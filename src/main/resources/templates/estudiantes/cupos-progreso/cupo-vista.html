@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Mi Progreso - Estudiante Mobile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== CSS OPTIMIZADO PARA MÓVIL ===== */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        /* Mejoras táctiles */
+        button, 
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
+        }
+
+        /* Transiciones suaves */
+        .progress-bar, 
+        .bg-green-500, 
+        .bg-blue-600,
+        button,
+        .rounded-lg,
+        .shadow-md {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Tarjetas con efecto táctil */
+        .bg-white {
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        
+        .bg-white:active {
+            transform: scale(0.99);
+        }
+
+        /* Sombra personalizada */
+        .shadow-custom {
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Barra de progreso animada */
+        .progress-bar {
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0) 100%);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Scroll horizontal mejorado para móvil */
+        .overflow-x-auto {
+            border-radius: 12px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+            overflow-x: auto;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Estilo para filas de tabla - mejor táctil */
+        tbody tr {
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        
+        tbody tr:active {
+            background-color: #f1f5f9 !important;
+        }
+
+        /* Badges personalizados */
+        .badge-progress {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Botones con feedback táctil */
+        button {
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+        
+        button:active {
+            transform: scale(0.96);
+            opacity: 0.9;
+        }
+
+        /* Tarjetas de materia mejoradas para móvil */
+        .materia-card {
+            border: 1px solid rgba(203, 213, 225, 0.5);
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .materia-card:active {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px -4px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Tabla responsive para móvil */
+        @media (max-width: 640px) {
+            .responsive-table {
+                font-size: 0.7rem;
+            }
+            .responsive-table th,
+            .responsive-table td {
+                padding: 0.6rem 0.4rem;
+            }
+            .px-4 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            .py-3 {
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+            }
+        }
+
+        /* Header mejorado para móvil */
+        .bg-white.rounded-lg.shadow-md {
+            background: linear-gradient(135deg, #ffffff 0%, #fafcff 100%);
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        /* Input mejorado para móvil */
+        input[type="number"] {
+            font-size: 16px; /* Previene zoom automático en iOS */
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Barra de progreso interna */
+        .bg-green-500.h-2.rounded-full {
+            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        /* Loading spinner mejorado */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Cards con mejor espaciado móvil */
+        .container-mobile {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        /* Ajustes de fuente para móvil */
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 1.5rem !important;
+            }
+            .text-3xl {
+                font-size: 1.5rem !important;
+            }
+            .text-lg {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Pull to refresh indicator */
+        .pull-to-refresh {
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* Scroll personalizado */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+
+        /* Safe area para notch */
+        .safe-top {
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Animación para el botón de actualizar */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fa-spin-slow {
+            animation: spin-slow 0.8s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans">
+
+    <div class="max-w-6xl mx-auto container-mobile safe-top" style="padding: 0.75rem;">
+        <!-- Encabezado responsive -->
+        <div class="bg-white rounded-2xl shadow-md p-4 mb-4">
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">
+                            <i class="fas fa-chart-line text-blue-500"></i> Mi Progreso
+                        </h1>
+                        <p class="text-xs text-gray-600 mt-0.5">
+                            <i class="fas fa-graduation-cap"></i> Seguimiento de tratamientos
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="refreshBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 shadow-md touch-target">
+                            <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                            <span>Actualizar</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Campo ID estudiante (oculto inicialmente) -->
+                <div class="flex items-center gap-2" style="display: none;" id="manualIdDiv">
+                    <label for="studentIdInput" class="text-gray-700 font-medium text-sm">
+                        <i class="fas fa-id-card"></i> ID:
+                    </label>
+                    <input type="number" id="studentIdInput" value="1" 
+                           class="border border-gray-300 rounded-xl px-3 py-2 w-20 text-center focus:ring-2 focus:ring-blue-400 text-sm"
+                           inputmode="numeric">
+                    <button id="loadStudentBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl shadow-md touch-target text-sm">
+                        <i class="fas fa-search"></i> Cargar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenedor de datos del estudiante -->
+        <div id="studentDashboard" class="bg-white rounded-2xl shadow-custom p-4">
+            <div class="flex justify-between items-center flex-wrap gap-2 mb-4">
+                <div>
+                    <p id="studentCode" class="text-gray-600 text-xs">
+                        <i class="fas fa-qrcode"></i> Código: <span class="font-mono font-semibold text-gray-800">---</span>
+                    </p>
+                </div>
+                <span id="lastUpdate" class="text-xs text-gray-500">
+                    <i class="far fa-clock"></i> Última actualización: --
+                </span>
+            </div>
+            
+            <div id="materiasContainer" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <div class="loading-spinner mb-3"></div>
+                    <div class="text-sm">Cargando tus materias...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pull to refresh hint -->
+        <div class="pull-to-refresh mt-2">
+            <i class="fas fa-arrow-down"></i> Desliza hacia abajo para actualizar
+        </div>
+    </div>
+
+    <script>
+        // Configuración de la API
+        const API_BASE_URL = ''; // Si está en el mismo origen, vacío; si no, ej: 'http://localhost:8080'
+
+        let currentStudentId = null;
+        let isRefreshing = false;
+
+        // Función para obtener el progreso desde el backend
+        async function fetchStudentProgress(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}/progreso`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Estudiante no encontrado');
+                    }
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error al obtener progreso:', error);
+                throw error;
+            }
+        }
+
+        // Función para obtener información adicional del estudiante
+        async function fetchStudentInfo(studentId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}`);
+                if (!response.ok) {
+                    throw new Error('Error al obtener información del estudiante');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error al obtener info del estudiante:', error);
+                return null;
+            }
+        }
+
+        // Renderizar el dashboard con los datos (optimizado para móvil)
+        function renderDashboard(materiasData, studentInfo) {
+            const container = document.getElementById('materiasContainer');
+            if (!materiasData || materiasData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl">
+                        <i class="fas fa-folder-open text-5xl mb-3 opacity-40"></i>
+                        <p class="text-sm">No hay materias inscritas o no se encontraron tratamientos.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = '';
+            for (const materia of materiasData) {
+                let totalRequerido = 0;
+                let totalRealizado = 0;
+                materia.tratamientos.forEach(t => {
+                    totalRequerido += t.requerido;
+                    totalRealizado += t.realizado;
+                });
+                const porcentajeMateria = totalRequerido === 0 ? 0 : (totalRealizado / totalRequerido) * 100;
+
+                html += `
+                    <div class="materia-card border rounded-xl p-3 bg-gray-50 shadow-sm">
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <h3 class="text-base font-semibold text-gray-800 flex-1">
+                                <i class="fas fa-book-open text-blue-500 text-sm"></i> ${escapeHtml(materia.nombreMateria)}
+                            </h3>
+                            <span class="badge-progress text-xs">
+                                <i class="fas fa-tasks text-xs"></i> ${totalRealizado}/${totalRequerido}
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-3">
+                            <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: ${porcentajeMateria}%"></div>
+                        </div>
+                        <div class="overflow-x-auto responsive-table">
+                            <table class="min-w-full text-xs">
+                                <thead class="bg-gradient-to-r from-gray-200 to-gray-100">
+                                    <tr>
+                                        <th class="px-2 py-2 text-left rounded-l-lg"><i class="fas fa-pills text-xs"></i> Tratamiento</th>
+                                        <th class="px-2 py-2 text-center"><i class="fas fa-flag-checkered text-xs"></i> Req.</th>
+                                        <th class="px-2 py-2 text-center"><i class="fas fa-check-circle text-xs"></i> Real.</th>
+                                        <th class="px-2 py-2 text-center"><i class="fas fa-hourglass-half text-xs"></i> Fal.</th>
+                                        <th class="px-2 py-2 text-center rounded-r-lg"><i class="fas fa-chart-simple text-xs"></i> %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                
+                for (const trat of materia.tratamientos) {
+                    const faltante = trat.requerido - trat.realizado;
+                    const porcentajeTrat = trat.requerido === 0 ? 0 : (trat.realizado / trat.requerido) * 100;
+                    const faltanteClass = faltante > 0 ? 'text-red-600' : 'text-green-600';
+                    html += `
+                        <tr class="border-b hover:bg-gray-100 transition-colors">
+                            <td class="px-2 py-2 font-medium text-xs">${escapeHtml(trat.nombreTratamiento)}</td>
+                            <td class="px-2 py-2 text-center font-semibold">${trat.requerido}</td>
+                            <td class="px-2 py-2 text-center font-semibold text-green-600">${trat.realizado}</td>
+                            <td class="px-2 py-2 text-center font-bold ${faltanteClass} text-xs">
+                                <i class="fas ${faltante > 0 ? 'fa-exclamation-triangle' : 'fa-check'} text-xs mr-0.5"></i>${faltante}
+                            </td>
+                            <td class="px-2 py-2 text-center">
+                                <div class="flex items-center gap-1">
+                                    <div class="flex-1 bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-green-500 h-1.5 rounded-full transition-all duration-500" style="width: ${porcentajeTrat}%"></div>
+                                    </div>
+                                    <span class="text-xs font-semibold text-gray-600">${Math.round(porcentajeTrat)}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            // Actualizar datos del estudiante
+            if (studentInfo) {
+                document.getElementById('studentCode').innerHTML = `<i class="fas fa-qrcode"></i> Código: <span class="font-mono font-semibold text-gray-800">${studentInfo.codigoEstudiante || '---'}</span>`;
+            } else {
+                document.getElementById('studentCode').innerHTML = `<i class="fas fa-qrcode"></i> Código: <span class="font-mono font-semibold text-gray-800">---</span>`;
+            }
+
+            document.getElementById('lastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+        }
+
+        // Función principal para cargar datos
+        async function loadData(studentId, showLoading = true) {
+            if (!studentId) return;
+            if (isRefreshing) return;
+            
+            try {
+                isRefreshing = true;
+                
+                if (showLoading) {
+                    const container = document.getElementById('materiasContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="loading-spinner mb-3"></div>
+                                <div class="text-sm">Actualizando datos...</div>
+                            </div>`;
+                    }
+                }
+                
+                const [progreso, studentInfo] = await Promise.all([
+                    fetchStudentProgress(studentId),
+                    fetchStudentInfo(studentId)
+                ]);
+                
+                renderDashboard(progreso, studentInfo);
+            } catch (error) {
+                const container = document.getElementById('materiasContainer');
+                container.innerHTML = `
+                    <div class="text-center py-8 text-red-500 bg-red-50 rounded-2xl">
+                        <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                        <div class="text-sm">Error: ${error.message}</div>
+                        <button onclick="location.reload()" class="mt-3 bg-red-600 text-white px-4 py-2 rounded-xl touch-target text-sm">
+                            <i class="fas fa-sync-alt"></i> Reintentar
+                        </button>
+                    </div>`;
+                document.getElementById('lastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+            } finally {
+                isRefreshing = false;
+            }
+        }
+
+        // Pull to refresh
+        function initPullToRefresh() {
+            let startY = 0;
+            let isPulling = false;
+            
+            document.addEventListener('touchstart', (e) => {
+                if (window.scrollY === 0) {
+                    startY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (isPulling && window.scrollY === 0) {
+                    const currentY = e.touches[0].clientY;
+                    const diff = currentY - startY;
+                    if (diff > 60 && !isRefreshing && currentStudentId) {
+                        loadData(currentStudentId, true);
+                        isPulling = false;
+                    }
+                }
+            });
+            
+            document.addEventListener('touchend', () => {
+                isPulling = false;
+            });
+        }
+
+        // Eventos
+        document.getElementById('loadStudentBtn')?.addEventListener('click', () => {
+            const newId = parseInt(document.getElementById('studentIdInput').value);
+            if (isNaN(newId)) {
+                alert('Ingrese un ID válido');
+                return;
+            }
+            currentStudentId = newId;
+            sessionStorage.setItem('idEstudiante', currentStudentId);
+            loadData(currentStudentId, true);
+        });
+
+        // Botón de actualizar manual
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            if (currentStudentId) {
+                const refreshIcon = document.getElementById('refreshIcon');
+                // Añadir animación al icono
+                refreshIcon.classList.add('fa-spin-slow');
+                loadData(currentStudentId, true);
+                setTimeout(() => { 
+                    refreshIcon.classList.remove('fa-spin-slow');
+                }, 800);
+            } else {
+                alert('Primero carga un ID de estudiante');
+            }
+        });
+
+        // Inicialización
+        const storedId = sessionStorage.getItem('idEstudiante');
+        if (storedId && !isNaN(parseInt(storedId))) {
+            currentStudentId = parseInt(storedId);
+            const inputManual = document.getElementById('studentIdInput');
+            if (inputManual) inputManual.value = currentStudentId;
+            loadData(currentStudentId, true);
+            initPullToRefresh();
+        } else {
+            document.getElementById('manualIdDiv')?.style.removeProperty('display');
+            document.getElementById('materiasContainer').innerHTML = `
+                <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl">
+                    <i class="fas fa-id-card text-5xl mb-3 opacity-40"></i>
+                    <p class="text-sm">Ingresa tu ID para ver tu progreso</p>
+                </div>`;
+        }
+
+        // Escapar HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Prevenir zoom en inputs (iOS)
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>

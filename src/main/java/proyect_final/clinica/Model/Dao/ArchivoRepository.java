@@ -1,0 +1,50 @@
+package proyect_final.clinica.Model.Dao;
+
+import proyect_final.clinica.Model.Entity.Archivo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.List;
+import java.util.Optional;
+
+public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
+    
+    // Métodos existentes...
+    List<Archivo> findByPacienteIdPaciente(Long idPaciente);
+    Optional<Archivo> findByCodigoArchivo(String codigoArchivo);
+    List<Archivo> findByUbicacionFisicaContainingIgnoreCase(String ubicacion);
+    
+    @Query("SELECT a FROM Archivo a WHERE a.paciente.idPaciente = :idPaciente " +
+           "AND LOWER(a.codigoArchivo) LIKE LOWER(CONCAT('%', :codigo, '%'))")
+    List<Archivo> buscarPorPacienteYCodigo(@Param("idPaciente") Long idPaciente, 
+                                           @Param("codigo") String codigo);
+    
+    @Query("SELECT a FROM Archivo a WHERE a.paciente.idPaciente = :idPaciente ORDER BY a.idArchivo LIMIT 1")
+    Optional<Archivo> findPrimerArchivoPorPaciente(@Param("idPaciente") Long idPaciente);
+    
+    // ✅ NUEVOS MÉTODOS PARA BUSCAR POR DATOS DEL PACIENTE
+     // ✅ Método único para buscar archivo por CI O nombre del paciente
+    @Query("SELECT a FROM Archivo a WHERE " +
+           "(:ci IS NOT NULL AND CAST(a.paciente.ci AS string) = CAST(:ci AS string)) OR " +
+           "(:nombre IS NOT NULL AND LOWER(CONCAT(a.paciente.persona.nombre, ' ', " +
+           "a.paciente.persona.apellidoPaterno, ' ', " +
+           "a.paciente.persona.apellidoMaterno)) " +
+           "LIKE LOWER(CONCAT('%', REPLACE(:nombre, ' ', '%'), '%')))")
+    Optional<Archivo> findArchivoByPacienteCiOrNombre(@Param("ci") Integer ci, 
+                                                      @Param("nombre") String nombre);
+    
+    // ✅ Método para obtener solo el ID del archivo (más eficiente)
+    @Query("SELECT a.idArchivo FROM Archivo a WHERE " +
+           "(:ci IS NOT NULL AND CAST(a.paciente.ci AS string) = CAST(:ci AS string)) OR " +
+           "(:nombre IS NOT NULL AND LOWER(CONCAT(a.paciente.persona.nombre, ' ', " +
+           "a.paciente.persona.apellidoPaterno, ' ', " +
+           "a.paciente.persona.apellidoMaterno)) " +
+           "LIKE LOWER(CONCAT('%', REPLACE(:nombre, ' ', '%'), '%')))")
+    Optional<Long> findIdArchivoByPacienteCiOrNombre(@Param("ci") Integer ci, 
+                                                     @Param("nombre") String nombre);
+    
+    // ✅ Verificar si un paciente ya tiene archivo
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END " +
+           "FROM Archivo a WHERE a.paciente.idPaciente = :idPaciente")
+    boolean existsByPacienteId(@Param("idPaciente") Long idPaciente);
+}

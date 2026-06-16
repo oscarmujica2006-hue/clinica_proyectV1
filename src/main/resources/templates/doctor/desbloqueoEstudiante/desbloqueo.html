@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Desbloqueo Estudiantil</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            background-color: var(--light);
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h2 {
+            font-size: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-body {
+            padding: 0;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        td {
+            padding: 15px 12px;
+            font-size: 14px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .badge-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: #fff3e0;
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        
+        .badge-secondary {
+            background-color: #f5f5f5;
+            color: var(--gray);
+        }
+        
+        .badge-info {
+            background-color: #e3f2fd;
+            color: var(--secondary);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #219a52;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-info {
+            background-color: #00bcd4;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #00acc1;
+            transform: translateY(-2px);
+        }
+        
+        .btn-unlock {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .btn-unlock:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .text-warning {
+            color: var(--warning);
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .text-gray {
+            color: var(--gray);
+        }
+
+        @media (max-width: 768px) {
+            .table-container {
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+        
+        .filter-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-input {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+            background: white;
+            min-width: 150px;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+        
+        .vencido-row {
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        .vencido-row:hover {
+            background-color: rgba(231, 76, 60, 0.1) !important;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Estilos para estudiantes bloqueados */
+        .bloqueado-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            background-color: #ffebee;
+            color: var(--danger);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Mensajes de éxito/error -->
+        <div th:if="${param.success}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${param.success}">Operación completada correctamente</span>
+        </div>
+        
+        <div th:if="${param.error}" class="alert alert-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${param.error}">Ha ocurrido un error</span>
+        </div>
+        
+        <div th:if="${param.info}" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <span th:text="${param.info}">Información</span>
+        </div>
+        
+        <div class="header">
+            <h1><i class="fas fa-unlock-alt"></i> Gestión de Desbloqueo Estudiantil</h1>
+            <p>Administre los préstamos y desbloquee estudiantes cuando sea necesario</p>
+        </div>
+        
+        <!-- Barra de filtros -->
+        <div class="filter-bar">
+            <input type="text" class="filter-input" placeholder="Buscar por ID Estudiante..." id="filtroEstudiante">
+            <input type="text" class="filter-input" placeholder="Buscar por ID Archivo..." id="filtroArchivo">
+            <select class="filter-select" id="filtroEstado">
+                <option value="">Todos los estados</option>
+                <option value="ACTIVO">Activo</option>
+                <option value="VENCIDO">Vencido</option>
+                <option value="DEVUELTO">Devuelto</option>
+            </select>
+            <button class="btn btn-primary" onclick="aplicarFiltros()">
+                <i class="fas fa-search"></i> Filtrar
+            </button>
+            <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                <i class="fas fa-eraser"></i> Limpiar
+            </button>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value text-primary" th:text="${totalPrestamos}">0</div>
+                <div class="stat-label">Total de Préstamos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-success" th:text="${prestamosActivos}">0</div>
+                <div class="stat-label">Activos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-warning" th:text="${prestamosVencidos}">0</div>
+                <div class="stat-label">Vencidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-info" th:text="${prestamosDevueltos}">0</div>
+                <div class="stat-label">Devueltos</div>
+            </div>
+        </div>
+        
+        <!-- SECCIÓN NUEVA: Tarjetas de estudiantes bloqueados -->
+        <div class="card" th:if="${estudiantesBloqueados != null and !estudiantesBloqueados.isEmpty()}">
+            <div class="card-header" style="background-color: #ffebee;">
+                <h2 style="color: var(--danger);">
+                    <i class="fas fa-lock"></i> Estudiantes Bloqueados
+                </h2>
+            </div>
+            <div class="card-body">
+                <div style="padding: 20px; display: flex; flex-wrap: wrap; gap: 15px;">
+                    <div th:each="entry : ${estudiantesBloqueados}" 
+                         th:if="${entry.value}"
+                         style="background: #ffebee; padding: 15px; border-radius: 8px; border-left: 4px solid var(--danger); min-width: 250px; flex: 1;">
+                        <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">
+                            <i class="fas fa-user-graduate"></i> Estudiante ID: <span th:text="${entry.key}"></span>
+                        </div>
+                        <div style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 
+                            Este estudiante está bloqueado por préstamos vencidos
+                        </div>
+                        <button class="btn btn-unlock" 
+                                style="width: 100%;"
+                                th:onclick="'desbloquearEstudiante(' + ${entry.key} + ')'">
+                            <i class="fas fa-unlock"></i> Desbloquear Estudiante
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-list"></i> Lista de Préstamos Actuales</h2>
+            </div>
+            
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Préstamo</th>
+                                <th>ID Archivo</th>
+                                <th>ID Estudiante</th>
+                                <th>Fecha Préstamo</th>
+                                <th>Fecha Límite</th>
+                                <th>Tipo</th>
+                                <th>Encargado</th>
+                                <th>Motivo</th>
+                                <th>Días Retraso</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="p : ${prestamos}" th:class="${p.diasRetraso != null and p.diasRetraso > 0 ? 'vencido-row' : ''}">
+                                <td th:text="${p.id}">-</td>
+                                <td>
+                                    <strong th:text="${p.idArchivo}">-</strong>
+                                </td>
+                                <td>
+                                    <strong th:text="${p.idEstudiante}">-</strong>
+                                    <!-- Badge de bloqueado si el estudiante está bloqueado -->
+                                    <span th:if="${estudiantesBloqueados.get(p.idEstudiante)}" 
+                                          class="bloqueado-badge">
+                                        <i class="fas fa-lock"></i> BLOQUEADO
+                                    </span>
+                                </td>
+                                <td th:text="${p.fechaPrestamo != null ? #temporals.format(p.fechaPrestamo, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                                <td th:text="${p.fechaLimitePrestamo != null ? #temporals.format(p.fechaLimitePrestamo, 'dd/MM/yyyy') : 'N/A'}">-</td>
+                                <td>
+                                    <span class="badge badge-info" th:text="${p.tipoPrestamo}">-</span>
+                                </td>
+                                <td th:text="${p.encargadoPrestamo}">-</td>
+                                <td>
+                                    <div th:if="${p.motivoPrestamo != null and p.motivoPrestamo.length() > 30}" 
+                                         th:text="${#strings.substring(p.motivoPrestamo, 0, 30) + '...'}">
+                                        -
+                                    </div>
+                                    <div th:if="${p.motivoPrestamo != null and p.motivoPrestamo.length() <= 30}" 
+                                         th:text="${p.motivoPrestamo}">
+                                        -
+                                    </div>
+                                    <div th:if="${p.motivoPrestamo == null}">
+                                        <em class="text-gray">Sin motivo</em>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${p.diasRetraso != null and p.diasRetraso > 0}" 
+                                          class="badge badge-danger" 
+                                          th:text="${p.diasRetraso} + ' días'">
+                                    </span>
+                                    <span th:if="${p.diasRetraso == null or p.diasRetraso == 0}" 
+                                          class="badge badge-success">
+                                        <i class="fas fa-check"></i> 0 días
+                                    </span>
+                                </td>
+                                <td>
+                                    <span th:if="${p.estadoPrestamo == 'ACTIVO'}" class="badge badge-success">
+                                        <i class="fas fa-check-circle"></i> Activo
+                                    </span>
+                                    <span th:if="${p.estadoPrestamo == 'VENCIDO'}" class="badge badge-danger">
+                                        <i class="fas fa-exclamation-triangle"></i> Vencido
+                                    </span>
+                                    <span th:if="${p.estadoPrestamo == 'DEVUELTO'}" class="badge badge-secondary">
+                                        <i class="fas fa-check"></i> Devuelto
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <!-- Botón Ver Detalles -->
+                                        <button class="btn btn-primary btn-sm" 
+                                                th:onclick="'verDetalles(' + ${p.id} + ')'"
+                                                th:title="'Ver detalles'">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Registrar Devolución (solo para préstamos activos o vencidos) -->
+                                        <button th:if="${p.estadoPrestamo == 'ACTIVO' or p.estadoPrestamo == 'VENCIDO'}" 
+                                                class="btn btn-success btn-sm" 
+                                                th:onclick="'registrarDevolucion(' + ${p.id} + ')'"
+                                                th:title="'Registrar devolución'">
+                                            <i class="fas fa-undo-alt"></i>
+                                        </button>
+                                        
+                                        <!-- Botón Desbloquear Estudiante (NUEVO: basado en estado del estudiante, no del préstamo) -->
+                                        <button th:if="${estudiantesBloqueados.get(p.idEstudiante)}" 
+                                                class="btn btn-unlock btn-sm" 
+                                                th:onclick="'desbloquearEstudiante(' + ${p.idEstudiante} + ')'"
+                                                th:title="'Desbloquear estudiante'">
+                                            <i class="fas fa-unlock"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Fila cuando no hay datos -->
+                            <tr th:if="${prestamos == null or prestamos.isEmpty()}">
+                                <td colspan="11">
+                                    <div class="empty-state">
+                                        <i class="fas fa-folder-open"></i>
+                                        <h3>No hay préstamos registrados</h3>
+                                        <p>No se encontraron préstamos en el sistema</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para ver detalles del préstamo
+        function verDetalles(id) {
+            window.location.href = '/doctor/desbloqueoEstudiante/detalles/' + id;
+        }
+
+        // Función para registrar devolución
+        function registrarDevolucion(id) {
+            if (confirm('¿Estás seguro de registrar la devolución de este préstamo?')) {
+                fetch('/api/prestamos-actuales/' + id + '/devolver', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                        mostrarNotificacion('Devolución registrada correctamente', 'success');
+                    } else {
+                        throw new Error('Error al registrar devolución');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarNotificacion('Error al registrar devolución', 'error');
+                });
+            }
+        }
+
+        // Función para desbloquear estudiante
+        function desbloquearEstudiante(idEstudiante) {
+            if (confirm('¿Estás seguro de desbloquear a este estudiante?')) {
+                fetch('/api/prestamos-actuales/desbloquear/' + idEstudiante, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                        mostrarNotificacion('Estudiante desbloqueado correctamente', 'success');
+                    } else {
+                        throw new Error('Error al desbloquear estudiante');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    mostrarNotificacion('Error al desbloquear estudiante', 'error');
+                });
+            }
+        }
+
+        // Función para aplicar filtros
+        function aplicarFiltros() {
+            const filtroEstudiante = document.getElementById('filtroEstudiante').value;
+            const filtroArchivo = document.getElementById('filtroArchivo').value;
+            const filtroEstado = document.getElementById('filtroEstado').value;
+            
+            let url = '/doctor/desbloqueoEstudiante/desbloqueo?';
+            if (filtroEstudiante) url += 'estudiante=' + filtroEstudiante + '&';
+            if (filtroArchivo) url += 'archivo=' + filtroArchivo + '&';
+            if (filtroEstado) url += 'estado=' + filtroEstado + '&';
+            
+            window.location.href = url;
+        }
+
+        // Función para limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('filtroEstudiante').value = '';
+            document.getElementById('filtroArchivo').value = '';
+            document.getElementById('filtroEstado').value = '';
+            window.location.href = '/doctor/desbloqueoEstudiante/desbloqueo';
+        }
+
+        // Auto-ocultar mensajes después de 5 segundos
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s';
+                    setTimeout(() => alert.remove(), 500);
+                }, 5000);
+            });
+        }, 1000);
+
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${tipo}`;
+            notification.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${mensaje}
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                min-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }, 5000);
+        }
+
+        // Cargar valores de filtros desde la URL
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const estudiante = urlParams.get('estudiante');
+            const archivo = urlParams.get('archivo');
+            const estado = urlParams.get('estado');
+            
+            if (estudiante) document.getElementById('filtroEstudiante').value = estudiante;
+            if (archivo) document.getElementById('filtroArchivo').value = archivo;
+            if (estado) document.getElementById('filtroEstado').value = estado;
+        };
+    </script>
+</body>
+</html>

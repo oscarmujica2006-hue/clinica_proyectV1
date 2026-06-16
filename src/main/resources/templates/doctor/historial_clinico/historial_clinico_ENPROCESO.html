@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Clínico - U.A.P.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ESTILOS GENERALES RENOVADOS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1E40AF;      /* Azul médico profesional */
+            --secondary: #059669;    /* Verde salud */
+            --accent: #DC2626;       /* Rojo para acentos */
+            --light-bg: #F8FAFC;     /* Fondo claro */
+            --card-bg: #FFFFFF;      /* Fondo tarjetas */
+            --text-dark: #1E293B;    /* Texto oscuro */
+            --text-light: #64748B;   /* Texto claro */
+            --border: #E2E8F0;       /* Bordes */
+            --success: #10B981;      /* Verde éxito */
+            --warning: #F59E0B;      /* Amarillo advertencia */
+            --danger: #EF4444;       /* Rojo peligro */
+        }
+
+        body {
+            background: linear-gradient(135deg, #F0F9FF 0%, #EFF6FF 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* ENCABEZADO MEJORADO */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white" fill-opacity="0.1"><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30 Z"/></svg>');
+            background-size: 200px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        /* SECCIÓN DE BÚSQUEDA MODERNIZADA */
+        .search-section {
+            padding: 40px;
+            background: var(--light-bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-section h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            height: 46px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.3);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .search-info {
+            text-align: center;
+            color: var(--text-light);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* RESULTADOS DE BÚSQUEDA */
+        .search-results {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, var(--secondary), #047857);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .results-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item:hover {
+            background: #F0FDF4;
+            transform: translateX(5px);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item strong {
+            color: var(--primary);
+        }
+
+        /* SECCIÓN DE HISTORIAL CLÍNICO */
+        .form-section {
+            padding: 40px;
+            display: none;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary), #047857);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* CONTENEDOR DE HISTORIAL */
+        .historial-container {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .historial-content {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .consulta-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .consulta-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        .consulta-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .consulta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .consulta-fecha {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .consulta-tipo {
+            background: var(--success);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .consulta-detalles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detalle-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .detalle-label {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.85rem;
+        }
+
+        /* MODAL MODERNIZADO */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            z-index: 1;
+        }
+
+        .close:hover {
+            color: var(--danger);
+        }
+
+        .detalle-completo {
+            margin-top: 20px;
+        }
+
+        .seccion-detalle {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .seccion-detalle h5 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        /* ESTADOS DE CARGA Y MENSAJES */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-style: italic;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .consulta-detalles {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+        }
+
+        /* ESTILOS PARA IMPRESIÓN */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content,
+            .modal-content * {
+                visibility: visible;
+            }
+            .modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                background-color: white;
+            }
+            .modal-content {
+                margin: 0;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: none;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* ANIMACIONES ADICIONALES */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* BADGE PARA TRATAMIENTOS */
+        .badge-tratamiento {
+            background: var(--accent);
+        }
+
+        /* SCROLLBAR PERSONALIZADO */
+        .historial-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .historial-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .historial-content::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .historial-content::-webkit-scrollbar-thumb:hover {
+            background: #3730A3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ENCABEZADO MEJORADO -->
+        <div class="header">
+            <h1><i class="fas fa-tooth"></i> HISTORIAL CLÍNICO ODONTOLÓGICO U.A.P.</h1>
+            <p>Universidad Amazónica de Pando - Sistema de Gestión Dental</p>
+        </div>
+        
+        <!-- SECCIÓN DE BÚSQUEDA MODERNIZADA -->
+        <div class="search-section">
+            <h1><i class="fas fa-search"></i> BUSCAR PACIENTE</h1>
+            <div class="search-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> NOMBRE Y APELLIDOS</label>
+                    <input type="text" id="nombreBusqueda" placeholder="Ingrese nombre completo">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> C.I.</label>
+                    <input type="text" id="ciBusqueda" placeholder="Ingrese CI">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="search-btn" id="btnBuscar">
+                        <i class="fas fa-search"></i> BUSCAR
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-info">
+                <i class="fas fa-info-circle"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
+            </div>
+            
+            <!-- Resultados de búsqueda -->
+            <div class="search-results" id="resultadosBusqueda">
+                <div class="results-header">
+                    <i class="fas fa-list"></i> Resultados de la búsqueda
+                </div>
+                <div class="results-list" id="listaResultados">
+                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECCIÓN DE VISUALIZACIÓN DE HISTORIAL CLÍNICO -->
+        <div class="form-section" id="historialSection">
+            <h2 class="section-title"><i class="fas fa-file-medical"></i> HISTORIAL CLÍNICO DEL PACIENTE</h2>
+            
+            <!-- Información del paciente -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-file-medical-alt"></i> N.º de Historia Clínica</label>
+                    <input type="text" id="numHistoriaClinica" readonly class="form-control">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> C.I.</label>
+                    <input type="text" id="ciPaciente" readonly class="form-control">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-folder"></i> N.º de Expediente Clínico</label>
+                    <input type="text" id="numExpediente" readonly class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nombre completo</label>
+                    <input type="text" id="personaInformacion" readonly class="form-control">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-birthday-cake"></i> Edad</label>
+                    <input type="text" id="edadPaciente" readonly class="form-control">
+                </div>
+            </div>
+
+            <!-- Selector de tipo de historial -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-filter"></i> Tipo de Historial:</label>
+                    <select id="tipoHistorial" class="form-control">
+                        <option value="consultas">Consultas Odontológicas</option>
+                        <option value="tratamientos">Tratamientos</option>
+                        <option value="completo">Historial Completo</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: end; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" id="btnCargarHistorial">
+                        <i class="fas fa-sync-alt"></i> Cargar Historial
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnDescargarHistorial">
+                        <i class="fas fa-download"></i> Descargar PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor del historial -->
+            <div class="historial-container" id="contenedorHistorial">
+                <div class="loading" id="loadingHistorial" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando historial...
+                </div>
+                <div class="historial-content" id="contenidoHistorial">
+                    <!-- El historial se cargará aquí -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para detalles de consulta -->
+        <div id="modalDetalleConsulta" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3><i class="fas fa-clipboard-list"></i> Detalles de la Consulta</h3>
+                <div id="detalleConsultaContent"></div>
+                <button class="btn btn-primary no-print" onclick="imprimirDetalleConsulta()" style="margin-top: 20px;">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
+        const API_BASE_URL = 'http://localhost:8080/api/pacientes/public';
+
+        // Elementos de búsqueda
+        const nombreBusqueda = document.getElementById('nombreBusqueda');
+        const ciBusqueda = document.getElementById('ciBusqueda');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const resultadosBusqueda = document.getElementById('resultadosBusqueda');
+        const listaResultados = document.getElementById('listaResultados');
+        
+        // Elementos del formulario para llenar con datos del paciente
+        const numHistoriaClinica = document.getElementById('numHistoriaClinica');
+        const ciPaciente = document.getElementById('ciPaciente');
+        const numExpediente = document.getElementById('numExpediente');
+        const personaInformacion = document.getElementById('personaInformacion');
+        const edadPaciente = document.getElementById('edadPaciente');
+        
+        // Sección de historial
+        const historialSection = document.getElementById('historialSection');
+        const btnCargarHistorial = document.getElementById('btnCargarHistorial');
+        const btnDescargarHistorial = document.getElementById('btnDescargarHistorial');
+        const tipoHistorial = document.getElementById('tipoHistorial');
+        const contenedorHistorial = document.getElementById('contenedorHistorial');
+        const contenidoHistorial = document.getElementById('contenidoHistorial');
+        const loadingHistorial = document.getElementById('loadingHistorial');
+
+        let pacienteActual = null;
+
+        // Modal
+        const modalDetalleConsulta = document.getElementById('modalDetalleConsulta');
+        const detalleConsultaContent = document.getElementById('detalleConsultaContent');
+        const closeModal = document.querySelector('.close');
+
+        // Función para buscar pacientes en el backend
+        async function buscarPacientes() {
+            const nombre = nombreBusqueda.value.trim();
+            const ci = ciBusqueda.value.trim();
+
+            // Validar que al menos un campo tenga datos
+            if (!nombre && !ci) {
+                alert('Por favor, ingrese un nombre o CI para buscar.');
+                return;
+            }
+
+            listaResultados.innerHTML = '<div class="loading">Buscando pacientes...</div>';
+            resultadosBusqueda.style.display = 'block';
+            btnBuscar.disabled = true;
+            btnBuscar.textContent = 'BUSCANDO...';
+
+            try {
+                let url;
+                
+                // ✅ BÚSQUEDA SEPARADA: Si hay CI, buscar solo por CI
+                if (ci) {
+                    url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                } else {
+                    // Si solo hay nombre, buscar por nombre
+                    url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
+                }
+
+                console.log('Buscando pacientes con URL:', url);
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Error en la búsqueda: ${response.status}`);
+                }
+
+                const pacientes = await response.json();
+                console.log('Pacientes encontrados:', pacientes);
+                mostrarResultados(pacientes);
+
+            } catch (error) {
+                console.error('Error al buscar pacientes:', error);
+                listaResultados.innerHTML = '<div class="no-results">Error al realizar la búsqueda. Verifique la conexión.</div>';
+            } finally {
+                btnBuscar.disabled = false;
+                btnBuscar.textContent = 'BUSCAR';
+            }
+        }
+        
+        // Función para mostrar resultados de búsqueda
+        function mostrarResultados(pacientes) {
+            listaResultados.innerHTML = '';
+            
+            if (!pacientes || pacientes.length === 0) {
+                listaResultados.innerHTML = '<div class="no-results">No se encontraron pacientes con los criterios de búsqueda.</div>';
+            } else {
+                pacientes.forEach(paciente => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+
+                    // Formatear nombre completo usando los campos reales
+                    const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+
+                    // CI está en la entidad Paciente (campo ci)
+                    const ciMostrado = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : (paciente.persona?.ci || 'N/A');
+
+                    item.innerHTML = `
+                        <strong>${nombreCompleto}</strong> - CI: ${ciMostrado} - Historial: ${paciente.historialClinico || 'N/A'}
+                    `;
+                    item.addEventListener('click', () => seleccionarPaciente(paciente));
+                    listaResultados.appendChild(item);
+                });
+            }
+            
+            resultadosBusqueda.style.display = 'block';
+        }
+        
+        // Función para seleccionar un paciente y llenar el formulario
+        function seleccionarPaciente(paciente) {
+            // Llenar campos del formulario con datos del paciente
+            numHistoriaClinica.value = paciente.historialClinico || '';
+            ciPaciente.value = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : '';
+            numExpediente.value = paciente.idPaciente || paciente.id || '';
+            const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+            personaInformacion.value = nombreCompleto;
+            edadPaciente.value = paciente.persona?.edad || '';
+
+
+            pacienteActual = paciente;
+
+            // Mostrar sección de historial
+            historialSection.style.display = 'block';
+
+            // Ocultar resultados
+            resultadosBusqueda.style.display = 'none';
+
+            // Limpiar campos de búsqueda
+            nombreBusqueda.value = '';
+            ciBusqueda.value = '';
+
+            // Desplazar a la sección de historial
+            historialSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+            // Cargar historial del paciente
+            async function cargarHistorial() {
+                try {
+                    // Obtener el ID del paciente del campo de formulario
+                    const idPacienteInput = document.getElementById('numExpediente');
+                    const idPaciente = idPacienteInput ? idPacienteInput.value.trim() : '';
+                    const tipo = tipoHistorial.value;
+                    
+                    console.log('🔍 ID Paciente obtenido:', idPaciente); // DEBUG
+                    console.log('🔍 Tipo de historial:', tipo); // DEBUG
+                    
+                    // Validaciones más robustas
+                    if (!idPaciente) {
+                        alert('❌ Debe seleccionar un paciente primero');
+                        return;
+                    }
+
+                    // Validar que sea un número válido
+                    if (isNaN(idPaciente) || idPaciente <= 0) {
+                        alert('❌ ID de paciente inválido');
+                        return;
+                    }
+
+                    loadingHistorial.style.display = 'block';
+                    contenidoHistorial.innerHTML = '';
+
+                    let url;
+                    switch(tipo) {
+                        case 'consultas':
+                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                            break;
+                        case 'tratamientos':
+                            url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
+                            break;
+                        case 'completo':
+                            url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
+                            break;
+                        default:
+                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                    }
+
+                    console.log('🌐 URL de consulta:', url); // DEBUG
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error('No se encontraron consultas para este paciente');
+                        } else if (response.status === 500) {
+                            throw new Error('Error interno del servidor');
+                        } else {
+                            throw new Error(`Error ${response.status}: ${response.statusText}`);
+                        }
+                    }
+
+                    const historial = await response.json();
+                    console.log('📊 Historial recibido:', historial);
+                    
+                    if (!historial || historial.length === 0) {
+                        contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                        return;
+                    }
+                    
+                    mostrarHistorial(historial, tipo);
+
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    contenidoHistorial.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error al cargar el historial: ${error.message}</p>
+                            <p>Verifique que el paciente tenga consultas registradas.</p>
+                        </div>
+                    `;
+                } finally {
+                    loadingHistorial.style.display = 'none';
+                }
+            }
+
+        // Mostrar historial en la interfaz
+        function mostrarHistorial(historial, tipo) {
+            contenidoHistorial.innerHTML = '';
+
+            if (!historial || historial.length === 0) {
+                contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                return;
+            }
+
+            if (tipo === 'consultas') {
+                mostrarConsultas(historial);
+            } else if (tipo === 'tratamientos') {
+                mostrarTratamientos(historial);
+            } else {
+                mostrarHistorialCompleto(historial);
+            }
+        }
+
+        function mostrarConsultas(consultas) {
+            console.log('Consultas DTO recibidas:', consultas);
+            
+            consultas.forEach((consulta, index) => {
+                const consultaItem = document.createElement('div');
+                consultaItem.className = 'consulta-item';
+                consultaItem.onclick = () => mostrarDetalleConsulta(consulta);
+                
+                consultaItem.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">Consulta #${index + 1} - ${formatearFecha(consulta.fecha)}</span>
+                        <span class="consulta-tipo">CONSULTA</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        <div class="detalle-item">
+                            <span class="detalle-label">Observaciones:</span>
+                            <span>${consulta.observaciones || 'Sin observaciones'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Alergias:</span>
+                            <span>${consulta.alergias ? 'Sí' : 'No'} ${consulta.especifiqueAlergia ? `- ${consulta.especifiqueAlergia}` : ''}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Patología:</span>
+                            <span>${consulta.nombrePatologia || 'Ninguna'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Higiene Bucal:</span>
+                            <span>${consulta.higieneBucal || 'No especificado'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(consultaItem);
+            });
+        }
+
+        // Mostrar tratamientos
+        function mostrarTratamientos(tratamientos) {
+            tratamientos.forEach((tratamiento, index) => {
+                const tratamientoItem = document.createElement('div');
+                tratamientoItem.className = 'consulta-item';
+                
+                tratamientoItem.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">Tratamiento #${index + 1} - ${formatearFecha(tratamiento.fecha)}</span>
+                        <span class="consulta-tipo" style="background-color: #dc3545;">TRATAMIENTO</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        <div class="detalle-item">
+                            <span class="detalle-label">Tipo:</span>
+                            <span>${tratamiento.tipoTratamiento || 'No especificado'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Descripción:</span>
+                            <span>${tratamiento.descripcion || 'Sin descripción'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Estado:</span>
+                            <span>${tratamiento.estado || 'No especificado'}</span>
+                        </div>
+                        <div class="detalle-item">
+                            <span class="detalle-label">Procedimientos:</span>
+                            <span>${tratamiento.procedimientos || 'No especificado'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(tratamientoItem);
+            });
+        }
+
+        // Mostrar historial completo
+        function mostrarHistorialCompleto(historial) {
+            // Agrupar por fecha o tipo
+            historial.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'consulta-item';
+                
+                const esTratamiento = item.tipo === 'tratamiento' || item.tipoTratamiento;
+                const tipo = esTratamiento ? 'TRATAMIENTO' : 'CONSULTA';
+                const bgColor = esTratamiento ? '#dc3545' : '#28a745';
+                
+                itemElement.innerHTML = `
+                    <div class="consulta-header">
+                        <span class="consulta-fecha">${esTratamiento ? 'Tratamiento' : 'Consulta'} #${index + 1} - ${formatearFecha(item.fecha)}</span>
+                        <span class="consulta-tipo" style="background-color: ${bgColor};">${tipo}</span>
+                    </div>
+                    <div class="consulta-detalles">
+                        ${esTratamiento ? `
+                            <div class="detalle-item">
+                                <span class="detalle-label">Tipo:</span>
+                                <span>${item.tipoTratamiento || 'No especificado'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Descripción:</span>
+                                <span>${item.descripcion || 'Sin descripción'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Estado:</span>
+                                <span>${item.estado || 'No especificado'}</span>
+                            </div>
+                        ` : `
+                            <div class="detalle-item">
+                                <span class="detalle-label">Observaciones:</span>
+                                <span>${item.observaciones || 'Sin observaciones'}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Alergias:</span>
+                                <span>${item.alergias ? 'Sí' : 'No'} ${item.especifiqueAlergia ? `- ${item.especifiqueAlergia}` : ''}</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Higiene Bucal:</span>
+                                <span>${item.higieneBucal || 'No especificado'}</span>
+                            </div>
+                        `}
+                    </div>
+                `;
+                
+                contenidoHistorial.appendChild(itemElement);
+            });
+        }
+
+async function mostrarDetalleConsulta(consulta) {
+    try {
+        console.log('Consulta DTO completa recibida:', consulta);
+
+        const response = await fetch('/Doctor_static/Historial-static/hoja-consulta/detalle-consulta-completo.html');
+        if (!response.ok) throw new Error(`Error al cargar el template: ${response.status}`);
+        const htmlString = await response.text();
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+
+        // Funciones auxiliares
+        const getValor = (valor, defecto = 'No especificado') => {
+            return (valor === null || valor === undefined || valor === '') ? defecto : valor;
+        };
+        const getBooleano = (valor) => {
+            if (valor === null || valor === undefined) return 'No especificado';
+            return valor ? 'Sí' : 'No';
+        };
+        const getNumero = (valor, defecto = 'No especificado') => {
+            return (valor === null || valor === undefined) ? defecto : valor.toString();
+        };
+
+    
+        // Función auxiliar para asignar texto de forma segura
+        const setText = (selector, valor) => {
+            const el = tempDiv.querySelector(selector);
+            if (el) el.textContent = (valor !== null && valor !== undefined && valor !== '') ? valor : 'No especificado';
+        };
+
+        // Rellenar datos del paciente usando pacienteActual
+        if (pacienteActual) {
+            const persona = pacienteActual.persona || {};
+
+            setText('#detalle-expediente', pacienteActual.idPaciente || '');
+            setText('#detalle-historia', pacienteActual.historialClinico || '');
+            setText('#detalle-ci', pacienteActual.ci || persona.ci || '');
+
+            const nombreCompleto = [persona.nombre, persona.apellidoPaterno, persona.apellidoMaterno].filter(Boolean).join(' ') || 'No especificado';
+            setText('#detalle-nombre-paciente', nombreCompleto);
+            setText('#detalle-apellido-paterno', persona.apellidoPaterno || 'No especificado');
+            setText('#detalle-apellido-materno', persona.apellidoMaterno || 'No especificado');
+
+            setText('#detalle-edad-sexo', `${persona.edad || '?'} años / ${persona.sexo || 'No especificado'}`);
+            setText('#detalle-lugar-fecha-nacimiento', `${pacienteActual.lugarNacimiento || 'No especificado'}, ${pacienteActual.fechaNacimiento || '?'}`);
+            setText('#detalle-direccion', pacienteActual.direccion || 'No especificada');
+            setText('#detalle-telefono-celular', pacienteActual.telefono || 'No especificado');
+            setText('#detalle-grado-instruccion', pacienteActual.gradoInstruccion || 'No especificado');
+            setText('#detalle-ocupacion', pacienteActual.ocupacion || 'No especificada');
+            setText('#detalle-estado-civil', pacienteActual.estadoCivil || 'No especificado');
+            setText('#detalle-naciones-originarias', pacienteActual.nacionesOriginarias || 'No especificado');
+            setText('#detalle-idioma', persona.idioma || pacienteActual.idioma || 'No especificado');
+        } else {
+            setText('#detalle-nombre-paciente', 'No seleccionado');
+        }
+        setText('#detalle-fecha', formatearFecha(consulta.fecha));
+
+        // Patologías
+        setText('#detalle-anemia', getBooleano(consulta.anemia));
+        setText('#detalle-asma', getBooleano(consulta.asma));
+        setText('#detalle-cardiopatias', getBooleano(consulta.cardiopatias));
+        setText('#detalle-diabetes', getBooleano(consulta.diabetesMel));      
+        setText('#detalle-gastricas', getBooleano(consulta.enfGastricos));   
+        setText('#detalle-epilepsia', getBooleano(consulta.epilepsia));
+        setText('#detalle-hepatitis', getBooleano(consulta.hepatitis));
+        setText('#detalle-hipertension', getBooleano(consulta.hipertension));
+        setText('#detalle-tuberculosis', getBooleano(consulta.tuberculosis));
+        setText('#detalle-vih', getBooleano(consulta.vih));                 
+        setText('#detalle-otros', getValor(consulta.otros));
+        setText('#detalle-ninguno', getBooleano(consulta.ninguno));
+
+
+
+
+        setText('#detalle-observaciones', getValor(consulta.observaciones, 'Sin observaciones'));
+        setText('#detalle-fecha-revision', formatearFecha(consulta.fechaRevision));
+        setText('#detalle-patologia', getValor(consulta.nombrePatologia, 'Ninguna'));
+
+        setText('#detalle-alergias', getBooleano(consulta.alergias));
+        setText('#detalle-alergia-detalle', consulta.especifiqueAlergia ? `- ${getValor(consulta.especifiqueAlergia)}` : '');
+
+        setText('#detalle-embarazo', getBooleano(consulta.embarazo));
+        setText('#detalle-semana-embarazo', consulta.semanaEmbarazo ? `- ${getNumero(consulta.semanaEmbarazo)} semanas` : '');
+
+        setText('#detalle-tratamiento-medico', getBooleano(consulta.tratamientoMedico));
+        setText('#detalle-tratamiento-detalle', consulta.tratamientoMedicoDetalle ? `- ${getValor(consulta.tratamientoMedicoDetalle)}` : '');
+
+        setText('#detalle-medicamentos', getBooleano(consulta.recibeAlgunMedicamento));
+        setText('#detalle-medicamento-actual', consulta.medicamentoActual ? `- ${getValor(consulta.medicamentoActual)}` : '');
+
+        setText('#detalle-hemorragia', getBooleano(consulta.tuvoHemorragiaDental));
+        setText('#detalle-hemorragia-detalle', consulta.especifiqueHemorragia ? `- ${getValor(consulta.especifiqueHemorragia)}` : '');
+
+        setText('#detalle-atm', getValor(consulta.atm));
+        setText('#detalle-ganglios', getValor(consulta.gangliosLinfaticos));
+        setText('#detalle-respirador', getValor(consulta.respirador));
+        setText('#detalle-otros-respiratorio', getValor(consulta.otrosRespiratorio));
+
+        setText('#detalle-labios', getValor(consulta.labios));
+        setText('#detalle-lengua', getValor(consulta.lengua));
+        setText('#detalle-paladar', getValor(consulta.paladar));
+        setText('#detalle-piso-boca', getValor(consulta.pisoDeLaBoca));
+        setText('#detalle-mucosa-yugal', getValor(consulta.mucosaYugal));
+        setText('#detalle-encias', getValor(consulta.encias));
+
+        setText('#detalle-usa-protesis', getBooleano(consulta.utilizaProtesisDental));
+        if (consulta.utilizaProtesisDental) {
+            setText('#detalle-protesis-tipo', `Tipo: ${getValor(consulta.tipoProtesis)}`);
+            setText('#detalle-protesis-tiempo', `Tiempo de uso: ${getValor(consulta.tiempoProtesis)}`);
+        } else {
+            // Opcional: ocultar los elementos si no aplica
+            const tipo = tempDiv.querySelector('#detalle-protesis-tipo');
+            const tiempo = tempDiv.querySelector('#detalle-protesis-tiempo');
+            if (tipo) tipo.style.display = 'none';
+            if (tiempo) tiempo.style.display = 'none';
+        }
+
+        setText('#detalle-fuma', getBooleano(consulta.habitoFuma));
+        setText('#detalle-bebe', getBooleano(consulta.habitoBebe));
+        setText('#detalle-otros-habitos', getValor(consulta.otrosHabitos));
+
+        setText('#detalle-cepillo', getBooleano(consulta.utilizaCepilloDental));
+        setText('#detalle-hilo', getBooleano(consulta.utilizaHiloDental));
+        setText('#detalle-enjuague', getBooleano(consulta.utilizaEnjuagueBucal));
+        setText('#detalle-frecuencia-cepillo', getValor(consulta.frecuenciaCepillo));
+        setText('#detalle-sangrado', getBooleano(consulta.sangradoEncias));
+        setText('#detalle-higiene-bucal', getValor(consulta.higieneBucal));
+        setText('#detalle-obs-higiene', getValor(consulta.observacionesHigiene, 'Sin observaciones'));
+
+        setText('#detalle-informante-nombres', getValor(consulta.informanteNombres));
+        setText('#detalle-informante-apellido-paterno', getValor(consulta.informanteApellidoPaterno));
+        setText('#detalle-informante-apellido-materno', getValor(consulta.informanteApellidoMaterno));
+        setText('#detalle-informante-direccion', getValor(consulta.informanteDireccion));
+        setText('#detalle-informante-telefono', getValor(consulta.informanteTelefono));
+
+        const consultaId = consulta.idConsulta ?? consulta.id ?? consulta.id_consulta;
+        const contenedorFotos = tempDiv.querySelector('#contenedor-fotos-odontograma');
+        if (contenedorFotos) {
+            contenedorFotos.innerHTML = ''; // Limpiar
+
+            if (!consultaId) {
+                console.warn('ID de consulta no definido para cargar fotos:', consulta);
+                contenedorFotos.innerHTML = '<p>No se pudo determinar el ID de la consulta para cargar las fotos.</p>';
+            } else {
+                const fotosResponse = await fetch(`/api/odontograma-fotos/consulta/${consultaId}`);
+                if (fotosResponse.ok) {
+                    const fotos = await fotosResponse.json();
+                    if (!Array.isArray(fotos) || fotos.length === 0) {
+                        contenedorFotos.innerHTML = '<p>No hay fotos en esta consulta.</p>';
+                    } else {
+                        fotos.forEach(foto => {
+                            const rutaArchivo = foto.rutaArchivo ?? foto.ruta_archivo ?? foto.path ?? null;
+                            const src = rutaArchivo ? (rutaArchivo.startsWith('/') ? rutaArchivo : `/${rutaArchivo}`) : null;
+
+                            if (!src) {
+                                console.warn('Ruta de imagen faltante en datos de foto:', foto);
+                                return;
+                            }
+
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.alt = foto.nombreOriginal || 'Imagen de odontograma';
+                            img.style.width = '150px';
+                            img.style.height = '150px';
+                            img.style.objectFit = 'cover';
+                            img.style.borderRadius = '8px';
+                            img.style.border = '1px solid #ccc';
+                            img.style.cursor = 'pointer';
+                            img.onerror = () => {
+                                img.alt = 'No se pudo cargar la imagen';
+                                img.style.opacity = '0.5';
+                                console.error('Error cargando imagen de odontograma:', src);
+                            };
+                            img.onclick = () => window.open(src, '_blank');
+                            contenedorFotos.appendChild(img);
+                        });
+                    }
+                } else {
+                    console.error('Error al obtener fotos de odontograma:', fotosResponse.status, fotosResponse.statusText);
+                    contenedorFotos.innerHTML = '<p>Error al cargar las fotos del odontograma.</p>';
+                }
+            }
+        }
+
+        // Insertar en el modal
+        detalleConsultaContent.innerHTML = '';
+        detalleConsultaContent.appendChild(tempDiv);
+        modalDetalleConsulta.style.display = 'block';
+
+    } catch (error) {
+        console.error('Error al cargar el detalle:', error);
+        detalleConsultaContent.innerHTML = `<div class="error">Error al cargar el detalle: ${error.message}</div>`;
+        modalDetalleConsulta.style.display = 'block';
+    }
+}
+        // Función para formatear fecha
+        function formatearFecha(fechaString) {
+            if (!fechaString) return 'No especificada';
+            
+            try {
+                const fecha = new Date(fechaString);
+                return fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fechaString;
+            }
+        }
+
+        // Descargar historial como PDF
+        async function descargarHistorialPDF() {
+            const idPaciente = document.getElementById('numExpediente').value;
+            const tipo = tipoHistorial.value;
+            
+            if (!idPaciente) {
+                alert('Debe seleccionar un paciente primero');
+                return;
+            }
+
+            try {
+                // Crear una ventana de impresión con el contenido del historial
+                const ventanaImpresion = window.open('', '_blank');
+                const nombrePaciente = document.getElementById('personaInformacion').value;
+                
+                ventanaImpresion.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Historial Clínico - ${nombrePaciente}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+                            .consulta { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
+                            .seccion { margin-bottom: 15px; }
+                            .label { font-weight: bold; }
+                            @media print { body { margin: 0; } }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>HISTORIAL CLÍNICO ODONTOLÓGICO</h1>
+                            <h2>Universidad Amazónica de Pando</h2>
+                            <h3>Paciente: ${nombrePaciente}</h3>
+                            <p>Expediente: ${document.getElementById('numExpediente').value} | 
+                            Historia Clínica: ${document.getElementById('numHistoriaClinica').value} | 
+                            CI: ${document.getElementById('ciPaciente').value}</p>
+                            <p>Fecha de generación: ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        <div id="contenido">
+                            ${contenidoHistorial.innerHTML}
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                ventanaImpresion.document.close();
+                ventanaImpresion.print();
+                
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                alert('Error al generar el PDF');
+            }
+        }
+
+        // Función para imprimir detalle de consulta
+        function imprimirDetalleConsulta() {
+            window.print();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Búsqueda
+            btnBuscar.addEventListener('click', buscarPacientes);
+            
+            // Permitir búsqueda con Enter
+            nombreBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarPacientes();
+                }
+            });
+            
+            ciBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarPacientes();
+                }
+            });
+            
+            // Ocultar resultados al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!resultadosBusqueda.contains(e.target) && 
+                    e.target !== nombreBusqueda && 
+                    e.target !== ciBusqueda && 
+                    e.target !== btnBuscar) {
+                    resultadosBusqueda.style.display = 'none';
+                }
+            });
+
+            // Historial
+            btnCargarHistorial.addEventListener('click', cargarHistorial);
+            btnDescargarHistorial.addEventListener('click', descargarHistorialPDF);
+
+            // Modal
+            closeModal.addEventListener('click', function() {
+                modalDetalleConsulta.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target === modalDetalleConsulta) {
+                    modalDetalleConsulta.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

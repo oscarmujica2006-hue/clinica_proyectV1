@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcademiaSphere · Gestión de Estudiantes</title>
+    <!-- Google Fonts & Iconos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== VARIABLES Y RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --primary-light: #eef2ff;
+            --secondary: #06d6a0;
+            --secondary-light: #e0fcf2;
+            --accent: #ff9e5e;
+            --danger: #ef476f;
+            --warning: #ffd166;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+            --radius-lg: 1.5rem;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #f6f8fd 0%, #f0f3fa 100%);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ===== HEADER MEJORADO ===== */
+        .header-gradient {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.97) 0%, rgba(6, 214, 160, 0.95) 100%);
+            padding: 3rem 3rem;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border-bottom: 4px solid white;
+        }
+
+        .header-gradient::before {
+            content: "📚🎓";
+            position: absolute;
+            font-size: 300px;
+            opacity: 0.1;
+            bottom: -80px;
+            right: -40px;
+            transform: rotate(-10deg);
+            white-space: nowrap;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+            animation: floatElements 25s infinite alternate ease-in-out;
+        }
+
+        .header-gradient::after {
+            content: "✏️📝";
+            position: absolute;
+            font-size: 220px;
+            opacity: 0.08;
+            top: -60px;
+            left: -30px;
+            transform: rotate(15deg);
+            white-space: nowrap;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+            animation: floatElementsReverse 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatElements {
+            0% { transform: rotate(-10deg) translateY(0) translateX(0); }
+            100% { transform: rotate(-5deg) translateY(-20px) translateX(-15px); }
+        }
+
+        @keyframes floatElementsReverse {
+            0% { transform: rotate(15deg) translateY(0) translateX(0); }
+            100% { transform: rotate(10deg) translateY(20px) translateX(15px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            color: white;
+        }
+
+        .header-content h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.75rem;
+            text-shadow: 2px 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .badge-premium {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-sm);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge-premium i {
+            color: var(--warning);
+        }
+
+        /* ===== PROGRESS STEPS ===== */
+        .progress-tracker {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: -1.5rem 2rem 2rem 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            z-index: 10;
+            border: 1px solid var(--gray-200);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .step i {
+            font-size: 0.9rem;
+            color: var(--gray-400);
+        }
+
+        .step.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+            border-color: var(--primary);
+        }
+
+        .step.active i {
+            color: white;
+        }
+
+        .step.completed {
+            background: var(--secondary-light);
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .step.completed i {
+            color: var(--secondary);
+        }
+
+        /* ===== CARDS PRINCIPALES ===== */
+        .main-card {
+            background: white;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            padding: 2.5rem;
+            border: 1px solid var(--gray-200);
+            border-top: none;
+        }
+
+        .section-card {
+            background: white;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .section-desc {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ===== GRID Y FORMULARIOS ===== */
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 0.3rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        }
+
+        .input-with-feedback {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .input-with-feedback .form-control {
+            flex: 1;
+        }
+
+        .feedback-indicator {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: var(--gray-100);
+            color: var(--gray-500);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0.5rem 0;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--primary);
+        }
+
+        /* ===== VALIDACIONES EN VIVO ===== */
+        .validations-panel {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 2px solid var(--gray-200);
+        }
+
+        .validation-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .validation-item:last-child {
+            border-bottom: none;
+        }
+
+        .validation-status {
+            width: 28px;
+            height: 28px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .status-pending { background: var(--gray-200); color: var(--gray-600); }
+        .status-success { background: var(--secondary-light); color: var(--secondary); }
+        .status-error { background: #fee2e2; color: var(--danger); }
+        .status-warning { background: #fef3c7; color: var(--warning); }
+
+        /* ===== BOTONES ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.9rem 2rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #05bd8e;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 214, 160, 0.3);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--gray-700);
+            border-color: var(--gray-200);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .btn-lg {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        /* ===== ALERTAS ===== */
+        .alert {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-sm);
+            background: white;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            border-left-color: var(--secondary);
+        }
+
+        .alert-error {
+            border-left-color: var(--danger);
+        }
+
+        .alert-warning {
+            border-left-color: var(--warning);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 968px) {
+            body { padding: 1rem; }
+            .form-grid-2 { grid-template-columns: 1fr; }
+            .btn-group { grid-template-columns: 1fr; }
+            .header-content h1 { font-size: 2.2rem; }
+            .main-card { padding: 1.5rem; }
+        }
+
+        @media (max-width: 640px) {
+            .progress-tracker { flex-direction: column; border-radius: var(--radius); }
+            .step { width: 100%; justify-content: center; }
+            .radio-group { flex-direction: column; gap: 0.75rem; }
+        }
+
+        /* Utilidades */
+        .text-success { color: var(--secondary); }
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+        .text-primary { color: var(--primary); }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER MEJORADO -->
+        <div class="header-gradient">
+            <div class="header-content">
+                <h1>🏛️ Registro de Estudiante</h1>
+                <div class="header-badges">
+                    <span class="badge-premium"><i class="fas fa-check-circle"></i> Sistema de Registro Académico</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROGRESS TRACKER -->
+        <div class="progress-tracker">
+            <span class="step active" id="step1"><i class="fas fa-user-plus"></i> Datos Persona</span>
+            <span class="step" id="step2"><i class="fas fa-lock"></i> Datos Usuario</span>
+            <span class="step" id="step3"><i class="fas fa-graduation-cap"></i> Datos Estudiante</span>
+            <span class="step" id="step4"><i class="fas fa-check-double"></i> Validación</span>
+            <span class="step" id="step5"><i class="fas fa-cloud-upload-alt"></i> Registro</span>
+        </div>
+
+        <!-- MAIN CARD -->
+        <div class="main-card">
+            <!-- SECCIÓN PRINCIPAL DE REGISTRO -->
+            <div class="section-card">
+                <div class="section-title">
+                    <div class="section-icon"><i class="fas fa-edit"></i></div>
+                    <div>
+                        <h2>Registro Completo de Estudiante</h2>
+                        <p class="section-desc">Complete los datos para registrar una nueva persona, usuario y estudiante en el sistema</p>
+                    </div>
+                </div>
+
+                <!-- FORMULARIO EN GRID 2 COLUMNAS -->
+                <div class="form-grid-2">
+                    <!-- COLUMNA IZQUIERDA: PERSONA + USUARIO -->
+                    <div>
+                        <!-- DATOS PERSONA -->
+                        <div style="background: var(--primary-light); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
+                            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--primary);">
+                                <i class="fas fa-user-circle"></i> Datos de la Persona
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label><i class="fas fa-signature"></i> Nombres Completos</label>
+                                <input type="text" class="form-control" id="nombres" placeholder="Ej: Juan Carlos" oninput="actualizarEstadoValidaciones()">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Apellido Paterno</label>
+                                    <input type="text" class="form-control" id="apellidoPaterno" placeholder="Ej: Pérez" oninput="actualizarEstadoValidaciones()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Apellido Materno</label>
+                                    <input type="text" class="form-control" id="apellidoMaterno" placeholder="Ej: García" oninput="actualizarEstadoValidaciones()">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Edad</label>
+                                    <input type="number" class="form-control" id="edad" placeholder="22" min="0" max="120" oninput="actualizarEstadoValidaciones()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Sexo</label>
+                                    <div class="radio-group">
+                                        <label class="radio-option">
+                                            <input type="radio" name="sexo" value="M" checked onchange="actualizarEstadoValidaciones()"> Masculino
+                                        </label>
+                                        <label class="radio-option">
+                                            <input type="radio" name="sexo" value="F" onchange="actualizarEstadoValidaciones()"> Femenino
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- DATOS USUARIO -->
+                        <div style="background: #e0f2fe; padding: 1.5rem; border-radius: var(--radius);">
+                            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; color: #0284c7;">
+                                <i class="fas fa-lock"></i> Datos de Usuario
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label>Nombre de Usuario</label>
+                                <div class="input-with-feedback">
+                                    <input type="text" class="form-control" id="nombreUsuario" placeholder="Ej: juan.perez" oninput="verificarNombreUsuario()">
+                                    <span class="feedback-indicator" id="usuarioFeedback"><i class="fas fa-spinner fa-pulse hidden" id="usuarioLoading"></i><i class="fas fa-user" id="usuarioIcon"></i></span>
+                                </div>
+                                <small id="disponibilidadUsuario" class="text-muted"></small>
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                                <input type="email" class="form-control" id="email" placeholder="Ej: juan.perez@universidad.edu" oninput="actualizarEstadoValidaciones()">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" id="password" placeholder="Mínimo 8 caracteres" oninput="validarContraseñas(); actualizarEstadoValidaciones()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirmar</label>
+                                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirme contraseña" oninput="validarContraseñas(); actualizarEstadoValidaciones()">
+                                </div>
+                            </div>
+                            <small id="mensajeContraseña" class="text-muted"></small>
+                            
+                            <div class="form-group mt-2">
+                                <label>Estado del Usuario</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="estadoUsuario" value="true" checked onchange="actualizarEstadoValidaciones()"> 🟢 Activo
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="estadoUsuario" value="false" onchange="actualizarEstadoValidaciones()"> 🔴 Inactivo
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COLUMNA DERECHA: ESTUDIANTE -->
+                    <div>
+                        <div style="background: var(--secondary-light); padding: 1.5rem; border-radius: var(--radius);">
+                            <h3 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--secondary);">
+                                <i class="fas fa-graduation-cap"></i> Datos del Estudiante
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label>Código de Estudiante</label>
+                                <div class="input-with-feedback">
+                                    <input type="number" class="form-control" id="codigoEstudiante" placeholder="Ej: 2024001" oninput="verificarCodigoEstudiante()">
+                                    <span class="feedback-indicator" id="codigoFeedback"><i class="fas fa-spinner fa-pulse hidden" id="codigoLoading"></i><i class="fas fa-hashtag" id="codigoIcon"></i></span>
+                                </div>
+                                <small id="disponibilidadCodigo" class="text-muted"></small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Gestión</label>
+                                <input type="text" class="form-control" id="gestion" placeholder="Ej: 2024-2025" value="2024-2025" oninput="actualizarEstadoValidaciones()">
+                            </div>
+                            
+                            <!-- NUEVO CAMPO: SELECCIONAR ROTE -->
+                            <div class="form-group">
+                                <label><i class="fas fa-chalkboard-teacher"></i> ROTE ASIGNADO</label>
+                                <select class="form-control" id="idRoteActual" onchange="actualizarEstadoValidaciones()">
+                                    <option value="">Cargando rotes...</option>
+                                </select>
+                                <small class="text-muted">Seleccione el rote al que será asignado el estudiante</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Bloqueado</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="bloqueado" value="false" checked onchange="actualizarEstadoValidaciones()"> ❌ No
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="bloqueado" value="true" onchange="actualizarEstadoValidaciones()"> ⚠️ Sí
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PANEL DE VALIDACIONES EN VIVO -->
+                        <div class="validations-panel">
+                            <h4 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                                <i class="fas fa-check-circle text-primary"></i> Validaciones en Tiempo Real
+                            </h4>
+                            
+                            <div class="validation-item">
+                                <div class="validation-status status-pending" id="validIconContraseña">⏳</div>
+                                <span id="validTextContraseña">Contraseña: pendiente</span>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-status status-pending" id="validIconUsuario">⏳</div>
+                                <span id="validTextUsuario">Usuario: pendiente</span>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-status status-pending" id="validIconCodigo">⏳</div>
+                                <span id="validTextCodigo">Código: pendiente</span>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-status status-pending" id="validIconRote">⏳</div>
+                                <span id="validTextRote">Rote: pendiente</span>
+                            </div>
+                            <div class="validation-item">
+                                <div class="validation-status status-pending" id="validIconCampos">⏳</div>
+                                <span id="validTextCampos">Campos completos: pendiente</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="limpiarFormulario()">
+                    <i class="fas fa-undo-alt"></i> LIMPIAR TODO
+                </button>
+
+                <button class="btn btn-outline" onclick="generarUsuarioSugerido()">
+                    <i class="fas fa-magic"></i> GENERAR USUARIO
+                </button>
+
+                <button class="btn btn-success" onclick="registrarEstudiante()" id="btnRegistrar">
+                    <i class="fas fa-save"></i> REGISTRAR ESTUDIANTE COMPLETO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080/api';
+
+        let timeoutIdUsuario = null;
+        let timeoutIdCodigo = null;
+
+        function mostrarAlerta(mensaje, tipo = 'success') {
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo}`;
+            alerta.innerHTML = `
+                <i class="fas ${tipo === 'success' ? 'fa-check-circle' : tipo === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.remove(), 4000);
+        }
+
+        function actualizarProgreso(paso) {
+            const steps = ['step1', 'step2', 'step3', 'step4', 'step5'];
+            steps.forEach((step, index) => {
+                const el = document.getElementById(step);
+                if (el) {
+                    if (index < paso) {
+                        el.classList.add('completed');
+                        el.classList.remove('active');
+                    } else if (index === paso) {
+                        el.classList.add('active');
+                        el.classList.remove('completed');
+                    } else {
+                        el.classList.remove('active', 'completed');
+                    }
+                }
+            });
+        }
+
+        function limpiarFormulario() {
+            document.querySelectorAll('input[type=text], input[type=number], input[type=password], input[type=email]').forEach(e => e.value = '');
+            document.querySelector('input[name="sexo"][value="M"]').checked = true;
+            document.querySelector('input[name="estadoUsuario"][value="true"]').checked = true;
+            document.querySelector('input[name="bloqueado"][value="false"]').checked = true;
+            document.getElementById('gestion').value = '2024-2025';
+            document.getElementById('idRoteActual').value = '';
+            
+            // Limpiar mensajes
+            document.getElementById('disponibilidadUsuario').innerHTML = '';
+            document.getElementById('mensajeContraseña').innerHTML = '';
+            document.getElementById('disponibilidadCodigo').innerHTML = '';
+            
+            // Resetear iconos
+            document.getElementById('usuarioIcon').className = 'fas fa-user';
+            document.getElementById('codigoIcon').className = 'fas fa-hashtag';
+            
+            // Resetear validaciones
+            actualizarEstadoValidaciones();
+            actualizarProgreso(0);
+            mostrarAlerta('Formulario limpiado', 'warning');
+        }
+
+        // ============================================
+        // CARGAR ROTES DESDE LA BASE DE DATOS
+        // ============================================
+        async function cargarRotes() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-integrado/rotes`);
+                const rotes = await response.json();
+                
+                const selectRote = document.getElementById('idRoteActual');
+                if (selectRote) {
+                    // Limpiar opciones existentes
+                    selectRote.innerHTML = '<option value="">Seleccione un Rote</option>';
+                    
+                    // Agregar nuevas opciones
+                    if (rotes && rotes.length > 0) {
+                        rotes.forEach(rote => {
+                            const option = document.createElement('option');
+                            option.value = rote.idRote;
+                            option.textContent = rote.nombreRote;
+                            selectRote.appendChild(option);
+                        });
+                    } else {
+                        selectRote.innerHTML = '<option value="">No hay rotes disponibles</option>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar rotes:', error);
+                const selectRote = document.getElementById('idRoteActual');
+                if (selectRote) {
+                    selectRote.innerHTML = '<option value="">Error al cargar rotes</option>';
+                }
+            }
+        }
+
+        // ============================================
+        // VALIDACIÓN DE CONTRASEÑAS
+        // ============================================
+        function validarContraseñas() {
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const msg = document.getElementById('mensajeContraseña');
+            
+            const validIcon = document.getElementById('validIconContraseña');
+            const validText = document.getElementById('validTextContraseña');
+            
+            if (!pass && !confirm) {
+                msg.innerHTML = '';
+                validIcon.className = 'validation-status status-pending';
+                validIcon.innerHTML = '⏳';
+                validText.innerHTML = 'Contraseña: pendiente';
+                return false;
+            }
+            if (pass.length < 8) {
+                msg.innerHTML = '⚠️ Mínimo 8 caracteres';
+                msg.style.color = 'var(--warning)';
+                validIcon.className = 'validation-status status-warning';
+                validIcon.innerHTML = '⚠️';
+                validText.innerHTML = 'Contraseña: muy corta (mínimo 8)';
+                return false;
+            }
+            if (pass !== confirm) {
+                msg.innerHTML = '❌ Las contraseñas no coinciden';
+                msg.style.color = 'var(--danger)';
+                validIcon.className = 'validation-status status-error';
+                validIcon.innerHTML = '❌';
+                validText.innerHTML = 'Contraseñas: no coinciden';
+                return false;
+            }
+            else {
+                msg.innerHTML = '✅ Contraseña válida';
+                msg.style.color = 'var(--secondary)';
+                validIcon.className = 'validation-status status-success';
+                validIcon.innerHTML = '✅';
+                validText.innerHTML = 'Contraseña: válida';
+                return true;
+            }
+        }
+
+        // ============================================
+        // VERIFICACIONES CON BACKEND
+        // ============================================
+        async function verificarNombreUsuario() {
+            const username = document.getElementById('nombreUsuario').value.trim();
+            const msg = document.getElementById('disponibilidadUsuario');
+            const loading = document.getElementById('usuarioLoading');
+            const icon = document.getElementById('usuarioIcon');
+            const validIcon = document.getElementById('validIconUsuario');
+            const validText = document.getElementById('validTextUsuario');
+            
+            if (!username) {
+                msg.innerHTML = '';
+                icon.className = 'fas fa-user';
+                validIcon.className = 'validation-status status-pending';
+                validIcon.innerHTML = '⏳';
+                validText.innerHTML = 'Usuario: pendiente';
+                actualizarEstadoValidaciones();
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            icon.classList.add('hidden');
+            msg.innerHTML = 'Verificando...';
+
+            clearTimeout(timeoutIdUsuario);
+            
+            timeoutIdUsuario = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/registro-integrado/verificar-usuario/${encodeURIComponent(username)}`);
+                    const data = await response.json();
+                    
+                    loading.classList.add('hidden');
+                    icon.classList.remove('hidden');
+                    
+                    if (data.disponible) {
+                        msg.innerHTML = '✅ Nombre de usuario disponible';
+                        msg.style.color = 'var(--secondary)';
+                        icon.className = 'fas fa-check-circle text-success';
+                        validIcon.className = 'validation-status status-success';
+                        validIcon.innerHTML = '✅';
+                        validText.innerHTML = 'Usuario: disponible';
+                    } else {
+                        msg.innerHTML = '❌ Nombre de usuario no disponible';
+                        msg.style.color = 'var(--danger)';
+                        icon.className = 'fas fa-times-circle text-danger';
+                        validIcon.className = 'validation-status status-error';
+                        validIcon.innerHTML = '❌';
+                        validText.innerHTML = 'Usuario: no disponible';
+                    }
+                    actualizarEstadoValidaciones();
+                } catch (error) {
+                    loading.classList.add('hidden');
+                    icon.classList.remove('hidden');
+                    msg.innerHTML = '⚠️ Error al verificar';
+                    msg.style.color = 'var(--warning)';
+                    icon.className = 'fas fa-exclamation-triangle text-warning';
+                    validIcon.className = 'validation-status status-warning';
+                    validIcon.innerHTML = '⚠️';
+                    validText.innerHTML = 'Usuario: error de conexión';
+                    actualizarEstadoValidaciones();
+                }
+            }, 500);
+        }
+
+        async function verificarCodigoEstudiante() {
+            const codigo = document.getElementById('codigoEstudiante').value.trim();
+            const msg = document.getElementById('disponibilidadCodigo');
+            const loading = document.getElementById('codigoLoading');
+            const icon = document.getElementById('codigoIcon');
+            const validIcon = document.getElementById('validIconCodigo');
+            const validText = document.getElementById('validTextCodigo');
+            
+            if (!codigo) {
+                msg.innerHTML = '';
+                icon.className = 'fas fa-hashtag';
+                validIcon.className = 'validation-status status-pending';
+                validIcon.innerHTML = '⏳';
+                validText.innerHTML = 'Código: pendiente';
+                actualizarEstadoValidaciones();
+                return;
+            }
+
+            const codigoNum = parseInt(codigo, 10);
+            if (isNaN(codigoNum)) {
+                msg.innerHTML = '❌ Código inválido';
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            icon.classList.add('hidden');
+            msg.innerHTML = 'Verificando...';
+
+            clearTimeout(timeoutIdCodigo);
+            
+            timeoutIdCodigo = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/registro-integrado/verificar-codigo/${codigoNum}`);
+                    const data = await response.json();
+                    
+                    loading.classList.add('hidden');
+                    icon.classList.remove('hidden');
+                    
+                    if (data.disponible) {
+                        msg.innerHTML = '✅ Código de estudiante disponible';
+                        msg.style.color = 'var(--secondary)';
+                        icon.className = 'fas fa-check-circle text-success';
+                        validIcon.className = 'validation-status status-success';
+                        validIcon.innerHTML = '✅';
+                        validText.innerHTML = 'Código: disponible';
+                    } else {
+                        msg.innerHTML = '❌ Código de estudiante ya registrado';
+                        msg.style.color = 'var(--danger)';
+                        icon.className = 'fas fa-times-circle text-danger';
+                        validIcon.className = 'validation-status status-error';
+                        validIcon.innerHTML = '❌';
+                        validText.innerHTML = 'Código: ya existe';
+                    }
+                    actualizarEstadoValidaciones();
+                } catch (error) {
+                    loading.classList.add('hidden');
+                    icon.classList.remove('hidden');
+                    msg.innerHTML = '⚠️ Error al verificar';
+                    msg.style.color = 'var(--warning)';
+                    icon.className = 'fas fa-exclamation-triangle text-warning';
+                    validIcon.className = 'validation-status status-warning';
+                    validIcon.innerHTML = '⚠️';
+                    validText.innerHTML = 'Código: error de conexión';
+                    actualizarEstadoValidaciones();
+                }
+            }, 500);
+        }
+
+        // ============================================
+        // GENERAR USUARIO SUGERIDO
+        // ============================================
+        function generarUsuarioSugerido() {
+            const nombres = document.getElementById('nombres').value.trim().split(' ')[0] || '';
+            const apPat = document.getElementById('apellidoPaterno').value.trim() || '';
+            
+            if (!nombres || !apPat) {
+                mostrarAlerta('Ingrese nombre y apellido paterno para generar usuario', 'warning');
+                return;
+            }
+            
+            let base = nombres.toLowerCase() + '.' + apPat.toLowerCase();
+            let sugerido = base.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z.]/g, '');
+            
+            document.getElementById('nombreUsuario').value = sugerido;
+            verificarNombreUsuario();
+            actualizarEstadoValidaciones();
+            mostrarAlerta(`Usuario sugerido: ${sugerido}`, 'success');
+        }
+
+        // ============================================
+        // ACTUALIZAR ESTADO DE VALIDACIONES
+        // ============================================
+        function actualizarEstadoValidaciones() {
+            // Obtener valores actuales
+            const nombre = document.getElementById('nombres').value.trim();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const edad = document.getElementById('edad').value;
+            const nombreUsuario = document.getElementById('nombreUsuario').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const contraseña = document.getElementById('password').value;
+            const codigoEstudiante = document.getElementById('codigoEstudiante').value;
+            const gestion = document.getElementById('gestion').value.trim();
+            const idRoteActual = document.getElementById('idRoteActual').value;
+            
+            // Validar campos completos
+            const camposCompletos = nombre && apellidoPaterno && apellidoMaterno && 
+                                   edad && nombreUsuario && email && contraseña && 
+                                   codigoEstudiante && gestion && idRoteActual;
+            
+            // Validar Rote
+            const validIconRote = document.getElementById('validIconRote');
+            const validTextRote = document.getElementById('validTextRote');
+            
+            if (idRoteActual) {
+                validIconRote.className = 'validation-status status-success';
+                validIconRote.innerHTML = '✅';
+                validTextRote.innerHTML = 'Rote: seleccionado';
+            } else {
+                validIconRote.className = 'validation-status status-pending';
+                validIconRote.innerHTML = '⏳';
+                validTextRote.innerHTML = 'Rote: pendiente';
+            }
+            
+            const validIcon = document.getElementById('validIconCampos');
+            const validText = document.getElementById('validTextCampos');
+            
+            if (camposCompletos) {
+                validIcon.className = 'validation-status status-success';
+                validIcon.innerHTML = '✅';
+                validText.innerHTML = 'Campos completos: listo';
+            } else {
+                validIcon.className = 'validation-status status-pending';
+                validIcon.innerHTML = '⏳';
+                validText.innerHTML = 'Campos completos: faltan datos';
+            }
+
+            // Actualizar progress según qué campos estén llenos
+            if (nombre && apellidoPaterno && apellidoMaterno && edad) actualizarProgreso(1);
+            if (nombreUsuario && email && contraseña) actualizarProgreso(2);
+            if (codigoEstudiante && gestion && idRoteActual) actualizarProgreso(3);
+            if (camposCompletos) actualizarProgreso(4);
+        }
+
+        // ============================================
+        // REGISTRO PRINCIPAL
+        // ============================================
+        async function registrarEstudiante() {
+            const dto = {
+                nombre: document.getElementById('nombres').value.trim(),
+                apellidoPaterno: document.getElementById('apellidoPaterno').value.trim(),
+                apellidoMaterno: document.getElementById('apellidoMaterno').value.trim(),
+                edad: document.getElementById('edad').value ? parseInt(document.getElementById('edad').value) : null,
+                sexo: document.querySelector('input[name="sexo"]:checked')?.value,
+                nombreUsuario: document.getElementById('nombreUsuario').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                contraseña: document.getElementById('password').value,
+                estadoUsuario: document.querySelector('input[name="estadoUsuario"]:checked')?.value === 'true',
+                codigoEstudiante: document.getElementById('codigoEstudiante').value ? parseInt(document.getElementById('codigoEstudiante').value) : null,
+                gestion: document.getElementById('gestion').value.trim(),
+                bloqueado: document.querySelector('input[name="bloqueado"]:checked')?.value === 'true',
+                idRoteActual: document.getElementById('idRoteActual').value ? parseInt(document.getElementById('idRoteActual').value) : null
+            };
+
+            // Validaciones
+            for (const [key, value] of Object.entries(dto)) {
+                if (value === null || value === '' || value === undefined) {
+                    mostrarAlerta(`El campo ${key} es obligatorio`, 'error');
+                    return;
+                }
+            }
+
+            if (dto.edad <= 0 || dto.edad > 120) {
+                mostrarAlerta('La edad debe ser entre 1 y 120 años', 'error');
+                return;
+            }
+
+            if (!validarContraseñas()) {
+                mostrarAlerta('Revise la contraseña', 'error');
+                return;
+            }
+
+            if (dto.codigoEstudiante <= 0) {
+                mostrarAlerta('El código debe ser un número positivo', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btnRegistrar');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> REGISTRANDO...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-integrado/estudiante`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dto)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarAlerta(`✅ ${data.mensaje || 'Estudiante registrado exitosamente'}`, 'success');
+                    limpiarFormulario();
+                    actualizarProgreso(5);
+                } else {
+                    mostrarAlerta(`❌ Error: ${data.error || 'Error en el registro'}`, 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('❌ Error de conexión con el servidor', 'error');
+                console.error('Error:', error);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        window.onload = function() {
+            cargarRotes();
+            actualizarEstadoValidaciones();
+        };
+
+        // Exponer funciones globalmente
+        window.verificarNombreUsuario = verificarNombreUsuario;
+        window.verificarCodigoEstudiante = verificarCodigoEstudiante;
+        window.registrarEstudiante = registrarEstudiante;
+        window.limpiarFormulario = limpiarFormulario;
+        window.generarUsuarioSugerido = generarUsuarioSugerido;
+        window.actualizarEstadoValidaciones = actualizarEstadoValidaciones;
+        window.validarContraseñas = validarContraseñas;
+    </script>
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Solicitudes de Insumos · Docente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #006D77;
+      --primary-dark: #005259;
+      --primary-light: #E6F4F5;
+      --success: #10B981;
+      --success-light: #D1FAE5;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --danger: #EF4444;
+      --danger-light: #FEE2E2;
+      --info: #3B82F6;
+      --info-light: #DBEAFE;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --radius: 1rem;
+      --radius-sm: 0.75rem;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+      color: var(--gray-800);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header p {
+      opacity: 0.9;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-200);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card .icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-card .label {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+    }
+
+    /* Filters */
+    .filters-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+    }
+
+    .filters-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 0.25rem;
+    }
+
+    .filter-group select, .filter-group input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      background: white;
+    }
+
+    .filter-group select:focus, .filter-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      ring: 2px solid var(--primary-light);
+    }
+
+    /* Table */
+    .table-container {
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--gray-50);
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.875rem;
+    }
+
+    tr:hover {
+      background: var(--gray-50);
+    }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-pendiente { background: var(--warning-light); color: var(--warning); }
+    .status-aprobado { background: var(--success-light); color: var(--success); }
+    .status-entregado { background: var(--info-light); color: var(--info); }
+    .status-rechazado { background: var(--danger-light); color: var(--danger); }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+    .btn-success:hover { background: #0b9e6e; }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+    .btn-danger:hover { background: #dc2626; }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.active { display: flex; }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius);
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-500);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray-500);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-500);
+    }
+
+    /* Info Docente */
+    .info-docente {
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .filters-grid { flex-direction: column; }
+      .filter-group { width: 100%; }
+      th, td { padding: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <h1><i class="fas fa-clipboard-list"></i> Gestión de Solicitudes de Insumos</h1>
+    <p>Docente · Apruebe o rechace las solicitudes de insumos para los tratamientos</p>
+  </div>
+
+  <!-- Info Docente -->
+  <div class="info-docente" id="infoDocente" style="display: none;">
+    <div><i class="fas fa-user-md"></i> <strong>Docente:</strong> <span id="docenteNombre">Cargando...</span></div>
+    <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="docenteId">-</span></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="icon"><i class="fas fa-hourglass-half" style="color: var(--warning);"></i></div>
+      <div class="number" id="countPendiente">0</div>
+      <div class="label">Pendientes de Aprobación</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon"><i class="fas fa-check-circle" style="color: var(--success);"></i></div>
+      <div class="number" id="countAprobado">0</div>
+      <div class="label">Aprobadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon"><i class="fas fa-truck" style="color: var(--info);"></i></div>
+      <div class="number" id="countEntregado">0</div>
+      <div class="label">Entregadas</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon"><i class="fas fa-times-circle" style="color: var(--danger);"></i></div>
+      <div class="number" id="countRechazado">0</div>
+      <div class="label">Rechazadas</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label><i class="fas fa-filter"></i> Estado</label>
+        <select id="filterStatus">
+          <option value="todos">Todos</option>
+          <option value="PENDIENTE_DOCENTE">Pendientes</option>
+          <option value="APROBADO">Aprobadas</option>
+          <option value="ENTREGADO">Entregadas</option>
+          <option value="RECHAZADO">Rechazadas</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-search"></i> Buscar</label>
+        <input type="text" id="filterSearch" placeholder="Paciente, tratamiento...">
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-calendar"></i> Fecha desde</label>
+        <input type="date" id="filterDateFrom">
+      </div>
+      <div class="filter-group">
+        <label><i class="fas fa-calendar"></i> Fecha hasta</label>
+        <input type="date" id="filterDateTo">
+      </div>
+      <div class="filter-group">
+        <label>&nbsp;</label>
+        <button class="btn btn-primary" id="btnRefresh"><i class="fas fa-sync-alt"></i> Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+     <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha Solicitud</th>
+          <th>Paciente</th>
+          <th>Tratamiento</th>
+          <th>Insumos</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+         </tr>
+      </thead>
+      <tbody id="solicitudesTableBody">
+        <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Detalle -->
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-alt"></i> Detalle de Solicitud</h3>
+      <button class="close-modal" onclick="closeModal()">&times;</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+let solicitudes = [];
+let idDocente = null;
+
+// Obtener ID del docente logueado - Versión mejorada
+async function obtenerIdDocente() {
+    console.log('🔍 Iniciando obtención de ID Docente...');
+    
+    // 1. Intentar obtener de sessionStorage
+    let docenteId = sessionStorage.getItem('idDocente');
+    let docenteNombre = sessionStorage.getItem('nombreUsuario');
+    
+    if (docenteId) {
+        console.log('✅ Docente ID desde sessionStorage:', docenteId);
+        idDocente = docenteId;
+        document.getElementById('docenteId').textContent = docenteId;
+        document.getElementById('docenteNombre').textContent = docenteNombre || 'Docente';
+        document.getElementById('infoDocente').style.display = 'flex';
+        return idDocente;
+    }
+    
+    // 2. Si no está en sessionStorage, intentar obtener del usuario autenticado
+    try {
+        console.log('📡 Buscando docente autenticado...');
+        
+        // Primero obtener el usuario actual
+        const userResponse = await fetch('/api/usuario/actual');
+        if (userResponse.ok) {
+            const usuario = await userResponse.json();
+            console.log('👤 Usuario actual:', usuario);
+            
+            // Buscar el docente asociado a este usuario
+            const docenteResponse = await fetch(`/api/docentes/usuario/${usuario.idUsuario}`);
+            if (docenteResponse.ok) {
+                const docente = await docenteResponse.json();
+                console.log('👨‍🏫 Docente encontrado:', docente);
+                
+                idDocente = docente.idDocente;
+                sessionStorage.setItem('idDocente', idDocente);
+                
+                document.getElementById('docenteId').textContent = idDocente;
+                document.getElementById('docenteNombre').textContent = docente.nombreCompleto || 'Docente';
+                document.getElementById('infoDocente').style.display = 'flex';
+                
+                return idDocente;
+            }
+        }
+    } catch (error) {
+        console.error('Error obteniendo docente autenticado:', error);
+    }
+    
+    // 3. Último recurso: pedir al usuario que inicie sesión
+    console.error('❌ No se pudo obtener ID del docente');
+    Swal.fire({
+        title: 'Sesión no encontrada',
+        text: 'Debe iniciar sesión como docente para acceder a esta página',
+        icon: 'error',
+        confirmButtonText: 'Ir al login'
+    }).then(() => {
+        window.location.href = '/';
+    });
+    
+    return null;
+}
+
+// Cargar solicitudes
+async function cargarSolicitudes() {
+    if (!idDocente) {
+        console.error('No hay ID de docente para cargar solicitudes');
+        return;
+    }
+    
+    const tbody = document.getElementById('solicitudesTableBody');
+    tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>';
+    
+    try {
+        console.log(`📡 Cargando solicitudes para docente ID: ${idDocente}`);
+        const response = await fetch(`/api/solicitudes-insumo/docente/${idDocente}`);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response:', errorText);
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        solicitudes = await response.json();
+        console.log(`📦 Solicitudes recibidas: ${solicitudes.length}`);
+        aplicarFiltros();
+    } catch (error) {
+        console.error('❌ Error al cargar solicitudes:', error);
+        tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Error al cargar solicitudes: ${error.message}</td></tr>`;
+    }
+}
+
+// Aplicar filtros
+function aplicarFiltros() {
+    const statusFilter = document.getElementById('filterStatus').value;
+    const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
+    const dateFrom = document.getElementById('filterDateFrom').value;
+    const dateTo = document.getElementById('filterDateTo').value;
+    
+    let filtered = [...solicitudes];
+    
+    // Filtrar por estado
+    if (statusFilter !== 'todos') {
+        filtered = filtered.filter(s => s.estadoSolicitud === statusFilter);
+    }
+    
+    // Filtrar por búsqueda
+    if (searchFilter) {
+        filtered = filtered.filter(s => 
+            (s.pacienteNombre && s.pacienteNombre.toLowerCase().includes(searchFilter)) ||
+            (s.tratamientoNombre && s.tratamientoNombre.toLowerCase().includes(searchFilter))
+        );
+    }
+    
+    // Filtrar por fecha
+    if (dateFrom) {
+        filtered = filtered.filter(s => s.fechaSolicitud >= dateFrom);
+    }
+    if (dateTo) {
+        filtered = filtered.filter(s => s.fechaSolicitud <= dateTo);
+    }
+    
+    actualizarTabla(filtered);
+    actualizarEstadisticas();
+}
+
+// Actualizar tabla
+function actualizarTabla(solicitudesFiltradas) {
+    const tbody = document.getElementById('solicitudesTableBody');
+    
+    if (solicitudesFiltradas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-folder-open"></i> No hay solicitudes</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = solicitudesFiltradas.map(s => `
+        <tr>
+            <td>${s.idSolicitudInsumo}</td>
+            <td>${formatDate(s.fechaSolicitud)}</td>
+            <td><strong>${s.pacienteNombre || 'N/A'}</strong><br><small style="color: var(--gray-500);">${s.pacienteCi || ''}</small></td>
+            <td>${s.tratamientoNombre || 'N/A'}</td>
+            <td>${s.cantidadInsumos || 0} insumos</td>
+            <td>${getStatusBadge(s.estadoSolicitud)}</td>
+            <td>
+                <button class="btn btn-outline" onclick="verDetalle(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem;">
+                    <i class="fas fa-eye"></i> Ver
+                </button>
+                ${s.estadoSolicitud === 'PENDIENTE_DOCENTE' ? `
+                    <button class="btn btn-success" onclick="aprobarSolicitud(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
+                        <i class="fas fa-check"></i> Aprobar
+                    </button>
+                    <button class="btn btn-danger" onclick="rechazarSolicitud(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
+                        <i class="fas fa-times"></i> Rechazar
+                    </button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Actualizar estadísticas
+function actualizarEstadisticas() {
+    const pendiente = solicitudes.filter(s => s.estadoSolicitud === 'PENDIENTE_DOCENTE').length;
+    const aprobado = solicitudes.filter(s => s.estadoSolicitud === 'APROBADO').length;
+    const entregado = solicitudes.filter(s => s.estadoSolicitud === 'ENTREGADO').length;
+    const rechazado = solicitudes.filter(s => s.estadoSolicitud === 'RECHAZADO').length;
+    
+    document.getElementById('countPendiente').textContent = pendiente;
+    document.getElementById('countAprobado').textContent = aprobado;
+    document.getElementById('countEntregado').textContent = entregado;
+    document.getElementById('countRechazado').textContent = rechazado;
+}
+
+// Ver detalle de solicitud
+async function verDetalle(idSolicitud) {
+    try {
+        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
+        if (!response.ok) throw new Error('Error al cargar detalle');
+        const detalle = await response.json();
+        
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+                <p><strong><i class="fas fa-calendar"></i> Fecha:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
+                <p><strong><i class="fas fa-user"></i> Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
+                <p><strong><i class="fas fa-tooth"></i> Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
+                <p><strong><i class="fas fa-user-md"></i> Estudiante:</strong> ${detalle.estudianteNombre || 'N/A'}</p>
+                <p><strong><i class="fas fa-stethoscope"></i> Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
+            </div>
+            <h4 style="margin-top: 1rem;"><i class="fas fa-boxes"></i> Insumos solicitados:</h4>
+            <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.5rem;">
+                ${detalle.insumos && detalle.insumos.length > 0 ? detalle.insumos.map(i => `
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
+                        <span><strong>${i.nombreInsumo}</strong> <small>${i.concentracion || ''}</small></span>
+                        <span>Cantidad: ${i.cantidadSolicitada} ${i.unidadBase || 'unidades'}</span>
+                    </div>
+                `).join('') : '<p>No hay insumos registrados</p>'}
+            </div>
+            ${detalle.explicacion ? `
+                <h4 style="margin-top: 1rem;"><i class="fas fa-file-alt"></i> Explicación del procedimiento:</h4>
+                <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.5rem;">
+                    ${detalle.explicacion}
+                </div>
+            ` : ''}
+        `;
+        
+        document.getElementById('detailModal').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo cargar el detalle de la solicitud', 'error');
+    }
+}
+
+// Aprobar solicitud
+async function aprobarSolicitud(idSolicitud) {
+    const result = await Swal.fire({
+        title: '¿Aprobar solicitud?',
+        text: '¿Está seguro de APROBAR esta solicitud de insumos?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Sí, aprobar',
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!result.isConfirmed) return;
+    
+    try {
+        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/aprobar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (!response.ok) throw new Error('Error al aprobar');
+        
+        Swal.fire('Aprobada', 'Solicitud aprobada correctamente', 'success');
+        cargarSolicitudes();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo aprobar la solicitud', 'error');
+    }
+}
+
+// Rechazar solicitud
+async function rechazarSolicitud(idSolicitud) {
+    const { value: motivo } = await Swal.fire({
+        title: 'Rechazar solicitud',
+        text: 'Ingrese el motivo del rechazo:',
+        input: 'textarea',
+        inputPlaceholder: 'Escriba aquí el motivo del rechazo...',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Rechazar',
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!motivo) return;
+    
+    try {
+        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/rechazar`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ motivo: motivo })
+        });
+        
+        if (!response.ok) throw new Error('Error al rechazar');
+        
+        Swal.fire('Rechazada', 'Solicitud rechazada correctamente', 'warning');
+        cargarSolicitudes();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES');
+}
+
+function getStatusBadge(status) {
+    const statusMap = {
+        'PENDIENTE_DOCENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
+        'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobada' },
+        'ENTREGADO': { class: 'status-entregado', icon: 'fa-truck', text: 'Entregada' },
+        'RECHAZADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Rechazada' }
+    };
+    const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
+    return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+}
+
+function closeModal() {
+    document.getElementById('detailModal').classList.remove('active');
+}
+
+// Event listeners
+document.getElementById('btnRefresh').addEventListener('click', () => cargarSolicitudes());
+document.getElementById('filterStatus').addEventListener('change', () => aplicarFiltros());
+document.getElementById('filterSearch').addEventListener('input', () => aplicarFiltros());
+document.getElementById('filterDateFrom').addEventListener('change', () => aplicarFiltros());
+document.getElementById('filterDateTo').addEventListener('change', () => aplicarFiltros());
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+});
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', async () => {
+    // Cargar SweetAlert2 para los modales
+    if (typeof Swal === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        script.onload = async () => {
+            await obtenerIdDocente();
+            if (idDocente) await cargarSolicitudes();
+        };
+        document.head.appendChild(script);
+    } else {
+        await obtenerIdDocente();
+        if (idDocente) await cargarSolicitudes();
+    }
+});
+</script>
+</body>
+</html>

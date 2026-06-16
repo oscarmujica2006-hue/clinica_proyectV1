@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Clínico Odontológico</title>
+    <link rel="stylesheet" href="static/css/general_style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+        }
+
+        .container-principal {
+            width: 215.9mm;
+            height: 330.2mm;
+            margin: 0 auto;
+            padding: 0;
+            background: white;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: top center;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        iframe {
+            display: block;
+            margin: 0;
+            padding: 0;
+            border: none;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        @media print {
+            * {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .container-principal {
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-after: avoid;
+            }
+
+            iframe {
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-inside: avoid;
+            }
+        }
+
+        @page {
+            size: oficio;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-principal">
+        <iframe src="plantillas/seccion_uno.html" class="seccion" style="height: 150px;"></iframe>
+        <iframe src="plantillas/seccion_two.html" class="seccion" style="height: 160px;"></iframe>
+        <iframe src="plantillas/seccion_tree.html" class="seccion" style="height: 150px;"></iframe>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clínica Dental UAP · Consentimiento Informado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ========== ESTILOS EXISTENTES (Mantén todos tus estilos actuales) ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #006D77;
+      --primary-dark: #005259;
+      --primary-light: #E6F4F5;
+      --secondary: #E29578;
+      --secondary-light: #FFE8E0;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-300: #D1D5DB;
+      --gray-400: #9CA3AF;
+      --gray-500: #6B7280;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-800: #1F2937;
+      --gray-900: #111827;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --radius: 1rem;
+      --radius-sm: 0.75rem;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+      color: var(--gray-800);
+      line-height: 1.5;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .header-pattern {
+      background: linear-gradient(135deg, rgba(0, 77, 64, 0.95) 0%, rgba(0, 109, 119, 0.95) 50%, rgba(2, 128, 144, 0.95) 100%),
+                  repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 20px, transparent 20px, transparent 40px);
+      padding: 45px 50px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0;
+      box-shadow: 0 30px 50px -15px rgba(2, 48, 71, 0.4);
+      width: 100%;
+      transition: all 0.3s ease;
+      border: none;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+    }
+
+    .header-pattern-center {
+      text-align: center;
+      color: white;
+      position: relative;
+      z-index: 3;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header-pattern-center h1 {
+      font-size: 2.8em;
+      font-weight: 800;
+      margin-bottom: 15px;
+      text-shadow: 3px 5px 15px rgba(0,0,0,0.3);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 0%, #ffd966 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-pattern-center .subtitle {
+      font-size: 1.2em;
+      opacity: 0.95;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.1);
+      padding: 12px 25px;
+      border-radius: 50px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.2);
+      margin-top: 10px;
+    }
+
+    .subtitle i {
+      color: #ffd966;
+      font-size: 1.3em;
+    }
+
+    .mock-badge-premium {
+      background: linear-gradient(135deg, #ffd966, #ffb347);
+      color: #023047;
+      padding: 5px 15px;
+      border-radius: 30px;
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+      border: 1px solid rgba(255,255,255,0.5);
+    }
+
+    .header-decoration {
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      right: 20px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.5), rgba(255,255,255,0.5), rgba(255,215,0,0.5), transparent);
+      z-index: 4;
+      border-radius: 100%;
+    }
+
+    .main-card {
+      background: white;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 30px;
+      width: 100%;
+    }
+
+    .progress-steps {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      background: var(--gray-50);
+      padding: 1rem;
+      border-radius: 60px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-500);
+      background: white;
+      border: 1px solid var(--gray-200);
+      transition: all 0.3s ease;
+    }
+
+    .step i {
+      font-size: 0.9rem;
+    }
+
+    .step.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(0, 109, 119, 0.3);
+    }
+
+    .section-card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .section-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title .number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .search-form {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .input-group {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      transition: all 0.3s;
+      background: white;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 109, 119, 0.1);
+    }
+
+    .consulta-info {
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .info-item .label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    .option-card {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 109, 119, 0.15);
+    }
+
+    .option-card.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-light) 0%, white 100%);
+      box-shadow: 0 8px 20px rgba(0, 109, 119, 0.2);
+    }
+
+    .option-card.selected::before {
+      content: "✓";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .option-card h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--gray-800);
+    }
+
+    .option-card p {
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      margin-bottom: 0.5rem;
+    }
+
+    .tratamiento-option {
+      background: white;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .tratamiento-option:hover {
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(226, 149, 120, 0.15);
+    }
+
+    .tratamiento-option.selected {
+      border-color: var(--secondary);
+      background: linear-gradient(135deg, var(--secondary-light) 0%, white 100%);
+    }
+
+    .tratamiento-option.selected::before {
+      content: "✓";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 24px;
+      height: 24px;
+      background: var(--secondary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge-primary {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .price-tag {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 0.5rem;
+    }
+
+    .procedimiento-texto {
+      width: 100%;
+      min-height: 120px;
+      padding: 1.2rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+      margin-top: 1rem;
+      resize: vertical;
+    }
+
+    .procedimiento-texto:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(0, 109, 119, 0.1);
+    }
+
+    .decision-options {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .decision-card {
+      flex: 1;
+      min-width: 200px;
+      padding: 2rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .decision-card.aceptar:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .decision-card.rechazar:hover {
+      border-color: #DC2626;
+      background: #FEF2F2;
+    }
+
+    .decision-card.aceptar.selected {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-light) 0%, white 100%);
+    }
+
+    .decision-card.rechazar.selected {
+      border-color: #DC2626;
+      background: linear-gradient(135deg, #FEF2F2 0%, white 100%);
+    }
+
+    .decision-card i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      transition: transform 0.3s;
+    }
+
+    .decision-card h4 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ========== ESTILOS PARA LA SECCIÓN DE FOTOS ========== */
+    .upload-area {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-sm);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--gray-50);
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .upload-area i {
+      font-size: 3rem;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+
+    .upload-area p {
+      color: var(--gray-500);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-area small {
+      color: var(--gray-400);
+      font-size: 0.8rem;
+    }
+
+    .file-list {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .file-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid var(--gray-200);
+      background: white;
+    }
+
+    .file-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-item .file-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      font-size: 10px;
+      padding: 4px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .remove-file {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: var(--danger);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .remove-file:hover {
+      background: #c0392b;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.8rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      border: 2px solid var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0, 109, 119, 0.3);
+    }
+
+    .btn-success {
+      background: var(--secondary);
+      color: white;
+      border: 2px solid var(--secondary);
+    }
+
+    .btn-success:hover {
+      background: #d67a5c;
+      border-color: #d67a5c;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(226, 149, 120, 0.3);
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--gray-700);
+      border: 2px solid var(--gray-200);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .button-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid var(--gray-200);
+    }
+
+    .signature-section {
+      display: flex;
+      gap: 2rem;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+      padding: 2rem;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    .signature-box {
+      flex: 1;
+      min-width: 250px;
+      text-align: center;
+    }
+
+    .signature-line {
+      border-top: 2px dashed var(--primary);
+      margin-top: 3rem;
+      padding-top: 0.8rem;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+    }
+
+    .revocatorio {
+      background: #FEF2F2;
+      border: 2px solid #DC2626;
+      border-radius: var(--radius-sm);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      color: #991B1B;
+      display: none;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 0.9rem;
+    }
+
+    .insumos-auto-info {
+      background: #E8F5E9;
+      border-left: 4px solid #4CAF50;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+    }
+
+    .insumos-grid {
+      background: var(--gray-50);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .header-pattern { padding: 25px 15px; }
+      .header-pattern-center h1 { font-size: 1.8em; }
+      .step { width: 100%; justify-content: center; }
+      .options-grid { grid-template-columns: 1fr; }
+      .main-card { padding: 15px; }
+      .btn { width: 100%; padding: 1rem 1.5rem; }
+      .button-container { flex-direction: column; gap: 0.8rem; }
+      .search-form { flex-direction: column; align-items: stretch; }
+      .decision-options { flex-direction: column; gap: 1rem; }
+      .info-grid { grid-template-columns: 1fr; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-pattern">
+    <div class="header-pattern-center">
+      <h1>Consentimiento Informado</h1>
+      <div class="subtitle">
+        <i class="fas fa-tooth"></i>
+        <span>Clínica Odontológica UAP</span>
+        <i class="fas fa-file-signature"></i>
+      </div>   
+    </div>
+    <div class="header-decoration"></div>
+  </div>
+
+  <div class="main-card">
+    <div class="progress-steps">
+      <span class="step active"><i class="fas fa-search"></i> Buscar</span>
+      <span class="step"><i class="fas fa-clinic-medical"></i> Clínica</span>
+      <span class="step"><i class="fas fa-tags"></i> Materia</span>
+      <span class="step"><i class="fas fa-tooth"></i> Tratamiento</span>
+      <span class="step"><i class="fas fa-file-signature"></i> Consentir</span>
+      <span class="step"><i class="fas fa-file-image"></i> Documentos</span>
+      <span class="step"><i class="fas fa-check-circle"></i> Finalizar</span>
+    </div>
+
+    <!-- SECCIÓN 1: SELECCIONAR CONSULTA -->
+    <div class="section-card">
+      <div class="section-title">
+        <span class="number">1</span>
+        <h2>Seleccionar consulta</h2>
+      </div>
+      <div class="search-form">
+        <div class="input-group">
+          <label><i class="fas fa-user"></i> Paciente o N° consulta</label>
+          <input type="text" id="buscaConsulta" placeholder="Ej: Juan Pérez o CON-2025-001">
+        </div>
+        <button type="button" id="btnBuscar" class="btn btn-primary">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+      </div>
+      <div id="infoConsulta" class="consulta-info">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Paciente</span>
+            <span class="value" id="pacienteNombre">-</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Edad</span>
+            <span class="value" id="edadPaciente">-</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Fecha consulta</span>
+            <span class="value" id="fechaConsulta">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: CLÍNICAS -->
+    <div id="seccionClinicas" class="section-card" style="display: none;">
+      <div class="section-title">
+        <span class="number">2</span>
+        <h2>Seleccionar clínica</h2>
+      </div>
+      <div id="opciones_clinicas" class="options-grid"></div>
+      <div id="infoClinicaSeleccionada" style="display: none; margin-top: 1.5rem; padding: 1rem; background: var(--primary-light); border-radius: var(--radius-sm);">
+        <h4 style="margin-bottom: 0.5rem;">Clínica seleccionada</h4>
+        <p><strong>Nombre:</strong> <span id="clinicaNombre"></span></p>
+        <p><strong>Turno:</strong> <span id="clinicaTurno"></span></p>
+        <p><strong>Doctor responsable:</strong> <span id="clinicaDoctor"></span></p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: MATERIAS -->
+    <div id="seccionTiposTratamiento" class="section-card" style="display: none;">
+      <div class="section-title">
+        <span class="number">3</span>
+        <h2>Seleccionar materia</h2>
+      </div>
+      <div id="tiposTratamientoContainer" class="options-grid"></div>
+    </div>
+
+    <div id="formularioConsentimiento" style="display: none;">
+      <div id="seccionTratamiento" class="section-card" style="display: none;">
+        <div class="section-title">
+          <span class="number">4</span>
+          <h2>Seleccionar tratamiento</h2>
+        </div>
+        <p id="doctorSeleccionadoInfo" style="margin-bottom: 1rem; color: var(--gray-600);"></p>
+        <div id="tratamientosContainer" class="options-grid"></div>
+      </div>
+
+      <div id="seccionProcedimiento" class="section-card" style="display: none;">
+        <div class="section-title">
+          <span class="number">5</span>
+          <h2>Descripción del procedimiento</h2>
+        </div>
+        <p><strong>Procedimiento:</strong> <span id="nombreTratamientoSeleccionado">-</span></p>
+        <p id="detallesTratamientoSeleccionado" style="color: var(--gray-600); font-size: 0.95rem;"></p>
+        <textarea id="explicacionProcedimiento" class="procedimiento-texto" placeholder="Describa el procedimiento en detalle, materiales, cuidados postoperatorios..."></textarea>
+      </div>
+
+      <div id="seccionDecision" class="section-card" style="display: none;">
+        <div class="section-title">
+          <span class="number">6</span>
+          <h2>Decisión del paciente</h2>
+        </div>
+        <div class="decision-options">
+          <div class="decision-card aceptar" data-decision="aceptar" id="decisionAceptar">
+            <i class="fas fa-check-circle" style="color: var(--primary);"></i>
+            <h4>Acepto el tratamiento</h4>
+            <p style="color: var(--gray-600);">Comprendo y autorizo el procedimiento</p>
+          </div>
+          <div class="decision-card rechazar" data-decision="rechazar" id="decisionRechazar">
+            <i class="fas fa-times-circle" style="color: #DC2626;"></i>
+            <h4>Rechazo el tratamiento</h4>
+            <p style="color: var(--gray-600);">No consiento la realización</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== NUEVA SECCIÓN: SUBIR DOCUMENTOS / FOTOS ========== -->
+      <div id="seccionSubirFotos" class="section-card" style="display: none;">
+        <div class="section-title">
+          <span class="number">7</span>
+          <h2><i class="fas fa-camera"></i> Adjuntar documentos</h2>
+        </div>
+        <p style="margin-bottom: 1rem; color: var(--gray-600);">
+          <i class="fas fa-info-circle"></i> Puede adjuntar imágenes del consentimiento firmado, documentos escaneados o fotos del tratamiento
+        </p>
+        
+        <div id="uploadArea" class="upload-area" onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p><strong>Haga clic para seleccionar archivos</strong></p>
+          <p>o arrastre y suelte aquí</p>
+          <small>Formatos permitidos: JPG, PNG, PDF (máx 10MB por archivo)</small>
+        </div>
+        
+        <input type="file" id="fileInput" multiple accept="image/*,application/pdf" style="display: none;">
+        
+        <div id="fileListContainer" class="file-list"></div>
+        
+        <div class="insumos-auto-info" style="margin-top: 1rem; background: #E3F2FD; border-left-color: #2196F3;">
+          <i class="fas fa-info-circle" style="color: #2196F3; margin-right: 0.5rem;"></i>
+          <strong>Nota:</strong> Los documentos adjuntos se guardarán junto con el consentimiento.
+        </div>
+      </div>
+
+      <div id="revocatorio" class="revocatorio">
+        <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+        <strong>REVOCATORIO</strong>
+        <p style="margin-top: 1rem;">Yo <span id="nombreRevocatorio" style="font-weight: 600;">-</span> declaro que rechazo el tratamiento que el/la Dr(a). <span id="doctorRevocatorio" style="font-weight: 600;">-</span> me explicó.</p>
+        <p>Fecha: <span id="fechaRevocatorio" style="font-weight: 600;">-</span></p>
+      </div>
+
+      <div class="section-card" style="background: var(--gray-50);">
+        <p><strong>Paciente:</strong> <span id="nombrePaciente" style="font-weight: 500;">-</span> | <strong>Edad:</strong> <span id="edadPacienteForm" style="font-weight: 500;">-</span></p>
+        <p><strong>Odontólogo:</strong> <span id="nombre_doctor" style="font-weight: 500;">-</span></p>
+        <p><strong>Tratamiento:</strong> <span id="resumenTratamiento" style="font-weight: 500;">-</span></p>
+      </div>
+
+      <!-- SECCIÓN DE INSUMOS AUTOMÁTICOS -->
+      <div id="solicitudInsumosContainer" style="display: none;">
+        <div class="section-card" style="border-color: #4CAF50;">
+          <div class="section-title">
+            <span class="number" style="background: #4CAF50; color: white;">📦</span>
+            <h2 style="color: #4CAF50;">Insumos del Tratamiento</h2>
+          </div>
+          
+          <div class="insumos-auto-info">
+            <i class="fas fa-check-circle" style="color: #4CAF50; margin-right: 0.5rem;"></i>
+            <strong>Los insumos se cargarán automáticamente según el tratamiento seleccionado.</strong>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">El sistema registrará los insumos asociados a este tratamiento con las cantidades predefinidas.</p>
+          </div>
+          
+          <div id="insumosGridContainer" class="insumos-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
+      <button class="btn btn-outline" onclick="limpiarFormulario()"><i class="fas fa-undo-alt"></i> Limpiar todo</button>
+      <button class="btn btn-success" id="btnGuardarTodo"><i class="fas fa-save"></i> Guardar <span id="btnGuardarTexto">Consentimiento</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_BASE = '';
+let consultaSeleccionada = null;
+let clinicaSeleccionada = null;
+let decision = null;
+let docenteSeleccionado = null;
+let tratamientoSeleccionado = null;
+let idEstudiante = null;
+let materiaSeleccionada = null;
+let insumosDelTratamiento = [];
+
+// ========== VARIABLES PARA LAS FOTOS ==========
+let archivosSeleccionados = [];
+let fotosSubidas = [];
+
+const searchInput = document.getElementById('buscaConsulta');
+const searchBtn = document.getElementById('btnBuscar');
+const decisionAceptar = document.getElementById('decisionAceptar');
+const decisionRechazar = document.getElementById('decisionRechazar');
+const revocatorio = document.getElementById('revocatorio');
+const solicitudInsumosContainer = document.getElementById('solicitudInsumosContainer');
+const btnGuardarTexto = document.getElementById('btnGuardarTexto');
+const seccionSubirFotos = document.getElementById('seccionSubirFotos');
+const fileInput = document.getElementById('fileInput');
+const fileListContainer = document.getElementById('fileListContainer');
+
+// ========== FUNCIONES PARA MANEJAR LAS FOTOS ==========
+
+// Mostrar la sección de fotos
+function mostrarSeccionFotos() {
+    seccionSubirFotos.style.display = 'block';
+    actualizarProgreso(7);
+}
+
+// Manejar selección de archivos
+fileInput.addEventListener('change', function(e) {
+    const files = Array.from(e.target.files);
+    agregarArchivos(files);
+});
+
+// Agregar archivos a la lista
+function agregarArchivos(files) {
+    files.forEach(file => {
+        // Validar tamaño (10MB máx)
+        if (file.size > 10 * 1024 * 1024) {
+            alert(`El archivo "${file.name}" supera el límite de 10MB`);
+            return;
+        }
+        
+        // Validar tipo
+        const tiposPermitidos = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+        if (!tiposPermitidos.includes(file.type)) {
+            alert(`El archivo "${file.name}" no es válido. Solo se permiten JPG, PNG y PDF`);
+            return;
+        }
+        
+        archivosSeleccionados.push(file);
+    });
+    
+    renderizarListaArchivos();
+}
+
+// Renderizar la lista de archivos seleccionados
+function renderizarListaArchivos() {
+    fileListContainer.innerHTML = '';
+    
+    archivosSeleccionados.forEach((archivo, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        if (archivo.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                fileItem.appendChild(img);
+            };
+            reader.readAsDataURL(archivo);
+        } else {
+            // Para PDF u otros
+            const iconDiv = document.createElement('div');
+            iconDiv.style.cssText = 'display: flex; align-items: center; justify-content: center; height: 100%; background: var(--gray-100);';
+            iconDiv.innerHTML = '<i class="fas fa-file-pdf" style="font-size: 40px; color: #e74c3c;"></i>';
+            fileItem.appendChild(iconDiv);
+        }
+        
+        const info = document.createElement('div');
+        info.className = 'file-info';
+        info.textContent = archivo.name.length > 15 ? archivo.name.substring(0, 12) + '...' : archivo.name;
+        fileItem.appendChild(info);
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'remove-file';
+        removeBtn.innerHTML = '✕';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            archivosSeleccionados.splice(index, 1);
+            renderizarListaArchivos();
+        };
+        fileItem.appendChild(removeBtn);
+        
+        fileListContainer.appendChild(fileItem);
+    });
+    
+    if (archivosSeleccionados.length === 0) {
+        fileListContainer.innerHTML = '<p style="color: var(--gray-500); text-align: center; width: 100%;">No hay archivos seleccionados</p>';
+    }
+}
+
+// Drag and drop
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--primary)';
+    uploadArea.style.background = 'var(--primary-light)';
+});
+
+uploadArea.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--gray-300)';
+    uploadArea.style.background = 'var(--gray-50)';
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--gray-300)';
+    uploadArea.style.background = 'var(--gray-50)';
+    
+    const files = Array.from(e.dataTransfer.files);
+    agregarArchivos(files);
+});
+
+// ========== FUNCIONES EXISTENTES ==========
+
+async function cargarClinicas() {
+    try {
+        const response = await fetch('/api/clinicas');
+        if (!response.ok) throw new Error('Error al cargar clínicas');
+        const clinicas = await response.json();
+        const contenedor = document.getElementById('opciones_clinicas');
+        contenedor.innerHTML = '';
+        clinicas.forEach(clinica => {
+            const opcion = document.createElement('div');
+            opcion.className = 'option-card';
+            opcion.dataset.id = clinica.idClinica;
+            opcion.dataset.nombre = clinica.nombreClinica;
+            opcion.dataset.turno = clinica.turno;
+            opcion.innerHTML = `<h4>${clinica.nombreClinica}</h4><p><i class="fas fa-clock"></i> Turno: ${clinica.turno}</p><p><i class="fas fa-user-md"></i> ${clinica.nombreDoctor}</p>`;
+            opcion.addEventListener('click', () => seleccionarClinica(opcion));
+            contenedor.appendChild(opcion);
+        });
+    } catch (error) {
+        console.error('Error cargando clínicas:', error);
+        cargarClinicasMock();
+    }
+}
+
+function cargarClinicasMock() {
+    const mockClinicas = [
+        { id: 1, nombre: 'Clínica 1 - Mañana', turno: 'Mañana', idDoctor: 1, nombreDoctor: 'Dr. Carlos Rodríguez' },
+        { id: 2, nombre: 'Clínica 2 - Tarde', turno: 'Tarde', idDoctor: 2, nombreDoctor: 'Dra. Ana Martínez' },
+        { id: 3, nombre: 'Clínica 3 - Noche', turno: 'Noche', idDoctor: 3, nombreDoctor: 'Dr. Miguel Sánchez' }
+    ];
+    const contenedor = document.getElementById('opciones_clinicas');
+    contenedor.innerHTML = '';
+    mockClinicas.forEach(clinica => {
+        const opcion = document.createElement('div');
+        opcion.className = 'option-card';
+        opcion.dataset.id = clinica.id;
+        opcion.dataset.nombre = clinica.nombre;
+        opcion.dataset.turno = clinica.turno;
+        opcion.dataset.idDoctor = clinica.idDoctor;
+        opcion.dataset.nombreDoctor = clinica.nombreDoctor;
+        opcion.innerHTML = `<h4>${clinica.nombre}</h4><p><i class="fas fa-clock"></i> Turno: ${clinica.turno}</p><p><i class="fas fa-user-md"></i> ${clinica.nombreDoctor}</p>`;
+        opcion.addEventListener('click', () => seleccionarClinica(opcion));
+        contenedor.appendChild(opcion);
+    });
+}
+
+async function cargarDocentesDeClinica(idClinica) {
+    try {
+        const response = await fetch(`/api/clinicas/${idClinica}/docentes`);
+        if (!response.ok) throw new Error('Error al cargar docentes de la clínica');
+        const docentes = await response.json();
+        if (docentes.length > 0) {
+            const primerDocente = docentes[0];
+            docenteSeleccionado = {
+                id: primerDocente.idDocente,
+                nombre: primerDocente.nombreCompleto,
+                especialidad: primerDocente.especialidad || 'Odontología General'
+            };
+            document.getElementById('nombre_doctor').textContent = primerDocente.nombreCompleto;
+            document.getElementById('doctorRevocatorio').textContent = primerDocente.nombreCompleto;
+            document.getElementById('doctorSeleccionadoInfo').innerHTML = `<strong>${primerDocente.nombreCompleto}</strong> · ${primerDocente.especialidad || 'Odontología'}`;
+            document.getElementById('clinicaDoctor').textContent = primerDocente.nombreCompleto;
+        } else {
+            docenteSeleccionado = null;
+            document.getElementById('nombre_doctor').textContent = '-';
+            document.getElementById('doctorRevocatorio').textContent = '-';
+            document.getElementById('doctorSeleccionadoInfo').innerHTML = '<strong>No asignado</strong>';
+            document.getElementById('clinicaDoctor').textContent = 'No asignado';
+        }
+    } catch (error) {
+        console.error('Error cargando docentes de la clínica:', error);
+    }
+}
+
+async function cargarMateriasPorClinica(idClinica) {
+    try {
+        const response = await fetch(`/api/materias/clinica/${idClinica}`);
+        if (!response.ok) throw new Error('Error al cargar materias');
+        const materias = await response.json();
+        const container = document.getElementById('tiposTratamientoContainer');
+        container.innerHTML = '';
+        materias.forEach(materia => {
+            const opcion = document.createElement('div');
+            opcion.className = 'option-card';
+            opcion.dataset.id = materia.id_materia || materia.idMateria;
+            opcion.dataset.nombre = materia.nombreMateria;
+            opcion.innerHTML = `<h4>${materia.nombreMateria}</h4>`;
+            opcion.addEventListener('click', () => seleccionarMateria(opcion));
+            container.appendChild(opcion);
+        });
+        document.getElementById('seccionTiposTratamiento').style.display = 'block';
+        document.getElementById('seccionTratamiento').style.display = 'none';
+        document.getElementById('seccionProcedimiento').style.display = 'none';
+        document.getElementById('seccionDecision').style.display = 'none';
+        actualizarProgreso(3);
+    } catch (error) {
+        console.error('Error cargando materias:', error);
+        cargarMateriasMock();
+    }
+}
+
+function cargarMateriasMock() {
+    const mockMaterias = [
+        { idMateria: 1, nombreMateria: 'Odontología General', descripcionMateria: 'Atención dental básica' },
+        { idMateria: 2, nombreMateria: 'Ortodoncia', descripcionMateria: 'Corrección de dientes' },
+        { idMateria: 3, nombreMateria: 'Cirugía Oral', descripcionMateria: 'Procedimientos quirúrgicos' }
+    ];
+    const container = document.getElementById('tiposTratamientoContainer');
+    container.innerHTML = '';
+    mockMaterias.forEach(materia => {
+        const opcion = document.createElement('div');
+        opcion.className = 'option-card';
+        opcion.dataset.id = materia.idMateria;
+        opcion.dataset.nombre = materia.nombreMateria;
+        opcion.innerHTML = `<h4>${materia.nombreMateria}</h4><p>${materia.descripcionMateria}</p>`;
+        opcion.addEventListener('click', () => seleccionarMateria(opcion));
+        container.appendChild(opcion);
+    });
+}
+
+function seleccionarMateria(element) {
+    document.querySelectorAll('#tiposTratamientoContainer .option-card').forEach(o => o.classList.remove('selected'));
+    element.classList.add('selected');
+    materiaSeleccionada = {
+        id: element.dataset.id,
+        nombre: element.dataset.nombre,
+        descripcion: element.dataset.descripcion
+    };
+    cargarTratamientosPorMateria(materiaSeleccionada.id);
+}
+
+async function cargarTratamientosPorMateria(idMateria) {
+    try {
+        const response = await fetch(`/api/cupos/tratamientos-por-materia/${idMateria}`);
+        if (!response.ok) throw new Error('Error al cargar tratamientos');
+        const tratamientos = await response.json();
+        const container = document.getElementById('tratamientosContainer');
+        container.innerHTML = '';
+        tratamientos.forEach(t => {
+            agregarTarjetaTratamiento(container, {
+                id: t.idTratamiento,
+                nombre: t.nombreTratamiento,
+                precio: t.precioTratamiento ? `$${Number(t.precioTratamiento).toLocaleString('es-CL')}` : 'Consultar',
+                categoria: materiaSeleccionada?.nombre || 'Tratamiento',
+                cupos: t.cuposDisponibles
+            });
+        });
+        document.getElementById('seccionTratamiento').style.display = 'block';
+        actualizarProgreso(4);
+    } catch (error) {
+        console.error('Error cargando tratamientos:', error);
+        cargarTratamientosMock();
+    }
+}
+
+function cargarTratamientosMock() {
+    const mockTratamientos = [
+        { idTratamiento: 1, nombreTratamiento: 'Limpieza Dental', descripcionTratamiento: 'Eliminación de sarro y placa bacteriana', precioTratamiento: 50000 },
+        { idTratamiento: 2, nombreTratamiento: 'Extracción Dental', descripcionTratamiento: 'Extracción de pieza dental', precioTratamiento: 80000 },
+        { idTratamiento: 3, nombreTratamiento: 'Obturación', descripcionTratamiento: 'Relleno de caries', precioTratamiento: 60000 }
+    ];
+    const container = document.getElementById('tratamientosContainer');
+    container.innerHTML = '';
+    mockTratamientos.forEach(t => {
+        agregarTarjetaTratamiento(container, {
+            id: t.idTratamiento,
+            nombre: t.nombreTratamiento,
+            descripcion: t.descripcionTratamiento,
+            precio: `$${t.precioTratamiento.toLocaleString('es-CL')}`,
+            categoria: materiaSeleccionada?.nombre || 'Tratamiento'
+        });
+    });
+}
+
+function seleccionarClinica(element) {
+    document.querySelectorAll('#opciones_clinicas .option-card').forEach(o => o.classList.remove('selected'));
+    element.classList.add('selected');
+    clinicaSeleccionada = {
+        id: element.dataset.id,
+        nombre: element.dataset.nombre,
+        turno: element.dataset.turno
+    };
+    document.getElementById('clinicaNombre').textContent = clinicaSeleccionada.nombre;
+    document.getElementById('clinicaTurno').textContent = clinicaSeleccionada.turno;
+    document.getElementById('clinicaDoctor').textContent = 'Cargando...';
+    document.getElementById('infoClinicaSeleccionada').style.display = 'block';
+    if (clinicaSeleccionada.id) { cargarDocentesDeClinica(clinicaSeleccionada.id); }
+    document.getElementById('formularioConsentimiento').style.display = 'block';
+    cargarMateriasPorClinica(clinicaSeleccionada.id);
+    document.getElementById('seccionTiposTratamiento').style.display = 'none';
+    document.getElementById('seccionTratamiento').style.display = 'none';
+    document.getElementById('seccionProcedimiento').style.display = 'none';
+    document.getElementById('seccionDecision').style.display = 'none';
+    actualizarProgreso(2);
+}
+
+function agregarTarjetaTratamiento(container, tratamiento) {
+    const opcion = document.createElement('div');
+    opcion.className = 'tratamiento-option';
+    opcion.dataset.id = tratamiento.id;
+    opcion.dataset.nombre = tratamiento.nombre;
+    opcion.dataset.descripcion = tratamiento.descripcion;
+    opcion.dataset.precio = tratamiento.precio.replace(/[^0-9.-]/g, '') || '0';
+    opcion.dataset.categoria = tratamiento.categoria;
+    opcion.innerHTML = `<span class="badge badge-primary">${tratamiento.categoria}</span><h4>${tratamiento.nombre}</h4><p>${tratamiento.descripcion}</p><div class="price-tag">${tratamiento.precio}</div>`;
+    opcion.addEventListener('click', () => seleccionarTratamiento(opcion, tratamiento));
+    container.appendChild(opcion);
+}
+
+async function cargarInsumosDelTratamiento(idTratamiento) {
+    try {
+        console.log('🔍 Cargando insumos para tratamiento ID:', idTratamiento);
+        const response = await fetch(`/consentimientos/tratamiento-insumos/${idTratamiento}`);
+        if (!response.ok) throw new Error('Error al cargar insumos');
+        const data = await response.json();
+        
+        const insumosGrid = document.getElementById('insumosGridContainer');
+        
+        if (data.insumos && data.insumos.length > 0) {
+            let insumosHtml = '<div class="info-grid">';
+            data.insumos.forEach(insumo => {
+                insumosHtml += `
+                    <div class="info-item">
+                        <span class="label">${insumo.nombreInsumo}</span>
+                        <span class="value">Cantidad: ${insumo.cantidadRequerida} ${insumo.unidadBase || 'unidades'}</span>
+                        <span style="font-size: 0.8rem; color: var(--gray-500);">${insumo.concentracion || ''}</span>
+                    </div>
+                `;
+            });
+            insumosHtml += '</div>';
+            insumosGrid.innerHTML = insumosHtml;
+            solicitudInsumosContainer.style.display = 'block';
+            insumosDelTratamiento = data.insumos;
+        } else {
+            solicitudInsumosContainer.style.display = 'none';
+            insumosDelTratamiento = [];
+        }
+    } catch (error) {
+        console.error('Error cargando insumos:', error);
+        solicitudInsumosContainer.style.display = 'none';
+        insumosDelTratamiento = [];
+    }
+}
+
+function seleccionarTratamiento(element, tratamiento) {
+    document.querySelectorAll('#tratamientosContainer .tratamiento-option').forEach(o => o.classList.remove('selected'));
+    element.classList.add('selected');
+    tratamientoSeleccionado = tratamiento;
+    
+    document.getElementById('nombreTratamientoSeleccionado').textContent = tratamiento.nombre;
+    document.getElementById('detallesTratamientoSeleccionado').innerHTML = `<strong>Categoría:</strong> ${tratamiento.categoria} | <strong>Precio:</strong> ${tratamiento.precio}`;
+    document.getElementById('resumenTratamiento').textContent = tratamiento.nombre;
+    
+    const hoy = new Date();
+    document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
+    
+    const nombreDoctor = docenteSeleccionado ? docenteSeleccionado.nombre : 'el doctor';
+    document.getElementById('explicacionProcedimiento').value = `Explique el procedimiento a realizar`;
+    
+    // Cargar insumos automáticos
+    cargarInsumosDelTratamiento(tratamiento.id);
+    
+    document.getElementById('seccionProcedimiento').style.display = 'block';
+    document.getElementById('seccionDecision').style.display = 'block';
+    actualizarProgreso(5);
+}
+
+searchBtn.addEventListener('click', buscarConsulta);
+
+async function buscarConsulta() {
+    const criterio = searchInput.value.trim();
+    if (!criterio) return alert('Escribe algo para buscar.');
+    try {
+        const response = await fetch(`/consentimientos/buscar-consulta?criterio=${encodeURIComponent(criterio)}`);
+        if (!response.ok) throw new Error('Error en la búsqueda');
+        const consultas = await response.json();
+        if (consultas.length === 0) { alert('No se encontraron consultas'); return; }
+        const consulta = consultas[0];
+        mostrarInfoConsulta(consulta);
+        document.getElementById('seccionClinicas').style.display = 'block';
+        document.getElementById('formularioConsentimiento').style.display = 'none';
+        cargarClinicas();
+        actualizarProgreso(1);
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al buscar la consulta');
+    }
+}
+
+function mostrarInfoConsulta(consulta) {
+    document.getElementById('infoConsulta').style.display = 'block';
+    const nombreCompleto = consulta.nombrePaciente || (consulta.nombre ? `${consulta.nombre} ${consulta.apellidoPaterno || ''} ${consulta.apellidoMaterno || ''}`.trim() : 'Nombre no disponible');
+    let edad = consulta.edad || 'No especificada';
+    if (edad !== 'No especificada' && !isNaN(edad)) edad += ' años';
+    const fechaConsulta = consulta.fecha ? new Date(consulta.fecha).toLocaleDateString('es-ES') : 'Fecha no disponible';
+    document.getElementById('pacienteNombre').textContent = nombreCompleto;
+    document.getElementById('edadPaciente').textContent = edad;
+    document.getElementById('fechaConsulta').textContent = fechaConsulta;
+    document.getElementById('nombrePaciente').textContent = nombreCompleto;
+    document.getElementById('edadPacienteForm').textContent = edad;
+    document.getElementById('nombreRevocatorio').textContent = nombreCompleto;
+    consultaSeleccionada = { idConsulta: consulta.idConsulta, fecha: consulta.fecha, paciente: nombreCompleto };
+}
+
+decisionAceptar.addEventListener('click', function() {
+    document.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+    decision = 'aceptar';
+    revocatorio.style.display = 'none';
+    btnGuardarTexto.textContent = 'Consentimiento';
+    // Mostrar la sección de fotos
+    mostrarSeccionFotos();
+    actualizarProgreso(6);
+});
+
+decisionRechazar.addEventListener('click', function() {
+    document.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+    decision = 'rechazar';
+    revocatorio.style.display = 'block';
+    btnGuardarTexto.textContent = 'Consentimiento (Revocatorio)';
+    // Ocultar sección de fotos si está visible
+    seccionSubirFotos.style.display = 'none';
+    actualizarProgreso(6);
+});
+
+document.getElementById('btnGuardarTodo').addEventListener('click', async function() {
+    if (!consultaSeleccionada) return alert('Por favor, busque y seleccione una consulta primero.');
+    if (!clinicaSeleccionada) return alert('Seleccione una clínica.');
+    if (!docenteSeleccionado) return alert('Seleccione un doctor responsable.');
+    if (!tratamientoSeleccionado) return alert('Seleccione un tratamiento.');
+    if (!document.getElementById('explicacionProcedimiento').value.trim()) return alert('Complete la descripción del procedimiento.');
+    if (!decision) return alert('Seleccione Aceptar o Rechazar.');
+    if (!idEstudiante) { alert('Error: No se pudo identificar al estudiante.'); return; }
+    
+    const btnOriginal = this.innerHTML;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    this.disabled = true;
+    
+    // Preparar los insumos para enviar
+    const insumosParaEnviar = insumosDelTratamiento.map(insumo => ({
+        idInsumo: insumo.idInsumo,
+        cantidad: insumo.cantidadRequerida
+    }));
+    
+    // Crear FormData para enviar archivos
+    const formData = new FormData();
+    
+    const datos = {
+        idConsulta: consultaSeleccionada.idConsulta,
+        idDocente: parseInt(docenteSeleccionado.id),
+        idTratamiento: parseInt(tratamientoSeleccionado.id),
+        idEstudiante: parseInt(idEstudiante),
+        idMateria: parseInt(materiaSeleccionada.id),
+        explicacion: document.getElementById('explicacionProcedimiento').value,
+        decision: decision,
+        insumos: insumosParaEnviar
+    };
+    
+    // Agregar los datos como JSON
+    formData.append('datos', JSON.stringify(datos));
+    
+    // Agregar archivos si hay
+    if (archivosSeleccionados.length > 0) {
+        archivosSeleccionados.forEach(archivo => {
+            formData.append('fotos', archivo);
+        });
+    }
+    
+    console.log('📦 Enviando consentimiento con', archivosSeleccionados.length, 'archivos');
+    
+    try {
+        const response = await fetch('/consentimientos/crear-con-fotos', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Error al guardar');
+        
+        const mensajeFotos = archivosSeleccionados.length > 0 ? 
+            `\n\n📎 Se adjuntaron ${archivosSeleccionados.length} documento(s).` : '';
+        
+        if (decision === 'aceptar' && insumosParaEnviar.length > 0) {
+            alert(`✅ Consentimiento guardado correctamente${mensajeFotos}\n\n📦 Los insumos se han registrado automáticamente y están pendientes de aprobación del docente.`);
+        } else {
+            alert(`✅ Consentimiento guardado correctamente${mensajeFotos}`);
+        }
+        
+        limpiarFormulario();
+    } catch (error) {
+        console.error(error);
+        alert('Error: ' + error.message);
+    } finally {
+        this.innerHTML = btnOriginal;
+        this.disabled = false;
+    }
+});
+
+function actualizarProgreso(paso) {
+    const steps = document.querySelectorAll('.step');
+    steps.forEach((step, index) => { if (index < paso) step.classList.add('active'); else step.classList.remove('active'); });
+}
+
+function limpiarFormulario() { location.reload(); }
+
+document.addEventListener('DOMContentLoaded', async function() {
+    idEstudiante = sessionStorage.getItem('idEstudiante');
+    if (!idEstudiante) { alert('Debe iniciar sesión primero'); window.location.href = '/'; return; }
+    console.log('✅ ID Estudiante:', idEstudiante);
+    const hoy = new Date();
+    document.getElementById('fechaRevocatorio').textContent = hoy.toLocaleDateString('es-ES');
+});
+</script>
+</body>
+</html>

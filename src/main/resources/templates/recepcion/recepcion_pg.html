@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubic Admin - Recepción</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+</head>
+<body>          
+    <!-- Sidebar -->    
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div>
+                <h1>PANEL</h1>
+                <h1>RECEPCIÓN</h1>
+            </div>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <ul class="menu">
+            <li onclick="loadPage('/recepcion/paginas/registro_paciente', 'Nuevo Paciente', 'historiaClinicaFrame', this)">
+                <i class="fas fa-user-injured"></i>
+                <span class="menu-text">Nuevo Paciente</span>
+            </li>
+
+            <li onclick="loadPage('/recepcion/paginas/solicitud_insumos', 'Solicitud de Insumos', 'solicitudInsumosFrame', this)">
+                <i class="fas fa-box"></i>
+                <span class="menu-text">Solicitud de Insumos</span>
+            </li>
+
+            <li onclick="loadPage('/recepcion/paginas/historial_clinico', 'Historial Clínico', 'historiaClinicaFrame', this)">
+                <i class="fas fa-history"></i>
+                <span class="menu-text">Historial Clínico</span>
+            </li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar">RC</div>
+            <div class="user-details">
+                <div class="user-name">Recepción</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h2 id="pageTitle">Nuevo Paciente</h2>
+            <div class="user-menu">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        
+        <!-- Contenido de Nuevo Paciente (activo por defecto) -->
+        <div id="nuevoPacienteContent" class="content-area active">
+            <iframe id="historiaClinicaFrame" src="about:blank"></iframe>
+        </div>
+        
+        <!-- Contenido de Solicitud de Insumos -->
+        <div id="solicitudInsumosContent" class="content-area">
+            <iframe id="solicitudInsumosFrame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        function loadPage(pageUrl, pageTitle, frameId, menuItem) {
+            // Ocultar todo el contenido
+            document.querySelectorAll('.content-area').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los items del menú
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Mostrar el contenido correspondiente según el frameId
+            if (frameId === 'historiaClinicaFrame') {
+                document.getElementById('nuevoPacienteContent').classList.add('active');
+            } else if (frameId === 'solicitudInsumosFrame') {
+                document.getElementById('solicitudInsumosContent').classList.add('active');
+            }
+            
+            // Activar el item del menú clickeado
+            if (menuItem && menuItem.classList) {
+                menuItem.classList.add('active');
+            }
+            
+            // Actualizar el título de la página
+            document.getElementById('pageTitle').textContent = pageTitle;
+            
+            // Cargar la página en el iframe correspondiente
+            const frame = document.getElementById(frameId);
+            if (frame) {
+                frame.src = pageUrl;
+            }
+        }
+
+        // Cargar la primera página por defecto al iniciar
+        window.onload = function() {
+            const firstMenuItem = document.querySelector('.menu li');
+            if (firstMenuItem) {
+                firstMenuItem.click();
+            }
+        };
+    </script>
+</body>
+</html>

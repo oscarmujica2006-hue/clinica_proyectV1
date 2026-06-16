@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Pacientes - Clínica Odontológica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* ESTILOS GENERALES RENOVADOS - SIN MARGENES */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    :root {
+        --primary: #1E40AF;      /* Azul médico profesional */
+        --secondary: #059669;    /* Verde salud */
+        --accent: #DC2626;       /* Rojo para acentos */
+        --light-bg: #F8FAFC;     /* Fondo claro */
+        --card-bg: #FFFFFF;      /* Fondo tarjetas */
+        --text-dark: #1E293B;    /* Texto oscuro */
+        --text-light: #64748B;   /* Texto claro */
+        --border: #E2E8F0;       /* Bordes */
+        --success: #10B981;      /* Verde éxito */
+        --warning: #F59E0B;      /* Amarillo advertencia */
+        --danger: #EF4444;       /* Rojo peligro */
+    }
+
+    body {
+        background: linear-gradient(135deg, #F0F9FF 0%, #EFF6FF 100%);
+        color: var(--text-dark);
+        min-height: 100vh;
+    }
+
+    /* CONTENEDOR PRINCIPAL SIN MÁRGENES */
+    .container {
+        width: 100%;
+        min-height: 100vh;
+        background: white;
+    }
+
+    /* ENCABEZADO MEJORADO - OCUPA ANCHO COMPLETO */
+    .header {
+        background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
+        color: white;
+        padding: 35px 20px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white" fill-opacity="0.1"><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30 Z"/></svg>');
+        background-size: 200px;
+    }
+
+    .header-content {
+        position: relative;
+        z-index: 2;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .header h1 {
+        font-size: 2.3rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header h1 i {
+        margin-right: 15px;
+        font-size: 2.6rem;
+        color: #ffffff;
+    }
+
+    .header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* FORMULARIO PRINCIPAL - SIN MÁRGENES LATERALES */
+    .form-container {
+        padding: 0;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* SECCIONES DEL FORMULARIO */
+    .form-section {
+        background: var(--light-bg);
+        padding: 30px;
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-section::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: linear-gradient(to bottom, var(--primary), var(--secondary));
+    }
+
+    .section-title {
+        color: var(--primary);
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .section-title i {
+        color: var(--secondary);
+        font-size: 1.6rem;
+    }
+
+    /* FILAS Y CAMPOS DEL FORMULARIO - MÁS COMPACTOS */
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-field label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .form-field label i {
+        color: var(--primary);
+        font-size: 1rem;
+        min-width: 20px;
+    }
+
+    .form-field input,
+    .form-field select {
+        padding: 12px 15px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        width: 100%;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+
+    .form-field input:disabled,
+    .form-field select:disabled {
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .form-helper {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* BOTONES - CENTRADOS Y COMPACTOS */
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        padding: 30px;
+        background: white;
+    }
+
+    .btn {
+        padding: 14px 35px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 220px;
+        justify-content: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--secondary), #047857);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6B7280, #4B5563);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* MENSAJES DE ESTADO - ENCIMA DEL FORMULARIO */
+    .message-container {
+        padding: 20px;
+        background: white;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .message {
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 0;
+        display: none;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+        animation: fadeIn 0.3s ease-out;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .success {
+        background-color: #D1FAE5;
+        color: #065F46;
+        border: 1px solid #A7F3D0;
+    }
+
+    .error {
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FECACA;
+    }
+
+    .loading {
+        display: none;
+        padding: 20px;
+        text-align: center;
+        color: var(--text-light);
+        font-size: 1.1rem;
+        background: white;
+        margin: 0;
+    }
+
+    .loading i {
+        margin-right: 10px;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* VALIDACIÓN VISUAL */
+    .invalid {
+        border-color: var(--danger) !important;
+        background-color: #FEF2F2;
+    }
+
+    .valid {
+        border-color: var(--success) !important;
+        background-color: #F0FDF4;
+    }
+
+    /* CAMPO DE EDAD ESPECIAL */
+    .edad-field {
+        position: relative;
+    }
+
+    .edad-field::after {
+        content: 'años';
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 0.9rem;
+        pointer-events: none;
+    }
+
+    /* MEJORAS EN LOS SELECT */
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+    /* ===== MEDIA QUERIES PARA MÓVIL ===== */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        .header h1 i {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+        .header p {
+            font-size: 1rem;
+        }
+        .form-section {
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 1.2rem;
+        }
+        .button-container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+            padding: 20px;
+        }
+        .btn {
+            min-width: 100%;
+            padding: 12px 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .header {
+            padding: 20px 15px;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .header h1 i {
+            font-size: 2rem;
+            margin-right: 0;
+        }
+        .header p {
+            font-size: 0.9rem;
+        }
+        .form-section {
+            padding: 15px;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            gap: 5px;
+        }
+        .section-title i {
+            font-size: 1.3rem;
+        }
+        .form-row {
+            gap: 15px;
+            margin-bottom: 15px;
+            grid-template-columns: 1fr; /* Una sola columna en móvil pequeño */
+        }
+        .form-field label {
+            font-size: 0.9rem;
+        }
+        .form-field input,
+        .form-field select {
+            padding: 10px 12px;
+            font-size: 0.95rem;
+        }
+        .form-helper {
+            font-size: 0.8rem;
+        }
+        .button-container {
+            padding: 15px;
+        }
+        .btn {
+            font-size: 0.95rem;
+            padding: 12px 15px;
+        }
+        .message {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+        .loading {
+            font-size: 0.9rem;
+            padding: 15px;
+        }
+        /* Ajuste para la edad-field (pseudo-elemento) */
+        .edad-field::after {
+            right: 10px;
+            font-size: 0.8rem;
+        }
+        /* Select con flecha más pequeña */
+        select {
+            background-position: right 10px center;
+            background-size: 10px;
+            padding-right: 30px;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .header h1 {
+            font-size: 1.3rem;
+        }
+        .form-section {
+            padding: 10px;
+        }
+        .section-title {
+            font-size: 1rem;
+        }
+        .form-field input,
+        .form-field select {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+        .btn {
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- ENCABEZADO MEJORADO -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-tooth"></i> REGISTRO DE PACIENTES ODONTOLÓGICOS</h1>
+                <p>Universidad Amazónica de Pando - Sistema Integral de Gestión Dental</p>
+            </div>
+        </div>
+
+        <!-- CONTENEDOR PRINCIPAL DEL FORMULARIO -->
+        <div class="form-container">
+            <!-- MENSAJES DE ESTADO -->
+            <div class="message-container">
+                <div id="successMessage" class="message success">
+                    <i class="fas fa-check-circle"></i>
+                    <span></span>
+                </div>
+                <div id="errorMessage" class="message error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span></span>
+                </div>
+                <div id="loadingMessage" class="loading">
+                    <i class="fas fa-spinner"></i> Registrando paciente en el sistema...
+                </div>
+            </div>
+
+            <!-- FORMULARIO ACTUALIZADO -->
+            <form id="patientRegistrationForm" th:action="@{/recepcion/paciente/crear}" method="post">
+                <!-- SECCIÓN 1: INFORMACIÓN PERSONAL -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-user-circle"></i> INFORMACIÓN PERSONAL DEL PACIENTE
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="historialClinico"><i class="fas fa-file-medical-alt"></i> HISTORIA CLÍNICA</label>
+                            <input type="text" id="historialClinico" name="historialClinico" 
+                                   placeholder="HC-XXXX-XXXX" required>
+                            <div class="form-helper">
+                                <i class="fas fa-info-circle"></i> Formato: HC-2024-001
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="ci"><i class="fas fa-id-card"></i> CÉDULA DE IDENTIDAD</label>
+                            <input type="number" id="ci" name="ci" 
+                                   placeholder="Ingrese número de cédula" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="nombre"><i class="fas fa-user"></i> NOMBRES</label>
+                            <input type="text" id="nombre" name="nombre" 
+                                   placeholder="Ingrese nombres completos" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="apellidoPaterno"><i class="fas fa-users"></i> APELLIDO PATERNO</label>
+                            <input type="text" id="apellidoPaterno" name="apellidoPaterno" 
+                                   placeholder="Ingrese apellido paterno" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="apellidoMaterno"><i class="fas fa-users"></i> APELLIDO MATERNO</label>
+                            <input type="text" id="apellidoMaterno" name="apellidoMaterno" 
+                                   placeholder="Ingrese apellido materno" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- NOTA IMPORTANTE: Cambié el orden para que coincida con el formulario que funciona -->
+                        <div class="form-field">
+                            <label for="edad"><i class="fas fa-birthday-cake"></i> EDAD</label>
+                            <input type="number" id="edad" name="edad" 
+                                   placeholder="Edad calculada" min="1" max="120" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="sexo"><i class="fas fa-venus-mars"></i> GÉNERO</label>
+                            <select id="sexo" name="sexo" required>
+                                <option value="">Seleccione género</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="fechaNacimiento"><i class="fas fa-calendar-alt"></i> FECHA DE NACIMIENTO</label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <div class="form-helper">
+                                <i class="fas fa-calculator"></i> La edad se calculará automáticamente
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: INFORMACIÓN ADICIONAL -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i> INFORMACIÓN ADICIONAL
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="lugarNacimiento"><i class="fas fa-map-marker-alt"></i> LUGAR DE NACIMIENTO</label>
+                            <input type="text" id="lugarNacimiento" name="lugarNacimiento" 
+                                   placeholder="Ciudad, Departamento" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="ocupacion"><i class="fas fa-briefcase"></i> OCUPACIÓN</label>
+                            <input type="text" id="ocupacion" name="ocupacion" 
+                                   placeholder="Profesión u oficio" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="estadoCivil"><i class="fas fa-heart"></i> ESTADO CIVIL</label>
+                            <select id="estadoCivil" name="estadoCivil" required>
+                                <option value="">Seleccione estado civil</option>
+                                <option value="S">Soltero(a)</option>
+                                <option value="C">Casado(a)</option>
+                                <option value="V">Viudo(a)</option>
+                                <option value="D">Divorciado(a)</option>
+                                <option value="U">Unión libre</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="direccion"><i class="fas fa-home"></i> DIRECCIÓN</label>
+                            <input type="text" id="direccion" name="direccion" 
+                                   placeholder="Dirección completa" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="gradoInstruccion"><i class="fas fa-book"></i> GRADO DE INSTRUCCIÓN</label>
+                            <select id="gradoInstruccion" name="gradoInstruccion" required>
+                                <option value="">Seleccione grado de instrucción</option>
+                                <option value="Inicial">Inicial</option>
+                                <option value="Primaria">Primaria</option>
+                                <option value="Secundaria">Secundaria</option>
+                                <option value="Universidad">Universidad</option>
+                                <option value="Tecnico">Técnico</option>
+                                <option value="Profesional">Profesional</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="telefono"><i class="fas fa-phone"></i> TELÉFONO / CELULAR</label>
+                            <input type="tel" id="telefono" name="telefono" 
+                                   placeholder="Número de contacto" required>
+                            <div class="form-helper">
+                                <i class="fas fa-mobile-alt"></i> Formato: 7XXXXXXXX
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: EDUCACIÓN E IDENTIDAD -->
+                <div class="form-section" style="border-bottom: none;">
+                    <div class="section-title">
+                        <i class="fas fa-graduation-cap"></i> EDUCACIÓN E IDENTIDAD CULTURAL
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="nacionesOriginarias"><i class="fas fa-globe-americas"></i> NACIONES ORIGINARIAS</label>
+                            <input type="text" id="nacionesOriginarias" name="nacionesOriginarias" 
+                                   placeholder="Ej: Quechua, Aymara, etc.">
+                        </div>
+                        <div class="form-field">
+                            <label for="idioma"><i class="fas fa-language"></i> IDIOMA O DIALECTO</label>
+                            <input type="text" id="idioma" name="idioma" 
+                                   placeholder="Idioma principal">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-save"></i> REGISTRAR PACIENTE
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-eraser"></i> LIMPIAR FORMULARIO
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    // CONSTANTES Y CONFIGURACIÓN
+    const API_URL = '/recepcion/paciente/crear';
+    
+    // ELEMENTOS DEL DOM
+    const form = document.getElementById('patientRegistrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const loadingMessage = document.getElementById('loadingMessage');
+    const fechaNacimiento = document.getElementById('fechaNacimiento');
+    const edadInput = document.getElementById('edad');
+
+    // FUNCIONES DE UTILIDAD
+    function showMessage(element, message, type = 'success') {
+        const span = element.querySelector('span');
+        span.textContent = message;
+        element.style.display = 'flex';
+        
+        if (type === 'error') {
+            element.className = 'message error';
+        } else {
+            element.className = 'message success';
+        }
+        
+        setTimeout(() => {
+            element.style.display = 'none';
+        }, 5000);
+    }
+
+    function showLoading(show) {
+        if (show) {
+            loadingMessage.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> REGISTRANDO...';
+        } else {
+            loadingMessage.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> REGISTRAR PACIENTE';
+        }
+    }
+
+    // CÁLCULO AUTOMÁTICO DE EDAD (igual que en el segundo formulario)
+    fechaNacimiento.addEventListener('change', function() {
+        if (!this.value) return;
+        
+        const fechaNacimiento = new Date(this.value);
+        const hoy = new Date();
+        let edadCalculada = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        
+        // Ajuste para si aún no ha cumplido años este año
+        const mesDiferencia = hoy.getMonth() - fechaNacimiento.getMonth();
+        if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+            edadCalculada--;
+        }
+        
+        if (edadCalculada > 0 && edadCalculada <= 120) {
+            edadInput.value = edadCalculada;
+            edadInput.classList.remove('invalid');
+            edadInput.classList.add('valid');
+        } else if (edadCalculada <= 0) {
+            edadInput.value = '';
+            edadInput.classList.add('invalid');
+            showMessage(errorMessage, 'La fecha de nacimiento no puede ser futura o muy reciente', 'error');
+        }
+    });
+
+    // VALIDACIÓN DE EDAD MANUAL (igual que en el segundo formulario)
+    edadInput.addEventListener('change', function() {
+        const edad = parseInt(this.value);
+        if (edad < 1 || edad > 120) {
+            this.classList.add('invalid');
+            showMessage(errorMessage, 'La edad debe estar entre 1 y 120 años', 'error');
+            this.value = '';
+        } else {
+            this.classList.remove('invalid');
+            this.classList.add('valid');
+        }
+    });
+
+    // VALIDACIÓN DE CÉDULA
+    document.getElementById('ci').addEventListener('blur', function() {
+        const ci = this.value.trim();
+        if (ci.length < 4) {
+            this.classList.add('invalid');
+            showMessage(errorMessage, 'La cédula debe tener al menos 4 dígitos', 'error');
+        } else {
+            this.classList.remove('invalid');
+            this.classList.add('valid');
+        }
+    });
+
+    // ENVÍO DEL FORMULARIO CON AJAX - VERSIÓN SIMPLIFICADA COMO EL SEGUNDO
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validación básica como en el segundo formulario
+        const requiredFields = document.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('invalid');
+            } else {
+                field.classList.remove('invalid');
+            }
+        });
+        
+        if (!isValid) {
+            showMessage(errorMessage, 'Por favor, complete todos los campos obligatorios marcados en rojo', 'error');
+            return;
+        }
+
+        // Validación específica de edad
+        if (parseInt(edadInput.value) < 1 || parseInt(edadInput.value) > 120) {
+            showMessage(errorMessage, 'La edad debe estar entre 1 y 120 años', 'error');
+            edadInput.classList.add('invalid');
+            edadInput.focus();
+            return;
+        }
+        
+        // Mostrar loading
+        showLoading(true);
+        
+        try {
+            // Preparar datos del formulario
+            const formData = new FormData(this);
+            
+            // Enviar petición
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (response.ok) {
+                const mensaje = await response.text();
+                showMessage(successMessage, mensaje || '¡Paciente registrado exitosamente!', 'success');
+                
+                // Resetear formulario después de éxito
+                setTimeout(() => {
+                    form.reset();
+                    // Limpiar clases de validación
+                    form.querySelectorAll('input, select').forEach(field => {
+                        field.classList.remove('valid', 'invalid');
+                    });
+                }, 1500);
+                
+            } else {
+                const error = await response.text();
+                throw new Error(error || 'Error en el servidor');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage(errorMessage, error.message || 'Error al registrar el paciente', 'error');
+            
+        } finally {
+            showLoading(false);
+        }
+    });
+
+    // LIMPIAR VALIDACIONES AL ESCRIBIR
+    form.querySelectorAll('input, select').forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('invalid', 'valid');
+            errorMessage.style.display = 'none';
+        });
+    });
+
+    // RESET DEL FORMULARIO
+    form.querySelector('button[type="reset"]').addEventListener('click', function() {
+        form.reset();
+        form.querySelectorAll('input, select').forEach(field => {
+            field.classList.remove('invalid', 'valid');
+        });
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+    });
+
+    // VALIDACIÓN EN TIEMPO REAL PARA CAMPOS NUMÉRICOS
+    document.getElementById('ci').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    document.getElementById('telefono').addEventListener('input', function(e) {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // INICIALIZACIÓN
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar fecha mínima/máxima para fecha de nacimiento
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setFullYear(today.getFullYear() - 1);
+        const minDate = new Date();
+        minDate.setFullYear(today.getFullYear() - 120);
+        
+        fechaNacimiento.max = maxDate.toISOString().split('T')[0];
+        fechaNacimiento.min = minDate.toISOString().split('T')[0];
+        
+        // Verificar si hay parámetros de éxito en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            showMessage(successMessage, '¡Paciente registrado exitosamente!', 'success');
+        }
+        
+        // Mejorar la experiencia en dispositivos móviles
+        if ('ontouchstart' in window) {
+            document.querySelectorAll('input, select').forEach(field => {
+                field.style.fontSize = '16px'; // Previene zoom automático en iOS
+            });
+        }
+    });
+</script>
+</body>
+</html>

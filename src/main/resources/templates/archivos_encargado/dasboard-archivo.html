@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubic Admin - Archivos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+</head>
+<body>          
+    <!-- Sidebar -->    
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div>
+                <h1>PANEL</h1>
+                <h1>ARCHIVOS</h1>
+            </div>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <ul class="menu">
+            <li onclick="loadPage('/archivos/Registro-paciente/paciente-vista', 'Registro de Paciente', 'pacienteFrame', this)">
+                <i class="fas fa-user-plus"></i>
+                <span class="menu-text">Registro Paciente</span>
+            </li>
+
+            <li onclick="loadPage('/archivos/gestion/gestion-vista', 'Registro de Archivos', 'archivosFrame', this)">
+                <i class="fas fa-folder-open"></i>
+                <span class="menu-text">Registro Archivos</span>
+            </li>
+
+            <li onclick="loadPage('/archivos/prestamo/prestamo-vista', 'Préstamo de Archivos', 'PrestamoFrame', this)">
+                <i class="fas fa-hand-holding"></i>
+                <span class="menu-text">Entrega Archivos</span>
+            </li>
+
+            <li onclick="loadPage('/archivos/Archivo/archivo-vista', 'Búsqueda de Archivos', 'archivoFrame', this)">
+                <i class="fas fa-search"></i>
+                <span class="menu-text">Buscar Archivo</span>
+            </li>
+
+            <li onclick="loadPage('/archivos/historial_clinico/historial_clinico_ENPROCESO', 'Historial Clínico', 'historiaClinicaFrame', this)">
+                <i class="fas fa-history"></i>
+                <span class="menu-text">Historial Clínico</span>
+            </li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar">AR</div>
+            <div class="user-details">
+                <div class="user-name">Archivos</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h2 id="pageTitle">Registro de Paciente</h2>
+            <div class="user-menu">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+
+        <!-- Contenido de Registro Paciente (activo por defecto) -->
+        <div id="pacienteContent" class="content-area active">
+            <iframe id="pacienteFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Gestión de Archivos -->
+        <div id="gestionArchivosContent" class="content-area">
+            <iframe id="archivosFrame" src="about:blank"></iframe>
+        </div>
+        
+        <!-- Contenido de Préstamo -->
+        <div id="PrestamoContent" class="content-area">
+            <iframe id="PrestamoFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Búsqueda de Archivos -->
+        <div id="archivoContent" class="content-area">
+            <iframe id="archivoFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Historial Clínico -->
+        <div id="historialContent" class="content-area">
+            <iframe id="historiaClinicaFrame" src="about:blank"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        function loadPage(pageUrl, pageTitle, frameId, menuItem) {
+            // Ocultar todo el contenido
+            document.querySelectorAll('.content-area').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remover clase active de todos los items del menú
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Mostrar el contenido correspondiente según el frameId
+            if (frameId === 'pacienteFrame') {
+                document.getElementById('pacienteContent').classList.add('active');
+            } else if (frameId === 'archivosFrame') {
+                document.getElementById('gestionArchivosContent').classList.add('active');
+            } else if (frameId === 'PrestamoFrame') {
+                document.getElementById('PrestamoContent').classList.add('active');
+            } else if (frameId === 'archivoFrame') {
+                document.getElementById('archivoContent').classList.add('active');
+            } else if (frameId === 'historiaClinicaFrame') {
+                document.getElementById('historialContent').classList.add('active');
+            }
+            
+            // Activar el item del menú clickeado
+            if (menuItem && menuItem.classList) {
+                menuItem.classList.add('active');
+            }
+            
+            // Actualizar el título de la página
+            document.getElementById('pageTitle').textContent = pageTitle;
+            
+            // Cargar la página en el iframe correspondiente
+            const frame = document.getElementById(frameId);
+            if (frame) {
+                frame.src = pageUrl;
+            }
+        }
+
+        // Cargar la primera página por defecto al iniciar
+        window.onload = function() {
+            const firstMenuItem = document.querySelector('.menu li');
+            if (firstMenuItem) {
+                firstMenuItem.click();
+            }
+        };
+    </script>
+</body>
+</html>

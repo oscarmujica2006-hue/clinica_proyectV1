@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Recuperar Contraseña - Clínica Odontológica UAP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/CSS/login_dise.css}">
+</head>
+
+<body>
+    <div class="login-content">
+        <div class="logo">
+            <h1>Recuperar Contraseña</h1>
+            <p>Ingresa tu correo electrónico para recibir un enlace de recuperación</p>
+        </div>
+        
+        <form class="formulario" id="formRecuperacion">
+            <div class="input-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" placeholder="tucorreo@ejemplo.com" required>
+            </div>
+            
+            <button type="submit" class="signin-btn">ENVIAR ENLACE DE RECUPERACIÓN</button>
+            
+            <div class="password-olvidada" style="text-align: center; margin-top: 20px;">
+                <a href="/">← Volver al inicio de sesión</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.getElementById('formRecuperacion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            
+            // Mostrar loading
+            Swal.fire({
+                title: 'Enviando...',
+                text: 'Por favor espera',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            fetch('/api/recuperacion-password/solicitar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: '✅ Correo Enviado',
+                        text: data.mensaje || 'Revisa tu correo para restablecer tu contraseña',
+                        icon: 'success',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#3b82f6'
+                    }).then(() => {
+                        window.location.href = '/';
+                    });
+                } else {
+                    Swal.fire({
+                        title: '❌ Error',
+                        text: data.mensaje || 'No se encontró un usuario con ese correo',
+                        icon: 'error',
+                        confirmButtonText: 'Intentar de nuevo',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: '❌ Error',
+                    text: 'Error en el servidor. Intenta más tarde.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

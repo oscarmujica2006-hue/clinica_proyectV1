@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Historia Clínica Odontológica U.A.P.</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ESTILOS GENERALES RENOVADOS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1E40AF;
+            --secondary: #059669;
+            --accent: #DC2626;
+            --light-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #F0F9FF 0%, #EFF6FF 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            background: white;
+        }
+
+        /* ENCABEZADO */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="white" fill-opacity="0.1"><path d="M30,30 Q50,10 70,30 T90,50 T70,70 T50,90 T30,70 T10,50 T30,30 Z"/></svg>');
+            background-size: 200px;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 6px rgba(0,0,0,0.4);
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .main-title i {
+            margin-right: 20px;
+            font-size: 2.8rem;
+            color: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .header-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #ffffff;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .patient-info-header {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.3);
+        }
+
+        /* SECCIÓN DE BÚSQUEDA */
+        .search-section {
+            background: var(--light-bg);
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-section h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .search-form .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-form label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .search-form input {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .search-btn {
+            padding: 14px 25px;
+            background: linear-gradient(135deg, var(--secondary), #047857);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            margin-top: 25px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .search-info {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 15px 0 25px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .search-results {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .results-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .result-item:hover {
+            background: var(--light-bg);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-section {
+            background: var(--light-bg);
+            padding: 30px;
+            margin-bottom: 0;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-title i {
+            color: var(--secondary);
+            font-size: 1.8rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            font-size: 1.1rem;
+            min-width: 20px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 14px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .form-group input:disabled,
+        .form-group select:disabled {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 12px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.1);
+        }
+
+        .checkbox-item input[type="radio"],
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            margin-bottom: 0;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .diseases-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .diseases-table th {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .diseases-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .diseases-table input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .validation-message {
+            font-size: 0.85rem;
+            color: var(--danger);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 220px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary), #047857);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6B7280, #4B5563);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .message-container {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 0;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-out;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .success {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .loading {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            background: white;
+            margin: 0;
+        }
+
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .field-instruction {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .field-instruction i {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 1.5rem;
+            }
+            
+            .main-title i {
+                font-size: 1.6rem;
+                margin-right: 10px;
+            }
+            
+            .header-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .search-section, .form-section {
+                padding: 20px 15px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .section-title i {
+                font-size: 1.3rem;
+            }
+            
+            .form-row {
+                gap: 15px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                min-width: 100%;
+            }
+            
+            .patient-info-header {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            color: white;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: scale(0.96);
+            background: linear-gradient(135deg, #B91C1C, #991B1B);
+            box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+        }
+
+        @media (hover: hover) {
+            .btn-danger:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .btn {
+                width: auto;
+                min-width: 200px;
+            }
+        }
+/* Estilo especial para Otros y Ninguno en la misma línea */
+.otros-ninguno-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+}
+
+.otros-ninguno-row .form-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.otros-ninguno-row .form-group:first-child {
+    flex: 2;
+    min-width: 120px;
+}
+
+.otros-ninguno-row .form-group:last-child {
+    flex: 1;
+    min-width: 90px;
+}
+
+/* Reducir el padding del input de Otros */
+.otros-ninguno-row .form-group:first-child input {
+    padding: 12px 12px;
+    font-size: 0.95rem;
+}
+
+/* Ajustar el checkbox de Ninguno */
+.otros-ninguno-row .form-group:last-child div {
+    min-height: 42px;
+    gap: 8px;
+}
+
+.otros-ninguno-row .form-group:last-child input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+        /* En móvil, mantenerlos en la misma línea */
+        @media (max-width: 768px) {
+            .otros-ninguno-row {
+                flex-wrap: nowrap; 
+            }
+            
+            .otros-ninguno-row .form-group:first-child {
+                flex: 2;
+                min-width: 0;
+            }
+            
+            .otros-ninguno-row .form-group:last-child {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .otros-ninguno-row .form-group:first-child input {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            .otros-ninguno-row .form-group label {
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group label i {
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group:last-child div {
+                min-height: 38px;
+                gap: 5px;
+            }
+            
+            .otros-ninguno-row .form-group:last-child input[type="checkbox"] {
+                width: 18px !important;
+                height: 18px !important;
+            }
+        }
+
+        /* Para pantallas muy pequeñas (menos de 400px) */
+        @media (max-width: 400px) {
+            .otros-ninguno-row {
+                gap: 8px;
+            }
+            
+            .otros-ninguno-row .form-group:first-child input {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group label {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- ENCABEZADO -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="main-title"><i class="fas fa-tooth"></i> HISTORIA CLÍNICA ODONTOLÓGICA U.A.P.</h1>
+                <p class="header-subtitle">Universidad Amazónica de Pando - Sistema Integral de Gestión Dental</p>
+                
+                <div class="patient-info-header">
+                    <div class="info-item">
+                        <div class="info-label">Número de Expediente Clínico:</div>
+                        <div class="info-value" id="headerExpediente">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">N.º de Historia Clínica:</div>
+                        <div class="info-value" id="headerHistoria">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">C.I.:</div>
+                        <div class="info-value" id="headerCI">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENSAJES DE ESTADO -->
+        <div class="message-container">
+            <div id="successMessage" class="message success">
+                <i class="fas fa-check-circle"></i>
+                <span></span>
+            </div>
+            <div id="errorMessage" class="message error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span></span>
+            </div>
+            <div id="loadingMessage" class="loading">
+                <i class="fas fa-spinner"></i> Cargando información...
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE BÚSQUEDA -->
+        <div class="search-section">
+            <h1><i class="fas fa-search"></i> BUSCAR PACIENTE</h1>
+            
+            <div class="search-form">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-user"></i> NOMBRE Y APELLIDOS</label>
+                    <input type="text" id="nombreBusqueda" placeholder="Ingrese nombre completo">
+                    <div class="field-instruction">
+                        <i class="fas fa-info-circle"></i> Complete al menos este campo o el de CI
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-id-card"></i> C.I.</label>
+                    <input type="text" id="ciBusqueda" placeholder="Ingrese CI">
+                    <div class="field-instruction">
+                        <i class="fas fa-info-circle"></i> Complete al menos este campo o el de nombre
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="search-btn" id="btnBuscar">
+                        <i class="fas fa-search"></i> BUSCAR PACIENTE
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-info">
+                <i class="fas fa-lightbulb"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
+            </div>
+            
+            <div class="search-results" id="resultadosBusqueda">
+                <div class="results-header">Resultados de la búsqueda</div>
+                <div class="results-list" id="listaResultados"></div>
+            </div>
+        </div>
+
+        <!-- DATOS DE IDENTIFICACIÓN -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-address-card"></i> DATOS DE IDENTIFICACIÓN DEL PACIENTE</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-file-medical"></i> N.º de Historia Clínica</label>
+                    <input type="text" id="numHistoriaClinica" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> C.I.</label>
+                    <input type="text" id="ciPaciente" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-folder"></i> N.º de Expediente Clínico</label>
+                    <input type="text" id="numExpediente" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DATOS PERSONALES -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-user-circle"></i> DATOS PERSONALES DEL PACIENTE</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-user"></i> Apellido Paterno</label>
+                    <input type="text" id="apellidoPaterno" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-user"></i> Apellido Materno</label>
+                    <input type="text" id="apellidoMaterno" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-signature"></i> Nombres</label>
+                    <input type="text" id="nombres" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-user-tag"></i> Nombre completo</label>
+                    <input type="text" id="personaInformacion">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-venus-mars"></i> Sexo</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="masculino" name="sexo" value="M">
+                            <label for="masculino">Masculino</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="femenino" name="sexo" value="F">
+                            <label for="femenino">Femenino</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Lugar y Fecha de Nacimiento</label>
+                    <input type="text" id="lugarNacimiento" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-briefcase"></i> Ocupación</label>
+                    <input type="text" id="ocupacion" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-heart"></i> Estado Civil</label>
+                    <input type="text" id="estadoCivil" readonly>
+                </div>
+
+
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-home"></i> Dirección</label>
+                    <input type="text" id="direccion" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-birthday-cake"></i> Edad</label>
+                    <input type="text" id="edadPaciente" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Teléfono o Celular</label>
+                    <input type="text" id="telefono" readonly>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-graduation-cap"></i> Grado de Instrucción</label>
+                    <input type="text" id="gradoInstruccion" readonly>
+                </div>
+            </div>
+        </div>
+        
+        <!-- PERSONA QUE BRINDA INFORMACIÓN -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-user-md"></i> PERSONA QUE BRINDA LA INFORMACIÓN</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Apellido Paterno</label>
+                    <input type="text" id="apellidoPaterno_persona" placeholder="Apellido paterno">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Apellido Materno</label>
+                    <input type="text" id="apellidoMaterno_persona" placeholder="Apellido materno">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-signature"></i> Nombres</label>
+                    <input type="text" id="nombres_pesona" placeholder="Nombres completos">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-home"></i> Dirección</label>
+                    <input type="text" id="direccion_persona" placeholder="Dirección completa">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-phone"></i> Teléfono o Celular</label>
+                    <input type="text" id="telefono_persona" placeholder="Número de contacto">
+                </div>
+            </div>
+        </div>        
+
+        <!-- ANTECEDENTES PATOLÓGICOS -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-heartbeat"></i> ANTECEDENTES PATOLÓGICOS</h2>
+            
+            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0;">
+                <table class="diseases-table" style="min-width: 500px;">
+                    <thead>
+                        <tr><th>Anemia</th><th>Cardiopatías</th><th>Enf. Gástricas</th><th>Hepatitis</th><th>Tuberculosis</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" id="anemia" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="cardiopatias" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="gastricas" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="hepatitis" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="tuberculosis" class="enfermedad-checkbox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 16px 0;">
+                <table class="diseases-table" style="min-width: 500px;">
+                    <thead>
+                        <tr><th>Asma</th><th>Diabetes Mel.</th><th>Epilepsia</th><th>Hipertensión</th><th>VIH</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" id="asma" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="diabetes" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="epilepsia" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="hipertension" class="enfermedad-checkbox"></td>
+                            <td><input type="checkbox" id="vih" class="enfermedad-checkbox"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="otros-ninguno-row">
+                <div class="form-group">
+                    <label><i class="fas fa-plus-circle"></i> Otros:</label>
+                    <input type="text" id="otrosEnfermedades" placeholder="Otras enfermedades">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-ban"></i> Ninguno:</label>
+                    <div style="display: flex; align-items: center; gap: 10px; min-height: 48px;">
+                        <input type="checkbox" id="ningunaEnfermedad" style="width: 22px; height: 22px; cursor: pointer;">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-allergy"></i> Alergias:</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="alergias-si" name="alergias" value="si"> SI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="alergias-no" name="alergias" value="no"> NO
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> Especifique la Alergia:</label>
+                    <input type="text" id="especifiqueAlergia" placeholder="Especifique alergia" disabled>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-baby"></i> Embarazo:</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="embarazo-si" name="embarazo" value="si"> SI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="embarazo-no" name="embarazo" value="no"> NO
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-week"></i> Semanas:</label>
+                    <input type="text" id="semanasEmbarazo" placeholder="Semanas de embarazo" disabled>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-prescription-bottle-alt"></i> ¿Está en tratamiento médico?</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="tratamiento-si" name="tratamientoMedico" value="si"> SI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="tratamiento-no" name="tratamientoMedico" value="no"> NO
+                        </label>
+                    </div>
+                    <input type="text" id="tratamientoMedico" placeholder="Especifique tratamiento">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-pills"></i> ¿Actualmente recibe algún medicamento?</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="medicamento-si" name="medicamentoActual" value="si"> SI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="medicamento-no" name="medicamentoActual" value="no"> NO
+                        </label>
+                    </div>
+                    <input type="text" id="medicamentoActual" placeholder="Especifique medicamentos">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-tint"></i> ¿Tuvo hemorragia después de una extracción dental?</label>
+                    <div class="checkbox-group" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="hemorragia-si" name="hemorragia" value="si"> SI
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="radio" id="hemorragia-no" name="hemorragia" value="no"> NO
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-info-circle"></i> Especifique:</label>
+                    <input type="text" id="especifiqueHemorragia" placeholder="Inmediata - Mediata" disabled>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXAMEN EXTRA ORAL -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-eye"></i> EXAMEN EXTRA ORAL</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-joint"></i> ATM:</label>
+                    <input type="text" id="atm" placeholder="Estado de la ATM">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-network-wired"></i> Ganglios linfáticos:</label>
+                    <input type="text" id="ganglios" placeholder="Estado de ganglios">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-lungs"></i> Respirador:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-nasal" name="respirador" value="nasal">
+                            <label for="resp-nasal">Nasal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-bucal" name="respirador" value="bucal">
+                            <label for="resp-bucal">Bucal</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="resp-buco-nasal" name="respirador" value="buco-nasal">
+                            <label for="resp-buco-nasal">Buco nasal</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-plus-circle"></i> Otros:</label>
+                    <input type="text" id="otrosRespiratorio" placeholder="Otras observaciones">
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXAMEN INTRA ORAL -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-teeth-open"></i> EXAMEN INTRA ORAL</h2>
+            <div class="form-row">
+                <div class="form-group"><label><i class="fas fa-smile"></i> Labios:</label><input type="text" id="labios" placeholder="Estado de labios"></div>
+                <div class="form-group"><label><i class="fas fa-comment-alt"></i> Lengua:</label><input type="text" id="lengua" placeholder="Estado de lengua"></div>
+                <div class="form-group"><label><i class="fas fa-archway"></i> Paladar:</label><input type="text" id="paladar" placeholder="Estado del paladar"></div>
+                <div class="form-group"><label><i class="fas fa-utensils"></i> Piso de la boca:</label><input type="text" id="pisoBoca" placeholder="Estado del piso bucal"></div>
+                <div class="form-group"><label><i class="fas fa-cheek"></i> Mucosa Yugal:</label><input type="text" id="mucosaYugal" placeholder="Estado mucosa yugal"></div>
+                <div class="form-group"><label><i class="fas fa-tooth"></i> Encías:</label><input type="text" id="encias" placeholder="Estado de encías"></div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-teeth"></i> Utiliza prótesis dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="protesis-si" name="protesis" value="si">
+                            <label for="protesis-si">SI</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="protesis-no" name="protesis" value="no">
+                            <label for="protesis-no">NO</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-cog"></i> Tipo de prótesis:</label>
+                    <input type="text" id="tipoProtesis" placeholder="Tipo de prótesis" disabled>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Tiempo de uso:</label>
+                    <input type="text" id="tiempoProtesis" placeholder="Tiempo de uso" disabled>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ANTECEDENTES BUCODENTALES -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-history"></i> ANTECEDENTES BUCODENTALES</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha de la última visita al odontólogo:</label>
+                    <input type="date" id="ultimaVisita">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-smoking"></i> HÁBITOS:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="checkbox" id="fuma" class="habito-checkbox"><label for="fuma">Fuma</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="bebe" class="habito-checkbox"><label for="bebe">Bebe</label></div>
+                        <div class="checkbox-item"><input type="checkbox" id="coca" class="habito-checkbox"><label for="coca">Coca</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-plus-circle"></i> Otros hábitos:</label>
+                    <input type="text" id="otrosHabitos" placeholder="Otros hábitos bucales">
+                </div>
+            </div>
+        </div>
+        
+        <!-- ANTECEDENTES DE HIGIENE ORAL -->
+        <div class="form-section">
+            <h2 class="section-title"><i class="fas fa-broom"></i> ANTECEDENTES DE HIGIENE ORAL</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-toothbrush"></i> Utiliza cepillo dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="radio" id="cepillo-si" name="cepillo" value="si"><label for="cepillo-si">SI</label></div>
+                        <div class="checkbox-item"><input type="radio" id="cepillo-no" name="cepillo" value="no"><label for="cepillo-no">NO</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-thread"></i> Utiliza hilo dental:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="radio" id="hilo-si" name="hilo" value="si"><label for="hilo-si">SI</label></div>
+                        <div class="checkbox-item"><input type="radio" id="hilo-no" name="hilo" value="no"><label for="hilo-no">NO</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-spray-can"></i> Utiliza enjuague bucal:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="radio" id="enjuague-si" name="enjuague" value="si"><label for="enjuague-si">SI</label></div>
+                        <div class="checkbox-item"><input type="radio" id="enjuague-no" name="enjuague" value="no"><label for="enjuague-no">NO</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-redo-alt"></i> Frecuencia del cepillado dental:</label>
+                    <input type="text" id="frecuenciaCepillado" placeholder="Ej: 3 veces al día">
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-tint"></i> Durante el cepillado dental le sangran las encías:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="radio" id="sangrado-si" name="sangrado" value="si"><label for="sangrado-si">SI</label></div>
+                        <div class="checkbox-item"><input type="radio" id="sangrado-no" name="sangrado" value="no"><label for="sangrado-no">NO</label></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="required-field"><i class="fas fa-shower"></i> HIGIENE BUCAL:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item"><input type="radio" id="higiene-buena" name="higiene" value="buena"><label for="higiene-buena">Buena</label></div>
+                        <div class="checkbox-item"><input type="radio" id="higiene-regular" name="higiene" value="regular"><label for="higiene-regular">Regular</label></div>
+                        <div class="checkbox-item"><input type="radio" id="higiene-mala" name="higiene" value="mala"><label for="higiene-mala">Mala</label></div>
+                    </div>
+                </div>
+                <div class="form-group full-width">
+                    <label><i class="fas fa-clipboard-list"></i> Observaciones:</label>
+                    <textarea rows="3" id="observacionesHigiene" placeholder="Observaciones adicionales sobre higiene oral"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botón de envío final -->
+        <div class="form-section">
+            <div class="form-row">
+                <div class="form-group" style="text-align: center; width: 100%;">
+                    <div class="button-group">
+                        <button type="button" class="btn btn-primary" id="enviarFormulario">
+                            <i class="fas fa-save"></i> GUARDAR
+                        </button>
+                        <button type="button" class="btn btn-danger" id="limpiarFormularioBtn">
+                            <i class="fas fa-trash-alt"></i> LIMPIAR
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECCIÓN PARA SUBIR FOTOS DESPUÉS DE GUARDAR ===== -->
+        <div class="form-section" id="seccionFotos" style="display: none;">
+            <h2 class="section-title"><i class="fas fa-images"></i> SUBIR FOTOS DEL ODONTOGRAMA</h2>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label><i class="fas fa-info-circle"></i> Consulta guardada exitosamente</label>
+                    <p>ID de Consulta: <strong id="consultaIdGuardada"></strong></p>
+                    <div class="field-instruction">
+                        <i class="fas fa-camera"></i> Ahora puede subir las fotos del odontograma
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group full-width">
+                    <label><i class="fas fa-camera"></i> Seleccionar fotos del odontograma:</label>
+                    <input type="file" id="fotosOdontograma" accept="image/*" multiple>
+                    <div class="field-instruction">
+                        <i class="fas fa-info-circle"></i> Puede seleccionar una o varias fotos (JPG, PNG, GIF)
+                    </div>
+                </div>
+            </div>
+            
+            <div id="previsualizacionFotos" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;"></div>
+            
+            <div class="form-row">
+                <div class="form-group" style="text-align: center;">
+                    <button type="button" class="btn btn-primary" id="btnSubirFotos" style="background: linear-gradient(135deg, #2196F3, #1976D2);">
+                        <i class="fas fa-upload"></i> SUBIR FOTOS
+                    </button>
+                </div>
+            </div>
+            
+            <div id="progresoFotos" style="display: none; margin-top: 15px;">
+                <div style="background-color: #E3F2FD; border-radius: 8px; padding: 10px;">
+                    <span id="progresoTexto">Subiendo fotos: 0/0</span>
+                    <div style="background-color: #BBDEFB; border-radius: 4px; height: 20px; margin-top: 8px;">
+                        <div id="barraProgreso" style="background-color: #2196F3; border-radius: 4px; height: 20px; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
+</body>
+</html>

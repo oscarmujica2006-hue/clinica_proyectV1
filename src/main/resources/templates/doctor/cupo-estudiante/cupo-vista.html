@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Estudiante por RU - Cupos por Materia</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <!-- Encabezado -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <i class="fas fa-user-graduate text-blue-600"></i> 
+            Consultar Cupos por Estudiante
+        </h1>
+        <p class="text-gray-600 mt-2">Ingrese el RU (código de estudiante) para ver sus materias y el progreso de tratamientos</p>
+    </div>
+
+    <!-- Formulario de búsqueda -->
+    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="flex flex-col md:flex-row gap-4 items-end">
+            <div class="flex-1">
+                <label class="block text-gray-700 font-semibold mb-2"><i class="fas fa-id-card"></i> RU del Estudiante</label>
+                <input type="text" id="ruInput" placeholder="Ej: 20210001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <button id="btnBuscar" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+        <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-700 rounded-lg"></div>
+    </div>
+
+    <!-- Información del estudiante -->
+    <div id="studentInfo" class="bg-white rounded-xl shadow-md p-6 mb-8 hidden">
+        <div class="flex justify-between items-start flex-wrap gap-4">
+            <div>
+                <h2 id="studentName" class="text-2xl font-bold text-gray-800">-</h2>
+                <p class="text-gray-600"><i class="fas fa-id-badge"></i> Código: <span id="studentCode">-</span></p>
+                <p class="text-gray-600"><i class="fas fa-envelope"></i> Email: <span id="studentEmail">-</span></p>
+            </div>
+            <div class="bg-blue-50 px-4 py-2 rounded-lg">
+                <span class="text-sm text-blue-700"><i class="fas fa-calendar-alt"></i> Última actualización: <span id="lastUpdate">--:--</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor de materias y cupos -->
+    <div id="materiasContainer" class="space-y-6">
+        <div class="text-center py-12 bg-white rounded-xl shadow-md">
+            <i class="fas fa-search text-5xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500">Ingrese un RU y presione Buscar para ver las materias y cupos del estudiante.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configuración de la API (ajusta si tu backend tiene prefijo)
+    const API_BASE = '';  // vacío si está en el mismo origen, ej: 'http://localhost:8080'
+
+    const ruInput = document.getElementById('ruInput');
+    const btnBuscar = document.getElementById('btnBuscar');
+    const errorDiv = document.getElementById('errorMessage');
+    const studentInfoDiv = document.getElementById('studentInfo');
+    const materiasContainer = document.getElementById('materiasContainer');
+
+    // Función para mostrar errores
+    function showError(message) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+    }
+
+    // Función para formatear precio (si se requiere)
+    function formatPrice(value) {
+        if (!value) return 'N/A';
+        return `$${Number(value).toLocaleString('es-CL')}`;
+    }
+
+    // Escapar HTML para evitar XSS
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Renderizar el progreso del estudiante
+    function renderizarProgreso(materiasData, estudiante) {
+        if (!materiasData || materiasData.length === 0) {
+            materiasContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                    <i class="fas fa-folder-open text-5xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500">El estudiante no está inscrito en ninguna materia activa o no tiene tratamientos asignados.</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        for (const materia of materiasData) {
+            // Calcular totales para la barra de progreso de la materia
+            let totalRequerido = 0;
+            let totalRealizado = 0;
+            materia.tratamientos.forEach(t => {
+                totalRequerido += t.requerido;
+                totalRealizado += t.realizado;
+            });
+            const porcentajeMateria = totalRequerido === 0 ? 0 : (totalRealizado / totalRequerido) * 100;
+
+            html += `
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover transition">
+                    <div class="border-l-4 border-blue-600 p-5">
+                        <div class="flex flex-wrap justify-between items-center gap-3 mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">${escapeHtml(materia.nombreMateria)}</h3>
+                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                ${totalRealizado}/${totalRequerido} tratamientos completados
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                            <div class="bg-blue-600 h-2.5 rounded-full progress-bar" style="width: ${porcentajeMateria}%"></div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left">Tratamiento</th>
+                                        <th class="px-4 py-2 text-center">Requerido</th>
+                                        <th class="px-4 py-2 text-center">Realizado</th>
+                                        <th class="px-4 py-2 text-center">Faltante</th>
+                                        <th class="px-4 py-2 text-center">Progreso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+            `;
+            for (const trat of materia.tratamientos) {
+                const faltante = trat.requerido - trat.realizado;
+                const porcentajeTrat = trat.requerido === 0 ? 0 : (trat.realizado / trat.requerido) * 100;
+                html += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="px-4 py-2 font-medium">${escapeHtml(trat.nombreTratamiento)}</td>
+                        <td class="px-4 py-2 text-center">${trat.requerido}</td>
+                        <td class="px-4 py-2 text-center">${trat.realizado}</td>
+                        <td class="px-4 py-2 text-center font-bold ${faltante > 0 ? 'text-red-600' : 'text-green-600'}">${faltante}</td>
+                        <td class="px-4 py-2 text-center">
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: ${porcentajeTrat}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        materiasContainer.innerHTML = html;
+    }
+
+    // Cargar datos del estudiante por RU (código)
+    async function buscarEstudiantePorRU(ru) {
+        try {
+            // 1. Buscar estudiante por código (endpoint /api/estudiantes/buscar-por-codigo?codigo=xxx)
+            const responseEst = await fetch(`${API_BASE}/api/estudiantes/buscar-por-codigo?codigo=${encodeURIComponent(ru)}`);
+            if (!responseEst.ok) throw new Error('Estudiante no encontrado');
+            const estudiantes = await responseEst.json();
+            if (!estudiantes || estudiantes.length === 0) throw new Error('No existe un estudiante con ese RU');
+            
+            const estudiante = estudiantes[0];  // tomamos el primero
+            const estudianteId = estudiante.idEstudiante;
+
+            // Mostrar información del estudiante
+            document.getElementById('studentName').innerHTML = 
+                `${escapeHtml(estudiante.usuario?.persona?.nombre || '')} ${escapeHtml(estudiante.usuario?.persona?.apellidoPaterno || '')}`.trim() || 'Nombre no disponible';
+            document.getElementById('studentCode').textContent = estudiante.codigoEstudiante || ru;
+            document.getElementById('studentEmail').textContent = estudiante.usuario?.nombreUsuario || 'No registrado';
+            studentInfoDiv.classList.remove('hidden');
+
+            // 2. Obtener progreso del estudiante (materias con tratamientos)
+            const responseProgreso = await fetch(`${API_BASE}/api/estudiantes/${estudianteId}/progreso`);
+            if (!responseProgreso.ok) throw new Error('Error al cargar el progreso del estudiante');
+            const progreso = await responseProgreso.json();
+            
+            renderizarProgreso(progreso, estudiante);
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+        } catch (error) {
+            console.error(error);
+            showError(error.message);
+            studentInfoDiv.classList.add('hidden');
+            materiasContainer.innerHTML = `
+                <div class="bg-white rounded-xl shadow-md p-8 text-center">
+                    <i class="fas fa-exclamation-triangle text-5xl text-red-300 mb-3"></i>
+                    <p class="text-red-600">${escapeHtml(error.message)}</p>
+                </div>`;
+        }
+    }
+
+    // Evento del botón buscar
+    btnBuscar.addEventListener('click', () => {
+        const ru = ruInput.value.trim();
+        if (!ru) {
+            showError('Por favor ingrese un RU válido');
+            return;
+        }
+        // Mostrar loading
+        materiasContainer.innerHTML = `<div class="text-center py-12 bg-white rounded-xl shadow-md"><i class="fas fa-spinner fa-spin text-3xl text-blue-500"></i><p class="mt-2 text-gray-500">Cargando...</p></div>`;
+        studentInfoDiv.classList.add('hidden');
+        buscarEstudiantePorRU(ru);
+    });
+
+    // Permitir buscar con Enter
+    ruInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnBuscar.click();
+    });
+</script>
+</body>
+</html>

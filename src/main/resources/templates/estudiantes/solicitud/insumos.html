@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Insumos Odontológicos</title>
+    <link rel="stylesheet" th:href="@{/Estudiantes_Static/static_Insumos/Css_Insumos/insumo_style.css}">
+</head>
+<body>
+    <div class="container">
+        <!-- Imagen de encabezado completa -->
+        <div class="header-image">
+            <div class="header-content">
+            </div>
+        </div>
+        <div class="header-content">
+            <div class="document-title">Solicitud de Insumos </div>
+        </div>
+        
+        <form id="dentalRequestForm">
+            <!-- Sección de búsqueda de consultas -->
+            <div class="form-section">
+                <div class="section-title">BUSCADOR DE CONSENTIMIENTO</div>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Ingrese número de ID del consentimiento">
+                    <button type="button" class="search-btn" id="searchBtn">Buscar</button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="section-title">DATOS DEL ESTUDIANTE Y PACIENTE</div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="estudiante">ESTUDIANTE</label>
+                        <input type="text" id="estudiante" name="estudiante" placeholder="Ingrese nombre del estudiante">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="clinica">Nº CLÍNICA Y TURNO</label>
+                        <input type="text" id="clinica" name="clinica" placeholder="Ej: Clínica 2">
+                    </div>
+                    <div class="form-field">
+                        <label for="historiaClinica">Nº DE H.C.</label>
+                        <input type="text" id="historiaClinica" name="historiaClinica" placeholder="Número de historia clínica">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="paciente">APELLIDO Y NOMBRE DEL PACIENTE</label>
+                        <input type="text" id="paciente" name="paciente" placeholder="Ingrese nombre completo del paciente">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="section-title">INFORMACIÓN DEL TRATAMIENTO</div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="tratamiento">TRATAMIENTO A REALIZAR</label>
+                        <input type="text" id="tratamiento" name="tratamiento" placeholder="Ej: Prótesis total superior">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="diente">Nº DE DIENTE</label>
+                        <input type="text" id="diente" name="diente" placeholder="Número de diente">
+                    </div>
+                    <div class="form-field">
+                        <label for="fecha">FECHA</label>
+                        <input type="date" id="fecha" name="fecha">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="insumos">SELECCIONAR INSUMOS</label>
+                        
+                        <div class="insumos-selector">
+                            <select id="tipoInsumo">
+                                <option value="">Seleccione tipo de insumo</option>
+                                <option value="materiales">Materiales de Impresión</option>
+                                <option value="restauracion">Materiales de Restauración</option>
+                                <option value="endodoncia">Materiales de Endodoncia</option>
+                                <option value="protesis">Materiales de Prótesis</option>
+                                <option value="anestesia">Anestésicos</option>
+                                <option value="otros">Otros Insumos</option>
+                            </select>
+                            <button type="button" class="add-btn" id="addInsumoBtn">Agregar</button>
+                        </div>
+                        
+                        <div class="insumos-list" id="insumosList">
+                            <!-- Los insumos se cargarán aquí dinámicamente -->
+                        </div>
+                        
+                        <div class="selected-insumos">
+                            <label>INSUMOS SELECCIONADOS:</label>
+                            <div id="selectedInsumosContainer">
+                                <!-- Los insumos seleccionados aparecerán aquí -->
+                            </div>
+                        </div>
+                        
+                        <textarea id="insumos" name="insumos" rows="4" placeholder="Lista de insumos seleccionados" style="display:none;"></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="button-container">
+                <button type="submit" class="submit-btn">Enviar Solicitud</button>
+                <button type="reset" class="reset-btn">Limpiar Formulario</button>
+            </div>
+        </form>
+        
+        <div class="footer">
+            <div class="code">
+                Código Privado: Edificio
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de ejemplo para simular una base de datos de consultas
+        const consultasDB = [
+            {
+                historiaClinica: "HC-001",
+                estudiante: "María González López",
+                paciente: "Carlos Rodríguez Pérez",
+                clinica: "Clínica 2 - Turno Mañana"
+            },
+            {
+                historiaClinica: "HC-002",
+                estudiante: "José Martínez Silva",
+                paciente: "Ana García Fernández",
+                clinica: "Clínica 1 - Turno Tarde"
+            },
+            {
+                historiaClinica: "HC-003",
+                estudiante: "Laura Sánchez Díaz",
+                paciente: "Miguel Torres Ramírez",
+                clinica: "Clínica 3 - Turno Mañana"
+            }
+        ];
+
+        // Datos de insumos por categoría
+        const insumosDB = {
+            materiales: [
+                "Alginato - Caja x 500g",
+                "Silicona por adición - Cartucho",
+                "Silicona por condensación - Cartucho",
+                "Yeso tipo III - Bolsa x 5kg",
+                "Yeso tipo IV - Bolsa x 5kg"
+            ],
+            restauracion: [
+                "Resina compuesta - Universal",
+                "Resina compuesta - Anterior",
+                "Resina compuesta - Posterior",
+                "Ionómero de vidrio - Tipo I",
+                "Ionómero de vidrio - Tipo II",
+                "Cementos resinosos"
+            ],
+            endodoncia: [
+                "Limas Hedstrom - Juego completo",
+                "Limas K - Juego completo",
+                "Gutapercha - Conos x 100",
+                "Cemento de obturación - Tubo",
+                "Irrigantes - Clorhexidina 2%",
+                "Irrigantes - Hipoclorito de sodio"
+            ],
+            protesis: [
+                "Acrílico para base - Rosa",
+                "Acrílico para base - Transparente",
+                "Dientes acrílicos anteriores - Juego",
+                "Dientes acrílicos posteriores - Juego",
+                "Cera de modelar - Caja",
+                "Cera para mordida - Barra"
+            ],
+            anestesia: [
+                "Lidocaína 2% - Carpule x 50",
+                "Articaína 4% - Carpule x 50",
+                "Mepivacaína 3% - Carpule x 50",
+                "Agujas 27G - Caja x 100",
+                "Agujas 30G - Caja x 100"
+            ],
+            otros: [
+                "Guantes de látex - Talle M x 100",
+                "Guantes de nitrilo - Talle M x 100",
+                "Mascarillas - Caja x 50",
+                "Gorros desechables - Caja x 100",
+                "Cubrecalzado - Caja x 100"
+            ]
+        };
+
+        // Elementos del DOM
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const estudianteInput = document.getElementById('estudiante');
+        const clinicaInput = document.getElementById('clinica');
+        const historiaClinicaInput = document.getElementById('historiaClinica');
+        const pacienteInput = document.getElementById('paciente');
+        const tipoInsumoSelect = document.getElementById('tipoInsumo');
+        const insumosList = document.getElementById('insumosList');
+        const addInsumoBtn = document.getElementById('addInsumoBtn');
+        const selectedInsumosContainer = document.getElementById('selectedInsumosContainer');
+        const insumosTextarea = document.getElementById('insumos');
+
+        // Insumos seleccionados (ahora con cantidad)
+        let selectedInsumos = [];
+
+        // Función para buscar consulta
+        function buscarConsulta() {
+            const searchValue = searchInput.value.trim().toLowerCase();
+            
+            if (!searchValue) {
+                alert('Por favor, ingrese un número de historia clínica o nombre del paciente');
+                return;
+            }
+            
+            // Buscar en la base de datos simulada
+            const consultaEncontrada = consultasDB.find(consulta => 
+                consulta.historiaClinica.toLowerCase() === searchValue || 
+                consulta.paciente.toLowerCase().includes(searchValue)
+            );
+            
+            if (consultaEncontrada) {
+                // Llenar los campos del formulario
+                estudianteInput.value = consultaEncontrada.estudiante;
+                clinicaInput.value = consultaEncontrada.clinica;
+                historiaClinicaInput.value = consultaEncontrada.historiaClinica;
+                pacienteInput.value = consultaEncontrada.paciente;
+                
+                alert('Consulta encontrada. Los campos se han llenado automáticamente.');
+            } else {
+                alert('No se encontró ninguna consulta con esos datos.');
+            }
+        }
+
+        // Función para cargar insumos según el tipo seleccionado
+        function cargarInsumos() {
+            const tipo = tipoInsumoSelect.value;
+            insumosList.innerHTML = '';
+            
+            if (tipo && insumosDB[tipo]) {
+                insumosDB[tipo].forEach(insumo => {
+                    const item = document.createElement('div');
+                    item.className = 'insumo-item';
+                    
+                    const insumoInfo = document.createElement('div');
+                    insumoInfo.textContent = insumo;
+                    
+                    const cantidadContainer = document.createElement('div');
+                    cantidadContainer.className = 'insumo-cantidad';
+                    
+                    const menosBtn = document.createElement('button');
+                    menosBtn.type = 'button'; // Importante: especificar tipo button
+                    menosBtn.className = 'cantidad-btn';
+                    menosBtn.textContent = '-';
+                    menosBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Detener la propagación del evento
+                        const input = this.nextElementSibling;
+                        if (parseInt(input.value) > 1) {
+                            input.value = parseInt(input.value) - 1;
+                        }
+                    });
+                    
+                    const cantidadInput = document.createElement('input');
+                    cantidadInput.type = 'number';
+                    cantidadInput.className = 'cantidad-input';
+                    cantidadInput.value = '1';
+                    cantidadInput.min = '1';
+                    
+                    const masBtn = document.createElement('button');
+                    masBtn.type = 'button'; // Importante: especificar tipo button
+                    masBtn.className = 'cantidad-btn';
+                    masBtn.textContent = '+';
+                    masBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Detener la propagación del evento
+                        const input = this.previousElementSibling;
+                        input.value = parseInt(input.value) + 1;
+                    });
+                    
+                    cantidadContainer.appendChild(menosBtn);
+                    cantidadContainer.appendChild(cantidadInput);
+                    cantidadContainer.appendChild(masBtn);
+                    
+                    item.appendChild(insumoInfo);
+                    item.appendChild(cantidadContainer);
+                    
+                    // Solo seleccionar/deseleccionar cuando se hace clic en el área del texto del insumo
+                    insumoInfo.addEventListener('click', function() {
+                        item.classList.toggle('selected');
+                    });
+                    
+                    insumosList.appendChild(item);
+                });
+            }
+        }
+
+        // Función para agregar insumos seleccionados
+        function agregarInsumos() {
+            const tipo = tipoInsumoSelect.value;
+            
+            if (!tipo) {
+                alert('Por favor, seleccione un tipo de insumo');
+                return;
+            }
+            
+            const insumosSeleccionados = Array.from(insumosList.querySelectorAll('.selected'));
+            
+            if (insumosSeleccionados.length === 0) {
+                alert('Por favor, seleccione al menos un insumo de la lista');
+                return;
+            }
+            
+            insumosSeleccionados.forEach(item => {
+                const insumo = item.querySelector('div').textContent;
+                const cantidadInput = item.querySelector('.cantidad-input');
+                const cantidad = parseInt(cantidadInput.value) || 1;
+                
+                // Buscar si ya existe el insumo en la lista
+                const insumoExistente = selectedInsumos.find(item => item.nombre === insumo);
+                
+                if (insumoExistente) {
+                    // Si ya existe, sumar la cantidad
+                    insumoExistente.cantidad += cantidad;
+                    
+                    // Actualizar la cantidad en la lista visual
+                    const existingElement = document.querySelector(`[data-insumo="${insumo}"]`);
+                    if (existingElement) {
+                        const cantidadElement = existingElement.querySelector('.selected-cantidad');
+                        cantidadElement.textContent = `Cantidad: ${insumoExistente.cantidad}`;
+                    }
+                } else {
+                    // Si no existe, agregar nuevo insumo
+                    selectedInsumos.push({
+                        nombre: insumo,
+                        cantidad: cantidad
+                    });
+                    
+                    // Crear elemento en la lista de seleccionados
+                    const selectedItem = document.createElement('div');
+                    selectedItem.className = 'selected-item';
+                    selectedItem.setAttribute('data-insumo', insumo);
+                    
+                    const selectedInfo = document.createElement('div');
+                    selectedInfo.className = 'selected-info';
+                    
+                    const insumoText = document.createElement('span');
+                    insumoText.textContent = insumo;
+                    
+                    const cantidadText = document.createElement('span');
+                    cantidadText.className = 'selected-cantidad';
+                    cantidadText.textContent = `Cantidad: ${cantidad}`;
+                    
+                    selectedInfo.appendChild(insumoText);
+                    selectedInfo.appendChild(cantidadText);
+                    
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button'; // Importante: especificar tipo button
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.textContent = 'X';
+                    removeBtn.addEventListener('click', function() {
+                        // Eliminar insumo de la lista
+                        const index = selectedInsumos.findIndex(item => item.nombre === insumo);
+                        if (index > -1) {
+                            selectedInsumos.splice(index, 1);
+                        }
+                        selectedItem.remove();
+                        actualizarTextareaInsumos();
+                    });
+                    
+                    selectedItem.appendChild(selectedInfo);
+                    selectedItem.appendChild(removeBtn);
+                    selectedInsumosContainer.appendChild(selectedItem);
+                }
+                
+                // Quitar la selección visual y resetear cantidad
+                item.classList.remove('selected');
+                cantidadInput.value = '1';
+            });
+            
+            actualizarTextareaInsumos();
+        }
+
+        // Función para actualizar el textarea con los insumos seleccionados
+        function actualizarTextareaInsumos() {
+            const textoInsumos = selectedInsumos.map(insumo => 
+                `${insumo.nombre} - Cantidad: ${insumo.cantidad}`
+            ).join('\n');
+            
+            insumosTextarea.value = textoInsumos;
+        }
+
+        // Event Listeners
+        searchBtn.addEventListener('click', buscarConsulta);
+        tipoInsumoSelect.addEventListener('change', cargarInsumos);
+        addInsumoBtn.addEventListener('click', agregarInsumos);
+
+        // Establecer la fecha actual como valor por defecto
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // Manejar el envío del formulario
+        document.getElementById('dentalRequestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (selectedInsumos.length === 0) {
+                alert('Por favor, seleccione al menos un insumo antes de enviar la solicitud.');
+                return;
+            }
+            
+            alert('Solicitud enviada correctamente. Será revisada por el departamento correspondiente.');
+        });
+
+        // Inicializar la lista de insumos si hay un tipo seleccionado por defecto
+        cargarInsumos();
+    </script>
+</body>
+</html>

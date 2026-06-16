@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+  <title>Gestión Clínica</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: linear-gradient(145deg, #8B0000 0%, #0A2F44 100%); font-family: 'Inter', sans-serif; min-height: 100vh; width: 100%; position: relative; overflow-x: hidden; }
+    body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(circle at 10% 20%, rgba(220, 38, 38, 0.08) 2%, transparent 2.5%), radial-gradient(circle at 85% 70%, rgba(30, 110, 168, 0.08) 1.8%, transparent 2%); background-size: 45px 45px, 38px 38px; pointer-events: none; z-index: 0; }
+    .fullscreen-dashboard { width: 100%; min-height: 100vh; background: linear-gradient(135deg, #FFFFFF 0%, #FEF5F5 100%); position: relative; z-index: 2; display: flex; flex-direction: column; box-shadow: none; border-radius: 0; }
+    .fullscreen-dashboard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #DC2626, #1E6EA8, #DC2626, #1E6EA8); z-index: 10; }
+    .dashboard-content { flex: 1; padding: 24px 32px 20px 32px; background: transparent; overflow-y: auto; scrollbar-width: thin; max-height: calc(100vh - 80px); }
+    .dashboard-content::-webkit-scrollbar { width: 6px; }
+    .dashboard-content::-webkit-scrollbar-track { background: #F0E6E6; border-radius: 10px; }
+    .dashboard-content::-webkit-scrollbar-thumb { background: #DC2626; border-radius: 10px; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; background: linear-gradient(115deg, rgba(220,38,38,0.08), rgba(30,110,168,0.08)); padding: 18px 24px; border-radius: 48px; backdrop-filter: blur(2px); }
+    .greeting h2 { font-size: 32px; font-weight: 800; font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #DC2626, #155E8A); background-clip: text; -webkit-background-clip: text; color: transparent; letter-spacing: -0.5px; }
+    .profile-icon { background: linear-gradient(145deg, #DC2626, #1E6EA8); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 35px; box-shadow: 0 8px 18px rgba(220,38,38,0.4); border: 2px solid white; cursor: pointer; transition: transform 0.2s; }
+    .profile-icon:hover { transform: scale(1.05); }
+    .profile-icon i { font-size: 32px; color: white; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .feature-card { border-radius: 32px; padding: 28px 16px; text-align: center; transition: all 0.25s ease; cursor: pointer; position: relative; overflow: hidden; backdrop-filter: blur(4px); box-shadow: 0 15px 30px -12px rgba(0, 0, 0, 0.25); }
+    .feature-card:active { transform: scale(0.97); }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3); }
+    .card-emergency { background: linear-gradient(145deg, #DC2626, #B91C1C); border: 1px solid #FF6B6B; }
+    .card-emergency .card-icon { background: rgba(255,255,255,0.25); }
+    .card-emergency .card-icon i { color: #FFDCDC; }
+    .card-emergency h3, .card-emergency p { color: white; }
+    .card-appointments { background: linear-gradient(145deg, #155E8A, #0E4A6E); border: 1px solid #4A9FD8; }
+    .card-appointments .card-icon { background: rgba(255,255,255,0.2); }
+    .card-appointments .card-icon i { color: #C4E6FF; }
+    .card-appointments h3, .card-appointments p { color: white; }
+    .card-pharmacy { background: linear-gradient(135deg, #C53030, #1C6A9E); border: 1px solid #F87171; }
+    .card-pharmacy .card-icon { background: rgba(255,215,215,0.25); }
+    .card-pharmacy .card-icon i { color: #FFE0E0; }
+    .card-pharmacy h3, .card-pharmacy p { color: white; }
+    .card-doctriod { background: linear-gradient(145deg, #A51C1C, #10608A); border: 2px solid rgba(255,255,200,0.5); }
+    .card-doctriod .card-icon { background: radial-gradient(circle, rgba(255,255,240,0.3), rgba(220,38,38,0.2)); }
+    .card-doctriod .card-icon i { color: #FFE8B6; font-size: 36px; }
+    .card-doctriod h3, .card-doctriod p { color: #FFF6E0; }
+    .card-icon { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50px; margin: 0 auto 18px auto; }
+    .card-icon i { font-size: 38px; }
+    .feature-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 8px; font-family: 'Poppins', sans-serif; }
+    .feature-card p { font-size: 13px; font-weight: 600; opacity: 0.9; }
+    
+    /* === CONTENEDOR DEL IFRAME OPTIMIZADO SOLO PARA LA VISTA DE CUPOS === */
+    .iframe-container { 
+      margin-top: 20px; 
+      border-radius: 24px; 
+      overflow: hidden; 
+      background: white; 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+      display: none;
+      /* Altura optimizada para móvil - ocupa más espacio vertical */
+      height: calc(100vh - 160px);
+    }
+    .iframe-container iframe { 
+      width: 100%; 
+      height: 100%; 
+      border: none; 
+      display: block;
+    }
+    
+    .profile-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+    .profile-modal.active { display: flex; }
+    .profile-modal-content { background: white; border-radius: 32px; width: 90%; max-width: 450px; padding: 30px; text-align: center; position: relative; animation: modalFadeIn 0.3s ease; }
+    @keyframes modalFadeIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #DC2626; }
+    .profile-avatar { width: 100px; height: 100px; background: linear-gradient(145deg, #DC2626, #1E6EA8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .profile-avatar i { font-size: 50px; color: white; }
+    .profile-info { margin: 20px 0; text-align: left; max-height: 400px; overflow-y: auto; }
+    .profile-info p { padding: 8px 0; border-bottom: 1px solid #eee; font-weight: 500; }
+    .profile-info i { width: 30px; color: #DC2626; }
+    .btn-cerrar { background: linear-gradient(135deg, #DC2626, #1E6EA8); color: white; border: none; padding: 12px 24px; border-radius: 40px; font-weight: 700; cursor: pointer; margin-top: 15px; }
+    
+    /* === NAVEGACIÓN ORIGINAL RESTAURADA === */
+    .bottom-nav { 
+      background: linear-gradient(90deg, #B91C1C, #0F567D); 
+      display: flex; 
+      justify-content: space-around; 
+      padding: 16px 32px 24px; 
+      border-top: 3px solid #FFD966; 
+      width: 100%; 
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+    }
+    .nav-item { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 6px; 
+      font-size: 14px; 
+      color: #FFECB3; 
+      font-weight: 700; 
+      transition: 0.15s; 
+      cursor: pointer; 
+      text-shadow: 0 1px 1px rgba(0,0,0,0.3); 
+    }
+    .nav-item i { font-size: 28px; color: white; }
+    .nav-item.active { color: #FFD966; transform: translateY(-4px); }
+    .nav-item.active i { color: #FFD966; text-shadow: 0 0 5px #FF8C00; }
+    
+    hr { margin: 20px 0; border: 0; height: 3px; background: linear-gradient(90deg, #DC2626, #1E6EA8, #DC2626); border-radius: 3px; }
+    
+    /* === RESPONSIVE - SOLO SE AJUSTA LA ALTURA DEL IFRAME === */
+    @media (max-width: 768px) {
+      .dashboard-content { padding: 20px 20px 16px; }
+      .greeting h2 { font-size: 24px; }
+      .card-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+      .feature-card { padding: 20px 12px; }
+      .iframe-container { 
+        height: calc(100vh - 140px);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .iframe-container { 
+        height: calc(100vh - 130px);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="fullscreen-dashboard">
+  
+  <div class="dashboard-content">
+    <div class="header-row">
+      <div class="greeting">
+        <h2 id="pageTitle">Cargando...</h2>
+      </div>
+      <div class="profile-icon" onclick="openProfileModal()">
+        <i class="fas fa-user-shield"></i>
+      </div>
+    </div>
+
+    <!-- Tarjetas con diseño ORIGINAL restaurado -->
+    <div id="homeCards" class="card-grid">
+      <div class="feature-card card-appointments" onclick="cargarNuevaConsulta()">
+        <div class="card-icon"><i class="fas fa-file-signature"></i></div>
+        <h3>Nueva Consulta</h3>
+        <p>Atención clínica</p>
+      </div>
+      <div class="feature-card card-pharmacy" onclick="cargarConsentimiento()">
+        <div class="card-icon"><i class="fas fa-file-contract"></i></div>
+        <h3>Consentimiento</h3>
+        <p>Documentos legales</p>
+      </div>
+      <div class="feature-card card-doctriod" onclick="cargarSeguimiento()">
+        <div class="card-icon"><i class="fas fa-edit"></i></div>
+        <h3>Seguimiento</h3>
+        <p>Evolución clínica</p>
+      </div>
+      <div class="feature-card card-emergency" onclick="cargarSolicitudHerramienta()">
+        <div class="card-icon"><i class="fas fa-address-card"></i></div>
+        <h3>Solicitud Herramienta</h3>
+        <p>Nuevo ingreso</p>
+      </div>
+    </div>
+
+    <!-- Contenedor del iframe - optimizado para cupos -->
+    <div id="iframeContainer" class="iframe-container">
+      <iframe id="cuposFrame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- Navegación ORIGINAL restaurada -->
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="showHome()">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </div>
+    <div class="nav-item" onclick="cargarCupos()">
+      <i class="fas fa-table"></i>
+      <span>Cupos</span>
+    </div>
+    <div class="nav-item" onclick="openProfileModal()">
+      <i class="fas fa-user-md"></i>
+      <span>Perfil</span>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DEL PERFIL -->
+<div id="profileModal" class="profile-modal">
+  <div class="profile-modal-content">
+    <span class="close-modal" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-avatar">
+      <i class="fas fa-user-graduate"></i>
+    </div>
+    <h3 style="color: #DC2626; font-size: 24px; font-weight: 800;">Mi Perfil</h3>
+    <div id="modalProfileInfo" class="profile-info">
+      <p><i class="fas fa-user"></i> <strong>Nombre:</strong> <span id="modalNombre">---</span></p>
+      <p><i class="fas fa-id-card"></i> <strong>Código:</strong> <span id="modalCodigo">---</span></p>
+      <p><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="modalEmail">---</span></p>
+    </div>
+    <button class="btn-cerrar" onclick="closeProfileModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  // ============================================
+  // ⭐ Cargar datos guardados en el LOGIN
+  // ============================================
+  
+  function cargarDatosPerfil() {
+    const nombreEstudiante = sessionStorage.getItem('nombreUsuario');
+    const codigoEstudiante = sessionStorage.getItem('codigoEstudiante');
+    const email = sessionStorage.getItem('email');
+    
+    // Mostrar el nombre en el título
+    if (nombreEstudiante && nombreEstudiante !== 'null') {
+      document.getElementById('pageTitle').innerHTML = nombreEstudiante;
+    } else {
+      document.getElementById('pageTitle').innerHTML = 'ESTUDIANTE';
+    }
+    
+    // Mostrar la información en el modal
+    document.getElementById('modalNombre').innerText = nombreEstudiante || '---';
+    document.getElementById('modalCodigo').innerText = codigoEstudiante || '---';
+    document.getElementById('modalEmail').innerText = email || '---';
+  }
+  
+  function openProfileModal() {
+    cargarDatosPerfil();
+    document.getElementById('profileModal').classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[2].classList.add('active');
+  }
+  
+  function closeProfileModal() {
+    document.getElementById('profileModal').classList.remove('active');
+  }
+  
+  function showHome() {
+    document.getElementById('homeCards').style.display = 'grid';
+    document.getElementById('iframeContainer').style.display = 'none';
+    const nombre = sessionStorage.getItem('nombreUsuario');
+    document.getElementById('pageTitle').innerHTML = nombre || 'ESTUDIANTE';
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[0].classList.add('active');
+    // Limpiar el iframe cuando se regresa a home
+    document.getElementById('cuposFrame').src = 'about:blank';
+  }
+  
+  function cargarCupos() {
+    document.getElementById('homeCards').style.display = 'none';
+    const iframeContainer = document.getElementById('iframeContainer');
+    iframeContainer.style.display = 'block';
+    const frame = document.getElementById('cuposFrame');
+    frame.src = '/estudiantes/cupos-progreso/cupo-vista';
+    document.getElementById('pageTitle').innerHTML = 'Cupos Disponibles';
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[1].classList.add('active');
+  }
+  
+  function cargarSolicitudHerramienta() { window.location.href = 'estudiantes/Solicitud-Heramienta/herramienta-vista'; }
+  function cargarNuevaConsulta() { window.location.href = '/estudiantes/Revision/revision'; }
+  function cargarConsentimiento() { window.location.href = '/estudiantes/consentimiento/consentimiento-vista'; }
+  function cargarSeguimiento() { window.location.href = '/estudiantes/seguimiento/seguimiento-vista'; }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('profileModal');
+    if (event.target === modal) closeProfileModal();
+  }
+  
+  // Cargar datos al iniciar
+  cargarDatosPerfil();
+</script>
+</body>
+</html>

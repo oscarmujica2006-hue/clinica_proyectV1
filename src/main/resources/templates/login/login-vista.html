@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Formulario CSS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/CSS/login_dise.css}">
+    <link rel="stylesheet" href="../../static/CSS/login_dise.css">
+</head>
+<body>
+    <div class="login-content">
+        <div class="logo">
+            <h1>Clinica Odontologica UAP</h1>
+        </div>
+        
+        <form class="formulario">
+            <div class="input-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" placeholder="Ingresa tu nombre">
+            </div>
+            
+            <div class="input-group">
+                <label for="contraseña">Contraseña</label>
+                <input type="password" id="contraseña" placeholder="Ingresa tu contraseña">
+            </div>
+            
+            <div class="password-olvidada">
+                <a href="/solicitud-password/vista-solicitud">¿Olvidaste tu contraseña?</a>
+            </div>
+            <button type="submit" class="signin-btn">INICIAR SESIÓN</button>
+        </form>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.querySelector('.formulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value;
+            const contraseña = document.getElementById('contraseña').value;
+            
+            fetch('/autenticar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    usuario: usuario,
+                    contraseña: contraseña
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Guardar datos comunes en sessionStorage
+                    sessionStorage.setItem('idUsuario', data.idUsuario);
+                    sessionStorage.setItem('nombreUsuario', data.nombre + ' ' + data.apellidos);
+                    sessionStorage.setItem('tipoUsuario', data.tipoUsuario);
+                    
+                    console.log('✅ Login exitoso - Tipo:', data.tipoUsuario);
+                    console.log('📝 ID específico:', data.idEspecifico);
+                    
+                    // REDIRECCIÓN SEGÚN EL TIPO DE USUARIO
+                    if (data.tipoUsuario === 'ESTUDIANTE') {
+                        // Guardar datos específicos de estudiante
+                        sessionStorage.setItem('idEstudiante', data.idEspecifico);
+                        sessionStorage.setItem('semestreEstudiante', data.semestre);
+
+                        sessionStorage.setItem('email', data.email);
+                        sessionStorage.setItem('codigoEstudiante', data.codigoEstudiante);
+                        
+                        Swal.fire({
+                            title: '¡Bienvenido!',
+                            text: `Estudiante ${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#f0f9ff',
+                            iconColor: '#3b82f6',
+                            titleText: '🎓 Acceso Estudiante'
+                        }).then(() => {
+                            window.location.href = '/estudiantes';
+                        });
+                    } 
+                    else if (data.tipoUsuario === 'DOCENTE') {
+                        // ✅ GUARDAR ID DEL DOCENTE
+                        sessionStorage.setItem('idDocente', data.idEspecifico);
+                        console.log('✅ Docente ID guardado:', data.idEspecifico);
+                        
+                        Swal.fire({
+                            title: '👨‍⚕️ Bienvenido Dr(a).',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#f0fdf4',
+                            iconColor: '#10b981'
+                        }).then(() => {
+                            window.location.href = '/doctor';
+                        });
+                    }
+
+
+                    else if (data.tipoUsuario === 'ENCARGADO_INSUMO') {
+                        // ✅ GUARDAR ID DEL ENCARGADO
+                        sessionStorage.setItem('idEncargadoInsumo', data.idEspecifico);
+                        console.log('✅ Encargado ID guardado:', data.idEspecifico);
+                        
+                        Swal.fire({
+                            title: '👨‍⚕️ Bienvenido Dr(a).',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#f0fdf4',
+                            iconColor: '#10b981'
+                        }).then(() => {
+                            window.location.href = '/encargado_insumo';
+                        });
+                    }
+                    else if (data.tipoUsuario === 'DIRECTOR') {
+                        // ✅ GUARDAR ID DEL ENCARGADO
+                        sessionStorage.setItem('idUsuarioClinica', data.idEspecifico);
+                        console.log('✅ Directora ID guardado:', data.idEspecifico);
+                        
+                        Swal.fire({
+                            title: '👨‍⚕️ Bienvenido Dr(a).',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#f0fdf4',
+                            iconColor: '#10b981'
+                        }).then(() => {
+                            window.location.href = '/director';
+                        });
+                    }
+                    else if (data.tipoUsuario === 'ADMIN') {
+                        sessionStorage.setItem('idAdmin', data.idEspecifico);
+                        
+                        Swal.fire({
+                            title: '🔐 Bienvenido Administrador',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#fffbeb',
+                            iconColor: '#f59e0b'
+                        }).then(() => {
+                            window.location.href = '/admin';
+                        });
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error en el servidor');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Archivo Clínico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* (mismos estilos que antes, sin cambios) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #1E40AF;
+            --secondary: #059669;
+            --accent: #DC2626;
+            --light-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        body {
+            background: linear-gradient(135deg, #F0F9FF 0%, #EFF6FF 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .main-title i {
+            margin-right: 15px;
+            color: white;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .search-section {
+            background: var(--light-bg);
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-section h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 20px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+
+        .form-group input {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--secondary), #047857);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.3);
+        }
+
+        .search-info {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .results-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .loading, .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .archivo-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-header i {
+            margin-right: 10px;
+        }
+
+        .estado-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-group {
+            background: var(--light-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-group h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-group p {
+            margin: 8px 0;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .info-group strong {
+            min-width: 120px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .info-group span {
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            .main-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            max-width: 400px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .notification-success { background: #10B981; }
+        .notification-error { background: #EF4444; }
+        .notification-warning { background: #F59E0B; }
+        .notification-info { background: #3B82F6; }
+
+        .notification-icon { font-size: 1.5rem; }
+        .notification-content { flex: 1; }
+        .notification-close {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        .notification-close:hover { opacity: 1; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title"><i class="fas fa-folder-open"></i> BÚSQUEDA DE ARCHIVOS CLÍNICOS</h1>
+            <p class="header-subtitle">Sistema de Gestión de Archivos - Universidad Amazónica de Pando</p>
+        </div>
+
+        <div class="search-section">
+            <h2><i class="fas fa-search"></i> Buscar archivo por paciente</h2>
+            <div class="search-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Nombre del paciente</label>
+                    <input type="text" id="nombreInput" placeholder="Ingrese nombre completo">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-id-card"></i> C.I. del paciente</label>
+                    <input type="text" id="ciInput" placeholder="Ingrese CI (solo números)">
+                </div>
+                <button class="search-btn" id="btnBuscar">
+                    <i class="fas fa-search"></i> BUSCAR
+                </button>
+            </div>
+            <div class="search-info">
+                <i class="fas fa-lightbulb"></i> Complete al menos uno de los campos.
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <i class="fas fa-file-medical"></i>
+                <span>Resultado de la búsqueda</span>
+            </div>
+            <div id="resultadosContainer">
+                <div class="loading" style="display: none;" id="loadingIndicator">
+                    <i class="fas fa-spinner"></i> Buscando...
+                </div>
+                <div class="no-results" id="noResultsMessage" style="display: none;">
+                    <i class="fas fa-folder-open"></i> No se encontró ningún archivo.
+                </div>
+                <div id="archivoCard" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_PACIENTES = 'http://localhost:8080/api/pacientes/public';
+        const API_ARCHIVOS = 'http://localhost:8080/api/archivos';
+
+        const nombreInput = document.getElementById('nombreInput');
+        const ciInput = document.getElementById('ciInput');
+        const btnBuscar = document.getElementById('btnBuscar');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        const archivoCard = document.getElementById('archivoCard');
+
+        function showNotification(type, message, title = '') {
+            const existing = document.querySelectorAll('.notification');
+            existing.forEach(n => n.remove());
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-triangle',
+                warning: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+            notification.innerHTML = `
+                <i class="${icons[type]} notification-icon"></i>
+                <div class="notification-content">
+                    ${title ? `<strong>${title}</strong><br>` : ''}
+                    ${message}
+                </div>
+                <button class="notification-close"><i class="fas fa-times"></i></button>
+            `;
+            document.body.appendChild(notification);
+
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            });
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'No disponible';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+        }
+
+        function renderArchivoCard(archivo) {
+            const paciente = archivo.paciente || {};
+            const persona = paciente.persona || {};
+            const nombreCompleto = `${persona.nombre || ''} ${persona.apellidoPaterno || ''} ${persona.apellidoMaterno || ''}`.trim() || 'No disponible';
+            const ciPaciente = paciente.ci || 'No disponible';
+
+            return `
+                <div class="archivo-card">
+                    <div class="card-header">
+                        <span><i class="fas fa-archive"></i> Archivo #${archivo.idArchivo || 'N/A'}</span>
+                        <span class="estado-badge"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 5px;"></i> ${archivo.estado || 'ACTIVO'}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="info-group">
+                                <h4><i class="fas fa-folder"></i> Datos del Archivo</h4>
+                                <p><strong>Código:</strong> <span>${archivo.codigoArchivo || 'N/A'}</span></p>
+                                <p><strong>Fecha de creación:</strong> <span>${formatDate(archivo.fechaCreacion) || 'N/A'}</span></p>
+                                <p><strong>Ubicación física:</strong> <span>${archivo.ubicacionFisica || 'No especificada'}</span></p>
+                            </div>
+                            <div class="info-group">
+                                <h4><i class="fas fa-user"></i> Paciente Asociado</h4>
+                                <p><strong>Nombre completo:</strong> <span>${nombreCompleto}</span></p>
+                                <p><strong>C.I.:</strong> <span>${ciPaciente}</span></p>
+                                <p><strong>Historial clínico:</strong> <span>${paciente.historialClinico || 'N/A'}</span></p>
+                                <p><strong>Teléfono:</strong> <span>${paciente.telefono || 'N/A'}</span></p>
+                                <p><strong>Dirección:</strong> <span>${paciente.direccion || 'N/A'}</span></p>
+                            </div>
+                        </div>
+                        ${archivo.notas ? `
+                        <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                            <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Información adicional</h4>
+                            <p><strong>Notas internas:</strong> ${archivo.notas}</p>
+                        </div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function buscarArchivo() {
+            const nombre = nombreInput.value.trim();
+            const ci = ciInput.value.trim();
+
+            if (!nombre && !ci) {
+                showNotification('warning', 'Debe ingresar al menos un campo.');
+                return;
+            }
+
+            archivoCard.style.display = 'none';
+            noResultsMessage.style.display = 'none';
+            loadingIndicator.style.display = 'flex';
+
+            try {
+                // 1. Buscar paciente por nombre o CI
+                let pacientes = [];
+                if (ci) {
+                    const url = `${API_PACIENTES}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Error al buscar paciente: ${response.status}`);
+                    pacientes = await response.json();
+                } else {
+                    // Usar el método de búsqueda por nombre completo
+                    const url = `${API_PACIENTES}/buscar?term=${encodeURIComponent(nombre)}`;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`Error al buscar pacientes: ${response.status}`);
+                    pacientes = await response.json();
+                }
+
+                if (!pacientes || pacientes.length === 0) {
+                    loadingIndicator.style.display = 'none';
+                    noResultsMessage.style.display = 'flex';
+                    showNotification('info', 'No se encontró ningún paciente con esos datos.');
+                    return;
+                }
+
+                // Si hay varios pacientes, tomamos el primero (puedes mejorar mostrando una lista)
+                const paciente = pacientes[0];
+                const pacienteId = paciente.idPaciente || paciente.id;
+
+                // 2. Obtener archivo por ID del paciente
+                const archivoUrl = `${API_ARCHIVOS}/paciente/${pacienteId}`;
+                const archivoResponse = await fetch(archivoUrl);
+                
+                if (archivoResponse.status === 404) {
+                    loadingIndicator.style.display = 'none';
+                    noResultsMessage.style.display = 'flex';
+                    showNotification('info', 'El paciente no tiene ningún archivo asociado.');
+                    return;
+                }
+                
+                if (!archivoResponse.ok) {
+                    throw new Error(`Error al obtener archivo: ${archivoResponse.status}`);
+                }
+
+                const archivo = await archivoResponse.json();
+                loadingIndicator.style.display = 'none';
+                archivoCard.innerHTML = renderArchivoCard(archivo);
+                archivoCard.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                loadingIndicator.style.display = 'none';
+                noResultsMessage.style.display = 'flex';
+                noResultsMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
+                showNotification('error', error.message);
+            }
+        }
+
+        btnBuscar.addEventListener('click', buscarArchivo);
+        [nombreInput, ciInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') buscarArchivo();
+            });
+        });
+        ciInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>
