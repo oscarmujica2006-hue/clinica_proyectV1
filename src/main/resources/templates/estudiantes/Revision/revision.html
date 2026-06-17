@@ -6,7 +6,8 @@
     <title>Historia Clínica Odontológica U.A.P.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ESTILOS GENERALES RENOVADOS */
+        /* ... TODOS TUS ESTILOS EXISTENTES ... */
+                /* ESTILOS GENERALES RENOVADOS */
         * {
             margin: 0;
             padding: 0;
@@ -713,6 +714,388 @@
             .otros-ninguno-row .form-group label {
                 font-size: 0.75rem;
             }
+        }        
+        /* ESTILOS PARA EL ODONTOGRAMA */
+        .odontograma-section {
+            background: var(--light-bg);
+            padding: 30px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .odontograma-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: linear-gradient(to bottom, #2c5aa0, #059669);
+        }
+
+        .odontograma-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .odontograma-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2c5aa0;
+        }
+
+        .odontograma-header h3 {
+            font-size: 20px;
+            color: #2c5aa0;
+            margin-bottom: 5px;
+        }
+
+        .odontograma-header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .odontograma-info {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f0f5ff;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+
+        .odontograma-info label {
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .odontograma-info input, .odontograma-info select {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .quadrants-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .quadrant {
+            border: 2px solid #2c5aa0;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .quadrant-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c5aa0;
+            font-size: 14px;
+        }
+
+        .dental-chart {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+            min-height: 60px;
+        }
+
+        .tooth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+        }
+
+        .tooth-number {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 2px;
+            color: #333;
+        }
+
+        .tooth {
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tooth.selected {
+            box-shadow: 0 0 0 2px #2c5aa0;
+            border-radius: 5px;
+        }
+
+        /* Estilos para las áreas según diagnóstico */
+        .center.sano, .left.sano, .right.sano, .top.sano, .bottom.sano {
+            fill: #d4edda !important;
+        }
+
+        .center.cariado, .left.cariado, .right.cariado, .top.cariado, .bottom.cariado {
+            fill: #f8d7da !important;
+        }
+
+        .center.obturado, .left.obturado, .right.obturado, .top.obturado, .bottom.obturado {
+            fill: #fff3cd !important;
+        }
+
+        .center.obturado_cariado, .left.obturado_cariado, .right.obturado_cariado, 
+        .top.obturado_cariado, .bottom.obturado_cariado {
+            fill: url(#obturado-cariado-pattern) !important;
+        }
+
+        .tooth.extraccion .center, .tooth.extraccion .left, .tooth.extraccion .right,
+        .tooth.extraccion .top, .tooth.extraccion .bottom {
+            fill: #dc3545 !important;
+        }
+
+        .tooth.extraido .center, .tooth.extraido .left, .tooth.extraido .right,
+        .tooth.extraido .top, .tooth.extraido .bottom {
+            fill: #6c757d !important;
+        }
+
+        .tooth.perdido_otra .center, .tooth.perdido_otra .left, .tooth.perdido_otra .right,
+        .tooth.perdido_otra .top, .tooth.perdido_otra .bottom {
+            fill: #495057 !important;
+        }
+
+        .center.endodoncia, .left.endodoncia, .right.endodoncia, .top.endodoncia, .bottom.endodoncia {
+            fill: #cce5ff !important;
+        }
+
+        .center.corona, .left.corona, .right.corona, .top.corona, .bottom.corona {
+            fill: #d4edda !important;
+            stroke: #ffc107 !important;
+            stroke-width: 2px !important;
+        }
+
+        .center, .left, .right, .top, .bottom {
+            stroke: #000;
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: fill 0.2s ease;
+        }
+
+        .surface-label {
+            font-size: 7px;
+            font-weight: bold;
+            fill: #333;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .diagnostic-criteria {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .criteria-item:hover {
+            background-color: #f0f5ff;
+            transform: scale(1.02);
+        }
+
+        .criteria-color {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #666;
+            border-radius: 3px;
+        }
+
+        .sano-color { background-color: #d4edda; border: 1px solid #999; }
+        .cariado-color { background-color: #f8d7da; border: 1px solid #999; }
+        .obturado-color { background-color: #fff3cd; border: 1px solid #999; }
+        .obturado-cariado-color { background: linear-gradient(45deg, #f8d7da 50%, #fff3cd 50%); border: 1px solid #999; }
+        .extraccion-color { background-color: #dc3545; border: 1px solid #999; }
+        .extraido-color { background-color: #6c757d; border: 1px solid #999; }
+        .perdido-otra-color { background-color: #495057; border: 1px solid #999; }
+        .endodoncia-color { background-color: #cce5ff; border: 1px solid #999; }
+        .corona-color { background-color: #d4edda; border: 1px solid #999; }
+
+        .criteria-label {
+            font-size: 10px;
+        }
+
+        .current-selection {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c5aa0;
+            min-height: 20px;
+        }
+
+        .area-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .area-selector-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c5aa0;
+        }
+
+        .area-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .area-btn {
+            padding: 8px 15px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .area-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .area-btn.active {
+            background: #2c5aa0;
+            color: white;
+            border-color: #2c5aa0;
+        }
+
+        .indices-section {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f5ff;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+
+        .indices-group {
+            text-align: center;
+        }
+
+        .indices-group h4 {
+            margin-bottom: 10px;
+            color: #2c5aa0;
+        }
+
+        .indices-group input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            margin: 0 3px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        .indices-group .total {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .odontograma-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .odontograma-actions .btn {
+            padding: 10px 25px;
+            min-width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .quadrants-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .diagnostic-criteria {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .odontograma-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .tooth {
+                width: 28px;
+                height: 28px;
+            }
+
+            .indices-section {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tooth {
+                width: 22px;
+                height: 22px;
+            }
+
+            .tooth-number {
+                font-size: 8px;
+            }
+
+            .diagnostic-criteria {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .area-buttons {
+                gap: 5px;
+            }
+
+            .area-btn {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
         }
     </style>
 </head>
@@ -858,15 +1241,12 @@
                     <label><i class="fas fa-heart"></i> Estado Civil</label>
                     <input type="text" id="estadoCivil" readonly>
                 </div>
-
-
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label class="required-field"><i class="fas fa-home"></i> Dirección</label>
                     <input type="text" id="direccion" readonly>
                 </div>
-
                 <div class="form-group">
                     <label><i class="fas fa-birthday-cake"></i> Edad</label>
                     <input type="text" id="edadPaciente" readonly>
@@ -1175,6 +1555,161 @@
                 </div>
             </div>
         </div>
+
+        <!-- ===== SECCIÓN DEL ODONTOGRAMA ===== -->
+        <div class="odontograma-section">
+            <h2 class="section-title"><i class="fas fa-tooth"></i> ODONTOGRAMA</h2>
+            
+            <div class="odontograma-container">
+                <div class="odontograma-header">
+                    <h3><i class="fas fa-teeth-open"></i> ODONTOGRAMA - SISTEMA DENTAL</h3>
+                    <p>Seleccione un diente, luego elija un área y aplique un diagnóstico</p>
+                </div>
+                
+                <div class="odontograma-info">
+
+                    <div>
+                        <label>Tipo dentición:</label>
+                        <select id="tipoDenticion">
+                            <option value="permanente">Permanente (CPO-D) - Adultos</option>
+                            <option value="temporal">Temporal (CEO) - Niños</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="quadrants-container">
+                    <div class="quadrant" id="quadrant1">
+                        <div class="quadrant-title" id="titleQuadrant1">CUADRANTE 1 - SUPERIOR DERECHO (11-18)</div>
+                        <div class="dental-chart" id="dentalChart1"></div>
+                    </div>
+                    <div class="quadrant" id="quadrant2">
+                        <div class="quadrant-title" id="titleQuadrant2">CUADRANTE 2 - SUPERIOR IZQUIERDO (21-28)</div>
+                        <div class="dental-chart" id="dentalChart2"></div>
+                    </div>
+                    <div class="quadrant" id="quadrant3">
+                        <div class="quadrant-title" id="titleQuadrant3">CUADRANTE 3 - INFERIOR IZQUIERDO (31-38)</div>
+                        <div class="dental-chart" id="dentalChart3"></div>
+                    </div>
+                    <div class="quadrant" id="quadrant4">
+                        <div class="quadrant-title" id="titleQuadrant4">CUADRANTE 4 - INFERIOR DERECHO (41-48)</div>
+                        <div class="dental-chart" id="dentalChart4"></div>
+                    </div>
+                </div>
+                
+                <div class="current-selection" id="currentSelection">
+                    Seleccione un diente, luego un área y un diagnóstico
+                </div>
+                
+                <div class="area-selector" id="areaSelector" style="display: none;">
+                    <div class="area-selector-title">Seleccione un área del diente:</div>
+                    <div class="area-buttons">
+                        <button class="area-btn" data-area="center">Centro</button>
+                        <button class="area-btn" data-area="top">Superior</button>
+                        <button class="area-btn" data-area="bottom">Inferior</button>
+                        <button class="area-btn" data-area="left">Izquierda</button>
+                        <button class="area-btn" data-area="right">Derecha</button>
+                    </div>
+                </div>
+                
+                <h3 style="text-align: center; margin: 15px 0 10px; font-size: 16px; color: var(--text-dark);">
+                    <i class="fas fa-list"></i> CRITERIOS DE DIAGNÓSTICO
+                </h3>
+                
+                <div class="diagnostic-criteria" id="diagnosticCriteria">
+                    <div class="criteria-item" data-state="sano">
+                        <div class="criteria-color sano-color"></div>
+                        <div class="criteria-label">0 - SANO</div>
+                    </div>
+                    <div class="criteria-item" data-state="cariado">
+                        <div class="criteria-color cariado-color"></div>
+                        <div class="criteria-label">1 - CARIADO (C)</div>
+                    </div>
+                    <div class="criteria-item" data-state="obturado">
+                        <div class="criteria-color obturado-color"></div>
+                        <div class="criteria-label">2 - OBTURADO (O)</div>
+                    </div>
+                    <div class="criteria-item" data-state="obturado_cariado">
+                        <div class="criteria-color obturado-cariado-color"></div>
+                        <div class="criteria-label">3 - OBTURADO + CARIADO (O)</div>
+                    </div>
+                    <div class="criteria-item" data-state="extraccion">
+                        <div class="criteria-color extraccion-color"></div>
+                        <div class="criteria-label">4 - EXTRACCIÓN INDICADA (P/E)</div>
+                    </div>
+                    <div class="criteria-item" data-state="extraido">
+                        <div class="criteria-color extraido-color"></div>
+                        <div class="criteria-label">5 - PERDIDO POR CARIES (P/E)</div>
+                    </div>
+                    <div class="criteria-item" data-state="perdido_otra">
+                        <div class="criteria-color perdido-otra-color"></div>
+                        <div class="criteria-label">6 - PERDIDO POR OTRA RAZÓN (P/E)</div>
+                    </div>
+                    <div class="criteria-item" data-state="endodoncia">
+                        <div class="criteria-color endodoncia-color"></div>
+                        <div class="criteria-label">7 - ENDODONCIA (O)</div>
+                    </div>
+                    <div class="criteria-item" data-state="corona">
+                        <div class="criteria-color corona-color"></div>
+                        <div class="criteria-label">8 - CORONA (O)</div>
+                    </div>
+                </div>
+                
+                <div class="indices-section" id="indicesSection">
+                    <div class="indices-group" id="cpoGroup">
+                        <h4>CPO-D (Permanentes)</h4>
+                        <div>
+                            <label>C (Cariados):</label>
+                            <input type="number" id="cValue" readonly value="0">
+                            <label>P (Perdidos):</label>
+                            <input type="number" id="pValue" readonly value="0">
+                            <label>O (Obturados):</label>
+                            <input type="number" id="oValue" readonly value="0">
+                        </div>
+                        <div>
+                            <label>Total piezas Sanas:</label>
+                            <input type="number" id="sValue" readonly value="32">
+                            <label>Total piezas Dentales:</label>
+                            <input type="number" id="totalDientes" readonly value="32">
+                        </div>
+                        <div class="total">
+                            <strong>Total CPO-D: <span id="cpodTotal">0</span></strong>
+                        </div>
+                    </div>
+                    <div class="indices-group" id="ceoGroup" style="display: none;">
+                        <h4>CEO (Temporales - Niños)</h4>
+                        <div>
+                            <label>C (Cariados):</label>
+                            <input type="number" id="ceoCariados" readonly value="0">
+                            <label>E (Extraídos):</label>
+                            <input type="number" id="ceoExtraidos" readonly value="0">
+                            <label>O (Obturados):</label>
+                            <input type="number" id="ceoObturados" readonly value="0">
+                        </div>
+                        <div>
+                            <label>Total piezas Sanas:</label>
+                            <input type="number" id="ceoSanos" readonly value="20">
+                            <label>Total piezas Dentales:</label>
+                            <input type="number" id="totalDientesTemp" readonly value="20">
+                        </div>
+                        <div class="total">
+                            <strong>Total CEO: <span id="ceoTotal">0</span></strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="odontograma-actions">
+                    <button class="btn btn-secondary" id="clearAll">
+                        <i class="fas fa-eraser"></i> Limpiar Todo
+                    </button>
+                    <button class="btn btn-secondary" id="calcularIndices" style="background: linear-gradient(135deg, #6B7280, #4B5563);">
+                        <i class="fas fa-calculator"></i> Calcular Índices
+                    </button>
+                    <button class="btn btn-primary" id="saveOdontograma" style="background: linear-gradient(135deg, #2c5aa0, #1a3a6b);">
+                        <i class="fas fa-save"></i> Guardar Revisión
+                    </button>
+                </div>
+            </div>
+        </div>
         
         <!-- Botón de envío final -->
         <div class="form-section">
@@ -1182,13 +1717,12 @@
                 <div class="form-group" style="text-align: center; width: 100%;">
                     <div class="button-group">
                         <button type="button" class="btn btn-primary" id="enviarFormulario">
-                            <i class="fas fa-save"></i> GUARDAR
+                            <i class="fas fa-save"></i> GUARDAR HISTORIA CLÍNICA
                         </button>
                         <button type="button" class="btn btn-danger" id="limpiarFormularioBtn">
                             <i class="fas fa-trash-alt"></i> LIMPIAR
                         </button>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -1236,9 +1770,8 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-    <script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
+<script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
 </body>
 </html>

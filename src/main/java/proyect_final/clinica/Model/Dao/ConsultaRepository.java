@@ -4,7 +4,6 @@ import proyect_final.clinica.Model.Entity.Consulta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface ConsultaRepository extends JpaRepository<Consulta, Long> {

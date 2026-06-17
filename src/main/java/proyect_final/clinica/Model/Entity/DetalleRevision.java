@@ -13,7 +13,7 @@ public class DetalleRevision {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_detalle")
-    private Long idDetalle;
+    private Long idDetalleRev;
 
     @ManyToOne
     @JoinColumn(name = "id_revision", nullable = false)
