@@ -6,7 +6,7 @@
     <title>Historia Clínica Odontológica U.A.P.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ... TODOS TUS ESTILOS EXISTENTES ... */
+                /* ... TODOS TUS ESTILOS EXISTENTES ... */
                 /* ESTILOS GENERALES RENOVADOS */
         * {
             margin: 0;
@@ -1096,7 +1096,36 @@
                 padding: 5px 10px;
                 font-size: 10px;
             }
+        .confirmation-box {
+            background-color: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
         }
+        
+        .confirmation-box i {
+            color: #10b981;
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .confirmation-box h3 {
+            color: #065f46;
+            margin-bottom: 10px;
+        }
+        
+        .confirmation-box .id-diagnostico {
+            color: #059669;
+            font-weight: bold;
+        }
+        
+        .confirmation-box .sub-text {
+            color: #64748b;
+            font-size: 14px;
+        }
+        }
+        
     </style>
 </head>
 <body>
@@ -1567,7 +1596,6 @@
                 </div>
                 
                 <div class="odontograma-info">
-
                     <div>
                         <label>Tipo dentición:</label>
                         <select id="tipoDenticion">
@@ -1696,18 +1724,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <div class="odontograma-actions">
-                    <button class="btn btn-secondary" id="clearAll">
-                        <i class="fas fa-eraser"></i> Limpiar Todo
-                    </button>
-                    <button class="btn btn-secondary" id="calcularIndices" style="background: linear-gradient(135deg, #6B7280, #4B5563);">
-                        <i class="fas fa-calculator"></i> Calcular Índices
-                    </button>
-                    <button class="btn btn-primary" id="saveOdontograma" style="background: linear-gradient(135deg, #2c5aa0, #1a3a6b);">
-                        <i class="fas fa-save"></i> Guardar Revisión
-                    </button>
-                </div>
+            
             </div>
         </div>
         
@@ -1727,19 +1744,28 @@
             </div>
         </div>
 
-        <!-- ===== SECCIÓN PARA SUBIR FOTOS DESPUÉS DE GUARDAR ===== -->
-        <div class="form-section" id="seccionFotos" style="display: none;">
-            <h2 class="section-title"><i class="fas fa-images"></i> SUBIR FOTOS DEL ODONTOGRAMA</h2>
-            
+        <!-- ===== SECCIÓN DE CONFIRMACIÓN DE GUARDADO ===== -->
+        <div class="form-section" id="seccionConfirmacion" style="display: none;">
+            <h2 class="section-title"><i class="fas fa-check-circle" style="color: #10b981;"></i> CONSULTA GUARDADA EXITOSAMENTE</h2>
             <div class="form-row">
                 <div class="form-group full-width">
-                    <label><i class="fas fa-info-circle"></i> Consulta guardada exitosamente</label>
-                    <p>ID de Consulta: <strong id="consultaIdGuardada"></strong></p>
-                    <div class="field-instruction">
-                        <i class="fas fa-camera"></i> Ahora puede subir las fotos del odontograma
+                    <div class="confirmation-box">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>¡Diagnóstico y Odontograma Guardados!</h3>
+                        <p style="font-size: 16px; margin-bottom: 5px;">
+                            <strong>ID de Diagnóstico:</strong> <span class="id-diagnostico" id="diagnosticoIdGuardado">-</span>
+                        </p>
+                        <p class="sub-text">
+                            <i class="fas fa-camera"></i> Ahora puede subir las fotos del odontograma
+                        </p>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- ===== SECCIÓN PARA SUBIR FOTOS DESPUÉS DE GUARDAR ===== -->
+        <div class="form-section" id="seccionFotos" style="display: none;">
+            <h2 class="section-title"><i class="fas fa-images"></i> SUBIR FOTOS DEL ODONTOGRAMA</h2>
             
             <div class="form-row">
                 <div class="form-group full-width">
@@ -1772,6 +1798,7 @@
         </div>
     </div>
 
-<script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
 </body>
 </html>

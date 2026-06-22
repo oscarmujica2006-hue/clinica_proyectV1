@@ -31,12 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const apellidoPaterno = document.getElementById('apellidoPaterno');
     const apellidoMaterno = document.getElementById('apellidoMaterno');
     const nombres = document.getElementById('nombres');
-    const lugarNacimiento = document.getElementById('lugarNacimiento');
-    const ocupacion = document.getElementById('ocupacion');
-    const estadoCivil = document.getElementById('estadoCivil');
-    const direccion = document.getElementById('direccion');
-    const telefono = document.getElementById('telefono');
-    const gradoInstruccion = document.getElementById('gradoInstruccion');
     
     // Elementos del header
     const headerExpediente = document.getElementById('headerExpediente');
@@ -63,20 +57,40 @@ document.addEventListener('DOMContentLoaded', function() {
         btnBuscarPaciente.textContent = 'BUSCANDO...';
 
         try {
-            let url;
+            let pacientes = [];
+            
             if (ci) {
-                url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
-            } else {
-                url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
+                // 🔥 Búsqueda por CI - devuelve un objeto
+                const url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                console.log('Buscando pacientes con URL:', url);
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Error en la búsqueda: ${response.status}`);
+
+                const data = await response.json();
+                console.log('Datos recibidos:', data);
+
+                // ✅ Si es un objeto con idPaciente, es un solo paciente
+                if (data && typeof data === 'object' && !Array.isArray(data) && data.idPaciente) {
+                    pacientes = [data];  // Convertir a array para mostrarlo
+                } else if (Array.isArray(data)) {
+                    pacientes = data;
+                } else {
+                    pacientes = [];
+                }
+                
+            } else if (nombre) {
+                // 🔥 Búsqueda por nombre - devuelve un array
+                const url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
+                console.log('Buscando pacientes con URL:', url);
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Error en la búsqueda: ${response.status}`);
+
+                pacientes = await response.json();
+                console.log('Pacientes encontrados:', pacientes);
             }
 
-            console.log('Buscando pacientes con URL:', url);
-
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Error en la búsqueda: ${response.status}`);
-
-            const pacientes = await response.json();
-            console.log('Pacientes encontrados:', pacientes);
             mostrarResultadosPacientes(pacientes);
 
         } catch (error) {
@@ -94,45 +108,56 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!pacientes || pacientes.length === 0) {
             listaResultadosPaciente.innerHTML = '<div class="no-results">No se encontraron pacientes.</div>';
-        } else {
-            pacientes.forEach(paciente => {
-                const item = document.createElement('div');
-                item.className = 'result-item';
-                const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
-                item.innerHTML = `<strong>${nombreCompleto}</strong> - CI: ${paciente.ci || 'N/A'} - Historial: ${paciente.historialClinico || 'N/A'}`;
-                item.addEventListener('click', () => seleccionarPaciente(paciente));
-                listaResultadosPaciente.appendChild(item);
-            });
+            resultadosBusquedaPaciente.style.display = 'block';
+            return;
         }
+        
+        pacientes.forEach(paciente => {
+            const item = document.createElement('div');
+            item.className = 'result-item';
+            
+            // ✅ Usar el DTO que ahora tiene nombreCompleto directamente
+            const nombreCompleto = paciente.nombreCompleto || 
+                `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 'Sin nombre';
+            
+            const ci = paciente.ci || 'N/A';
+            const historial = paciente.historialClinico || 'N/A';
+            
+            item.innerHTML = `<strong>${nombreCompleto}</strong> - CI: ${ci} - Historial: ${historial}`;
+            item.addEventListener('click', () => seleccionarPaciente(paciente));
+            listaResultadosPaciente.appendChild(item);
+        });
+        
         resultadosBusquedaPaciente.style.display = 'block';
     }
     
     async function seleccionarPaciente(paciente) {
         console.log('=== SELECCIONANDO PACIENTE ===');
-        console.log('Paciente:', paciente);
+        console.log('Paciente DTO:', paciente);
         
+        // ✅ Ahora los datos vienen directamente en el DTO
         numHistoriaClinica.value = paciente.historialClinico || '';
         ciPaciente.value = paciente.ci || '';
-        numExpediente.value = paciente.idPaciente || paciente.id || '';
-        const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+        numExpediente.value = paciente.idPaciente || '';
+        
+        // ✅ nombreCompleto ya viene en el DTO
+        const nombreCompleto = paciente.nombreCompleto || 
+            `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim();
+        
         personaInformacion.value = nombreCompleto;
-        edadPaciente.value = paciente.persona?.edad || '';
-        apellidoPaterno.value = paciente.persona?.apellidoPaterno || '';
-        apellidoMaterno.value = paciente.persona?.apellidoMaterno || '';
-        nombres.value = paciente.persona?.nombre || '';
-        lugarNacimiento.value = paciente.lugarNacimiento || '';
-        ocupacion.value = paciente.ocupacion || '';
-        estadoCivil.value = paciente.estadoCivil || '';
-        direccion.value = paciente.direccion || '';
-        telefono.value = paciente.telefono || '';
-        gradoInstruccion.value = paciente.gradoInstruccion || '';
-
-        if (paciente.persona?.sexo) {
-            const sexo = String(paciente.persona.sexo).toUpperCase();
+        edadPaciente.value = paciente.edad || '';
+        apellidoPaterno.value = paciente.apellidoPaterno || '';
+        apellidoMaterno.value = paciente.apellidoMaterno || '';
+        nombres.value = paciente.nombre || '';
+        
+        // Sexo
+        if (paciente.sexo) {
+            const sexo = String(paciente.sexo).toUpperCase();
             document.getElementById('masculino').checked = sexo === 'M';
             document.getElementById('femenino').checked = sexo === 'F';
         }
 
+        // Headers
         headerExpediente.textContent = paciente.idPaciente || '-';
         headerHistoria.textContent = paciente.historialClinico || '-';
         headerCI.textContent = paciente.ci || '-';
@@ -145,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
     }
     
-    // ===== FUNCIÓN PARA OBTENER ID DEL ARCHIVO (VERSIÓN CORREGIDA) =====
+    // ===== FUNCIÓN PARA OBTENER ID DEL ARCHIVO =====
     async function obtenerIdArchivoDelPaciente(paciente) {
         try {
             const ci = paciente.ci;
@@ -397,10 +422,11 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('estudiante.nombreCompleto:', estudiante.nombreCompleto);
 
         if (!estudiante.idEstudiante) {
-        console.error('ERROR: idEstudiante es undefined o null');
-        showNotification('error', 'Error: El estudiante no tiene ID válido', 'Error');
-        return;
-    }
+            console.error('ERROR: idEstudiante es undefined o null');
+            showNotification('error', 'Error: El estudiante no tiene ID válido', 'Error');
+            return;
+        }
+        
         const estudianteId = estudiante.idEstudiante;
         document.getElementById('idEstudiante').value = estudianteId;
         

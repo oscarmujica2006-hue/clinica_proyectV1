@@ -11,11 +11,6 @@ public interface ArchivoRepository extends JpaRepository<Archivo, Long> {
     
     // Métodos existentes...
     List<Archivo> findByPacienteIdPaciente(Long idPaciente);
-    @Query("SELECT a FROM Archivo a WHERE a.paciente.idPaciente = :idPaciente " +
-           "AND LOWER(a.codigoArchivo) LIKE LOWER(CONCAT('%', :codigo, '%'))")
-    List<Archivo> buscarPorPacienteYCodigo(@Param("idPaciente") Long idPaciente, 
-                                           @Param("codigo") String codigo);
-    
     @Query("SELECT a FROM Archivo a WHERE a.paciente.idPaciente = :idPaciente ORDER BY a.idArchivo LIMIT 1")
     Optional<Archivo> findPrimerArchivoPorPaciente(@Param("idPaciente") Long idPaciente);
     

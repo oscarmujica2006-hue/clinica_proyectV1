@@ -1,5 +1,3 @@
-// ===== VARIABLES GLOBALES =====
-// URL base de tu API Spring Boot
 const API_BASE_URL = 'http://localhost:8080/api/pacientes';
 
 // Variable global para almacenar el ID de la consulta guardada
@@ -23,14 +21,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             const idEstudianteFront = sessionStorage.getItem('idEstudiante');
             console.log('🔵 Frontend - ID en sessionStorage:', idEstudianteFront);
-            
-            const sesionResponse = await fetch('/api/pacientes/debug/verificar-sesion');
-            const sesionData = await sesionResponse.json();
-            console.log('🟢 Backend - Datos de sesión:', sesionData);
-            
-            if (!sesionData.tieneSesion && idEstudianteFront) {
-                console.warn('⚠️ El frontend tiene ID pero el backend no. Intentando reparar...');
-            }
             
             const response = await fetch('/api/pacientes/estudiante/paciente-prestado');
             const data = await response.json();
@@ -56,15 +46,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                         <div>
                             <strong style="color: #1976d2;">📋 PACIENTE ASIGNADO:</strong>
                             <span style="margin-left: 10px; font-size: 1.2em; color: #0d47a1;">
-                                ${data.nombreCompleto}
+                                ${data.nombreCompleto || 'No disponible'}
                             </span>
                         </div>
                         <div>
                             <span style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 20px;">
-                                CI: ${data.ci}
+                                CI: ${data.ci || 'N/A'}
                             </span>
                             <span style="margin-left: 10px; color: #f57c00;">
-                                ⏰ Límite: ${data.fechaLimite}
+                                ⏰ Límite: ${data.fechaLimite || 'No definida'}
                             </span>
                         </div>
                     </div>
@@ -529,11 +519,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         btnBuscar.textContent = 'BUSCANDO...';
 
         try {
-            let url;
             let pacientes = [];
             
             if (ci) {
-                url = `/api/pacientes/estudiante/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
+                const url = `/api/pacientes/estudiante/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
                 console.log('🔍 Buscando por CI:', ci);
                 
                 const response = await fetch(url);
@@ -560,14 +549,19 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 if (response.ok) {
                     const resultado = await response.json();
-                    pacientes = Array.isArray(resultado) ? resultado : [resultado];
-                } else {
+                    // ✅ Si es un objeto, lo convertimos a array
+                    if (resultado && typeof resultado === 'object' && !Array.isArray(resultado) && resultado.idPaciente) {
+                        pacientes = [resultado];
+                    } else if (Array.isArray(resultado)) {
+                        pacientes = resultado;
+                    }
+                } else if (response.status !== 404) {
                     throw new Error(`Error en la búsqueda: ${response.status}`);
                 }
             } 
             
             if (pacientes.length === 0 && nombre) {
-                url = `/api/pacientes/estudiante/buscar?term=${encodeURIComponent(nombre)}`;
+                const url = `/api/pacientes/estudiante/buscar?term=${encodeURIComponent(nombre)}`;
                 console.log('🔍 Buscando por nombre:', nombre);
                 
                 const response = await fetch(url);
@@ -617,8 +611,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const item = document.createElement('div');
                 item.className = 'result-item';
 
-                const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
-                const ciMostrado = paciente.ci || paciente.persona?.ci || 'N/A';
+                // ✅ Usar el DTO directamente
+                const nombreCompleto = paciente.nombreCompleto || 
+                    `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 'Sin nombre';
+                
+                const ciMostrado = paciente.ci || 'N/A';
 
                 item.innerHTML = `
                     <strong><i class="fas fa-user"></i> ${nombreCompleto}</strong><br>
@@ -637,24 +634,29 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     function seleccionarPaciente(paciente) {
-        const ciPacienteValue = paciente.ci || paciente.persona?.ci || '';
-        const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+        // ✅ Usar el DTO directamente
+        const ciPacienteValue = paciente.ci || '';
+        const nombreCompleto = paciente.nombreCompleto || 
+            `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 'Sin nombre';
         
         console.log('📋 Seleccionando paciente:', {
-            id: paciente.idPaciente || paciente.id,
+            id: paciente.idPaciente,
             ci: ciPacienteValue,
             nombre: nombreCompleto
         });
         
+        // Asignar valores del DTO
         numHistoriaClinica.value = paciente.historialClinico || '';
         ciPaciente.value = ciPacienteValue;
-        numExpediente.value = paciente.idPaciente || paciente.id || '';
+        numExpediente.value = paciente.idPaciente || '';
         personaInformacion.value = nombreCompleto;
-        edadPaciente.value = paciente.persona?.edad || '';
+        edadPaciente.value = paciente.edad || '';
 
-        apellidoPaterno.value = paciente.persona?.apellidoPaterno || '';
-        apellidoMaterno.value = paciente.persona?.apellidoMaterno || '';
-        nombres.value = paciente.persona?.nombre || '';
+        apellidoPaterno.value = paciente.apellidoPaterno || '';
+        apellidoMaterno.value = paciente.apellidoMaterno || '';
+        nombres.value = paciente.nombre || '';
+        
+        // Campos adicionales si vienen en el DTO
         lugarNacimiento.value = paciente.lugarNacimiento || '';
         ocupacion.value = paciente.ocupacion || '';
         estadoCivil.value = paciente.estadoCivil || '';
@@ -662,8 +664,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         telefono.value = paciente.telefono || '';
         gradoInstruccion.value = paciente.gradoInstruccion || '';
 
-        if (paciente.persona?.sexo) {
-            const sexo = String(paciente.persona.sexo).toUpperCase();
+        // Sexo
+        if (paciente.sexo) {
+            const sexo = String(paciente.sexo).toUpperCase();
             const masculino = document.getElementById('masculino');
             const femenino = document.getElementById('femenino');
             if (sexo === 'M' && masculino) {
@@ -673,7 +676,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             }
         }
 
-        headerExpediente.textContent = paciente.idPaciente || paciente.id || '-';
+        // Headers
+        headerExpediente.textContent = paciente.idPaciente || '-';
         headerHistoria.textContent = paciente.historialClinico || '-';
         headerCI.textContent = ciPacienteValue || '-';
 
@@ -1032,9 +1036,20 @@ document.addEventListener('DOMContentLoaded', async function() {
                 throw new Error(result.error || 'Error al guardar la consulta');
             }
 
+            // ===== GUARDAR IDS =====
             ultimoIdConsulta = result.idConsulta;
             
-            document.getElementById('consultaIdGuardada').textContent = ultimoIdConsulta;
+            // ✅ Mostrar el ID del diagnóstico
+            const idDiagnostico = result.idDiagnostico || result.idRevision || 'N/A';
+            document.getElementById('diagnosticoIdGuardado').textContent = idDiagnostico;
+            
+            // ✅ Mostrar sección de confirmación
+            const seccionConfirmacion = document.getElementById('seccionConfirmacion');
+            if (seccionConfirmacion) {
+                seccionConfirmacion.style.display = 'block';
+            }
+            
+            // Mostrar la sección de fotos
             document.getElementById('seccionFotos').style.display = 'block';
             
             const fotosInput = document.getElementById('fotosOdontograma');
@@ -1042,15 +1057,25 @@ document.addEventListener('DOMContentLoaded', async function() {
             const previsualizacionFotosDiv = document.getElementById('previsualizacionFotos');
             if (previsualizacionFotosDiv) previsualizacionFotosDiv.innerHTML = '';
             
-            document.getElementById('seccionFotos').scrollIntoView({ behavior: 'smooth' });
+            // Scroll a la sección de confirmación
+            if (seccionConfirmacion) {
+                seccionConfirmacion.scrollIntoView({ behavior: 'smooth' });
+            }
             
+            // Mostrar mensaje de éxito con SweetAlert
             Swal.fire({
-                title: '✅ Consulta y Odontograma Guardados',
-                text: `¡Todo se ha guardado exitosamente!\nID Consulta: ${ultimoIdConsulta}\nID Revisión: ${result.idRevision || 'N/A'}\nCPO: ${dientesPermanentes.length} dientes\nCEO: ${dientesTemporales.length} dientes`,
+                title: '✅ ¡Diagnóstico y Odontograma Guardados!',
+                html: `
+                    <div style="text-align: left; margin: 10px 0;">
+                        <p><strong>📋 ID Diagnóstico:</strong> ${idDiagnostico}</p>
+                        <p><strong>SE GUARDO EXITOSAMENTE</strong> </p>
+                    </div>
+                `,
                 icon: 'success',
                 timer: 4000,
                 showConfirmButton: true,
                 confirmButtonText: 'Subir Fotos',
+                confirmButtonColor: '#059669',
                 timerProgressBar: true,
                 background: '#f0fdf4',
                 iconColor: '#10b981'
@@ -1110,7 +1135,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             const progresoTexto = document.getElementById('progresoTexto');
             const barraProgreso = document.getElementById('barraProgreso');
             
+            // Mostrar barra de progreso
             progresoDiv.style.display = 'block';
+            barraProgreso.style.width = '0%';
             
             let exitosas = 0;
             let fallidas = 0;
@@ -1120,8 +1147,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 fotoFormData.append('idConsulta', ultimoIdConsulta);
                 fotoFormData.append('archivo', archivos[i]);
                 
-                progresoTexto.textContent = `Subiendo fotos: ${i + 1}/${archivos.length}`;
                 const porcentaje = ((i + 1) / archivos.length) * 100;
+                progresoTexto.textContent = `Subiendo fotos: ${i + 1}/${archivos.length}`;
                 barraProgreso.style.width = `${porcentaje}%`;
                 
                 try {
@@ -1141,30 +1168,52 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
             
-            if (fallidas === 0) {
-                Swal.fire({
-                    title: '✅ Completado',
-                    text: `Se subieron ${exitosas} foto(s) correctamente.`,
-                    icon: 'success',
-                    timer: 3000,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
-                fotosInput.value = '';
-                const previsualizacionFotosDiv = document.getElementById('previsualizacionFotos');
-                if (previsualizacionFotosDiv) previsualizacionFotosDiv.innerHTML = '';
-                progresoDiv.style.display = 'none';
-            } else {
-                Swal.fire({
-                    title: '⚠️ Advertencia',
-                    text: `Subida completada: ${exitosas} exitosas, ${fallidas} fallidas.`,
-                    icon: 'warning',
-                    confirmButtonText: 'Aceptar'
-                });
-            }
+            // Ocultar barra de progreso
+            progresoDiv.style.display = 'none';
+            barraProgreso.style.width = '0%';
             
+            // Restaurar botón
             btnSubir.disabled = false;
             btnSubir.textContent = 'SUBIR FOTOS';
+            
+            // Limpiar input de fotos
+            fotosInput.value = '';
+            const previsualizacionFotosDiv = document.getElementById('previsualizacionFotos');
+            if (previsualizacionFotosDiv) previsualizacionFotosDiv.innerHTML = '';
+            
+            // Mostrar mensaje de éxito o advertencia
+            if (fallidas === 0 && exitosas > 0) {
+                showSuccessAlert(archivos.length);
+            } else if (exitosas > 0 && fallidas > 0) {
+                Swal.fire({
+                    title: '⚠️ Subida Parcial',
+                    text: `Se subieron ${exitosas} foto(s) correctamente y ${fallidas} fallaron.`,
+                    icon: 'warning',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#f59e0b'
+                });
+            } else {
+                Swal.fire({
+                    title: '❌ Error',
+                    text: `No se pudo subir ninguna foto.`,
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        });
+    }
+
+    // ===== FUNCIÓN PARA MOSTRAR ALERTA DE ÉXITO =====
+    function showSuccessAlert(cantidadFotos) {
+        Swal.fire({
+            title: '✅ ¡Foto Subida!',
+            icon: 'success',
+            timer: 3000,
+            showConfirmButton: false,
+            timerProgressBar: true,
+            background: '#f0fdf4',
+            iconColor: '#10b981'
         });
     }
 
@@ -1220,9 +1269,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 });
+
 // ============================================================
 // ===== ODONTOGRAMA - Script independiente (VERSIÓN FINAL) =====
 // ============================================================
+
 (function() {
     // Configuración para ADULTOS (dientes permanentes)
     const cuadrantesAdultos = {

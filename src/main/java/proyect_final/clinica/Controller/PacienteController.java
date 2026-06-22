@@ -2,6 +2,7 @@ package proyect_final.clinica.Controller;
 
 import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Dao.EstudianteRepository;
+import proyect_final.clinica.Model.Dto.PacienteBusquedaDTO;
 import proyect_final.clinica.Model.Entity.Paciente;
 import proyect_final.clinica.Service.PacienteService;
 import proyect_final.clinica.Service.PrestamoActualService;
@@ -31,12 +32,9 @@ public class PacienteController {
     @Autowired
     private HttpSession session;
 
-
-    
     @Autowired
     private EstudianteRepository estudianteRepository;
 
-    
     // ===== CLASE PARA RESPUESTAS DE ERROR =====
     static class ErrorResponse {
         private String mensaje;
@@ -59,52 +57,66 @@ public class PacienteController {
     
     // ===== ENDPOINTS PÚBLICOS (para ARCHIVO/DOCTORES) =====
     
-    /**
-     * Busca paciente por CI - PÚBLICO (sin validación)
-     */
     @GetMapping("/public/buscar-por-ci")
     public ResponseEntity<?> buscarPorCiPublico(@RequestParam String ci) {
         try {
             Integer ciNumero = Integer.valueOf(ci);
             List<Paciente> pacientes = pacienteService.buscarPorCi(ciNumero);
-            return ResponseEntity.ok(pacientes);
+            
+            // ✅ Convertir a DTO
+            List<PacienteBusquedaDTO> dtos = pacientes.stream()
+                .map(PacienteBusquedaDTO::new)
+                .collect(Collectors.toList());
+            
+            if (dtos.size() == 1) {
+                return ResponseEntity.ok(dtos.get(0));
+            }
+            
+            return ResponseEntity.ok(dtos);
+            
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("CI inválido"));
         }
     }
     
-    /**
-     * Busca pacientes por término - PÚBLICO (sin validación)
-     */
     @GetMapping("/public/buscar")
-    public ResponseEntity<List<Paciente>> buscarPorTerminoPublico(@RequestParam String term) {
+    public ResponseEntity<List<PacienteBusquedaDTO>> buscarPorTerminoPublico(@RequestParam String term) {
         List<Paciente> pacientes = pacienteService.buscarPorTermino(term);
-        return ResponseEntity.ok(pacientes);
+        
+        // ✅ Convertir a DTO
+        List<PacienteBusquedaDTO> dtos = pacientes.stream()
+            .map(PacienteBusquedaDTO::new)
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(dtos);
     }
     
-    /**
-     * Obtener todos los pacientes - PÚBLICO
-     */
     @GetMapping("/public")
-    public List<Paciente> obtenerTodosPublico() {
-        return pacienteService.obtenerTodos();
+    public ResponseEntity<List<PacienteBusquedaDTO>> obtenerTodosPublico() {
+        List<Paciente> pacientes = pacienteService.obtenerTodos();
+        
+        // ✅ Convertir a DTO
+        List<PacienteBusquedaDTO> dtos = pacientes.stream()
+            .map(PacienteBusquedaDTO::new)
+            .collect(Collectors.toList());
+        
+        return ResponseEntity.ok(dtos);
     }
     
-    /**
-     * Obtener paciente por ID - PÚBLICO
-     */
     @GetMapping("/public/{id}")
-    public ResponseEntity<Paciente> obtenerPorIdPublico(@PathVariable Long id) {
-        Optional<Paciente> paciente = pacienteService.obtenerPorId(id);
-        return paciente.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PacienteBusquedaDTO> obtenerPorIdPublico(@PathVariable Long id) {
+        Optional<Paciente> pacienteOpt = pacienteService.obtenerPorId(id);
+        
+        if (pacienteOpt.isPresent()) {
+            PacienteBusquedaDTO dto = new PacienteBusquedaDTO(pacienteOpt.get());
+            return ResponseEntity.ok(dto);
+        }
+        
+        return ResponseEntity.notFound().build();
     }
     
     // ===== ENDPOINTS PARA ESTUDIANTES (CON VALIDACIÓN) =====
     
-    /**
-     * Obtiene información del paciente que el estudiante tiene prestado
-     */
     @GetMapping("/estudiante/paciente-prestado")
     public ResponseEntity<?> obtenerPacientePrestado() {
         Long idEstudiante = (Long) session.getAttribute("idEstudiante");
@@ -117,9 +129,6 @@ public class PacienteController {
         return ResponseEntity.ok(info);
     }
     
-    /**
-     * Busca paciente por CI y valida que sea el que tiene prestado
-     */
     @GetMapping("/estudiante/buscar-por-ci")
     public ResponseEntity<?> buscarPorCiEstudiante(@RequestParam String ci) {
         try {
@@ -155,16 +164,15 @@ public class PacienteController {
                 return ResponseEntity.status(403).body(errorData);
             }
             
-            return ResponseEntity.ok(pacientes);
+            // ✅ Convertir a DTO
+            PacienteBusquedaDTO dto = new PacienteBusquedaDTO(paciente);
+            return ResponseEntity.ok(dto);
             
         } catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(new ErrorResponse("CI inválido"));
         }
     }
     
-    /**
-     * Busca pacientes por término y filtra solo el paciente prestado
-     */
     @GetMapping("/estudiante/buscar")
     public ResponseEntity<?> buscarPorTerminoEstudiante(@RequestParam String term) {
         try {
@@ -197,16 +205,18 @@ public class PacienteController {
                 return ResponseEntity.status(403).body(errorData);
             }
             
-            return ResponseEntity.ok(pacientesFiltrados);
+            // ✅ Convertir a DTO
+            List<PacienteBusquedaDTO> dtos = pacientesFiltrados.stream()
+                .map(PacienteBusquedaDTO::new)
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(dtos);
             
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse("Error en la búsqueda: " + e.getMessage()));
         }
     }
     
-    /**
-     * Verifica si el estudiante puede consultar a un paciente específico
-     */
     @GetMapping("/estudiante/verificar-permiso")
     public ResponseEntity<?> verificarPermisoEstudiante(@RequestParam Long idPaciente) {
         Long idEstudiante = (Long) session.getAttribute("idEstudiante");
@@ -262,11 +272,6 @@ public class PacienteController {
         }
     }
 
-
-
-
-
-    // En PacienteController.java - Agrega este método
     @GetMapping("/debug/verificar-sesion")
     public ResponseEntity<?> verificarSesionEstudiante() {
         Long idEstudiante = (Long) session.getAttribute("idEstudiante");

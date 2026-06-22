@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Pacientes - Clínica Odontológica</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 CSS (opcional, pero recomendado) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
     /* ESTILOS GENERALES RENOVADOS - SIN MARGENES */
     * {
@@ -479,12 +481,8 @@
 
         <!-- CONTENEDOR PRINCIPAL DEL FORMULARIO -->
         <div class="form-container">
-            <!-- MENSAJES DE ESTADO -->
+            <!-- MENSAJES DE ESTADO (ahora solo para errores, el éxito usa SweetAlert) -->
             <div class="message-container">
-                <div id="successMessage" class="message success">
-                    <i class="fas fa-check-circle"></i>
-                    <span></span>
-                </div>
                 <div id="errorMessage" class="message error">
                     <i class="fas fa-exclamation-circle"></i>
                     <span></span>
@@ -537,11 +535,18 @@
                     </div>
 
                     <div class="form-row">
-                        <!-- NOTA IMPORTANTE: Cambié el orden para que coincida con el formulario que funciona -->
+
+                        <div class="form-field">
+                            <label for="fechaNacimiento"><i class="fas fa-calendar-alt"></i> FECHA DE NACIMIENTO</label>
+                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                            <div class="form-helper">
+                                <i class="fas fa-calculator"></i> La edad se calculará automáticamente
+                            </div>
+                        </div>
                         <div class="form-field">
                             <label for="edad"><i class="fas fa-birthday-cake"></i> EDAD</label>
                             <input type="number" id="edad" name="edad" 
-                                   placeholder="Edad calculada" min="1" max="120" required>
+                                   placeholder="Edad" min="1" max="120" required>
                         </div>
                         <div class="form-field">
                             <label for="sexo"><i class="fas fa-venus-mars"></i> GÉNERO</label>
@@ -551,13 +556,7 @@
                                 <option value="F">Femenino</option>
                             </select>
                         </div>
-                        <div class="form-field">
-                            <label for="fechaNacimiento"><i class="fas fa-calendar-alt"></i> FECHA DE NACIMIENTO</label>
-                            <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-                            <div class="form-helper">
-                                <i class="fas fa-calculator"></i> La edad se calculará automáticamente
-                            </div>
-                        </div>
+
                     </div>
                 </div>
 
@@ -653,6 +652,9 @@
         </div>
     </div>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     // CONSTANTES Y CONFIGURACIÓN
     const API_URL = '/recepcion/paciente/crear';
@@ -660,26 +662,19 @@
     // ELEMENTOS DEL DOM
     const form = document.getElementById('patientRegistrationForm');
     const submitBtn = document.getElementById('submitBtn');
-    const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
     const loadingMessage = document.getElementById('loadingMessage');
     const fechaNacimiento = document.getElementById('fechaNacimiento');
     const edadInput = document.getElementById('edad');
 
     // FUNCIONES DE UTILIDAD
-    function showMessage(element, message, type = 'success') {
-        const span = element.querySelector('span');
+    function showErrorMessage(message) {
+        const span = errorMessage.querySelector('span');
         span.textContent = message;
-        element.style.display = 'flex';
-        
-        if (type === 'error') {
-            element.className = 'message error';
-        } else {
-            element.className = 'message success';
-        }
+        errorMessage.style.display = 'flex';
         
         setTimeout(() => {
-            element.style.display = 'none';
+            errorMessage.style.display = 'none';
         }, 5000);
     }
 
@@ -695,17 +690,35 @@
         }
     }
 
-    // CÁLCULO AUTOMÁTICO DE EDAD (igual que en el segundo formulario)
+    // Mostrar mensaje de éxito con SweetAlert2 (estilo similar al login)
+    function showSuccessAlert(nombrePaciente) {
+        Swal.fire({
+            title: '✅ ¡Paciente Registrado!',
+            icon: 'success',
+            timer: 3000,
+            showConfirmButton: true,
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#059669',
+            timerProgressBar: true,
+            background: '#f0fdf4',
+            iconColor: '#10b981',
+            customClass: {
+                title: 'swal-title-custom',
+                popup: 'swal-popup-custom'
+            }
+        });
+    }
+
+    // CÁLCULO AUTOMÁTICO DE EDAD
     fechaNacimiento.addEventListener('change', function() {
         if (!this.value) return;
         
-        const fechaNacimiento = new Date(this.value);
+        const fechaNacimientoDate = new Date(this.value);
         const hoy = new Date();
-        let edadCalculada = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        let edadCalculada = hoy.getFullYear() - fechaNacimientoDate.getFullYear();
         
-        // Ajuste para si aún no ha cumplido años este año
-        const mesDiferencia = hoy.getMonth() - fechaNacimiento.getMonth();
-        if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        const mesDiferencia = hoy.getMonth() - fechaNacimientoDate.getMonth();
+        if (mesDiferencia < 0 || (mesDiferencia === 0 && hoy.getDate() < fechaNacimientoDate.getDate())) {
             edadCalculada--;
         }
         
@@ -716,16 +729,16 @@
         } else if (edadCalculada <= 0) {
             edadInput.value = '';
             edadInput.classList.add('invalid');
-            showMessage(errorMessage, 'La fecha de nacimiento no puede ser futura o muy reciente', 'error');
+            showErrorMessage('La fecha de nacimiento no puede ser futura o muy reciente');
         }
     });
 
-    // VALIDACIÓN DE EDAD MANUAL (igual que en el segundo formulario)
+    // VALIDACIÓN DE EDAD MANUAL
     edadInput.addEventListener('change', function() {
         const edad = parseInt(this.value);
         if (edad < 1 || edad > 120) {
             this.classList.add('invalid');
-            showMessage(errorMessage, 'La edad debe estar entre 1 y 120 años', 'error');
+            showErrorMessage('La edad debe estar entre 1 y 120 años');
             this.value = '';
         } else {
             this.classList.remove('invalid');
@@ -738,18 +751,18 @@
         const ci = this.value.trim();
         if (ci.length < 4) {
             this.classList.add('invalid');
-            showMessage(errorMessage, 'La cédula debe tener al menos 4 dígitos', 'error');
+            showErrorMessage('La cédula debe tener al menos 4 dígitos');
         } else {
             this.classList.remove('invalid');
             this.classList.add('valid');
         }
     });
 
-    // ENVÍO DEL FORMULARIO CON AJAX - VERSIÓN SIMPLIFICADA COMO EL SEGUNDO
+    // ENVÍO DEL FORMULARIO CON SweetAlert
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Validación básica como en el segundo formulario
+        // Validación básica
         const requiredFields = document.querySelectorAll('input[required], select[required]');
         let isValid = true;
         
@@ -763,17 +776,23 @@
         });
         
         if (!isValid) {
-            showMessage(errorMessage, 'Por favor, complete todos los campos obligatorios marcados en rojo', 'error');
+            showErrorMessage('Por favor, complete todos los campos obligatorios marcados en rojo');
             return;
         }
 
         // Validación específica de edad
         if (parseInt(edadInput.value) < 1 || parseInt(edadInput.value) > 120) {
-            showMessage(errorMessage, 'La edad debe estar entre 1 y 120 años', 'error');
+            showErrorMessage('La edad debe estar entre 1 y 120 años');
             edadInput.classList.add('invalid');
             edadInput.focus();
             return;
         }
+        
+        // Obtener el nombre completo para mostrarlo en el mensaje de éxito
+        const nombrePaciente = document.getElementById('nombre').value.trim();
+        const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
+        const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+        const nombreCompleto = `${nombrePaciente} ${apellidoPaterno} ${apellidoMaterno}`;
         
         // Mostrar loading
         showLoading(true);
@@ -790,16 +809,16 @@
             
             if (response.ok) {
                 const mensaje = await response.text();
-                showMessage(successMessage, mensaje || '¡Paciente registrado exitosamente!', 'success');
                 
-                // Resetear formulario después de éxito
-                setTimeout(() => {
-                    form.reset();
-                    // Limpiar clases de validación
-                    form.querySelectorAll('input, select').forEach(field => {
-                        field.classList.remove('valid', 'invalid');
-                    });
-                }, 1500);
+                // Mostrar SweetAlert de éxito (estilo similar al login)
+                await showSuccessAlert(nombreCompleto);
+                
+                // Resetear formulario después del éxito
+                form.reset();
+                // Limpiar clases de validación
+                form.querySelectorAll('input, select').forEach(field => {
+                    field.classList.remove('valid', 'invalid');
+                });
                 
             } else {
                 const error = await response.text();
@@ -808,7 +827,7 @@
             
         } catch (error) {
             console.error('Error:', error);
-            showMessage(errorMessage, error.message || 'Error al registrar el paciente', 'error');
+            showErrorMessage(error.message || 'Error al registrar el paciente. Por favor, intente nuevamente.');
             
         } finally {
             showLoading(false);
@@ -829,7 +848,6 @@
         form.querySelectorAll('input, select').forEach(field => {
             field.classList.remove('invalid', 'valid');
         });
-        successMessage.style.display = 'none';
         errorMessage.style.display = 'none';
     });
 
@@ -853,12 +871,6 @@
         
         fechaNacimiento.max = maxDate.toISOString().split('T')[0];
         fechaNacimiento.min = minDate.toISOString().split('T')[0];
-        
-        // Verificar si hay parámetros de éxito en la URL
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            showMessage(successMessage, '¡Paciente registrado exitosamente!', 'success');
-        }
         
         // Mejorar la experiencia en dispositivos móviles
         if ('ontouchstart' in window) {

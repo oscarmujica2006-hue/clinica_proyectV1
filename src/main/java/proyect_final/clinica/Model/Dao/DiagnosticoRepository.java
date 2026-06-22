@@ -3,7 +3,6 @@ package proyect_final.clinica.Model.Dao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import proyect_final.clinica.Model.Entity.Diagnostico;
 import java.util.Optional;
-import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

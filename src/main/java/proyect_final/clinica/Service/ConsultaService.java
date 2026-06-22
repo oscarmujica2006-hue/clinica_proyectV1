@@ -2,7 +2,6 @@ package proyect_final.clinica.Service;
 
 import proyect_final.clinica.Model.Entity.Consulta;
 import proyect_final.clinica.Model.Dto.ConsultaCompletaDTO;
-import java.time.LocalDate;
 import java.util.List;
 import java.io.IOException;
 import proyect_final.clinica.Model.Dto.ConsultaConFotosDTO;

@@ -415,43 +415,88 @@
             });
         }
 
-        function renderArchivoCard(archivo) {
-            const paciente = archivo.paciente || {};
-            const persona = paciente.persona || {};
-            const nombreCompleto = `${persona.nombre || ''} ${persona.apellidoPaterno || ''} ${persona.apellidoMaterno || ''}`.trim() || 'No disponible';
-            const ciPaciente = paciente.ci || 'No disponible';
-
-            return `
-                <div class="archivo-card">
-                    <div class="card-header">
-                        <span><i class="fas fa-archive"></i> Archivo #${archivo.idArchivo || 'N/A'}</span>
-                        <span class="estado-badge"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 5px;"></i> ${archivo.estado || 'ACTIVO'}</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-grid">
-                            <div class="info-group">
-                                <h4><i class="fas fa-folder"></i> Datos del Archivo</h4>
-                                <p><strong>Código:</strong> <span>${archivo.codigoArchivo || 'N/A'}</span></p>
-                                <p><strong>Fecha de creación:</strong> <span>${formatDate(archivo.fechaCreacion) || 'N/A'}</span></p>
-                                <p><strong>Ubicación física:</strong> <span>${archivo.ubicacionFisica || 'No especificada'}</span></p>
-                            </div>
-                            <div class="info-group">
-                                <h4><i class="fas fa-user"></i> Paciente Asociado</h4>
-                                <p><strong>Nombre completo:</strong> <span>${nombreCompleto}</span></p>
-                                <p><strong>C.I.:</strong> <span>${ciPaciente}</span></p>
-                                <p><strong>Historial clínico:</strong> <span>${paciente.historialClinico || 'N/A'}</span></p>
-                                <p><strong>Teléfono:</strong> <span>${paciente.telefono || 'N/A'}</span></p>
-                                <p><strong>Dirección:</strong> <span>${paciente.direccion || 'N/A'}</span></p>
+        function renderArchivoCard(archivoData) {
+            // Verificar si la respuesta tiene la estructura del backend (con archivo y paciente separados)
+            let archivo, paciente;
+            
+            if (archivoData.archivo && archivoData.paciente) {
+                // Estructura del backend: { archivo: {...}, paciente: {...} }
+                archivo = archivoData.archivo;
+                paciente = archivoData.paciente;
+                
+                // Si el paciente tiene nombreCompleto, lo usamos directamente
+                const nombreCompleto = paciente.nombreCompleto || 'No disponible';
+                const ciPaciente = paciente.ci || 'No disponible';
+                const idPaciente = paciente.id || 'No disponible';
+                
+                return `
+                    <div class="archivo-card">
+                        <div class="card-header">
+                            <span><i class="fas fa-archive"></i> Archivo #${archivo.idArchivo || 'N/A'}</span>
+                            <span class="estado-badge"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 5px; color: #10b981;"></i> ACTIVO</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-group">
+                                    <h4><i class="fas fa-folder"></i> Datos del Archivo</h4>
+                                    <p><strong>Código:</strong> <span>${archivo.codigoArchivo || 'N/A'}</span></p>
+                                    <p><strong>Ubicación física:</strong> <span>${archivo.ubicacionFisica || 'No especificada'}</span></p>
+                                    
+                                </div>
+                                <div class="info-group">
+                                    <h4><i class="fas fa-user"></i> Paciente Asociado</h4>
+                                    <p><strong>ID Paciente:</strong> <span>${idPaciente}</span></p>
+                                    <p><strong>C.I.:</strong> <span>${ciPaciente}</span></p>
+                                    <p><strong>Nombre completo:</strong> <span>${nombreCompleto}</span></p>
+                                    <p><strong>Historial clínico:</strong> <span>${paciente.historialClinico || 'No disponible'}</span></p>
+                                    <p><strong>Direccion:</strong> <span>${paciente.direccion || 'No disponible'}</span></p>
+                                </div>
                             </div>
                         </div>
-                        ${archivo.notas ? `
-                        <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
-                            <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Información adicional</h4>
-                            <p><strong>Notas internas:</strong> ${archivo.notas}</p>
-                        </div>` : ''}
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // Estructura directa del objeto Archivo (fallback)
+                archivo = archivoData;
+                const pacienteObj = archivo.paciente || {};
+                const persona = pacienteObj.persona || {};
+                const nombreCompleto = `${persona.nombre || ''} ${persona.apellidoPaterno || ''} ${persona.apellidoMaterno || ''}`.trim() || 'No disponible';
+                const ciPaciente = pacienteObj.ci || 'No disponible';
+                const idPaciente = pacienteObj.idPaciente || pacienteObj.id || 'No disponible';
+
+                return `
+                    <div class="archivo-card">
+                        <div class="card-header">
+                            <span><i class="fas fa-archive"></i> Archivo #${archivo.idArchivo || 'N/A'}</span>
+                            <span class="estado-badge"><i class="fas fa-circle" style="font-size: 0.6rem; margin-right: 5px; color: #10b981;"></i> ${archivo.estado || 'ACTIVO'}</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-group">
+                                    <h4><i class="fas fa-folder"></i> Datos del Archivo</h4>
+                                    <p><strong>Código:</strong> <span>${archivo.codigoArchivo || 'N/A'}</span></p>
+                                    <p><strong>Ubicación física:</strong> <span>${archivo.ubicacionFisica || 'No especificada'}</span></p>
+                                    <p><strong>Estado:</strong> <span>${archivo.estado || 'ACTIVO'}</span></p>
+                                </div>
+                                <div class="info-group">
+                                    <h4><i class="fas fa-user"></i> Paciente Asociado</h4>
+                                    <p><strong>ID Paciente:</strong> <span>${idPaciente}</span></p>
+                                    <p><strong>C.I.:</strong> <span>${ciPaciente}</span></p>
+                                    <p><strong>Nombre completo:</strong> <span>${nombreCompleto}</span></p>
+                                    ${pacienteObj.historialClinico ? `<p><strong>Historial clínico:</strong> <span>${pacienteObj.historialClinico}</span></p>` : ''}
+                                    ${pacienteObj.telefono ? `<p><strong>Teléfono:</strong> <span>${pacienteObj.telefono}</span></p>` : ''}
+                                    ${pacienteObj.direccion ? `<p><strong>Dirección:</strong> <span>${pacienteObj.direccion}</span></p>` : ''}
+                                </div>
+                            </div>
+                            ${archivo.notas ? `
+                            <div style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                                <h4 style="color: var(--primary); margin-bottom: 10px;"><i class="fas fa-info-circle"></i> Información adicional</h4>
+                                <p><strong>Notas internas:</strong> ${archivo.notas}</p>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         async function buscarArchivo() {
@@ -459,7 +504,7 @@
             const ci = ciInput.value.trim();
 
             if (!nombre && !ci) {
-                showNotification('warning', 'Debe ingresar al menos un campo.');
+                showNotification('warning', 'Debe ingresar al menos un campo (nombre o CI).');
                 return;
             }
 
@@ -468,67 +513,83 @@
             loadingIndicator.style.display = 'flex';
 
             try {
-                // 1. Buscar paciente por nombre o CI
-                let pacientes = [];
-                if (ci) {
-                    const url = `${API_PACIENTES}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error(`Error al buscar paciente: ${response.status}`);
-                    pacientes = await response.json();
-                } else {
-                    // Usar el método de búsqueda por nombre completo
-                    const url = `${API_PACIENTES}/buscar?term=${encodeURIComponent(nombre)}`;
-                    const response = await fetch(url);
-                    if (!response.ok) throw new Error(`Error al buscar pacientes: ${response.status}`);
-                    pacientes = await response.json();
-                }
-
-                if (!pacientes || pacientes.length === 0) {
-                    loadingIndicator.style.display = 'none';
-                    noResultsMessage.style.display = 'flex';
-                    showNotification('info', 'No se encontró ningún paciente con esos datos.');
-                    return;
-                }
-
-                // Si hay varios pacientes, tomamos el primero (puedes mejorar mostrando una lista)
-                const paciente = pacientes[0];
-                const pacienteId = paciente.idPaciente || paciente.id;
-
-                // 2. Obtener archivo por ID del paciente
-                const archivoUrl = `${API_ARCHIVOS}/paciente/${pacienteId}`;
+                // Construir URL con parámetros de búsqueda
+                let searchParams = new URLSearchParams();
+                if (ci) searchParams.append('ci', ci);
+                if (nombre) searchParams.append('nombre', nombre);
+                
+                const archivoUrl = `${API_ARCHIVOS}/buscar-por-paciente?${searchParams.toString()}`;
                 const archivoResponse = await fetch(archivoUrl);
                 
                 if (archivoResponse.status === 404) {
                     loadingIndicator.style.display = 'none';
                     noResultsMessage.style.display = 'flex';
+                    noResultsMessage.innerHTML = '<i class="fas fa-info-circle"></i> No se encontró archivo para el paciente';
                     showNotification('info', 'El paciente no tiene ningún archivo asociado.');
                     return;
                 }
                 
                 if (!archivoResponse.ok) {
-                    throw new Error(`Error al obtener archivo: ${archivoResponse.status}`);
+                    // Intentar obtener mensaje de error del backend
+                    let errorMessage = `Error ${archivoResponse.status}`;
+                    try {
+                        const errorData = await archivoResponse.json();
+                        if (errorData.message) errorMessage = errorData.message;
+                    } catch (e) {
+                        // Si no se puede parsear JSON, usar texto plano
+                        errorMessage = await archivoResponse.text() || errorMessage;
+                    }
+                    throw new Error(errorMessage);
                 }
 
-                const archivo = await archivoResponse.json();
-                loadingIndicator.style.display = 'none';
-                archivoCard.innerHTML = renderArchivoCard(archivo);
-                archivoCard.style.display = 'block';
+                const responseData = await archivoResponse.json();
+                
+                // Verificar si la respuesta indica error (tiene success: false)
+                if (responseData.success === false) {
+                    loadingIndicator.style.display = 'none';
+                    noResultsMessage.style.display = 'flex';
+                    noResultsMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${responseData.message || 'Error al buscar archivo'}`;
+                    showNotification('error', responseData.message || 'Error al buscar archivo');
+                    return;
+                }
+
+                // Si la respuesta tiene la estructura del backend con archivo y paciente
+                if (responseData.archivo && responseData.paciente) {
+                    loadingIndicator.style.display = 'none';
+                    archivoCard.innerHTML = renderArchivoCard(responseData);
+                    archivoCard.style.display = 'block';
+                    showNotification('success', 'Archivo encontrado exitosamente');
+                } else {
+                    // Si la respuesta es el objeto Archivo directamente
+                    loadingIndicator.style.display = 'none';
+                    archivoCard.innerHTML = renderArchivoCard(responseData);
+                    archivoCard.style.display = 'block';
+                    showNotification('success', 'Archivo encontrado exitosamente');
+                }
 
             } catch (error) {
                 console.error('Error:', error);
                 loadingIndicator.style.display = 'none';
                 noResultsMessage.style.display = 'flex';
                 noResultsMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error: ${error.message}`;
-                showNotification('error', error.message);
+                showNotification('error', error.message || 'Ocurrió un error al buscar el archivo');
             }
         }
 
+        // Event listeners
         btnBuscar.addEventListener('click', buscarArchivo);
+        
+        // Permitir búsqueda con Enter en ambos campos
         [nombreInput, ciInput].forEach(input => {
             input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') buscarArchivo();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    buscarArchivo();
+                }
             });
         });
+        
+        // Solo permitir números en el campo CI
         ciInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
         });
