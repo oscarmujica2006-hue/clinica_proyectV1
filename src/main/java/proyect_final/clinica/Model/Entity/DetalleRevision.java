@@ -3,13 +3,18 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "detalle_revision")
-public class DetalleRevision {
+public class DetalleRevision  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_detalle")
@@ -28,6 +33,19 @@ public class DetalleRevision {
 
     @Column(name = "observaciones")
     private String observaciones;
+    @Column(name = "usu_reg_detRev", length = 100)
+    private String usuRegDetRev;
+
+    @Column(name = "usu_mod_detRev", length = 100)
+    private String usuModDetRev;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_detRev", updatable = false)
+    private LocalDateTime fechRegDetRev;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_detRev")
+    private LocalDateTime fechModDetRev;
 
     @OneToMany(mappedBy = "detalleRevision", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CaraDetRevi> carasDetRevi = new ArrayList<>();

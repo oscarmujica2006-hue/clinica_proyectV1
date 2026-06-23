@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Getter
 @Setter
@@ -50,6 +53,19 @@ public class SeguimientoTratamiento {
 
     @Column(name = "plan_accion")
     private String planAccion;
+    @Column(name = "usu_reg_segTra", length = 100)
+    private String usuRegSegTra;
+
+    @Column(name = "usu_mod_segTra", length = 100)
+    private String usuModSegTra;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_segTra", updatable = false)
+    private LocalDateTime fechRegSegTra;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_segTra")
+    private LocalDateTime fechModSegTra;
 
     // Relación con detalles (un seguimiento tiene muchos detalles)
     @OneToMany(mappedBy = "seguimientoTratamiento", cascade = CascadeType.ALL, orphanRemoval = true)

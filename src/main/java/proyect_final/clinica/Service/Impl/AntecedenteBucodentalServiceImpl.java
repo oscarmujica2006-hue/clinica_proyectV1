@@ -1,31 +1,31 @@
 package proyect_final.clinica.Service.Impl;
 
-import proyect_final.clinica.Model.Entity.AntecedentesBucodentales;
+import proyect_final.clinica.Model.Entity.AntecedenteBucodental;
 import proyect_final.clinica.Model.Dao.AntecedentesBucodentalesRepository;
-import proyect_final.clinica.Service.AntecedentesBucodentalesService;
+import proyect_final.clinica.Service.AntecedenteBucodentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AntecedentesBucodentalesServiceImpl implements AntecedentesBucodentalesService {
+public class AntecedenteBucodentalServiceImpl implements AntecedenteBucodentalService {
 
     @Autowired
     private AntecedentesBucodentalesRepository antecedentesBucodentalesRepository;
 
     @Override
-    public List<AntecedentesBucodentales> obtenerTodos() {
+    public List<AntecedenteBucodental> obtenerTodos() {
         return antecedentesBucodentalesRepository.findAll();
     }
 
     @Override
-    public Optional<AntecedentesBucodentales> obtenerPorId(Long id) {
+    public Optional<AntecedenteBucodental> obtenerPorId(Long id) {
         return antecedentesBucodentalesRepository.findById(id);
     }
 
     @Override
-    public AntecedentesBucodentales guardar(AntecedentesBucodentales antecedentesBucodentales) {
+    public AntecedenteBucodental guardar(AntecedenteBucodental antecedentesBucodentales) {
         return antecedentesBucodentalesRepository.save(antecedentesBucodentales);
     }
 

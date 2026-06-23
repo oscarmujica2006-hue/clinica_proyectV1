@@ -3,6 +3,11 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Getter
@@ -29,6 +34,19 @@ public class DiagnosticoTratamiento {
     @Column(name="diente_afectado", length=50)
     private String dienteAfectado;  
 
+    @Column(name = "usu_reg_diaTra", length = 100)
+    private String usuRegDiaTra;
+
+    @Column(name = "usu_mod_diaTra", length = 100)
+    private String usuModDiaTra;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_diaTra", updatable = false)
+    private LocalDateTime fechRegDiaTra;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_diaTra")
+    private LocalDateTime fechModDiaTra;
 
     @OneToMany(mappedBy = "diagnosticoTratamiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Consentimiento> consentimientos = new ArrayList<>();

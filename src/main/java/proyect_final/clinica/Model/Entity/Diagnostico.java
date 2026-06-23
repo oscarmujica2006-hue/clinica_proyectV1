@@ -3,13 +3,18 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "diagnostico")
-public class Diagnostico {
+public class Diagnostico  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_diagnostico")
@@ -63,6 +68,19 @@ public class Diagnostico {
 
     @Column(name = "total_piezas_temporales")
     private Integer totalPiezasTemporales;
+    @Column(name = "usu_reg_dia", length = 100)
+    private String usuRegDia;
+
+    @Column(name = "usu_mod_dia", length = 100)
+    private String usuModDia;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_dia", updatable = false)
+    private LocalDateTime fechRegDia;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_dia")
+    private LocalDateTime fechModDia;
 
     @OneToMany(mappedBy = "diagnostico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DiagnosticoTratamiento> diagnosticosTratamientos = new ArrayList<>();

@@ -1,5 +1,10 @@
 package proyect_final.clinica.Model.Entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,4 +39,17 @@ public class Estudiante {
     @Column(name="bloqueado",nullable=false)
     private Boolean bloqueado;
     
+    @Column(name = "usu_reg_usuEst", length = 100)
+    private String usuRegUsuEst;
+
+    @Column(name = "usu_mod_usuEst", length = 100)
+    private String usuModUsuEst;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_usuEst", updatable = false)
+    private LocalDateTime fechRegUsuEst;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_usuEst")
+    private LocalDateTime fechModUsuEst;
 }

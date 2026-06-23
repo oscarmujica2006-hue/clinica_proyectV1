@@ -1,5 +1,11 @@
 package proyect_final.clinica.Model.Entity;
 import lombok.*;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Getter
@@ -23,5 +29,17 @@ public class TipoPaciente {
 
     @Column(name = "edad_max")
     private Integer edadMax;
+    @Column(name = "usu_reg_tipPac", length = 100)
+    private String usuRegTipPac;
 
+    @Column(name = "usu_mod_tipPac", length = 100)
+    private String usuModTipPac;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_tipPac", updatable = false)
+    private LocalDateTime fechRegTipPac;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_tipPac")
+    private LocalDateTime fechModTipPac;
 }

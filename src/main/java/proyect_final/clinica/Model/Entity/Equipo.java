@@ -1,26 +1,41 @@
 package proyect_final.clinica.Model.Entity;
-import jakarta.persistence.*;
-import lombok.*;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
-@Table(name="equipo")
-
+@Table(name = "equipo")
 public class Equipo {
-  @Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_equipo")
     private Long idEquipo;
 
-    @Column(name = "nombre_equipo", nullable = false)  
+    @Column(name = "codigo_equipo", length = 43, nullable = false)
+    private String codigoEquipo;
+
+    @Column(name = "nombre_equipo", length = 255, nullable = false)
     private String nombreEquipo;
-    
 
-    @Column(name="codigo_equipo",nullable=false,length = 43)
-    private String codigoequipo;
+    // Auditoría
+    @Column(name = "usu_reg_equ", length = 100)
+    private String usuRegEqu;
 
+    @Column(name = "usu_mod_equ", length = 100)
+    private String usuModEqu;
 
-    
+    @CreationTimestamp
+    @Column(name = "fech_reg_equ", updatable = false)
+    private LocalDateTime fechRegEqu;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_equ")
+    private LocalDateTime fechModEqu;
 }

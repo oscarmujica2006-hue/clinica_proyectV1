@@ -110,13 +110,13 @@ public class ConsultaServiceImpl implements ConsultaService {
         examenIntraOral.setEncias(consultaDTO.getEncias());
         examenIntraOral.setUtilizaProtesisDental(consultaDTO.getUtilizaProtesisDental());
 
-        AntecedentesBucodentales antecedentesBucodentales = new AntecedentesBucodentales();
+        AntecedenteBucodental antecedentesBucodentales = new AntecedenteBucodental();
         antecedentesBucodentales.setFechaRevision(consultaDTO.getFechaRevision());
         antecedentesBucodentales.setFuma(consultaDTO.getHabitoFuma());
         antecedentesBucodentales.setBebe(consultaDTO.getHabitoBebe());
         antecedentesBucodentales.setOtrosHabitos(consultaDTO.getOtrosHabitos());
 
-        AntecedentesHigieneOral antecedentesHigieneOral = new AntecedentesHigieneOral();
+        AntecedenteHigieneOral antecedentesHigieneOral = new AntecedenteHigieneOral();
         antecedentesHigieneOral.setUtilizaCepilloDental(consultaDTO.getUtilizaCepilloDental());
         antecedentesHigieneOral.setUtilizaHiloDental(consultaDTO.getUtilizaHiloDental());
         antecedentesHigieneOral.setUtilizaEnjuagueBucal(consultaDTO.getUtilizaEnjuagueBucal());
@@ -377,13 +377,13 @@ public class ConsultaServiceImpl implements ConsultaService {
         examenIntraOral.setEncias(dto.getEncias());
         examenIntraOral.setUtilizaProtesisDental(dto.getUtilizaProtesisDental());
 
-        AntecedentesBucodentales antecedentesBucodentales = new AntecedentesBucodentales();
+        AntecedenteBucodental antecedentesBucodentales = new AntecedenteBucodental();
         antecedentesBucodentales.setFechaRevision(dto.getFechaRevision());
         antecedentesBucodentales.setFuma(dto.getHabitoFuma());
         antecedentesBucodentales.setBebe(dto.getHabitoBebe());
         antecedentesBucodentales.setOtrosHabitos(dto.getOtrosHabitos());
 
-        AntecedentesHigieneOral antecedentesHigieneOral = new AntecedentesHigieneOral();
+        AntecedenteHigieneOral antecedentesHigieneOral = new AntecedenteHigieneOral();
         antecedentesHigieneOral.setUtilizaCepilloDental(dto.getUtilizaCepilloDental());
         antecedentesHigieneOral.setUtilizaHiloDental(dto.getUtilizaHiloDental());
         antecedentesHigieneOral.setUtilizaEnjuagueBucal(dto.getUtilizaEnjuagueBucal());

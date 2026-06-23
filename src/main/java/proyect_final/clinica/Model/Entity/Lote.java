@@ -2,14 +2,19 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.util.ArrayList;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "lote")
-public class Lote {
+public class Lote{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_lote")
@@ -39,6 +44,19 @@ public class Lote {
 
     @Column(name = "observaciones")
     private String observaciones;
+    @Column(name = "usu_reg_lot", length = 100)
+    private String usuRegLot;
+
+    @Column(name = "usu_mod_lot", length = 100)
+    private String usuModLot;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_lot", updatable = false)
+    private LocalDateTime fechRegLot;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_lot")
+    private LocalDateTime fechModLot;
 
     @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DetalleLote> detallesLote = new ArrayList<>();

@@ -1,15 +1,20 @@
 package proyect_final.clinica.Model.Entity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import lombok.*;
 @Getter
 @Setter
 
 
 @Entity@Table(name = "solicitud_insumo")
-public class SolicitudInsumo {
+public class SolicitudInsumo{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +30,20 @@ public class SolicitudInsumo {
 
     @Column(name = "estado_solicitud", nullable = false)
     private String estadoSolicitud;
-    
+    @Column(name = "usu_reg_solIns", length = 100)
+    private String usuRegSolIns;
+
+    @Column(name = "usu_mod_solIns", length = 100)
+    private String usuModSolIns;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_solIns", updatable = false)
+    private LocalDateTime fechRegSolIns;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_solIns")
+    private LocalDateTime fechModSolIns;
+  
     @OneToMany(mappedBy = "solicitudInsumo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<SolicitudDetInsumo> detalles;
 

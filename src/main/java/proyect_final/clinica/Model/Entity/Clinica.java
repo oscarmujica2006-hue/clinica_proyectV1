@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "clinica")
@@ -32,10 +35,32 @@ public class Clinica {
     @JsonIgnore
     private List<Docente> docentes;
 
+    @OneToMany(mappedBy = "clinica")
+    @JsonIgnore
+    private List<Materia> materias;
+
+    @OneToMany(mappedBy = "clinica")
+    @JsonIgnore
+    private List<TipoTratamiento> tiposTratamiento;
+
+    @Column(name = "usu_reg_cli", length = 100)
+    private String usuRegCli;
+
+    @Column(name = "usu_mod_cli", length = 100)
+    private String usuModCli;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_cli", updatable = false)
+    private LocalDateTime fechRegCli;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_cli")
+    private LocalDateTime fechModCli;
+
     // Constructores
     public Clinica() {}
 
-    public Clinica(String nombreClinica, String turno, Integer capacidadMaxima) {
+    public Clinica(String nombreClinica, Integer capacidadMaxima) {
         this.nombreClinica = nombreClinica;
         this.capacidadMaxima = capacidadMaxima;
     }
@@ -49,19 +74,20 @@ public class Clinica {
         this.idClinica = idClinica;
     }
 
-    public String getNombreClinica() {
-        return nombreClinica;
-    }
-
-    public void setNombreClinica(String nombreClinica) {
-        this.nombreClinica = nombreClinica;
-    }
     public Rote getRote() {
         return rote;
     }
 
     public void setRote(Rote rote) {
         this.rote = rote;
+    }
+
+    public String getNombreClinica() {
+        return nombreClinica;
+    }
+
+    public void setNombreClinica(String nombreClinica) {
+        this.nombreClinica = nombreClinica;
     }
 
     public Turno getTurno() {
@@ -71,7 +97,6 @@ public class Clinica {
     public void setTurno(Turno turno) {
         this.turno = turno;
     }
-
 
     public Integer getCapacidadMaxima() {
         return capacidadMaxima;
@@ -87,5 +112,57 @@ public class Clinica {
 
     public void setDocentes(List<Docente> docentes) {
         this.docentes = docentes;
+    }
+
+    public List<Materia> getMaterias() {
+        return materias;
+    }
+
+    public void setMaterias(List<Materia> materias) {
+        this.materias = materias;
+    }
+
+    public List<TipoTratamiento> getTiposTratamiento() {
+        return tiposTratamiento;
+    }
+
+    public void setTiposTratamiento(List<TipoTratamiento> tiposTratamiento) {
+        this.tiposTratamiento = tiposTratamiento;
+    }
+
+    // =============================================
+    // GETTERS Y SETTERS DE AUDITORÍA
+    // =============================================
+
+    public String getUsuRegCli() {
+        return usuRegCli;
+    }
+
+    public void setUsuRegCli(String usuRegCli) {
+        this.usuRegCli = usuRegCli;
+    }
+
+    public String getUsuModCli() {
+        return usuModCli;
+    }
+
+    public void setUsuModCli(String usuModCli) {
+        this.usuModCli = usuModCli;
+    }
+
+    public LocalDateTime getFechRegCli() {
+        return fechRegCli;
+    }
+
+    public void setFechRegCli(LocalDateTime fechRegCli) {
+        this.fechRegCli = fechRegCli;
+    }
+
+    public LocalDateTime getFechModCli() {
+        return fechModCli;
+    }
+
+    public void setFechModCli(LocalDateTime fechModCli) {
+        this.fechModCli = fechModCli;
     }
 }

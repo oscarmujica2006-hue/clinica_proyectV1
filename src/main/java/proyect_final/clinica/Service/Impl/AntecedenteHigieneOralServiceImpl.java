@@ -1,31 +1,31 @@
 package proyect_final.clinica.Service.Impl;
 
-import proyect_final.clinica.Model.Entity.AntecedentesHigieneOral;
+import proyect_final.clinica.Model.Entity.AntecedenteHigieneOral;
 import proyect_final.clinica.Model.Dao.AntecedentesHigieneOralRepository;
-import proyect_final.clinica.Service.AntecedentesHigieneOralService;
+import proyect_final.clinica.Service.AntecedenteHigieneOralService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AntecedentesHigieneOralServiceImpl implements AntecedentesHigieneOralService {
+public class AntecedenteHigieneOralServiceImpl implements AntecedenteHigieneOralService {
 
     @Autowired
     private AntecedentesHigieneOralRepository antecedentesHigieneOralRepository;
 
     @Override
-    public List<AntecedentesHigieneOral> obtenerTodos() {
+    public List<AntecedenteHigieneOral> obtenerTodos() {
         return antecedentesHigieneOralRepository.findAll();
     }
 
     @Override
-    public Optional<AntecedentesHigieneOral> obtenerPorId(Long id) {
+    public Optional<AntecedenteHigieneOral> obtenerPorId(Long id) {
         return antecedentesHigieneOralRepository.findById(id);
     }
 
     @Override
-    public AntecedentesHigieneOral guardar(AntecedentesHigieneOral antecedentesHigieneOral) {
+    public AntecedenteHigieneOral guardar(AntecedenteHigieneOral antecedentesHigieneOral) {
         return antecedentesHigieneOralRepository.save(antecedentesHigieneOral);
     }
 

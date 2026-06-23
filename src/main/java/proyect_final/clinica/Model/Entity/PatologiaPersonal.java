@@ -1,5 +1,10 @@
 package proyect_final.clinica.Model.Entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +14,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "patologiapersonal")
-public class PatologiaPersonal {
+public class PatologiaPersonal  {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,4 +66,17 @@ public class PatologiaPersonal {
 
     @Column(name="ninguno")
     private Boolean ninguno;
+    @Column(name = "usu_reg_patPer", length = 100)
+    private String usuRegPatPer;
+
+    @Column(name = "usu_mod_patPer", length = 100)
+    private String usuModPatPer;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_patPer", updatable = false)
+    private LocalDateTime fechRegPatPer;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_patPer")
+    private LocalDateTime fechModPatPer;
 }

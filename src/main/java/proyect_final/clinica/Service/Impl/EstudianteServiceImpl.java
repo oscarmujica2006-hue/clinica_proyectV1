@@ -1,6 +1,6 @@
 package proyect_final.clinica.Service.Impl;
 
-import proyect_final.clinica.Model.Entity.Cupos;
+import proyect_final.clinica.Model.Entity.Cupo;
 import proyect_final.clinica.Model.Entity.Estudiante;
 // import proyect_final.clinica.Model.Dao.CupoRepository;
 import proyect_final.clinica.Model.Dao.EstudianteRepository;

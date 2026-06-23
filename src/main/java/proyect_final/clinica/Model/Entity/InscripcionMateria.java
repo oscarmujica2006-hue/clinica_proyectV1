@@ -1,5 +1,9 @@
 package proyect_final.clinica.Model.Entity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,7 +14,7 @@ import lombok.Setter;
 @Entity
 @Table(name="inscripcion_materia")
 
-public class InscripcionMateria {
+public class InscripcionMateria  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JoinColumn(name = "id_inscripcion_materia")
@@ -34,4 +38,17 @@ public class InscripcionMateria {
     @Column(name="estado_inscripcion")
     private String estadoInscripcion ;
 
+    @Column(name = "usu_reg_insMat", length = 100)
+    private String usuRegInsMat;
+
+    @Column(name = "usu_mod_insMat", length = 100)
+    private String usuModInsMat;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_insMat", updatable = false)
+    private LocalDateTime fechRegInsMat;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_insMat")
+    private LocalDateTime fechModInsMat;
 }

@@ -47,5 +47,10 @@ public class EstudianteViewController {
     public String mostrarCupo() {
         return "estudiantes/cupos-progreso/cupo-vista";
     }
+    @GetMapping("/soli-equipo/solicitud_equipo-vista")
+    public String mostrarSoliEquipo() {
+        return "estudiantes/soli-equipo/solicitud_equipo-vista";
+    }
+    
 
 }

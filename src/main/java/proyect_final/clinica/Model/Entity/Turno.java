@@ -1,4 +1,9 @@
 package proyect_final.clinica.Model.Entity;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,4 +26,17 @@ public class Turno {
     private String horaInicio;
     @Column(name="hora_fin",nullable=false)
     private String horaFin;
+    @Column(name = "usu_reg_tur", length = 100)
+    private String usuRegTur;
+
+    @Column(name = "usu_mod_tur", length = 100)
+    private String usuModTur;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_tur", updatable = false)
+    private LocalDateTime fechRegTur;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_tur")
+    private LocalDateTime fechModTur;
 }

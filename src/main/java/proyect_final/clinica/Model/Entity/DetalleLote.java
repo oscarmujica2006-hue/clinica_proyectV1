@@ -3,12 +3,16 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "detalle_lote")
-public class DetalleLote {
+public class DetalleLote  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_det_lote")
@@ -30,4 +34,17 @@ public class DetalleLote {
 
     @Column(name = "observaciones")
     private String observaciones;
+    @Column(name = "usu_reg_detLot", length = 100)
+    private String usuRegDetLot;
+
+    @Column(name = "usu_mod_detLot", length = 100)
+    private String usuModDetLot;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_detLot", updatable = false)
+    private LocalDateTime fechRegDetLot;
+    
+    @UpdateTimestamp
+    @Column(name = "fech_mod_detLot")
+    private LocalDateTime fechModDetLot;
 }

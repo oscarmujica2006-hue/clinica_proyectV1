@@ -1,7 +1,13 @@
 package proyect_final.clinica.Model.Entity;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,6 +42,19 @@ public class Docente {
     @ManyToOne
     @JoinColumn(name = "id_clinica")
     private Clinica clinica;
+    @Column(name = "usu_reg_usuDoc", length = 100)
+    private String usuRegUsuDoc;
+
+    @Column(name = "usu_mod_usuDoc", length = 100)
+    private String usuModUsuDoc;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_usuDoc", updatable = false)
+    private LocalDateTime fechRegUsuDoc;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_usuDoc")
+    private LocalDateTime fechModUsuDoc;
 
     @OneToMany(mappedBy = "docente")
     private List<Consentimiento> consentimientos;

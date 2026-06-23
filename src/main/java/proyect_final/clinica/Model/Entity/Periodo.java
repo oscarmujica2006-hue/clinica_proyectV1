@@ -1,5 +1,9 @@
 package proyect_final.clinica.Model.Entity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -9,7 +13,7 @@ import lombok.Setter;
 @Entity
 @Table(name="periodo")
 
-public class Periodo {
+public class Periodo  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +28,17 @@ public class Periodo {
 
     @Column(name="fecha_fin")
     private LocalDate fechaFin;
+    @Column(name = "usu_reg_per", length = 100)
+    private String usuRegPer;
 
+    @Column(name = "usu_mod_per", length = 100)
+    private String usuModPer;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_per", updatable = false)
+    private LocalDateTime fechRegPer;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_per")
+    private LocalDateTime fechModPer;
 }

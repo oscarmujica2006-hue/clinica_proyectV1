@@ -4,13 +4,16 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "recibo")
-public class Recibo {
+public class Recibo  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_recibo")
@@ -28,4 +31,17 @@ public class Recibo {
 
     @Column(name="estado_pago", nullable = false )
     private String estadoPago;
+    @Column(name = "usu_reg_rec", length = 100)
+    private String usuRegRec;
+
+    @Column(name = "usu_mod_rec", length = 100)
+    private String usuModRec;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_rec", updatable = false)
+    private LocalDateTime fechRegRec;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_rec")
+    private LocalDateTime fechModRec;
 }

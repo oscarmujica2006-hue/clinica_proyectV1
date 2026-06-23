@@ -3,6 +3,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Setter
 @Entity
@@ -43,4 +47,18 @@ public class PrestamoActual {
 
     @Column(name="dias_retraso" , nullable = true)
     private Integer diasRetraso;
+
+    @Column(name = "usu_reg_preAct", length = 100)
+    private String usuRegPreAct;
+
+    @Column(name = "usu_mod_preAct", length = 100)
+    private String usuModPreAct;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_preAct", updatable = false)
+    private LocalDateTime fechRegPreAct;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_preAct")
+    private LocalDateTime fechModPreAct;
 }

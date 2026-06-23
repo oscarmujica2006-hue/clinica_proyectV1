@@ -1,13 +1,19 @@
 package proyect_final.clinica.Model.Entity;
 
 import lombok.*;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "detalle_pedido_insumo")
-public class DetallePedido {
+public class DetallePedido  {
     @Id
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,6 +46,17 @@ public class DetallePedido {
     @Column(name = "estado_det_pedido", nullable = false, length = 20 )
     private String estadoDetPedido;
 
+    @Column(name = "usu_reg_detPedIns", length = 100)
+    private String usuRegDetPedIns;
+
+    @Column(name = "usu_mod_detPedIns", length = 100)
+    private String usuModDetPedIns;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_detPedIns", updatable = false)
+    private LocalDateTime fechRegDetPedIns;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_detPedIns")
+    private LocalDateTime fechModDetPedIns;
 }
-
-

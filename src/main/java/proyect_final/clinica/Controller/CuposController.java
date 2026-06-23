@@ -1,7 +1,7 @@
 package proyect_final.clinica.Controller;
 
 import proyect_final.clinica.Model.Dto.TratamientoCupoDTO;
-import proyect_final.clinica.Model.Entity.Cupos;
+import proyect_final.clinica.Model.Entity.Cupo;
 import proyect_final.clinica.Model.Entity.Materia;
 import proyect_final.clinica.Model.Entity.Tratamiento;
 import proyect_final.clinica.Service.CupoService;
@@ -36,8 +36,8 @@ public class CuposController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cupos>> listarTodosLosCupos() {
-        List<Cupos> cupos = cupoService.listarTodos();
+    public ResponseEntity<List<Cupo>> listarTodosLosCupos() {
+        List<Cupo> cupos = cupoService.listarTodos();
         return ResponseEntity.ok(cupos);
     }
     @PostMapping
@@ -101,12 +101,12 @@ public class CuposController {
             }
             
             // Crear cupo
-            Cupos cupo = new Cupos();
+            Cupo cupo = new Cupo();
             cupo.setMateria(materiaOpt.get());
             cupo.setTratamiento(tratamientoOpt.get());
             cupo.setCuposDisponibles(cuposDisponibles);
             
-            Cupos saved = cupoService.guardar(cupo);
+            Cupo saved = cupoService.guardar(cupo);
             return ResponseEntity.ok(saved);
             
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class CuposController {
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarCupo(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         try {
-            Optional<Cupos> cupoOpt = cupoService.obtenerPorId(id);
+            Optional<Cupo> cupoOpt = cupoService.obtenerPorId(id);
             if (cupoOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
@@ -137,10 +137,10 @@ public class CuposController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Se requiere cuposDisponibles"));
             }
             
-            Cupos cupo = cupoOpt.get();
+            Cupo cupo = cupoOpt.get();
             cupo.setCuposDisponibles(cuposDisponibles);
             
-            Cupos saved = cupoService.guardar(cupo);
+            Cupo saved = cupoService.guardar(cupo);
             return ResponseEntity.ok(saved);
             
         } catch (Exception e) {

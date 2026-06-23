@@ -1,4 +1,9 @@
 package proyect_final.clinica.Model.Entity;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +12,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "odontograma_foto")
-public class OdontogramaFoto {
+public class OdontogramaFoto  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_odontograma_foto")
@@ -21,5 +26,17 @@ public class OdontogramaFoto {
     private String nombreOriginal;    // Nombre original del archivo
     private String tipoContenido;     // image/jpeg, etc.
     private Long tamano;             
+    @Column(name = "usu_reg_odoFot", length = 100)
+    private String usuRegOdoFot;
 
+    @Column(name = "usu_mod_odoFot", length = 100)
+    private String usuModOdoFot;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_odoFot", updatable = false)
+    private LocalDateTime fechRegOdoFot;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_odoFot")
+    private LocalDateTime fechModOdoFot;
 }

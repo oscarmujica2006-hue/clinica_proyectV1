@@ -3,6 +3,10 @@ import lombok.*;
 
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.*;
 
@@ -18,11 +22,23 @@ public class PrestamoEquipo {
 
 
     @ManyToOne
-    @JoinColumn(name = "id_herramienta")
-    private Long idHerramienta;
+    @JoinColumn(name = "id_equipo")
+    private Equipo idEquipo;
 
+
+    @ManyToOne
+    @JoinColumn(name="id_estudiante")
+    private Estudiante idEstudiante;
+
+    @ManyToOne
+    @JoinColumn(name="id_docente")
+    private Docente idDocente;
     @Column(name = "fech_entre_prestamo")
     private LocalDate fechaEntrePrestamo;
+
+    @ManyToOne
+    @JoinColumn(name="id_encargado_insumo")
+    private EncargadoInsumo idEncargadoInsumo;
     
     @Column(name="hora_entre_equipo")
     private Time horaEntreEquipo;
@@ -33,4 +49,20 @@ public class PrestamoEquipo {
 
     @Column(name="estado_devolucion")
     private String estadoDevolucion;
+
+    @Column(name="observacion_prestamo")
+    private String observacionPrestamo;
+    @Column(name = "usu_reg_preEqu", length = 100)
+    private String usuRegPreEqu;
+
+    @Column(name = "usu_mod_preEqu", length = 100)
+    private String usuModPreEqu;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_preEqu", updatable = false)
+    private LocalDateTime fechRegPreEqu;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_preEqu")
+    private LocalDateTime fechModPreEqu;
 }

@@ -2,7 +2,7 @@ package proyect_final.clinica.Service.Impl;
 
 import proyect_final.clinica.Model.Dao.CupoRepository;
 import proyect_final.clinica.Model.Dto.TratamientoCupoDTO;
-import proyect_final.clinica.Model.Entity.Cupos;
+import proyect_final.clinica.Model.Entity.Cupo;
 import proyect_final.clinica.Model.Entity.Materia;
 import proyect_final.clinica.Model.Entity.Tratamiento;
 import proyect_final.clinica.Service.CupoService;
@@ -20,17 +20,17 @@ public class CupoServiceImpl implements CupoService {
 
 
     @Override
-    public List<Cupos> listarTodos() {
+    public List<Cupo> listarTodos() {
         return cupoRepository.findAll();
     }
 
     @Override
-    public Optional<Cupos> obtenerPorId(Long id) {
+    public Optional<Cupo> obtenerPorId(Long id) {
         return cupoRepository.findById(id);
     }
 
     @Override
-    public Cupos guardar(Cupos cupo) {
+    public Cupo guardar(Cupo cupo) {
         return cupoRepository.save(cupo);
     }
 
@@ -40,12 +40,12 @@ public class CupoServiceImpl implements CupoService {
     }
 
     @Override
-    public List<Cupos> obtenerPorMateria(Materia materia) {
+    public List<Cupo> obtenerPorMateria(Materia materia) {
         return cupoRepository.findByMateria(materia);
     }
 
     @Override
-    public Optional<Cupos> obtenerPorMateriaYTratamiento(Materia materia, Tratamiento tratamiento) {
+    public Optional<Cupo> obtenerPorMateriaYTratamiento(Materia materia, Tratamiento tratamiento) {
         return cupoRepository.findByMateriaAndTratamiento(materia, tratamiento);
     }
 

@@ -1,12 +1,18 @@
 package proyect_final.clinica.Model.Entity;
 import lombok.*;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "recuperacion_password")
-public class RecuperacionPassword {
+public class RecuperacionPassword  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_recuperacion_password")
@@ -26,4 +32,17 @@ public class RecuperacionPassword {
     @Column(name="usado",nullable=false)
     private Boolean usado;
 
+    @Column(name = "usu_reg_recPas", length = 100)
+    private String usuRegRecPas;
+
+    @Column(name = "usu_mod_recPas", length = 100)
+    private String usuModRecPas;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_recPas", updatable = false)
+    private LocalDateTime fechRegRecPas;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_recPas")
+    private LocalDateTime fechModRecPas;
 }

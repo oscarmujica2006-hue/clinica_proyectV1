@@ -1,5 +1,11 @@
 package proyect_final.clinica.Model.Entity;
 import lombok.*;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 @Getter
 @Setter
@@ -25,4 +31,17 @@ public class Tratamiento {
     @Column(name = "descripcion_tratamiento", length = 255)
     private String descripcionTratamiento;
 
+    @Column(name = "usu_reg_tra", length = 100)
+    private String usuRegTra;
+
+    @Column(name = "usu_mod_tra", length = 100)
+    private String usuModTra;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_tra", updatable = false)
+    private LocalDateTime fechRegTra;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_tra")
+    private LocalDateTime fechModTra;
 }

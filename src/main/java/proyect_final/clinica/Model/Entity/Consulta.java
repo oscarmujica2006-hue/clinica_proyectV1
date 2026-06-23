@@ -1,5 +1,10 @@
 package proyect_final.clinica.Model.Entity;
 
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.*;
 import lombok.Getter;   
 import lombok.Setter;
@@ -10,7 +15,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "consulta")
-public class Consulta {
+public class Consulta  {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,7 +53,7 @@ public class Consulta {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_bucodentales")
-    private AntecedentesBucodentales antecedentesBucodentales;
+    private AntecedenteBucodental antecedentesBucodentales;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_tratamiento_medico")
@@ -56,7 +61,7 @@ public class Consulta {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_antecedentes_higiene_oral")
-    private AntecedentesHigieneOral antecedentesHigieneOral;
+    private AntecedenteHigieneOral antecedentesHigieneOral;
 
 
     @ManyToOne
@@ -64,6 +69,19 @@ public class Consulta {
     private PrestamoActual prestamo;
 
 
+    @Column(name = "usu_reg_con", length = 100)
+    private String usuRegCon;
+
+    @Column(name = "usu_mod_con", length = 100)
+    private String usuModCon;
+
+    @CreationTimestamp
+    @Column(name = "fech_reg_con", updatable = false)
+    private LocalDateTime fechRegCon;
+
+    @UpdateTimestamp
+    @Column(name = "fech_mod_con")
+    private LocalDateTime fechModCon;
 
     public void setPrestamo(PrestamoActual prestamo) {
     this.prestamo = prestamo;
