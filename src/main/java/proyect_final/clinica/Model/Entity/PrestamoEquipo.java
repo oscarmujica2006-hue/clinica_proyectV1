@@ -43,15 +43,18 @@ public class PrestamoEquipo {
     @Column(name="hora_entre_equipo")
     private Time horaEntreEquipo;
 
-
+    @Column(name="hora_solicitud")
+    private Time horaSolicitud;
     @Column(name="hora_devol_equipo")
     private Time horaDevolEquipo;
 
-    @Column(name="estado_devolucion")
+    @Column(name="esta_prest_equipo")
     private String estadoDevolucion;
 
     @Column(name="observacion_prestamo")
     private String observacionPrestamo;
+
+
     @Column(name = "usu_reg_preEqu", length = 100)
     private String usuRegPreEqu;
 

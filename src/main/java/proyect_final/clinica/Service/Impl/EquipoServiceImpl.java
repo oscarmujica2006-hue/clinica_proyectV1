@@ -16,6 +16,25 @@ public class EquipoServiceImpl implements EquipoService {
     @Autowired
     private EquipoRepository equipoRepository;
 
+    @Override
+    public List<Equipo> obtenerTodos() {
+        return equipoRepository.findAll();
+    }
+
+    @Override
+    public Optional<Equipo> obtenerPorId(Long id) {
+        return equipoRepository.findById(id);
+    }
+
+    @Override
+    public Equipo guardar(Equipo equipo) {
+        return equipoRepository.save(equipo);
+    }
+
+    @Override
+    public void eliminar(Long id) {
+        equipoRepository.deleteById(id);
+    }
     // ✅ CREAR EQUIPO CON FUNCIÓN (devuelve String)
     @Override
     public String crearEquipoConFuncion(String codigo, String nombre, String estado, String usuario) {
@@ -51,5 +70,13 @@ public class EquipoServiceImpl implements EquipoService {
 
 
 
-
+    @Override
+    @Transactional
+    public Equipo actualizarEstadoEquipo(Long idEquipo, String nuevoEstado) {
+        Equipo equipo = equipoRepository.findById(idEquipo)
+            .orElseThrow(() -> new RuntimeException("Equipo no encontrado"));
+        
+        equipo.setEstadoEquipo(nuevoEstado);
+        return equipoRepository.save(equipo);
+    }
 }

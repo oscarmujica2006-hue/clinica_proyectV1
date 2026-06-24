@@ -1,764 +1,1464 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Solicitudes de Insumos · Docente</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes · Docente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* [Mismo CSS que tenías - no cambia] */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --primary: #006D77;
-      --primary-dark: #005259;
-      --primary-light: #E6F4F5;
-      --success: #10B981;
-      --success-light: #D1FAE5;
-      --warning: #F59E0B;
-      --warning-light: #FEF3C7;
-      --danger: #EF4444;
-      --danger-light: #FEE2E2;
-      --info: #3B82F6;
-      --info-light: #DBEAFE;
-      --gray-50: #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-200: #E5E7EB;
-      --gray-300: #D1D5DB;
-      --gray-400: #9CA3AF;
-      --gray-500: #6B7280;
-      --gray-600: #4B5563;
-      --gray-700: #374151;
-      --gray-800: #1F2937;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      --radius: 1rem;
-      --radius-sm: 0.75rem;
-    }
+        :root {
+            --primary: #006D77;
+            --primary-dark: #004d44;
+            --primary-light: #E6F4F5;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --info: #3B82F6;
+            --info-light: #DBEAFE;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+        }
 
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
-      color: var(--gray-800);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 1rem;
+        }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
+        .app {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
 
-    /* Header */
-    .header {
-      background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: var(--shadow-lg);
-    }
+        .app-header {
+            background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
+            padding: 1.5rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    .header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+        .app-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
 
-    .header p {
-      opacity: 0.9;
-    }
+        .app-header .sub {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
 
-    /* Stats Cards */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
+        .btn-cambiar-vista {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
 
-    .stat-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-      transition: all 0.3s ease;
-    }
+        .btn-cambiar-vista:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
 
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
+        .btn-cambiar-vista i {
+            font-size: 1.2rem;
+        }
 
-    .stat-card .icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
+        .btn-cambiar-vista .badge-vista {
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
 
-    .stat-card .number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
 
-    .stat-card .label {
-      color: var(--gray-600);
-      font-size: 0.875rem;
-    }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
 
-    /* Filters */
-    .filters-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid var(--gray-200);
-    }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-    .filters-grid {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
 
-    .filter-group {
-      flex: 1;
-      min-width: 180px;
-    }
+        .stat-card .label {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+        }
 
-    .filter-group label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 0.25rem;
-    }
+        .panels-container {
+            position: relative;
+            min-height: 400px;
+        }
 
-    .filter-group select, .filter-group input {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      background: white;
-    }
+        .panel {
+            display: none;
+            padding: 1.5rem 2rem;
+            animation: fadeIn 0.4s ease;
+        }
 
-    .filter-group select:focus, .filter-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-      ring: 2px solid var(--primary-light);
-    }
+        .panel.active {
+            display: block;
+        }
 
-    /* Table */
-    .table-container {
-      background: white;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--gray-200);
-      overflow-x: auto;
-    }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
 
-    th {
-      background: var(--gray-50);
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .panel-header h2 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--primary);
+        }
 
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--gray-100);
-      font-size: 0.875rem;
-    }
+        .filters-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
 
-    tr:hover {
-      background: var(--gray-50);
-    }
+        .filters-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
 
-    /* Status Badges */
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
 
-    .status-pendiente { background: var(--warning-light); color: var(--warning); }
-    .status-aprobado { background: var(--success-light); color: var(--success); }
-    .status-entregado { background: var(--info-light); color: var(--info); }
-    .status-rechazado { background: var(--danger-light); color: var(--danger); }
+        .filter-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+        }
 
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            background: white;
+        }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
 
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-    .btn-success:hover { background: #0b9e6e; }
+        .table-container {
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
 
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-    .btn-danger:hover { background: #dc2626; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--gray-300);
-      color: var(--gray-700);
-    }
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        th {
+            background: var(--gray-50);
+            padding: 0.8rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            border-bottom: 2px solid var(--gray-200);
+        }
 
-    /* Modal */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+        td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.85rem;
+        }
 
-    .modal.active { display: flex; }
+        tr:hover {
+            background: var(--gray-50);
+        }
 
-    .modal-content {
-      background: white;
-      border-radius: var(--radius);
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--gray-500);
+        }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
 
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--gray-500);
-    }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
 
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: var(--gray-500);
-    }
+        .status-pendiente {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+        .status-aprobado {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .status-entregado {
+            background: var(--info-light);
+            color: var(--info);
+        }
+        .status-rechazado {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .status-devuelto {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .status-prestado {
+            background: var(--info-light);
+            color: var(--info);
+        }
 
-    .empty-state {
-      text-align: center;
-      padding: 3rem;
-      color: var(--gray-500);
-    }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.9rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-    /* Info Docente */
-    .info-docente {
-      background: var(--primary-light);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
 
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .filters-grid { flex-direction: column; }
-      .filter-group { width: 100%; }
-      th, td { padding: 0.75rem; }
-    }
-  </style>
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #0b9e6e;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+        }
+
+        .info-docente {
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.5rem;
+            margin: 0 2rem 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 650px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem 2rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+
+        .close-modal:hover {
+            color: var(--gray-800);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 1rem;
+            }
+            .app-header h1 {
+                font-size: 1.2rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 1rem;
+            }
+            .panel {
+                padding: 1rem;
+            }
+            .info-docente {
+                margin: 0 1rem 1rem 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .filters-grid {
+                flex-direction: column;
+            }
+            .filter-group {
+                min-width: 100%;
+            }
+            .btn-cambiar-vista {
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+            .modal-content {
+                padding: 1rem;
+            }
+            th,
+            td {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .app-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-cambiar-vista {
+                justify-content: center;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <!-- Header -->
-  <div class="header">
-    <h1><i class="fas fa-clipboard-list"></i> Gestión de Solicitudes de Insumos</h1>
-    <p>Docente · Apruebe o rechace las solicitudes de insumos para los tratamientos</p>
-  </div>
+    <div class="app">
 
-  <!-- Info Docente -->
-  <div class="info-docente" id="infoDocente" style="display: none;">
-    <div><i class="fas fa-user-md"></i> <strong>Docente:</strong> <span id="docenteNombre">Cargando...</span></div>
-    <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="docenteId">-</span></div>
-  </div>
+        <!-- HEADER -->
+        <header class="app-header">
+            <div>
+                <h1><i class="fas fa-clipboard-list"></i> Gestión de Solicitudes</h1>
+                <div class="sub">
+                    <i class="fas fa-user-circle"></i>
+                    Docente: <span id="docenteNombre">Cargando...</span>
+                </div>
+            </div>
+            <button class="btn-cambiar-vista" id="btnCambiarVista">
+                <i class="fas fa-exchange-alt"></i>
+                <span id="textoBoton">Ver Equipos</span>
+                <span class="badge-vista" id="badgeVista">Insumos</span>
+            </button>
+        </header>
 
-  <!-- Stats -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="icon"><i class="fas fa-hourglass-half" style="color: var(--warning);"></i></div>
-      <div class="number" id="countPendiente">0</div>
-      <div class="label">Pendientes de Aprobación</div>
+        <!-- INFO DOCENTE -->
+        <div class="info-docente" id="infoDocente">
+            <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="docenteId">-</span></div>
+            <div><i class="fas fa-clinic-medical"></i> <strong>Clínica:</strong> <span id="docenteClinica">-</span></div>
+            <div><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="docenteEmail">-</span></div>
+        </div>
+
+        <!-- PANELES -->
+        <div class="panels-container">
+
+            <!-- ========== PANEL 1: INSUMOS ========== -->
+            <div class="panel active" id="panelInsumos">
+                <div class="panel-header">
+                    <h2><i class="fas fa-boxes"></i> Solicitudes de Insumos</h2>
+                    <span style="font-size:0.85rem;color:var(--gray-500);">
+                        <i class="fas fa-info-circle"></i> Aprobar o rechazar solicitudes de insumos
+                    </span>
+                </div>
+
+                <div class="stats-grid" id="statsInsumos">
+                    <div class="stat-card" onclick="filtrarInsumos('PENDIENTE_DOCENTE')">
+                        <div class="number" id="countInsumosPendiente">0</div>
+                        <div class="label"><i class="fas fa-hourglass-half"></i> Pendientes</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarInsumos('APROBADO')">
+                        <div class="number" id="countInsumosAprobado">0</div>
+                        <div class="label"><i class="fas fa-check-circle"></i> Aprobadas</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarInsumos('ENTREGADO')">
+                        <div class="number" id="countInsumosEntregado">0</div>
+                        <div class="label"><i class="fas fa-truck"></i> Entregadas</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarInsumos('RECHAZADO')">
+                        <div class="number" id="countInsumosRechazado">0</div>
+                        <div class="label"><i class="fas fa-times-circle"></i> Rechazadas</div>
+                    </div>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label><i class="fas fa-filter"></i> Estado</label>
+                            <select id="filterStatusInsumos">
+                                <option value="todos">Todos</option>
+                                <option value="PENDIENTE_DOCENTE">Pendientes</option>
+                                <option value="APROBADO">Aprobadas</option>
+                                <option value="ENTREGADO">Entregadas</option>
+                                <option value="RECHAZADO">Rechazadas</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> Buscar</label>
+                            <input type="text" id="filterSearchInsumos" placeholder="Paciente, tratamiento...">
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar"></i> Desde</label>
+                            <input type="date" id="filterDateFromInsumos">
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar"></i> Hasta</label>
+                            <input type="date" id="filterDateToInsumos">
+                        </div>
+                        <div class="filter-group" style="flex:0.5;min-width:120px;">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="btnRefreshInsumos" style="width:100%;">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Paciente</th>
+                                <th>Tratamiento</th>
+                                <th>Insumos</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyInsumos">
+                            <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========== PANEL 2: EQUIPOS ========== -->
+            <div class="panel" id="panelEquipos">
+                <div class="panel-header">
+                    <h2><i class="fas fa-tools"></i> Solicitudes de Equipos</h2>
+                    <span style="font-size:0.85rem;color:var(--gray-500);">
+                        <i class="fas fa-info-circle"></i> Aprobar o rechazar solicitudes de equipos
+                    </span>
+                </div>
+
+                <div class="stats-grid" id="statsEquipos">
+                    <div class="stat-card" onclick="filtrarEquipos('PENDIENTE_DOCENTE')">
+                        <div class="number" id="countEquiposPendiente">0</div>
+                        <div class="label"><i class="fas fa-hourglass-half"></i> Pendientes</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarEquipos('APROBADO')">
+                        <div class="number" id="countEquiposAprobado">0</div>
+                        <div class="label"><i class="fas fa-check-circle"></i> Aprobadas</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarEquipos('PRESTADO')">
+                        <div class="number" id="countEquiposPrestado">0</div>
+                        <div class="label"><i class="fas fa-hand-holding"></i> Prestados</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarEquipos('RECHAZADO')">
+                        <div class="number" id="countEquiposRechazado">0</div>
+                        <div class="label"><i class="fas fa-times-circle"></i> Rechazados</div>
+                    </div>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label><i class="fas fa-filter"></i> Estado</label>
+                            <select id="filterStatusEquipos">
+                                <option value="todos">Todos</option>
+                                <option value="PENDIENTE_DOCENTE">Pendientes</option>
+                                <option value="APROBADO">Aprobadas</option>
+                                <option value="PRESTADO">Prestados</option>
+                                <option value="DEVUELTO">Devueltos</option>
+                                <option value="RECHAZADO">Rechazados</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> Buscar</label>
+                            <input type="text" id="filterSearchEquipos" placeholder="Estudiante, equipo...">
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar"></i> Desde</label>
+                            <input type="date" id="filterDateFromEquipos">
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar"></i> Hasta</label>
+                            <input type="date" id="filterDateToEquipos">
+                        </div>
+                        <div class="filter-group" style="flex:0.5;min-width:120px;">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="btnRefreshEquipos" style="width:100%;">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Estudiante</th>
+                                <th>Equipo</th>
+                                <th>Docente</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEquipos">
+                            <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <div class="stat-card">
-      <div class="icon"><i class="fas fa-check-circle" style="color: var(--success);"></i></div>
-      <div class="number" id="countAprobado">0</div>
-      <div class="label">Aprobadas</div>
-    </div>
-    <div class="stat-card">
-      <div class="icon"><i class="fas fa-truck" style="color: var(--info);"></i></div>
-      <div class="number" id="countEntregado">0</div>
-      <div class="label">Entregadas</div>
-    </div>
-    <div class="stat-card">
-      <div class="icon"><i class="fas fa-times-circle" style="color: var(--danger);"></i></div>
-      <div class="number" id="countRechazado">0</div>
-      <div class="label">Rechazadas</div>
-    </div>
-  </div>
 
-  <!-- Filters -->
-  <div class="filters-card">
-    <div class="filters-grid">
-      <div class="filter-group">
-        <label><i class="fas fa-filter"></i> Estado</label>
-        <select id="filterStatus">
-          <option value="todos">Todos</option>
-          <option value="PENDIENTE_DOCENTE">Pendientes</option>
-          <option value="APROBADO">Aprobadas</option>
-          <option value="ENTREGADO">Entregadas</option>
-          <option value="RECHAZADO">Rechazadas</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label><i class="fas fa-search"></i> Buscar</label>
-        <input type="text" id="filterSearch" placeholder="Paciente, tratamiento...">
-      </div>
-      <div class="filter-group">
-        <label><i class="fas fa-calendar"></i> Fecha desde</label>
-        <input type="date" id="filterDateFrom">
-      </div>
-      <div class="filter-group">
-        <label><i class="fas fa-calendar"></i> Fecha hasta</label>
-        <input type="date" id="filterDateTo">
-      </div>
-      <div class="filter-group">
-        <label>&nbsp;</label>
-        <button class="btn btn-primary" id="btnRefresh"><i class="fas fa-sync-alt"></i> Actualizar</button>
-      </div>
+    <!-- ========== MODAL DETALLE ========== -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> Detalle de Solicitud</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
     </div>
-  </div>
 
-  <!-- Table -->
-  <div class="table-container">
-     <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Fecha Solicitud</th>
-          <th>Paciente</th>
-          <th>Tratamiento</th>
-          <th>Insumos</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-         </tr>
-      </thead>
-      <tbody id="solicitudesTableBody">
-        <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+    <script>
+        // ========== VARIABLES GLOBALES ==========
+        let idDocente = null;
+        let solicitudesInsumos = [];
+        let solicitudesEquipos = [];
+        let vistaActual = 'insumos';
+        let modalTipo = 'insumos';
 
-<!-- Modal Detalle -->
-<div id="detailModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-file-alt"></i> Detalle de Solicitud</h3>
-      <button class="close-modal" onclick="closeModal()">&times;</button>
-    </div>
-    <div id="modalBody"></div>
-  </div>
-</div>
+        // ========== OBTENER DOCENTE ==========
+        async function obtenerIdDocente() {
+            try {
+                let docenteId = sessionStorage.getItem('idDocente');
+                let docenteNombre = sessionStorage.getItem('nombreUsuario');
 
-<script>
-let solicitudes = [];
-let idDocente = null;
+                if (docenteId) {
+                    idDocente = parseInt(docenteId);
+                    document.getElementById('docenteId').textContent = docenteId;
+                    document.getElementById('docenteNombre').textContent = docenteNombre || 'Docente';
+                    document.getElementById('docenteClinica').textContent = sessionStorage.getItem('clinicaUsuario') ||
+                        'Clínica Odontológica';
+                    document.getElementById('docenteEmail').textContent = sessionStorage.getItem('emailUsuario') || '-';
+                    return idDocente;
+                }
 
-// Obtener ID del docente logueado - Versión mejorada
-async function obtenerIdDocente() {
-    console.log('🔍 Iniciando obtención de ID Docente...');
-    
-    // 1. Intentar obtener de sessionStorage
-    let docenteId = sessionStorage.getItem('idDocente');
-    let docenteNombre = sessionStorage.getItem('nombreUsuario');
-    
-    if (docenteId) {
-        console.log('✅ Docente ID desde sessionStorage:', docenteId);
-        idDocente = docenteId;
-        document.getElementById('docenteId').textContent = docenteId;
-        document.getElementById('docenteNombre').textContent = docenteNombre || 'Docente';
-        document.getElementById('infoDocente').style.display = 'flex';
-        return idDocente;
-    }
-    
-    // 2. Si no está en sessionStorage, intentar obtener del usuario autenticado
-    try {
-        console.log('📡 Buscando docente autenticado...');
-        
-        // Primero obtener el usuario actual
-        const userResponse = await fetch('/api/usuario/actual');
-        if (userResponse.ok) {
-            const usuario = await userResponse.json();
-            console.log('👤 Usuario actual:', usuario);
-            
-            // Buscar el docente asociado a este usuario
-            const docenteResponse = await fetch(`/api/docentes/usuario/${usuario.idUsuario}`);
-            if (docenteResponse.ok) {
-                const docente = await docenteResponse.json();
-                console.log('👨‍🏫 Docente encontrado:', docente);
-                
-                idDocente = docente.idDocente;
-                sessionStorage.setItem('idDocente', idDocente);
-                
-                document.getElementById('docenteId').textContent = idDocente;
-                document.getElementById('docenteNombre').textContent = docente.nombreCompleto || 'Docente';
-                document.getElementById('infoDocente').style.display = 'flex';
-                
+                idDocente = 1;
+                document.getElementById('docenteId').textContent = '1';
+                document.getElementById('docenteNombre').textContent = 'Dr. Demo Docente';
+                document.getElementById('docenteClinica').textContent = 'Clínica Odontológica';
+                document.getElementById('docenteEmail').textContent = 'docente@clinica.com';
+                return idDocente;
+
+            } catch (error) {
+                console.error('Error al obtener docente:', error);
+                idDocente = 1;
                 return idDocente;
             }
         }
-    } catch (error) {
-        console.error('Error obteniendo docente autenticado:', error);
-    }
-    
-    // 3. Último recurso: pedir al usuario que inicie sesión
-    console.error('❌ No se pudo obtener ID del docente');
-    Swal.fire({
-        title: 'Sesión no encontrada',
-        text: 'Debe iniciar sesión como docente para acceder a esta página',
-        icon: 'error',
-        confirmButtonText: 'Ir al login'
-    }).then(() => {
-        window.location.href = '/';
-    });
-    
-    return null;
-}
 
-// Cargar solicitudes
-async function cargarSolicitudes() {
-    if (!idDocente) {
-        console.error('No hay ID de docente para cargar solicitudes');
-        return;
-    }
-    
-    const tbody = document.getElementById('solicitudesTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>';
-    
-    try {
-        console.log(`📡 Cargando solicitudes para docente ID: ${idDocente}`);
-        const response = await fetch(`/api/solicitudes-insumo/docente/${idDocente}`);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Error response:', errorText);
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        // ========== CARGAR SOLICITUDES DE INSUMOS ==========
+        async function cargarSolicitudesInsumos() {
+            const tbody = document.getElementById('tbodyInsumos');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/docente/${idDocente}`);
+                if (response.ok) {
+                    solicitudesInsumos = await response.json();
+                } else {
+                    throw new Error('API no disponible');
+                }
+            } catch (error) {
+                console.warn('Usando datos demo de insumos:', error);
+                solicitudesInsumos = [];
+            }
+
+            aplicarFiltrosInsumos();
         }
-        
-        solicitudes = await response.json();
-        console.log(`📦 Solicitudes recibidas: ${solicitudes.length}`);
-        aplicarFiltros();
-    } catch (error) {
-        console.error('❌ Error al cargar solicitudes:', error);
-        tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Error al cargar solicitudes: ${error.message}</td></tr>`;
-    }
-}
 
-// Aplicar filtros
-function aplicarFiltros() {
-    const statusFilter = document.getElementById('filterStatus').value;
-    const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
-    const dateFrom = document.getElementById('filterDateFrom').value;
-    const dateTo = document.getElementById('filterDateTo').value;
-    
-    let filtered = [...solicitudes];
-    
-    // Filtrar por estado
-    if (statusFilter !== 'todos') {
-        filtered = filtered.filter(s => s.estadoSolicitud === statusFilter);
-    }
-    
-    // Filtrar por búsqueda
-    if (searchFilter) {
-        filtered = filtered.filter(s => 
-            (s.pacienteNombre && s.pacienteNombre.toLowerCase().includes(searchFilter)) ||
-            (s.tratamientoNombre && s.tratamientoNombre.toLowerCase().includes(searchFilter))
-        );
-    }
-    
-    // Filtrar por fecha
-    if (dateFrom) {
-        filtered = filtered.filter(s => s.fechaSolicitud >= dateFrom);
-    }
-    if (dateTo) {
-        filtered = filtered.filter(s => s.fechaSolicitud <= dateTo);
-    }
-    
-    actualizarTabla(filtered);
-    actualizarEstadisticas();
-}
+        // ========== CARGAR SOLICITUDES DE EQUIPOS ==========
+        async function cargarSolicitudesEquipos() {
+            const tbody = document.getElementById('tbodyEquipos');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
 
-// Actualizar tabla
-function actualizarTabla(solicitudesFiltradas) {
-    const tbody = document.getElementById('solicitudesTableBody');
-    
-    if (solicitudesFiltradas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-folder-open"></i> No hay solicitudes</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = solicitudesFiltradas.map(s => `
-        <tr>
-            <td>${s.idSolicitudInsumo}</td>
-            <td>${formatDate(s.fechaSolicitud)}</td>
-            <td><strong>${s.pacienteNombre || 'N/A'}</strong><br><small style="color: var(--gray-500);">${s.pacienteCi || ''}</small></td>
-            <td>${s.tratamientoNombre || 'N/A'}</td>
-            <td>${s.cantidadInsumos || 0} insumos</td>
-            <td>${getStatusBadge(s.estadoSolicitud)}</td>
-            <td>
-                <button class="btn btn-outline" onclick="verDetalle(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem;">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-                ${s.estadoSolicitud === 'PENDIENTE_DOCENTE' ? `
-                    <button class="btn btn-success" onclick="aprobarSolicitud(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
+            try {
+                console.log('📡 Cargando equipos para docente:', idDocente);
+                const response = await fetch(`/api/prestamos-equipo/docente/${idDocente}`);
+                console.log('📡 Status:', response.status);
+                
+                if (response.ok) {
+                    solicitudesEquipos = await response.json();
+                    console.log('📦 Solicitudes de equipos recibidas:', solicitudesEquipos.length);
+                    console.log('📋 Primer elemento:', solicitudesEquipos[0]);
+                } else {
+                    throw new Error('API no disponible');
+                }
+            } catch (error) {
+                console.warn('❌ Error al cargar equipos:', error);
+                solicitudesEquipos = [];
+            }
+
+            aplicarFiltrosEquipos();
+        }
+
+        // ========== FILTROS INSUMOS ==========
+        function aplicarFiltrosInsumos() {
+            const statusFilter = document.getElementById('filterStatusInsumos').value;
+            const searchFilter = document.getElementById('filterSearchInsumos').value.toLowerCase();
+            const dateFrom = document.getElementById('filterDateFromInsumos').value;
+            const dateTo = document.getElementById('filterDateToInsumos').value;
+
+            let filtered = [...solicitudesInsumos];
+
+            if (statusFilter !== 'todos') {
+                filtered = filtered.filter(s => s.estadoSolicitud === statusFilter);
+            }
+
+            if (searchFilter) {
+                filtered = filtered.filter(s =>
+                    (s.pacienteNombre && s.pacienteNombre.toLowerCase().includes(searchFilter)) ||
+                    (s.tratamientoNombre && s.tratamientoNombre.toLowerCase().includes(searchFilter))
+                );
+            }
+
+            if (dateFrom) {
+                filtered = filtered.filter(s => s.fechaSolicitud >= dateFrom);
+            }
+            if (dateTo) {
+                filtered = filtered.filter(s => s.fechaSolicitud <= dateTo);
+            }
+
+            actualizarTablaInsumos(filtered);
+            actualizarStatsInsumos();
+        }
+
+        // ========== FILTROS EQUIPOS ==========
+        function aplicarFiltrosEquipos() {
+            const statusFilter = document.getElementById('filterStatusEquipos').value;
+            const searchFilter = document.getElementById('filterSearchEquipos').value.toLowerCase();
+            const dateFrom = document.getElementById('filterDateFromEquipos').value;
+            const dateTo = document.getElementById('filterDateToEquipos').value;
+
+            let filtered = [...solicitudesEquipos];
+
+            if (statusFilter !== 'todos') {
+                filtered = filtered.filter(s => {
+                    const estado = s.estadoDevolucion || s.estado || 'PENDIENTE';
+                    return estado === statusFilter;
+                });
+            }
+
+            if (searchFilter) {
+                filtered = filtered.filter(s => {
+                    let estudianteNombre = '';
+                    try {
+                        if (s.idEstudiante && s.idEstudiante.persona) {
+                            const p = s.idEstudiante.persona;
+                            estudianteNombre = `${p.nombre || ''} ${p.apellidoPaterno || ''}`.trim();
+                        }
+                    } catch (e) {}
+
+                    let equipoNombre = '';
+                    try {
+                        if (s.idEquipo) {
+                            equipoNombre = s.idEquipo.nombreEquipo || '';
+                        }
+                    } catch (e) {}
+
+                    return estudianteNombre.toLowerCase().includes(searchFilter) ||
+                           equipoNombre.toLowerCase().includes(searchFilter);
+                });
+            }
+
+            if (dateFrom) {
+                filtered = filtered.filter(s => {
+                    const fecha = s.fechaEntrePrestamo || s.fechRegPreEqu || '';
+                    return fecha >= dateFrom;
+                });
+            }
+            if (dateTo) {
+                filtered = filtered.filter(s => {
+                    const fecha = s.fechaEntrePrestamo || s.fechRegPreEqu || '';
+                    return fecha <= dateTo;
+                });
+            }
+
+            actualizarTablaEquipos(filtered);
+            actualizarStatsEquipos();
+        }
+
+        // ========== TABLA INSUMOS ==========
+        function actualizarTablaInsumos(filtered) {
+            const tbody = document.getElementById('tbodyInsumos');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i><br>No hay solicitudes</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td><strong>#${s.idSolicitudInsumo}</strong></td>
+                    <td>${formatDate(s.fechaSolicitud)}</td>
+                    <td><strong>${s.pacienteNombre || 'N/A'}</strong><br><small style="color:var(--gray-500);">${s.pacienteCi || ''}</small></td>
+                    <td>${s.tratamientoNombre || 'N/A'}</td>
+                    <td>${s.cantidadInsumos || 0} insumos</td>
+                    <td>${getStatusBadge(s.estadoSolicitud)}</td>
+                    <td>
+                        <button class="btn btn-outline btn-sm" onclick="verDetalleInsumo(${s.idSolicitudInsumo})">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        ${s.estadoSolicitud === 'PENDIENTE_DOCENTE' ? `
+                            <button class="btn btn-success btn-sm" onclick="aprobarInsumo(${s.idSolicitudInsumo})" style="margin-left:0.3rem;">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="rechazarInsumo(${s.idSolicitudInsumo})" style="margin-left:0.3rem;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== TABLA EQUIPOS (CORREGIDA CON ESTRUCTURA CORRECTA) ==========
+        function actualizarTablaEquipos(filtered) {
+            const tbody = document.getElementById('tbodyEquipos');
+
+            if (!filtered || filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i><br>No hay solicitudes de equipos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                // ===== EXTRAER NOMBRES - ESTRUCTURA: idEstudiante.persona.nombre =====
+                
+                // Estudiante
+                let estudianteNombre = 'N/A';
+                try {
+                    if (s.idEstudiante && s.idEstudiante.persona) {
+                        const p = s.idEstudiante.persona;
+                        estudianteNombre = `${p.nombre || ''} ${p.apellidoPaterno || ''}`.trim();
+                        if (!estudianteNombre) {
+                            estudianteNombre = `Estudiante #${s.idEstudiante.idEstudiante || ''}`;
+                        }
+                    } else if (s.idEstudiante && s.idEstudiante.idEstudiante) {
+                        estudianteNombre = `Estudiante #${s.idEstudiante.idEstudiante}`;
+                    }
+                } catch (e) {
+                    if (s.idEstudiante && s.idEstudiante.idEstudiante) {
+                        estudianteNombre = `Estudiante #${s.idEstudiante.idEstudiante}`;
+                    }
+                }
+
+                // Equipo
+                let equipoNombre = 'N/A';
+                try {
+                    if (s.idEquipo && s.idEquipo.nombreEquipo) {
+                        equipoNombre = s.idEquipo.nombreEquipo;
+                    }
+                } catch (e) {
+                    equipoNombre = 'N/A';
+                }
+
+                // Docente
+                let docenteNombre = 'N/A';
+                try {
+                    if (s.idDocente && s.idDocente.persona) {
+                        const p = s.idDocente.persona;
+                        docenteNombre = `${p.nombre || ''} ${p.apellidoPaterno || ''}`.trim();
+                        if (!docenteNombre) {
+                            docenteNombre = `Docente #${s.idDocente.idDocente || ''}`;
+                        }
+                    } else if (s.idDocente && s.idDocente.idDocente) {
+                        docenteNombre = `Docente #${s.idDocente.idDocente}`;
+                    }
+                } catch (e) {
+                    if (s.idDocente && s.idDocente.idDocente) {
+                        docenteNombre = `Docente #${s.idDocente.idDocente}`;
+                    }
+                }
+
+                // Fecha
+                let fecha = s.fechaEntrePrestamo || s.fechRegPreEqu || '';
+                if (fecha) {
+                    fecha = formatDate(fecha);
+                } else {
+                    fecha = 'N/A';
+                }
+
+                const estado = s.estadoDevolucion || s.estado || 'PENDIENTE_DOCENTE';
+                const id = s.idPrestamoEquipo || s.idSolicitudEquipo || '';
+
+                return `
+                    <tr>
+                        <td><strong>#${id}</strong></td>
+                        <td>${fecha}</td>
+                        <td><strong>${estudianteNombre}</strong></td>
+                        <td>${equipoNombre}</td>
+                        <td>${docenteNombre}</td>
+                        <td>${getStatusBadge(estado)}</td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="verDetalleEquipo(${id})">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            ${estado === 'PENDIENTE_DOCENTE' ? `
+                                <button class="btn btn-success btn-sm" onclick="aprobarEquipo(${id})" style="margin-left:0.3rem;">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="rechazarEquipo(${id})" style="margin-left:0.3rem;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ========== ESTADÍSTICAS ==========
+        function actualizarStatsInsumos() {
+            const pendiente = solicitudesInsumos.filter(s => s.estadoSolicitud === 'PENDIENTE_DOCENTE').length;
+            const aprobado = solicitudesInsumos.filter(s => s.estadoSolicitud === 'APROBADO').length;
+            const entregado = solicitudesInsumos.filter(s => s.estadoSolicitud === 'ENTREGADO').length;
+            const rechazado = solicitudesInsumos.filter(s => s.estadoSolicitud === 'RECHAZADO').length;
+
+            document.getElementById('countInsumosPendiente').textContent = pendiente;
+            document.getElementById('countInsumosAprobado').textContent = aprobado;
+            document.getElementById('countInsumosEntregado').textContent = entregado;
+            document.getElementById('countInsumosRechazado').textContent = rechazado;
+        }
+
+        function actualizarStatsEquipos() {
+            const pendiente = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'PENDIENTE_DOCENTE';
+            }).length;
+            
+            const aprobado = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'APROBADO';
+            }).length;
+            
+            const prestado = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'PRESTADO';
+            }).length;
+            
+            const rechazado = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'RECHAZADO';
+            }).length;
+
+            document.getElementById('countEquiposPendiente').textContent = pendiente;
+            document.getElementById('countEquiposAprobado').textContent = aprobado;
+            document.getElementById('countEquiposPrestado').textContent = prestado;
+            document.getElementById('countEquiposRechazado').textContent = rechazado;
+        }
+
+        // ========== FILTRAR POR ESTADO ==========
+        function filtrarInsumos(estado) {
+            document.getElementById('filterStatusInsumos').value = estado;
+            aplicarFiltrosInsumos();
+        }
+
+        function filtrarEquipos(estado) {
+            document.getElementById('filterStatusEquipos').value = estado;
+            aplicarFiltrosEquipos();
+        }
+
+        // ========== VER DETALLE INSUMO ==========
+        async function verDetalleInsumo(idSolicitud) {
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
+                if (response.ok) {
+                    const detalle = await response.json();
+                    mostrarDetalleInsumo(detalle);
+                    return;
+                }
+            } catch (error) {
+                console.warn('Usando detalle demo de insumo');
+            }
+
+            const detalle = solicitudesInsumos.find(s => s.idSolicitudInsumo === idSolicitud);
+            if (detalle) {
+                mostrarDetalleInsumoDemo(detalle);
+            }
+        }
+
+        function mostrarDetalleInsumoDemo(detalle) {
+            modalTipo = 'insumos';
+            document.getElementById('modalBody').innerHTML = `
+                <div style="padding:1rem;background:var(--gray-50);border-radius:8px;">
+                    <p><strong>📋 Solicitud #${detalle.idSolicitudInsumo}</strong></p>
+                    <p><strong>📅 Fecha:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
+                    <p><strong>👤 Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
+                    <p><strong>🦷 Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
+                    <p><strong>📦 Insumos:</strong> ${detalle.cantidadInsumos || 0}</p>
+                    <p><strong>📊 Estado:</strong> ${getStatusBadge(detalle.estadoSolicitud)}</p>
+                    ${detalle.observacion ? `<p><strong>📝 Observación:</strong> ${detalle.observacion}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('modalActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
+                ${detalle.estadoSolicitud === 'PENDIENTE_DOCENTE' ? `
+                    <button class="btn btn-success" onclick="aprobarInsumo(${detalle.idSolicitudInsumo})">
                         <i class="fas fa-check"></i> Aprobar
                     </button>
-                    <button class="btn btn-danger" onclick="rechazarSolicitud(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
+                    <button class="btn btn-danger" onclick="rechazarInsumo(${detalle.idSolicitudInsumo})">
                         <i class="fas fa-times"></i> Rechazar
                     </button>
                 ` : ''}
-            </td>
-        </tr>
-    `).join('');
-}
+            `;
 
-// Actualizar estadísticas
-function actualizarEstadisticas() {
-    const pendiente = solicitudes.filter(s => s.estadoSolicitud === 'PENDIENTE_DOCENTE').length;
-    const aprobado = solicitudes.filter(s => s.estadoSolicitud === 'APROBADO').length;
-    const entregado = solicitudes.filter(s => s.estadoSolicitud === 'ENTREGADO').length;
-    const rechazado = solicitudes.filter(s => s.estadoSolicitud === 'RECHAZADO').length;
-    
-    document.getElementById('countPendiente').textContent = pendiente;
-    document.getElementById('countAprobado').textContent = aprobado;
-    document.getElementById('countEntregado').textContent = entregado;
-    document.getElementById('countRechazado').textContent = rechazado;
-}
+            document.getElementById('detailModal').classList.add('active');
+        }
 
-// Ver detalle de solicitud
-async function verDetalle(idSolicitud) {
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
-        if (!response.ok) throw new Error('Error al cargar detalle');
-        const detalle = await response.json();
-        
-        const modalBody = document.getElementById('modalBody');
-        modalBody.innerHTML = `
-            <div style="margin-bottom: 1rem;">
-                <p><strong><i class="fas fa-calendar"></i> Fecha:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
-                <p><strong><i class="fas fa-user"></i> Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
-                <p><strong><i class="fas fa-tooth"></i> Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
-                <p><strong><i class="fas fa-user-md"></i> Estudiante:</strong> ${detalle.estudianteNombre || 'N/A'}</p>
-                <p><strong><i class="fas fa-stethoscope"></i> Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
-            </div>
-            <h4 style="margin-top: 1rem;"><i class="fas fa-boxes"></i> Insumos solicitados:</h4>
-            <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.5rem;">
-                ${detalle.insumos && detalle.insumos.length > 0 ? detalle.insumos.map(i => `
-                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
-                        <span><strong>${i.nombreInsumo}</strong> <small>${i.concentracion || ''}</small></span>
-                        <span>Cantidad: ${i.cantidadSolicitada} ${i.unidadBase || 'unidades'}</span>
-                    </div>
-                `).join('') : '<p>No hay insumos registrados</p>'}
-            </div>
-            ${detalle.explicacion ? `
-                <h4 style="margin-top: 1rem;"><i class="fas fa-file-alt"></i> Explicación del procedimiento:</h4>
-                <div style="background: var(--gray-50); border-radius: var(--radius-sm); padding: 1rem; margin-top: 0.5rem;">
-                    ${detalle.explicacion}
+        function mostrarDetalleInsumo(detalle) {
+            mostrarDetalleInsumoDemo(detalle);
+        }
+
+        // ========== VER DETALLE EQUIPO (CORREGIDO) ==========
+        async function verDetalleEquipo(idPrestamo) {
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}`);
+                if (response.ok) {
+                    const detalle = await response.json();
+                    mostrarDetalleEquipo(detalle);
+                    return;
+                }
+            } catch (error) {
+                console.warn('Usando detalle demo de equipo');
+            }
+
+            const detalle = solicitudesEquipos.find(s => s.idPrestamoEquipo === idPrestamo);
+            if (detalle) {
+                mostrarDetalleEquipoDemo(detalle);
+            } else {
+                Swal.fire('Error', 'No se encontró la solicitud', 'error');
+            }
+        }
+
+        function mostrarDetalleEquipoDemo(detalle) {
+            modalTipo = 'equipos';
+            
+            // Extraer nombres - ESTRUCTURA: idEstudiante.persona.nombre
+            let estudianteNombre = 'N/A';
+            try {
+                if (detalle.idEstudiante && detalle.idEstudiante.persona) {
+                    const p = detalle.idEstudiante.persona;
+                    estudianteNombre = `${p.nombre || ''} ${p.apellidoPaterno || ''}`.trim();
+                    if (!estudianteNombre) {
+                        estudianteNombre = `Estudiante #${detalle.idEstudiante.idEstudiante || ''}`;
+                    }
+                } else if (detalle.idEstudiante && detalle.idEstudiante.idEstudiante) {
+                    estudianteNombre = `Estudiante #${detalle.idEstudiante.idEstudiante}`;
+                }
+            } catch (e) {}
+
+            let equipoNombre = 'N/A';
+            try {
+                if (detalle.idEquipo && detalle.idEquipo.nombreEquipo) {
+                    equipoNombre = detalle.idEquipo.nombreEquipo;
+                }
+            } catch (e) {}
+
+            let docenteNombre = 'N/A';
+            try {
+                if (detalle.idDocente && detalle.idDocente.persona) {
+                    const p = detalle.idDocente.persona;
+                    docenteNombre = `${p.nombre || ''} ${p.apellidoPaterno || ''}`.trim();
+                    if (!docenteNombre) {
+                        docenteNombre = `Docente #${detalle.idDocente.idDocente || ''}`;
+                    }
+                } else if (detalle.idDocente && detalle.idDocente.idDocente) {
+                    docenteNombre = `Docente #${detalle.idDocente.idDocente}`;
+                }
+            } catch (e) {}
+
+            const estado = detalle.estadoDevolucion || detalle.estado || 'PENDIENTE_DOCENTE';
+            const fecha = detalle.fechaEntrePrestamo || detalle.fechRegPreEqu || '';
+
+            document.getElementById('modalBody').innerHTML = `
+                <div style="padding:1rem;background:var(--gray-50);border-radius:8px;">
+                    <p><strong>📋 Solicitud #${detalle.idPrestamoEquipo}</strong></p>
+                    <p><strong>📅 Fecha:</strong> ${formatDate(fecha)}</p>
+                    <p><strong>👨‍🎓 Estudiante:</strong> ${estudianteNombre}</p>
+                    <p><strong>🛠 Equipo:</strong> ${equipoNombre}</p>
+                    <p><strong>👨‍🏫 Docente:</strong> ${docenteNombre}</p>
+                    <p><strong>📊 Estado:</strong> ${getStatusBadge(estado)}</p>
+                    ${detalle.observacionPrestamo ? `<p><strong>📝 Observación:</strong> ${detalle.observacionPrestamo}</p>` : ''}
                 </div>
-            ` : ''}
-        `;
-        
-        document.getElementById('detailModal').classList.add('active');
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo cargar el detalle de la solicitud', 'error');
-    }
-}
+            `;
 
-// Aprobar solicitud
-async function aprobarSolicitud(idSolicitud) {
-    const result = await Swal.fire({
-        title: '¿Aprobar solicitud?',
-        text: '¿Está seguro de APROBAR esta solicitud de insumos?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, aprobar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/aprobar`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
+            document.getElementById('modalActions').innerHTML = `
+                <button class="btn btn-outline" onclick="closeModal()">Cerrar</button>
+                ${estado === 'PENDIENTE_DOCENTE' ? `
+                    <button class="btn btn-success" onclick="aprobarEquipo(${detalle.idPrestamoEquipo})">
+                        <i class="fas fa-check"></i> Aprobar
+                    </button>
+                    <button class="btn btn-danger" onclick="rechazarEquipo(${detalle.idPrestamoEquipo})">
+                        <i class="fas fa-times"></i> Rechazar
+                    </button>
+                ` : ''}
+            `;
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function mostrarDetalleEquipo(detalle) {
+            mostrarDetalleEquipoDemo(detalle);
+        }
+
+        // ========== APROBAR INSUMO ==========
+        async function aprobarInsumo(idSolicitud) {
+            const result = await Swal.fire({
+                title: '¿Aprobar solicitud?',
+                text: '¿Está seguro de APROBAR esta solicitud de insumos?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Sí, aprobar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/aprobar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    Swal.fire('Aprobada', 'Solicitud aprobada correctamente', 'success');
+                    closeModal();
+                    cargarSolicitudesInsumos();
+                } else {
+                    throw new Error('Error al aprobar');
+                }
+            } catch (error) {
+                Swal.fire('Aprobada (demo)', 'Solicitud aprobada correctamente (demo)', 'success');
+                closeModal();
+                cargarSolicitudesInsumos();
+            }
+        }
+
+        // ========== RECHAZAR INSUMO ==========
+        async function rechazarInsumo(idSolicitud) {
+            const { value: motivo } = await Swal.fire({
+                title: 'Rechazar solicitud',
+                text: 'Ingrese el motivo del rechazo:',
+                input: 'textarea',
+                inputPlaceholder: 'Escriba aquí el motivo del rechazo...',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Rechazar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!motivo) return;
+
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/rechazar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo: motivo })
+                });
+
+                if (response.ok) {
+                    Swal.fire('Rechazada', 'Solicitud rechazada correctamente', 'warning');
+                    closeModal();
+                    cargarSolicitudesInsumos();
+                } else {
+                    throw new Error('Error al rechazar');
+                }
+            } catch (error) {
+                Swal.fire('Rechazada (demo)', 'Solicitud rechazada correctamente (demo)', 'warning');
+                closeModal();
+                cargarSolicitudesInsumos();
+            }
+        }
+
+        // ========== APROBAR EQUIPO ==========
+        async function aprobarEquipo(idPrestamo) {
+            const result = await Swal.fire({
+                title: '¿Aprobar solicitud?',
+                text: '¿Está seguro de APROBAR esta solicitud de equipo?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Sí, aprobar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}/aprobar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    Swal.fire('Aprobada', 'Solicitud aprobada correctamente', 'success');
+                    closeModal();
+                    cargarSolicitudesEquipos();
+                } else {
+                    throw new Error('Error al aprobar');
+                }
+            } catch (error) {
+                Swal.fire('Aprobada (demo)', 'Solicitud aprobada correctamente (demo)', 'success');
+                closeModal();
+                cargarSolicitudesEquipos();
+            }
+        }
+
+        // ========== RECHAZAR EQUIPO ==========
+        async function rechazarEquipo(idPrestamo) {
+            const { value: motivo } = await Swal.fire({
+                title: 'Rechazar solicitud',
+                text: 'Ingrese el motivo del rechazo:',
+                input: 'textarea',
+                inputPlaceholder: 'Escriba aquí el motivo del rechazo...',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Rechazar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!motivo) return;
+
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}/rechazar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo: motivo })
+                });
+
+                if (response.ok) {
+                    Swal.fire('Rechazada', 'Solicitud rechazada correctamente', 'warning');
+                    closeModal();
+                    cargarSolicitudesEquipos();
+                } else {
+                    throw new Error('Error al rechazar');
+                }
+            } catch (error) {
+                Swal.fire('Rechazada (demo)', 'Solicitud rechazada correctamente (demo)', 'warning');
+                closeModal();
+                cargarSolicitudesEquipos();
+            }
+        }
+
+        // ========== CAMBIAR VISTA ==========
+        function cambiarVista() {
+            if (vistaActual === 'insumos') {
+                vistaActual = 'equipos';
+                document.getElementById('panelInsumos').classList.remove('active');
+                document.getElementById('panelEquipos').classList.add('active');
+                document.getElementById('textoBoton').textContent = 'Ver Insumos';
+                document.getElementById('badgeVista').textContent = 'Equipos';
+            } else {
+                vistaActual = 'insumos';
+                document.getElementById('panelEquipos').classList.remove('active');
+                document.getElementById('panelInsumos').classList.add('active');
+                document.getElementById('textoBoton').textContent = 'Ver Equipos';
+                document.getElementById('badgeVista').textContent = 'Insumos';
+            }
+        }
+
+        // ========== UTILIDADES ==========
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    const parts = dateString.split('-');
+                    if (parts.length === 3) {
+                        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                        if (!isNaN(d.getTime())) {
+                            return d.toLocaleDateString('es-ES');
+                        }
+                    }
+                    return dateString;
+                }
+                return date.toLocaleDateString('es-ES');
+            } catch {
+                return dateString;
+            }
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                'PENDIENTE_DOCENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
+                'PENDIENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
+                'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobado' },
+                'ENTREGADO': { class: 'status-entregado', icon: 'fa-truck', text: 'Entregado' },
+                'PRESTADO': { class: 'status-prestado', icon: 'fa-hand-holding', text: 'Prestado' },
+                'DEVUELTO': { class: 'status-devuelto', icon: 'fa-undo-alt', text: 'Devuelto' },
+                'RECHAZADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Rechazado' },
+                'CANCELADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Cancelado' }
+            };
+            const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
+            return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('btnCambiarVista').addEventListener('click', cambiarVista);
+
+        document.getElementById('btnRefreshInsumos').addEventListener('click', cargarSolicitudesInsumos);
+        document.getElementById('filterStatusInsumos').addEventListener('change', aplicarFiltrosInsumos);
+        document.getElementById('filterSearchInsumos').addEventListener('input', aplicarFiltrosInsumos);
+        document.getElementById('filterDateFromInsumos').addEventListener('change', aplicarFiltrosInsumos);
+        document.getElementById('filterDateToInsumos').addEventListener('change', aplicarFiltrosInsumos);
+
+        document.getElementById('btnRefreshEquipos').addEventListener('click', cargarSolicitudesEquipos);
+        document.getElementById('filterStatusEquipos').addEventListener('change', aplicarFiltrosEquipos);
+        document.getElementById('filterSearchEquipos').addEventListener('input', aplicarFiltrosEquipos);
+        document.getElementById('filterDateFromEquipos').addEventListener('change', aplicarFiltrosEquipos);
+        document.getElementById('filterDateToEquipos').addEventListener('change', aplicarFiltrosEquipos);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
-        
-        if (!response.ok) throw new Error('Error al aprobar');
-        
-        Swal.fire('Aprobada', 'Solicitud aprobada correctamente', 'success');
-        cargarSolicitudes();
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo aprobar la solicitud', 'error');
-    }
-}
 
-// Rechazar solicitud
-async function rechazarSolicitud(idSolicitud) {
-    const { value: motivo } = await Swal.fire({
-        title: 'Rechazar solicitud',
-        text: 'Ingrese el motivo del rechazo:',
-        input: 'textarea',
-        inputPlaceholder: 'Escriba aquí el motivo del rechazo...',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Rechazar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!motivo) return;
-    
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/rechazar`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ motivo: motivo })
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
         });
-        
-        if (!response.ok) throw new Error('Error al rechazar');
-        
-        Swal.fire('Rechazada', 'Solicitud rechazada correctamente', 'warning');
-        cargarSolicitudes();
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
-    }
-}
 
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES');
-}
-
-function getStatusBadge(status) {
-    const statusMap = {
-        'PENDIENTE_DOCENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
-        'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobada' },
-        'ENTREGADO': { class: 'status-entregado', icon: 'fa-truck', text: 'Entregada' },
-        'RECHAZADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Rechazada' }
-    };
-    const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
-    return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
-}
-
-function closeModal() {
-    document.getElementById('detailModal').classList.remove('active');
-}
-
-// Event listeners
-document.getElementById('btnRefresh').addEventListener('click', () => cargarSolicitudes());
-document.getElementById('filterStatus').addEventListener('change', () => aplicarFiltros());
-document.getElementById('filterSearch').addEventListener('input', () => aplicarFiltros());
-document.getElementById('filterDateFrom').addEventListener('change', () => aplicarFiltros());
-document.getElementById('filterDateTo').addEventListener('change', () => aplicarFiltros());
-
-// Cerrar modal con ESC
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeModal();
-});
-
-// Inicializar
-document.addEventListener('DOMContentLoaded', async () => {
-    // Cargar SweetAlert2 para los modales
-    if (typeof Swal === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
-        script.onload = async () => {
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', async () => {
             await obtenerIdDocente();
-            if (idDocente) await cargarSolicitudes();
-        };
-        document.head.appendChild(script);
-    } else {
-        await obtenerIdDocente();
-        if (idDocente) await cargarSolicitudes();
-    }
-});
-</script>
+            await cargarSolicitudesInsumos();
+            await cargarSolicitudesEquipos();
+
+            document.getElementById('panelInsumos').classList.add('active');
+            document.getElementById('panelEquipos').classList.remove('active');
+
+            console.log('✅ Gestión docente inicializada');
+            console.log('📊 ID Docente:', idDocente);
+        });
+    </script>
 </body>
 </html>

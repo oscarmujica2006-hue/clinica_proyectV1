@@ -490,24 +490,34 @@
     (function() {
         'use strict';
 
-        // ========== OBTENER USUARIO DE LA URL ==========
-        function obtenerUsuarioDeURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const usuario = urlParams.get('usuario');
-            console.log('📥 Usuario recibido en URL:', usuario);
-            return usuario || 'Invitado';
-        }
-
         // ========== CONFIGURACIÓN ==========
         const API_URL = 'http://localhost:8080/api/equipos';
         
-        // ✅ Obtener el usuario de la URL (enviado desde el padre)
-        const usuarioActual = obtenerUsuarioDeURL();
+        // ========== VARIABLE GLOBAL ==========
+        let usuarioActual = 'Cargando...';
         
-        // ✅ Mostrar el usuario en el header
-        document.getElementById('usuarioActual').textContent = usuarioActual;
+        // ========== OBTENER USUARIO DE LA SESIÓN ==========
+        async function obtenerUsuarioSesion() {
+            try {
+                const response = await fetch('/sesion-actual');
+                const data = await response.json();
+                if (data.autenticado) {
+                    // El nombre de usuario viene del backend
+                    return data.nombreUsuario || 'Invitado';
+                }
+                return 'Invitado';
+            } catch (error) {
+                console.error('Error al obtener usuario:', error);
+                return 'Invitado';
+            }
+        }
 
-        console.log('👤 Usuario final:', usuarioActual);
+        // ========== INICIALIZAR USUARIO ==========
+        async function initUsuario() {
+            usuarioActual = await obtenerUsuarioSesion();
+            document.getElementById('usuarioActual').textContent = usuarioActual;
+            console.log('👤 Usuario de sesión:', usuarioActual);
+        }
 
         // ========== ESTADO ==========
         let insumos = [];
@@ -694,14 +704,15 @@
             btnAgregarEquipo.innerHTML = '<span class="loading-spinner"></span>';
 
             try {
+                // ✅ YA NO enviamos el usuario, el backend lo obtiene de la sesión
                 const response = await fetch(`${API_URL}/crear`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         codigo: codigo,
                         nombre: nombre,
-                        estado: estado,
-                        usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                        estado: estado
+                        // ⚠️ ELIMINADO: usuario: usuarioActual
                     })
                 });
 
@@ -713,7 +724,7 @@
                         codigo,
                         nombre,
                         estado,
-                        usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                        usuario: usuarioActual
                     });
 
                     inputCodigoEquipo.value = '';
@@ -741,7 +752,7 @@
                     codigo,
                     nombre,
                     estado,
-                    usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                    usuario: usuarioActual
                 });
                 inputCodigoEquipo.value = '';
                 inputNombreEquipo.value = '';
@@ -862,8 +873,13 @@
 
         // ========== INICIALIZACIÓN ==========
         async function init() {
+            // ✅ Primero obtener el usuario de la sesión
+            await initUsuario();
+            
+            // ✅ Luego cargar equipos del backend
             await cargarEquiposBackend();
 
+            // Insumos de ejemplo
             insumos = [
                 { id: 1, nombre: 'Tóner Negro', cantidad: 12, unidad: 'cartucho', stockMinimo: 5 },
                 { id: 2, nombre: 'Resma A4', cantidad: 25, unidad: 'resma', stockMinimo: 10 },

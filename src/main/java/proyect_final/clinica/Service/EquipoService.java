@@ -15,4 +15,13 @@ public interface EquipoService {
         String usuario
     );
 
+    List<Equipo> obtenerTodos();
+    
+    Optional<Equipo> obtenerPorId(Long id);
+    
+    Equipo guardar(Equipo equipo);
+    
+    void eliminar(Long id);
+    Equipo actualizarEstadoEquipo(Long idEquipo, String nuevoEstado);
+
 }

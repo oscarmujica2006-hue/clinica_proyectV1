@@ -1,827 +1,1369 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Insumos · Encargada de Insumos</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #006D77;
-      --primary-dark: #005259;
-      --primary-light: #E6F4F5;
-      --success: #10B981;
-      --success-light: #D1FAE5;
-      --warning: #F59E0B;
-      --warning-light: #FEF3C7;
-      --danger: #EF4444;
-      --danger-light: #FEE2E2;
-      --info: #3B82F6;
-      --info-light: #DBEAFE;
-      --gray-50: #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-200: #E5E7EB;
-      --gray-300: #D1D5DB;
-      --gray-400: #9CA3AF;
-      --gray-500: #6B7280;
-      --gray-600: #4B5563;
-      --gray-700: #374151;
-      --gray-800: #1F2937;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      --radius: 1rem;
-      --radius-sm: 0.75rem;
-    }
-
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
-      color: var(--gray-800);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-      transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .stat-card .number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-card .label {
-      color: var(--gray-600);
-      font-size: 0.875rem;
-    }
-
-    .filters-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid var(--gray-200);
-    }
-
-    .filters-grid {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
-
-    .filter-group {
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .filter-group label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 0.25rem;
-    }
-
-    .filter-group select, .filter-group input {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      background: white;
-    }
-
-    .table-container {
-      background: white;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--gray-200);
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th {
-      background: var(--gray-50);
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--gray-100);
-      font-size: 0.875rem;
-    }
-
-    tr:hover {
-      background: var(--gray-50);
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .status-pendiente { background: var(--warning-light); color: var(--warning); }
-    .status-aprobado { background: var(--success-light); color: var(--success); }
-    .status-entregado { background: var(--info-light); color: var(--info); }
-    .status-entregado-parcial { background: #FEF3C7; color: #D97706; }
-    .status-rechazado { background: var(--danger-light); color: var(--danger); }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--primary-dark); }
-
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-    .btn-success:hover { background: #0b9e6e; }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--gray-300);
-      color: var(--gray-700);
-    }
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal.active { display: flex; }
-
-    .modal-content {
-      background: white;
-      border-radius: var(--radius);
-      max-width: 700px;
-      width: 90%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--gray-500);
-    }
-    .close-modal:hover { color: var(--gray-800); }
-
-    .insumo-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      background: var(--gray-50);
-      border-radius: 8px;
-      border-left: 4px solid var(--primary);
-    }
-
-    .insumo-info {
-      flex: 2;
-    }
-
-    .insumo-info strong {
-      font-size: 0.95rem;
-      color: var(--gray-800);
-    }
-
-    .insumo-info small {
-      font-size: 0.75rem;
-      color: var(--gray-500);
-    }
-
-    .insumo-solicitado {
-      flex: 1;
-      font-size: 0.85rem;
-      color: var(--gray-600);
-      text-align: center;
-    }
-
-    .insumo-entrega {
-      flex: 1;
-      text-align: right;
-    }
-
-    .insumo-entrega label {
-      font-size: 0.7rem;
-      color: var(--gray-500);
-      display: block;
-      margin-bottom: 0.25rem;
-    }
-
-    .insumo-entrega input {
-      width: 90px;
-      padding: 0.4rem;
-      border: 1.5px solid var(--gray-300);
-      border-radius: 6px;
-      text-align: center;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .insumo-entrega input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .insumo-entrega input.cantidad-parcial {
-      border-color: var(--warning);
-      background-color: #FFFBEB;
-    }
-
-    .insumo-entrega input.cantidad-completa {
-      border-color: var(--success);
-      background-color: #F0FDF4;
-    }
-
-    .insumo-entrega input.cantidad-cero {
-      border-color: var(--danger);
-      background-color: #FEF2F2;
-    }
-
-    .info-encargada {
-      background: var(--primary-light);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .alert-info {
-      background: #E0F2FE;
-      border-left: 4px solid var(--info);
-      padding: 0.75rem;
-      border-radius: 6px;
-      margin-top: 1rem;
-      font-size: 0.8rem;
-      color: var(--gray-700);
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .fa-spinner {
-      animation: spin 1s linear infinite;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .filters-grid { flex-direction: column; }
-      .filter-group { width: 100%; }
-      .insumo-row { flex-direction: column; gap: 0.5rem; text-align: center; }
-      .insumo-entrega { text-align: center; }
-    }
-  </style>
-</head>
-<body>
-<div class="container">
-  <div class="header">
-    <h1><i class="fas fa-boxes"></i> Gestión de Insumos</h1>
-    <p>Encargada de Insumos · Gestione la entrega de insumos para tratamientos</p>
-  </div>
-
-  <div class="info-encargada" id="infoEncargada">
-    <div><i class="fas fa-user-circle"></i> <strong>Encargada:</strong> <span id="encargadaNombre">Cargando...</span></div>
-    <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="encargadaId">-</span></div>
-  </div>
-
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="number" id="countAprobadas">0</div>
-      <div class="label">Solicitudes Aprobadas</div>
-    </div>
-    <div class="stat-card">
-      <div class="number" id="countEntregadas">0</div>
-      <div class="label">Solicitudes Entregadas</div>
-    </div>
-    <div class="stat-card">
-      <div class="number" id="countParciales">0</div>
-      <div class="label">Entregas Parciales</div>
-    </div>
-  </div>
-
-  <div class="filters-card">
-    <div class="filters-grid">
-      <div class="filter-group">
-        <label><i class="fas fa-filter"></i> Estado</label>
-        <select id="filterStatus">
-          <option value="todos">Todos</option>
-          <option value="APROBADO">✅ Aprobadas (Pendientes)</option>
-          <option value="ENTREGADO_PARCIAL">⚠️ Entregas Parciales</option>
-          <option value="ENTREGADO">📦 Entregadas Completas</option>
-        </select>
-      </div>
-      <div class="filter-group">
-        <label><i class="fas fa-search"></i> Buscar</label>
-        <input type="text" id="filterSearch" placeholder="Paciente, tratamiento...">
-      </div>
-      <div class="filter-group">
-        <label>&nbsp;</label>
-        <button class="btn btn-primary" id="btnRefresh"><i class="fas fa-sync-alt"></i> Actualizar</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>ID Solicitud</th>
-          <th>Fecha</th>
-          <th>Paciente</th>
-          <th>Tratamiento</th>
-          <th>Insumos</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="solicitudesTableBody">
-        <tr><td colspan="7" class="loading" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div id="entregaModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-truck"></i> Registrar Entrega de Insumos</h3>
-      <button class="close-modal" onclick="closeEntregaModal()">&times;</button>
-    </div>
-    <div id="modalBody"></div>
-    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-      <button class="btn btn-outline" onclick="closeEntregaModal()"><i class="fas fa-times"></i> Cancelar</button>
-      <button class="btn btn-success" id="btnConfirmarEntrega"><i class="fas fa-check"></i> Confirmar Entrega</button>
-    </div>
-  </div>
-</div>
-
-<script>
-let solicitudes = [];
-let idEncargadoInsumo = null;
-let solicitudSeleccionada = null;
-let cantidadesEntregadas = {};
-
-async function obtenerIdEncargadoInsumo() {
-    let encargadoId = sessionStorage.getItem('idEncargadoInsumo');
-    let encargadoNombre = sessionStorage.getItem('nombreUsuario');
-    
-    if (encargadoId) {
-        document.getElementById('encargadaId').textContent = encargadoId;
-        document.getElementById('encargadaNombre').textContent = encargadoNombre || 'Encargado de Insumos';
-        console.log('✅ ID Encargado encontrado en sessionStorage:', encargadoId);
-        return encargadoId;
-    }
-    
-    console.error('❌ No se encontró idEncargadoInsumo en sessionStorage');
-    Swal.fire({
-        title: 'Sesión no encontrada',
-        text: 'Debe iniciar sesión como encargado de insumos',
-        icon: 'error',
-        confirmButtonText: 'Ir al login'
-    }).then(() => {
-        window.location.href = '/';
-    });
-    return null;
-}
-
-async function cargarSolicitudes() {
-    if (!idEncargadoInsumo) {
-        console.error('No hay ID de encargado');
-        return;
-    }
-    
-    const tbody = document.getElementById('solicitudesTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>';
-    
-    try {
-        console.log(`📡 Cargando solicitudes para encargado ID: ${idEncargadoInsumo}`);
-        const response = await fetch(`/api/solicitudes-insumo/encargado/${idEncargadoInsumo}`);
-        if (!response.ok) throw new Error('Error al cargar solicitudes');
-        solicitudes = await response.json();
-        console.log(`📦 Solicitudes recibidas: ${solicitudes.length}`);
-        aplicarFiltros();
-    } catch (error) {
-        console.error('Error:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: red;"><i class="fas fa-exclamation-triangle"></i> Error al cargar solicitudes: ' + error.message + '</td></tr>';
-    }
-}
-
-function aplicarFiltros() {
-    const statusFilter = document.getElementById('filterStatus').value;
-    const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
-    
-    let filtered = [...solicitudes];
-    
-    if (statusFilter !== 'todos') {
-        filtered = filtered.filter(s => s.estadoSolicitud === statusFilter);
-    }
-    
-    if (searchFilter) {
-        filtered = filtered.filter(s => 
-            (s.pacienteNombre && s.pacienteNombre.toLowerCase().includes(searchFilter)) ||
-            (s.tratamientoNombre && s.tratamientoNombre.toLowerCase().includes(searchFilter))
-        );
-    }
-    
-    actualizarTabla(filtered);
-    actualizarEstadisticas();
-}
-
-function actualizarTabla(solicitudesFiltradas) {
-    const tbody = document.getElementById('solicitudesTableBody');
-    
-    if (solicitudesFiltradas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;"><i class="fas fa-folder-open"></i> No hay solicitudes</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = solicitudesFiltradas.map(s => `
-        <tr>
-            <td>${s.idSolicitudInsumo}</td>
-            <td>${formatDate(s.fechaSolicitud)}</td>
-            <td><strong>${s.pacienteNombre || 'N/A'}</strong></td>
-            <td>${s.tratamientoNombre || 'N/A'}</td>
-            <td>${s.cantidadInsumos || 0} insumos</td>
-            <td>${getStatusBadge(s.estadoSolicitud)}</td>
-            <td>
-                <button class="btn btn-outline" onclick="verDetalle(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem;">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-                ${(s.estadoSolicitud === 'APROBADO' || s.estadoSolicitud === 'ENTREGADO_PARCIAL') ? `
-                    <button class="btn btn-success" onclick="abrirModalEntrega(${s.idSolicitudInsumo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
-                        <i class="fas fa-truck"></i> ${s.estadoSolicitud === 'ENTREGADO_PARCIAL' ? 'Completar' : 'Entregar'}
-                    </button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
-}
-
-function actualizarEstadisticas() {
-    const aprobadas = solicitudes.filter(s => s.estadoSolicitud === 'APROBADO').length;
-    const entregadas = solicitudes.filter(s => s.estadoSolicitud === 'ENTREGADO').length;
-    const parciales = solicitudes.filter(s => s.estadoSolicitud === 'ENTREGADO_PARCIAL').length;
-    
-    document.getElementById('countAprobadas').textContent = aprobadas;
-    document.getElementById('countEntregadas').textContent = entregadas;
-    document.getElementById('countParciales').textContent = parciales;
-}
-
-async function verDetalle(idSolicitud) {
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
-        if (!response.ok) throw new Error('Error');
-        const detalle = await response.json();
-        
-        // Mostrar también cantidades ya entregadas si existen
-        const insumosHtml = detalle.insumos ? detalle.insumos.map(i => {
-            let entregado = i.cantidadEntregada ? i.cantidadEntregada : 0;
-            let pendiente = i.cantidadSolicitada - entregado;
-            let estadoTexto = entregado === 0 ? '⏳ Pendiente' : (entregado === i.cantidadSolicitada ? '✅ Completado' : `⚠️ Parcial (${entregado}/${i.cantidadSolicitada})`);
-            return `<li>${i.nombreInsumo} - Solicitado: ${i.cantidadSolicitada} ${i.unidadBase || ''} - ${estadoTexto}</li>`;
-        }).join('') : '<li>No hay insumos</li>';
-        
-        Swal.fire({
-            title: 'Detalle de Solicitud',
-            html: `
-                <div style="text-align: left;">
-                    <p><strong>📅 Fecha:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
-                    <p><strong>👤 Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
-                    <p><strong>🦷 Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
-                    <p><strong>👨‍🎓 Estudiante:</strong> ${detalle.estudianteNombre || 'N/A'}</p>
-                    <p><strong>👨‍⚕️ Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
-                    <p><strong>📊 Estado:</strong> ${getStatusBadge(detalle.estadoSolicitud)}</p>
-                    <hr>
-                    <h4>📦 Insumos:</h4>
-                    <ul>${insumosHtml}</ul>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonColor: '#006D77',
-            width: '500px'
-        });
-    } catch (error) {
-        Swal.fire('Error', 'No se pudo cargar el detalle', 'error');
-    }
-}
-
-async function abrirModalEntrega(idSolicitud) {
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
-        if (!response.ok) throw new Error('Error');
-        const detalle = await response.json();
-        solicitudSeleccionada = detalle;
-        cantidadesEntregadas = {};
-        
-        let insumosHtml = '';
-        if (detalle.insumos && detalle.insumos.length > 0) {
-            insumosHtml = detalle.insumos.map(insumo => {
-                // Calcular pendiente si ya se entregó algo
-                const yaEntregado = insumo.cantidadEntregada || 0;
-                const pendiente = insumo.cantidadSolicitada - yaEntregado;
-                const maximoEntregar = pendiente;
-                const valorPorDefecto = pendiente > 0 ? pendiente : 0;
-                
-                return `
-                    <div class="insumo-row">
-                        <div class="insumo-info">
-                            <strong>${insumo.nombreInsumo}</strong>
-                            ${insumo.concentracion ? `<br><small>${insumo.concentracion}</small>` : ''}
-                        </div>
-                        <div class="insumo-solicitado">
-                            📋 Solicitado:<br>
-                            <strong>${insumo.cantidadSolicitada}</strong> ${insumo.unidadBase || 'unid.'}
-                            ${yaEntregado > 0 ? `<br><small style="color: #10B981;">✓ Entregado: ${yaEntregado}</small>` : ''}
-                            ${pendiente > 0 && yaEntregado > 0 ? `<br><small style="color: #F59E0B;">⏳ Pendiente: ${pendiente}</small>` : ''}
-                        </div>
-                        <div class="insumo-entrega">
-                            <label>🎁 Entregar ahora:</label>
-                            <input type="number" 
-                                id="cantidad_${insumo.idInsumo}" 
-                                value="${valorPorDefecto}" 
-                                min="0" 
-                                max="${maximoEntregar}" 
-                                step="1"
-                                onchange="validarCantidad(${insumo.idInsumo}, this.value, ${maximoEntregar})">
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        } else {
-            insumosHtml = '<p style="text-align: center; color: var(--gray-500);">No hay insumos para entregar</p>';
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Insumos y Equipos · Encargado</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        const totalPendiente = detalle.insumos ? detalle.insumos.reduce((sum, i) => sum + (i.cantidadSolicitada - (i.cantidadEntregada || 0)), 0) : 0;
-        
-        document.getElementById('modalBody').innerHTML = `
-            <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
-                <p><strong>📋 Solicitud #${detalle.idSolicitudInsumo}</strong></p>
-                <p><strong>👤 Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
-                <p><strong>🦷 Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
-                <p><strong>👨‍⚕️ Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
-                ${totalPendiente > 0 ? `<p><strong>⏳ Pendiente total:</strong> ${totalPendiente} unidades</p>` : ''}
-            </div>
-            <h4 style="margin-bottom: 1rem;">📦 Insumos pendientes</h4>
-            <div id="insumosLista">${insumosHtml}</div>
-            <div class="alert-info">
-                <i class="fas fa-info-circle"></i> 
-                <strong>Nota:</strong> Puedes entregar cantidades parciales. Si entregas menos de lo solicitado, 
-                la solicitud quedará como "Entrega Parcial" y podrás completarla después.
-            </div>
-        `;
-        
-        document.getElementById('entregaModal').classList.add('active');
-        document.getElementById('btnConfirmarEntrega').onclick = () => confirmarEntrega(idSolicitud);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo cargar los insumos', 'error');
-    }
-}
 
-function validarCantidad(idInsumo, valor, maximo) {
-    let cantidad = parseInt(valor);
-    if (isNaN(cantidad)) cantidad = 0;
-    if (cantidad > maximo) cantidad = maximo;
-    if (cantidad < 0) cantidad = 0;
-    
-    cantidadesEntregadas[idInsumo] = cantidad;
-    const input = document.getElementById(`cantidad_${idInsumo}`);
-    input.value = cantidad;
-    
-    // Cambiar estilo según cantidad
-    input.classList.remove('cantidad-parcial', 'cantidad-completa', 'cantidad-cero');
-    if (cantidad === 0) {
-        input.classList.add('cantidad-cero');
-    } else if (cantidad === maximo) {
-        input.classList.add('cantidad-completa');
-    } else if (cantidad > 0 && cantidad < maximo) {
-        input.classList.add('cantidad-parcial');
-    }
-}
+        :root {
+            --primary: #006D77;
+            --primary-dark: #005259;
+            --primary-light: #E6F4F5;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --info: #3B82F6;
+            --info-light: #DBEAFE;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+        }
 
-async function confirmarEntrega(idSolicitud) {
-    const insumosEntregados = [];
-    let tieneAlgunaEntrega = false;
-    
-    if (solicitudSeleccionada.insumos) {
-        for (const insumo of solicitudSeleccionada.insumos) {
-            const yaEntregado = insumo.cantidadEntregada || 0;
-            const pendiente = insumo.cantidadSolicitada - yaEntregado;
-            const cantidadAEntregar = cantidadesEntregadas[insumo.idInsumo] !== undefined ? 
-                cantidadesEntregadas[insumo.idInsumo] : pendiente;
-            
-            if (cantidadAEntregar > 0) {
-                tieneAlgunaEntrega = true;
-                insumosEntregados.push({
-                    idInsumo: insumo.idInsumo,
-                    cantidadEntregada: cantidadAEntregar
-                });
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .btn-cambiar-vista {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-cambiar-vista:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-cambiar-vista i {
+            font-size: 1.1rem;
+        }
+
+        .btn-cambiar-vista .badge-vista {
+            background: var(--primary);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .filters-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--gray-200);
+        }
+
+        .filters-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            background: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-pendiente {
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+        .status-aprobado {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .status-entregado {
+            background: var(--info-light);
+            color: var(--info);
+        }
+        .status-entregado-parcial {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+        .status-rechazado {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .status-prestado {
+            background: var(--info-light);
+            color: var(--info);
+        }
+        .status-devuelto {
+            background: var(--success-light);
+            color: var(--success);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #0b9e6e;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        .close-modal:hover {
+            color: var(--gray-800);
+        }
+
+        .insumo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .insumo-info {
+            flex: 2;
+        }
+
+        .insumo-info strong {
+            font-size: 0.95rem;
+            color: var(--gray-800);
+        }
+
+        .insumo-info small {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .insumo-solicitado {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            text-align: center;
+        }
+
+        .insumo-entrega {
+            flex: 1;
+            text-align: right;
+        }
+
+        .insumo-entrega label {
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .insumo-entrega input {
+            width: 90px;
+            padding: 0.4rem;
+            border: 1.5px solid var(--gray-300);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .insumo-entrega input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .info-encargado {
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .alert-info {
+            background: #E0F2FE;
+            border-left: 4px solid var(--info);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--gray-700);
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    }
-    
-    if (!tieneAlgunaEntrega) {
-        Swal.fire('Error', 'Debe entregar al menos un insumo', 'error');
-        return;
-    }
-    
-    // Mostrar resumen de lo que se va a entregar
-    let resumenHtml = '<div style="text-align: left;"><ul>';
-    for (const item of insumosEntregados) {
-        const insumo = solicitudSeleccionada.insumos.find(i => i.idInsumo === item.idInsumo);
-        const yaEntregado = insumo.cantidadEntregada || 0;
-        const totalEntregado = yaEntregado + item.cantidadEntregada;
-        resumenHtml += `<li><strong>${insumo.nombreInsumo}</strong>: ${item.cantidadEntregada} unidad(es) (Total entregado: ${totalEntregado}/${insumo.cantidadSolicitada})</li>`;
-    }
-    resumenHtml += '</ul></div>';
-    
-    const result = await Swal.fire({
-        title: '¿Confirmar entrega?',
-        html: `
-            <p>¿Está seguro de que desea entregar estos insumos?</p>
-            ${resumenHtml}
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, entregar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/entregar`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                idEncargado: parseInt(idEncargadoInsumo),
-                insumos: insumosEntregados
-            })
-        });
-        
-        const data = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(data.error || 'Error al entregar');
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
         }
-        
-        Swal.fire('¡Éxito!', data.mensaje || 'Insumos entregados correctamente', 'success');
-        closeEntregaModal();
-        cargarSolicitudes();
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', error.message || 'No se pudo completar la entrega', 'error');
-    }
-}
 
-function closeEntregaModal() {
-    document.getElementById('entregaModal').classList.remove('active');
-    solicitudSeleccionada = null;
-    cantidadesEntregadas = {};
-}
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
 
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES');
-}
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
 
-function getStatusBadge(status) {
-    const statusMap = {
-        'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobada' },
-        'ENTREGADO': { class: 'status-entregado', icon: 'fa-truck', text: 'Entregada' },
-        'ENTREGADO_PARCIAL': { class: 'status-entregado-parcial', icon: 'fa-clock', text: 'Entrega Parcial' },
-        'PENDIENTE_DOCENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente Docente' },
-        'RECHAZADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Rechazada' }
-    };
-    const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
-    return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
-}
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gray-500);
+        }
 
-// Event listeners58
-document.getElementById('btnRefresh').addEventListener('click', () => cargarSolicitudes());
-document.getElementById('filterStatus').addEventListener('change', () => aplicarFiltros());
-document.getElementById('filterSearch').addEventListener('input', () => aplicarFiltros());
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEntregaModal(); });
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .filters-grid {
+                flex-direction: column;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .insumo-row {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+            .insumo-entrega {
+                text-align: center;
+            }
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .btn-cambiar-vista {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h1 id="tituloHeader"><i class="fas fa-boxes"></i> Gestión de Insumos</h1>
+                    <p id="subtituloHeader">Encargado de Insumos · Gestione la entrega de insumos para tratamientos</p>
+                </div>
+                <button class="btn-cambiar-vista" id="btnCambiarVista">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="textoBoton">Ver Equipos</span>
+                    <span class="badge-vista" id="badgeVista">Insumos</span>
+                </button>
+            </div>
+        </div>
 
-// Inicialización
-document.addEventListener('DOMContentLoaded', async () => {
-    idEncargadoInsumo = await obtenerIdEncargadoInsumo();
-    if (idEncargadoInsumo) await cargarSolicitudes();
-});
-</script>
+        <!-- INFO ENCARGADO -->
+        <div class="info-encargado" id="infoEncargado">
+            <div><i class="fas fa-user-circle"></i> <strong>Encargado:</strong> <span id="encargadoNombre">Cargando...</span></div>
+            <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="encargadoId">-</span></div>
+        </div>
+
+        <!-- PANELES -->
+        <div class="panels-container">
+
+            <!-- ========== PANEL 1: INSUMOS ========== -->
+            <div class="panel active" id="panelInsumos">
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="filtrarInsumos('APROBADO')">
+                        <div class="number" id="countAprobadas">0</div>
+                        <div class="label">Solicitudes Aprobadas</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarInsumos('ENTREGADO_PARCIAL')">
+                        <div class="number" id="countParciales">0</div>
+                        <div class="label">Entregas Parciales</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarInsumos('ENTREGADO')">
+                        <div class="number" id="countEntregadas">0</div>
+                        <div class="label">Solicitudes Entregadas</div>
+                    </div>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label><i class="fas fa-filter"></i> Estado</label>
+                            <select id="filterStatusInsumos">
+                                <option value="todos">Todos</option>
+                                <option value="APROBADO">✅ Aprobadas (Pendientes)</option>
+                                <option value="ENTREGADO_PARCIAL">⚠️ Entregas Parciales</option>
+                                <option value="ENTREGADO">📦 Entregadas Completas</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> Buscar</label>
+                            <input type="text" id="filterSearchInsumos" placeholder="Paciente, tratamiento...">
+                        </div>
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="btnRefreshInsumos"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Solicitud</th>
+                                <th>Fecha</th>
+                                <th>Paciente</th>
+                                <th>Tratamiento</th>
+                                <th>Insumos</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyInsumos">
+                            <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ========== PANEL 2: EQUIPOS ========== -->
+            <div class="panel" id="panelEquipos">
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="filtrarEquipos('APROBADO')">
+                        <div class="number" id="countEquiposPendientes">0</div>
+                        <div class="label">Solicitudes Aprobadas</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarEquipos('PRESTADO')">
+                        <div class="number" id="countEquiposEntregados">0</div>
+                        <div class="label">Equipos Prestados</div>
+                    </div>
+                    <div class="stat-card" onclick="filtrarEquipos('DEVUELTO')">
+                        <div class="number" id="countEquiposDevueltos">0</div>
+                        <div class="label">Equipos Devueltos</div>
+                    </div>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label><i class="fas fa-filter"></i> Estado</label>
+                            <select id="filterStatusEquipos">
+                                <option value="todos">Todos</option>
+                                <option value="APROBADO">✅ Aprobados (Pendientes)</option>
+                                <option value="PRESTADO">📦 Prestados</option>
+                                <option value="DEVUELTO">🔄 Devueltos</option>
+                                <option value="RECHAZADO">❌ Rechazados</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> Buscar</label>
+                            <input type="text" id="filterSearchEquipos" placeholder="Estudiante, equipo...">
+                        </div>
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="btnRefreshEquipos"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Estudiante</th>
+                                <th>Equipo</th>
+                                <th>Docente</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEquipos">
+                            <tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========== MODAL ENTREGA INSUMOS ========== -->
+    <div id="entregaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-truck"></i> Registrar Entrega de Insumos</h3>
+                <button class="close-modal" onclick="closeEntregaModal()">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn btn-outline" onclick="closeEntregaModal()"><i class="fas fa-times"></i> Cancelar</button>
+                <button class="btn btn-success" id="btnConfirmarEntrega"><i class="fas fa-check"></i> Confirmar Entrega</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL DETALLE EQUIPO ========== -->
+    <div id="detalleEquipoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-alt"></i> Detalle de Solicitud de Equipo</h3>
+                <button class="close-modal" onclick="closeDetalleEquipoModal()">&times;</button>
+            </div>
+            <div id="detalleEquipoBody"></div>
+            <div class="modal-actions" id="accionesEquipoModal" style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========== VARIABLES GLOBALES ==========
+        let idEncargadoInsumo = null;
+        let solicitudesInsumos = [];
+        let solicitudesEquipos = [];
+        let vistaActual = 'insumos';
+        let solicitudSeleccionada = null;
+        let cantidadesEntregadas = {};
+
+        // ========== OBTENER ENCARGADO ==========
+        async function obtenerIdEncargado() {
+            let encargadoId = sessionStorage.getItem('idEncargadoInsumo');
+            let encargadoNombre = sessionStorage.getItem('nombreUsuario');
+
+            if (encargadoId) {
+                idEncargadoInsumo = parseInt(encargadoId);
+                document.getElementById('encargadoId').textContent = encargadoId;
+                document.getElementById('encargadoNombre').textContent = encargadoNombre || 'Encargado de Insumos';
+                console.log('✅ ID Encargado encontrado:', encargadoId);
+                return idEncargadoInsumo;
+            }
+
+            // Demo
+            idEncargadoInsumo = 1;
+            document.getElementById('encargadoId').textContent = '1';
+            document.getElementById('encargadoNombre').textContent = 'Encargado Demo';
+            console.warn('⚠️ Usando encargado demo');
+            return idEncargadoInsumo;
+        }
+
+        // ========== CARGAR SOLICITUDES DE INSUMOS ==========
+        async function cargarSolicitudesInsumos() {
+            if (!idEncargadoInsumo) return;
+
+            const tbody = document.getElementById('tbodyInsumos');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+            try {
+                console.log(`📡 Cargando insumos para encargado: ${idEncargadoInsumo}`);
+                const response = await fetch(`/api/solicitudes-insumo/encargado/${idEncargadoInsumo}`);
+                if (!response.ok) throw new Error('Error al cargar');
+                solicitudesInsumos = await response.json();
+                console.log(`📦 Insumos recibidos: ${solicitudesInsumos.length}`);
+                aplicarFiltrosInsumos();
+            } catch (error) {
+                console.warn('Error al cargar insumos:', error);
+                solicitudesInsumos = [];
+                aplicarFiltrosInsumos();
+            }
+        }
+
+        // ========== CARGAR SOLICITUDES DE EQUIPOS ==========
+        async function cargarSolicitudesEquipos() {
+            if (!idEncargadoInsumo) return;
+
+            const tbody = document.getElementById('tbodyEquipos');
+            tbody.innerHTML = '<tr><td colspan="7" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+            try {
+                console.log(`📡 Cargando equipos para encargado: ${idEncargadoInsumo}`);
+                const response = await fetch(`/api/prestamos-equipo/encargado/${idEncargadoInsumo}`);
+                console.log('📡 Status:', response.status);
+                
+                if (!response.ok) throw new Error('Error al cargar');
+                solicitudesEquipos = await response.json();
+                console.log(`📦 Equipos recibidos: ${solicitudesEquipos.length}`);
+                console.log('📋 Primer elemento:', solicitudesEquipos[0]);
+                aplicarFiltrosEquipos();
+            } catch (error) {
+                console.warn('Error al cargar equipos:', error);
+                solicitudesEquipos = [];
+                aplicarFiltrosEquipos();
+            }
+        }
+
+        // ========== FILTROS INSUMOS ==========
+        function aplicarFiltrosInsumos() {
+            const statusFilter = document.getElementById('filterStatusInsumos').value;
+            const searchFilter = document.getElementById('filterSearchInsumos').value.toLowerCase();
+
+            let filtered = [...solicitudesInsumos];
+
+            if (statusFilter !== 'todos') {
+                filtered = filtered.filter(s => s.estadoSolicitud === statusFilter);
+            }
+
+            if (searchFilter) {
+                filtered = filtered.filter(s =>
+                    (s.pacienteNombre && s.pacienteNombre.toLowerCase().includes(searchFilter)) ||
+                    (s.tratamientoNombre && s.tratamientoNombre.toLowerCase().includes(searchFilter))
+                );
+            }
+
+            actualizarTablaInsumos(filtered);
+            actualizarStatsInsumos();
+        }
+
+        // ========== FILTROS EQUIPOS ==========
+        function aplicarFiltrosEquipos() {
+            const statusFilter = document.getElementById('filterStatusEquipos').value;
+            const searchFilter = document.getElementById('filterSearchEquipos').value.toLowerCase();
+
+            let filtered = [...solicitudesEquipos];
+
+            if (statusFilter !== 'todos') {
+                filtered = filtered.filter(s => {
+                    const estado = s.estadoDevolucion || s.estado || '';
+                    return estado === statusFilter;
+                });
+            }
+
+            if (searchFilter) {
+                filtered = filtered.filter(s => {
+                    let estudianteNombre = s.nombreEstudiante || '';
+                    let equipoNombre = s.nombreEquipo || '';
+                    return estudianteNombre.toLowerCase().includes(searchFilter) ||
+                        equipoNombre.toLowerCase().includes(searchFilter);
+                });
+            }
+
+            actualizarTablaEquipos(filtered);
+            actualizarStatsEquipos();
+        }
+
+        // ========== TABLA INSUMOS ==========
+        function actualizarTablaInsumos(filtered) {
+            const tbody = document.getElementById('tbodyInsumos');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-folder-open"></i> No hay solicitudes</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => `
+                <tr>
+                    <td>${s.idSolicitudInsumo}</td>
+                    <td>${formatDate(s.fechaSolicitud)}</td>
+                    <td><strong>${s.pacienteNombre || 'N/A'}</strong></td>
+                    <td>${s.tratamientoNombre || 'N/A'}</td>
+                    <td>${s.cantidadInsumos || 0} insumos</td>
+                    <td>${getStatusBadge(s.estadoSolicitud)}</td>
+                    <td>
+                        <button class="btn btn-outline btn-sm" onclick="verDetalleInsumo(${s.idSolicitudInsumo})">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                        ${(s.estadoSolicitud === 'APROBADO' || s.estadoSolicitud === 'ENTREGADO_PARCIAL') ? `
+                            <button class="btn btn-success btn-sm" onclick="abrirModalEntrega(${s.idSolicitudInsumo})" style="margin-left: 0.5rem;">
+                                <i class="fas fa-truck"></i> ${s.estadoSolicitud === 'ENTREGADO_PARCIAL' ? 'Completar' : 'Entregar'}
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ========== TABLA EQUIPOS (ADAPTADA PARA DTO) ==========
+        function actualizarTablaEquipos(filtered) {
+            const tbody = document.getElementById('tbodyEquipos');
+
+            if (!filtered || filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-folder-open"></i> No hay solicitudes de equipos</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(s => {
+                // Usar campos del DTO
+                let estudianteNombre = 'N/A';
+                if (s.nombreEstudiante || s.apellidoEstudiante) {
+                    estudianteNombre = `${s.nombreEstudiante || ''} ${s.apellidoEstudiante || ''}`.trim();
+                    if (!estudianteNombre) estudianteNombre = `Estudiante #${s.idEstudiante}`;
+                } else if (s.idEstudiante) {
+                    estudianteNombre = `Estudiante #${s.idEstudiante}`;
+                }
+
+                let equipoNombre = s.nombreEquipo || 'N/A';
+                
+                let docenteNombre = 'N/A';
+                if (s.nombreDocente || s.apellidoDocente) {
+                    docenteNombre = `${s.nombreDocente || ''} ${s.apellidoDocente || ''}`.trim();
+                    if (!docenteNombre) docenteNombre = `Docente #${s.idDocente}`;
+                } else if (s.idDocente) {
+                    docenteNombre = `Docente #${s.idDocente}`;
+                }
+
+                const estado = s.estadoDevolucion || 'PENDIENTE_DOCENTE';
+                const id = s.idPrestamoEquipo || '';
+                const fecha = s.fechaEntrePrestamo || s.fechRegPreEqu || '';
+
+                return `
+                    <tr>
+                        <td><strong>#${id}</strong></td>
+                        <td>${formatDate(fecha)}</td>
+                        <td><strong>${estudianteNombre}</strong></td>
+                        <td>${equipoNombre}</td>
+                        <td>${docenteNombre}</td>
+                        <td>${getStatusBadge(estado)}</td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="verDetalleEquipo(${id})">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            ${estado === 'APROBADO' ? `
+                                <button class="btn btn-success btn-sm" onclick="entregarEquipo(${id})" style="margin-left: 0.3rem;">
+                                    <i class="fas fa-truck"></i> Entregar
+                                </button>
+                            ` : ''}
+                            ${estado === 'PRESTADO' ? `
+                                <button class="btn btn-warning btn-sm" onclick="devolverEquipo(${id})" style="margin-left: 0.3rem; background: var(--warning); color: white;">
+                                    <i class="fas fa-undo"></i> Devolver
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // ========== ESTADÍSTICAS ==========
+        function actualizarStatsInsumos() {
+            const aprobadas = solicitudesInsumos.filter(s => s.estadoSolicitud === 'APROBADO').length;
+            const entregadas = solicitudesInsumos.filter(s => s.estadoSolicitud === 'ENTREGADO').length;
+            const parciales = solicitudesInsumos.filter(s => s.estadoSolicitud === 'ENTREGADO_PARCIAL').length;
+
+            document.getElementById('countAprobadas').textContent = aprobadas;
+            document.getElementById('countEntregadas').textContent = entregadas;
+            document.getElementById('countParciales').textContent = parciales;
+        }
+
+        function actualizarStatsEquipos() {
+            const aprobados = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'APROBADO';
+            }).length;
+            const prestados = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'PRESTADO';
+            }).length;
+            const devueltos = solicitudesEquipos.filter(s => {
+                const estado = s.estadoDevolucion || s.estado || '';
+                return estado === 'DEVUELTO';
+            }).length;
+
+            document.getElementById('countEquiposPendientes').textContent = aprobados;
+            document.getElementById('countEquiposEntregados').textContent = prestados;
+            document.getElementById('countEquiposDevueltos').textContent = devueltos;
+        }
+
+        // ========== FILTRAR POR ESTADO ==========
+        function filtrarInsumos(estado) {
+            document.getElementById('filterStatusInsumos').value = estado;
+            aplicarFiltrosInsumos();
+        }
+
+        function filtrarEquipos(estado) {
+            document.getElementById('filterStatusEquipos').value = estado;
+            aplicarFiltrosEquipos();
+        }
+
+        // ========== VER DETALLE INSUMO ==========
+        async function verDetalleInsumo(idSolicitud) {
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
+                if (!response.ok) throw new Error('Error');
+                const detalle = await response.json();
+
+                const insumosHtml = detalle.insumos ? detalle.insumos.map(i => {
+                    let entregado = i.cantidadEntregada ? i.cantidadEntregada : 0;
+                    let pendiente = i.cantidadSolicitada - entregado;
+                    let estadoTexto = entregado === 0 ? '⏳ Pendiente' : (entregado === i.cantidadSolicitada ? '✅ Completado' :
+                        `⚠️ Parcial (${entregado}/${i.cantidadSolicitada})`);
+                    return `<li>${i.nombreInsumo} - Solicitado: ${i.cantidadSolicitada} ${i.unidadBase || ''} - ${estadoTexto}</li>`;
+                }).join('') : '<li>No hay insumos</li>';
+
+                Swal.fire({
+                    title: 'Detalle de Solicitud',
+                    html: `
+                        <div style="text-align: left;">
+                            <p><strong>📅 Fecha:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
+                            <p><strong>👤 Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
+                            <p><strong>🦷 Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
+                            <p><strong>👨‍🎓 Estudiante:</strong> ${detalle.estudianteNombre || 'N/A'}</p>
+                            <p><strong>👨‍⚕️ Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
+                            <p><strong>📊 Estado:</strong> ${getStatusBadge(detalle.estadoSolicitud)}</p>
+                            <hr>
+                            <h4>📦 Insumos:</h4>
+                            <ul>${insumosHtml}</ul>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonColor: '#006D77',
+                    width: '500px'
+                });
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo cargar el detalle', 'error');
+            }
+        }
+
+        // ========== VER DETALLE EQUIPO ==========
+        async function verDetalleEquipo(idPrestamo) {
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}`);
+                if (!response.ok) throw new Error('Error');
+                const detalle = await response.json();
+                mostrarDetalleEquipo(detalle);
+            } catch (error) {
+                // Buscar en lista local
+                const detalle = solicitudesEquipos.find(s => s.idPrestamoEquipo === idPrestamo);
+                if (detalle) {
+                    mostrarDetalleEquipo(detalle);
+                } else {
+                    Swal.fire('Error', 'No se encontró la solicitud', 'error');
+                }
+            }
+        }
+
+        // ========== MOSTRAR DETALLE EQUIPO (ADAPTADO PARA DTO) ==========
+        function mostrarDetalleEquipo(detalle) {
+            let estudianteNombre = 'N/A';
+            if (detalle.nombreEstudiante || detalle.apellidoEstudiante) {
+                estudianteNombre = `${detalle.nombreEstudiante || ''} ${detalle.apellidoEstudiante || ''}`.trim();
+                if (!estudianteNombre) estudianteNombre = `Estudiante #${detalle.idEstudiante}`;
+            } else if (detalle.idEstudiante) {
+                estudianteNombre = `Estudiante #${detalle.idEstudiante}`;
+            }
+
+            let equipoNombre = detalle.nombreEquipo || 'N/A';
+            
+            let docenteNombre = 'N/A';
+            if (detalle.nombreDocente || detalle.apellidoDocente) {
+                docenteNombre = `${detalle.nombreDocente || ''} ${detalle.apellidoDocente || ''}`.trim();
+                if (!docenteNombre) docenteNombre = `Docente #${detalle.idDocente}`;
+            } else if (detalle.idDocente) {
+                docenteNombre = `Docente #${detalle.idDocente}`;
+            }
+
+            const estado = detalle.estadoDevolucion || 'PENDIENTE_DOCENTE';
+            const fecha = detalle.fechaEntrePrestamo || detalle.fechRegPreEqu || '';
+
+            document.getElementById('detalleEquipoBody').innerHTML = `
+                <div style="padding:1rem;background:var(--gray-50);border-radius:8px;">
+                    <p><strong>📋 Solicitud #${detalle.idPrestamoEquipo}</strong></p>
+                    <p><strong>📅 Fecha:</strong> ${formatDate(fecha)}</p>
+                    <p><strong>👨‍🎓 Estudiante:</strong> ${estudianteNombre}</p>
+                    <p><strong>🛠 Equipo:</strong> ${equipoNombre}</p>
+                    <p><strong>👨‍🏫 Docente:</strong> ${docenteNombre}</p>
+                    <p><strong>📊 Estado:</strong> ${getStatusBadge(estado)}</p>
+                    ${detalle.observacionPrestamo ? `<p><strong>📝 Observación:</strong> ${detalle.observacionPrestamo}</p>` : ''}
+                    ${detalle.nombreEncargado ? `<p><strong>📦 Entregado por:</strong> ${detalle.nombreEncargado}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('accionesEquipoModal').innerHTML = `
+                <button class="btn btn-outline" onclick="closeDetalleEquipoModal()">Cerrar</button>
+                ${estado === 'APROBADO' ? `
+                    <button class="btn btn-success" onclick="entregarEquipo(${detalle.idPrestamoEquipo})">
+                        <i class="fas fa-truck"></i> Entregar
+                    </button>
+                ` : ''}
+                ${estado === 'PRESTADO' ? `
+                    <button class="btn btn-warning" onclick="devolverEquipo(${detalle.idPrestamoEquipo})" style="background: var(--warning); color: white;">
+                        <i class="fas fa-undo"></i> Devolver
+                    </button>
+                ` : ''}
+            `;
+
+            document.getElementById('detalleEquipoModal').classList.add('active');
+        }
+
+        function closeDetalleEquipoModal() {
+            document.getElementById('detalleEquipoModal').classList.remove('active');
+        }
+
+        // ========== ENTREGAR EQUIPO ==========
+        async function entregarEquipo(idPrestamo) {
+            const result = await Swal.fire({
+                title: '¿Entregar equipo?',
+                text: 'Confirme que el equipo será entregado al estudiante',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                confirmButtonText: 'Sí, entregar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}/entregar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idEncargado: idEncargadoInsumo,
+                        fechaPrestamo: new Date().toISOString().split('T')[0]
+                    })
+                });
+
+                if (response.ok) {
+                    Swal.fire('¡Entregado!', 'El equipo ha sido entregado correctamente', 'success');
+                    closeDetalleEquipoModal();
+                    cargarSolicitudesEquipos();
+                } else {
+                    throw new Error('Error al entregar');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo entregar el equipo', 'error');
+            }
+        }
+
+        // ========== DEVOLVER EQUIPO ==========
+        async function devolverEquipo(idPrestamo) {
+            const result = await Swal.fire({
+                title: '¿Devolver equipo?',
+                text: 'Confirme que el equipo ha sido devuelto en buen estado',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#F59E0B',
+                confirmButtonText: 'Sí, devolver',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch(`/api/prestamos-equipo/${idPrestamo}/devolver`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fechaDevolucion: new Date().toISOString().split('T')[0]
+                    })
+                });
+
+                if (response.ok) {
+                    Swal.fire('¡Devuelto!', 'El equipo ha sido devuelto correctamente', 'success');
+                    closeDetalleEquipoModal();
+                    cargarSolicitudesEquipos();
+                } else {
+                    throw new Error('Error al devolver');
+                }
+            } catch (error) {
+                Swal.fire('Error', 'No se pudo devolver el equipo', 'error');
+            }
+        }
+
+        // ========== MODAL ENTREGA INSUMOS ==========
+        async function abrirModalEntrega(idSolicitud) {
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/detalle`);
+                if (!response.ok) throw new Error('Error');
+                const detalle = await response.json();
+                solicitudSeleccionada = detalle;
+                cantidadesEntregadas = {};
+
+                let insumosHtml = '';
+                if (detalle.insumos && detalle.insumos.length > 0) {
+                    insumosHtml = detalle.insumos.map(insumo => {
+                        const yaEntregado = insumo.cantidadEntregada || 0;
+                        const pendiente = insumo.cantidadSolicitada - yaEntregado;
+                        const maximoEntregar = pendiente;
+                        const valorPorDefecto = pendiente > 0 ? pendiente : 0;
+
+                        return `
+                            <div class="insumo-row">
+                                <div class="insumo-info">
+                                    <strong>${insumo.nombreInsumo}</strong>
+                                    ${insumo.concentracion ? `<br><small>${insumo.concentracion}</small>` : ''}
+                                </div>
+                                <div class="insumo-solicitado">
+                                    📋 Solicitado:<br>
+                                    <strong>${insumo.cantidadSolicitada}</strong> ${insumo.unidadBase || 'unid.'}
+                                    ${yaEntregado > 0 ? `<br><small style="color: #10B981;">✓ Entregado: ${yaEntregado}</small>` : ''}
+                                    ${pendiente > 0 && yaEntregado > 0 ? `<br><small style="color: #F59E0B;">⏳ Pendiente: ${pendiente}</small>` : ''}
+                                </div>
+                                <div class="insumo-entrega">
+                                    <label>🎁 Entregar ahora:</label>
+                                    <input type="number" 
+                                        id="cantidad_${insumo.idInsumo}" 
+                                        value="${valorPorDefecto}" 
+                                        min="0" 
+                                        max="${maximoEntregar}" 
+                                        step="1"
+                                        onchange="validarCantidad(${insumo.idInsumo}, this.value, ${maximoEntregar})">
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    insumosHtml = '<p style="text-align: center; color: var(--gray-500);">No hay insumos para entregar</p>';
+                }
+
+                document.getElementById('modalBody').innerHTML = `
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
+                        <p><strong>📋 Solicitud #${detalle.idSolicitudInsumo}</strong></p>
+                        <p><strong>👤 Paciente:</strong> ${detalle.pacienteNombre || 'N/A'}</p>
+                        <p><strong>🦷 Tratamiento:</strong> ${detalle.tratamientoNombre || 'N/A'}</p>
+                        <p><strong>👨‍⚕️ Doctor:</strong> ${detalle.doctorNombre || 'N/A'}</p>
+                    </div>
+                    <h4 style="margin-bottom: 1rem;">📦 Insumos pendientes</h4>
+                    <div id="insumosLista">${insumosHtml}</div>
+                    <div class="alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Nota:</strong> Puedes entregar cantidades parciales. Si entregas menos de lo solicitado, 
+                        la solicitud quedará como "Entrega Parcial" y podrás completarla después.
+                    </div>
+                `;
+
+                document.getElementById('entregaModal').classList.add('active');
+                document.getElementById('btnConfirmarEntrega').onclick = () => confirmarEntrega(idSolicitud);
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', 'No se pudo cargar los insumos', 'error');
+            }
+        }
+
+        function validarCantidad(idInsumo, valor, maximo) {
+            let cantidad = parseInt(valor);
+            if (isNaN(cantidad)) cantidad = 0;
+            if (cantidad > maximo) cantidad = maximo;
+            if (cantidad < 0) cantidad = 0;
+
+            cantidadesEntregadas[idInsumo] = cantidad;
+            const input = document.getElementById(`cantidad_${idInsumo}`);
+            input.value = cantidad;
+        }
+
+        async function confirmarEntrega(idSolicitud) {
+            const insumosEntregados = [];
+            let tieneAlgunaEntrega = false;
+
+            if (solicitudSeleccionada.insumos) {
+                for (const insumo of solicitudSeleccionada.insumos) {
+                    const yaEntregado = insumo.cantidadEntregada || 0;
+                    const pendiente = insumo.cantidadSolicitada - yaEntregado;
+                    const cantidadAEntregar = cantidadesEntregadas[insumo.idInsumo] !== undefined ?
+                        cantidadesEntregadas[insumo.idInsumo] : pendiente;
+
+                    if (cantidadAEntregar > 0) {
+                        tieneAlgunaEntrega = true;
+                        insumosEntregados.push({
+                            idInsumo: insumo.idInsumo,
+                            cantidadEntregada: cantidadAEntregar
+                        });
+                    }
+                }
+            }
+
+            if (!tieneAlgunaEntrega) {
+                Swal.fire('Error', 'Debe entregar al menos un insumo', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/solicitudes-insumo/${idSolicitud}/entregar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idEncargado: parseInt(idEncargadoInsumo),
+                        insumos: insumosEntregados
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al entregar');
+                }
+
+                Swal.fire('¡Éxito!', data.mensaje || 'Insumos entregados correctamente', 'success');
+                closeEntregaModal();
+                cargarSolicitudesInsumos();
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire('Error', error.message || 'No se pudo completar la entrega', 'error');
+            }
+        }
+
+        function closeEntregaModal() {
+            document.getElementById('entregaModal').classList.remove('active');
+            solicitudSeleccionada = null;
+            cantidadesEntregadas = {};
+        }
+
+        // ========== CAMBIAR VISTA ==========
+        function cambiarVista() {
+            if (vistaActual === 'insumos') {
+                vistaActual = 'equipos';
+                document.getElementById('panelInsumos').classList.remove('active');
+                document.getElementById('panelEquipos').classList.add('active');
+                document.getElementById('textoBoton').textContent = 'Ver Insumos';
+                document.getElementById('badgeVista').textContent = 'Equipos';
+                document.getElementById('tituloHeader').innerHTML = '<i class="fas fa-tools"></i> Gestión de Equipos';
+                document.getElementById('subtituloHeader').textContent = 'Encargado de Insumos · Gestione los préstamos de equipos';
+                cargarSolicitudesEquipos();
+            } else {
+                vistaActual = 'insumos';
+                document.getElementById('panelEquipos').classList.remove('active');
+                document.getElementById('panelInsumos').classList.add('active');
+                document.getElementById('textoBoton').textContent = 'Ver Equipos';
+                document.getElementById('badgeVista').textContent = 'Insumos';
+                document.getElementById('tituloHeader').innerHTML = '<i class="fas fa-boxes"></i> Gestión de Insumos';
+                document.getElementById('subtituloHeader').textContent = 'Encargado de Insumos · Gestione la entrega de insumos para tratamientos';
+                cargarSolicitudesInsumos();
+            }
+        }
+
+        // ========== UTILIDADES ==========
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    const parts = dateString.split('-');
+                    if (parts.length === 3) {
+                        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                        if (!isNaN(d.getTime())) {
+                            return d.toLocaleDateString('es-ES');
+                        }
+                    }
+                    return dateString;
+                }
+                return date.toLocaleDateString('es-ES');
+            } catch {
+                return dateString;
+            }
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                'PENDIENTE_DOCENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente Docente' },
+                'PENDIENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
+                'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobado' },
+                'ENTREGADO': { class: 'status-entregado', icon: 'fa-truck', text: 'Entregado' },
+                'ENTREGADO_PARCIAL': { class: 'status-entregado-parcial', icon: 'fa-clock', text: 'Entrega Parcial' },
+                'RECHAZADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Rechazado' },
+                'PRESTADO': { class: 'status-prestado', icon: 'fa-hand-holding', text: 'Prestado' },
+                'DEVUELTO': { class: 'status-devuelto', icon: 'fa-undo-alt', text: 'Devuelto' },
+                'CANCELADO': { class: 'status-rechazado', icon: 'fa-times-circle', text: 'Cancelado' }
+            };
+            const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
+            return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('btnCambiarVista').addEventListener('click', cambiarVista);
+
+        document.getElementById('btnRefreshInsumos').addEventListener('click', cargarSolicitudesInsumos);
+        document.getElementById('filterStatusInsumos').addEventListener('change', aplicarFiltrosInsumos);
+        document.getElementById('filterSearchInsumos').addEventListener('input', aplicarFiltrosInsumos);
+
+        document.getElementById('btnRefreshEquipos').addEventListener('click', cargarSolicitudesEquipos);
+        document.getElementById('filterStatusEquipos').addEventListener('change', aplicarFiltrosEquipos);
+        document.getElementById('filterSearchEquipos').addEventListener('input', aplicarFiltrosEquipos);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeEntregaModal();
+                closeDetalleEquipoModal();
+            }
+        });
+
+        document.getElementById('entregaModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeEntregaModal();
+        });
+        document.getElementById('detalleEquipoModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeDetalleEquipoModal();
+        });
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', async () => {
+            await obtenerIdEncargado();
+            await cargarSolicitudesInsumos();
+
+            document.getElementById('panelInsumos').classList.add('active');
+            document.getElementById('panelEquipos').classList.remove('active');
+
+            console.log('✅ Gestión de insumos y equipos inicializada');
+            console.log('📊 ID Encargado:', idEncargadoInsumo);
+        });
+    </script>
 </body>
 </html>

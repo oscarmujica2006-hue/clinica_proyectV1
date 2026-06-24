@@ -1,992 +1,798 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Solicitud de Equipos · Clínica</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Préstamo de Equipo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    :root {
-      --primary: #006D77;
-      --primary-dark: #005259;
-      --primary-light: #E6F4F5;
-      --success: #10B981;
-      --success-light: #D1FAE5;
-      --warning: #F59E0B;
-      --warning-light: #FEF3C7;
-      --danger: #EF4444;
-      --danger-light: #FEE2E2;
-      --info: #3B82F6;
-      --info-light: #DBEAFE;
-      --gray-50: #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-200: #E5E7EB;
-      --gray-300: #D1D5DB;
-      --gray-400: #9CA3AF;
-      --gray-500: #6B7280;
-      --gray-600: #4B5563;
-      --gray-700: #374151;
-      --gray-800: #1F2937;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-      --radius: 1rem;
-      --radius-sm: 0.75rem;
-    }
+        :root {
+            --primary: #006D77;
+            --primary-dark: #005259;
+            --primary-light: #E6F4F5;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --info: #3B82F6;
+            --info-light: #DBEAFE;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+        }
 
-    body {
-      font-family: "Inter", sans-serif;
-      background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
-      color: var(--gray-800);
-      line-height: 1.5;
-      min-height: 100vh;
-    }
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
 
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
+        .container {
+            max-width: 650px;
+            width: 100%;
+            margin: 0 auto;
+        }
 
-    .header {
-      background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
-      border-radius: var(--radius);
-      padding: 2rem;
-      margin-bottom: 2rem;
-      color: white;
-      box-shadow: var(--shadow-lg);
-    }
+        .header {
+            background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
 
-    .header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
 
-    .header p {
-      opacity: 0.9;
-    }
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
 
-    .nav-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+        .info-usuario {
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
 
-    .nav-btn {
-      background: white;
-      color: var(--primary);
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: var(--radius-sm);
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-      box-shadow: var(--shadow-sm);
-    }
+        .info-usuario-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
 
-    .nav-btn.active {
-      background: var(--primary);
-      color: white;
-    }
+        .info-usuario-item i {
+            color: var(--primary);
+            width: 18px;
+        }
 
-    .nav-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
 
-    .stat-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
+        .form-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1.8rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
 
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-    }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-    .stat-card .number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--gray-700);
+        }
 
-    .stat-card .label {
-      color: var(--gray-600);
-      font-size: 0.875rem;
-    }
+        .form-group label .required {
+            color: var(--danger);
+            font-weight: 700;
+        }
 
-    .filters-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid var(--gray-200);
-    }
+        .form-group .helper-text {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: 0.25rem;
+        }
 
-    .filters-grid {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
 
-    .filter-group {
-      flex: 1;
-      min-width: 180px;
-    }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
 
-    .filter-group label {
-      display: block;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--gray-500);
-      margin-bottom: 0.25rem;
-    }
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
 
-    .filter-group select, .filter-group input {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      background: white;
-    }
+        .form-group select:hover,
+        .form-group textarea:hover {
+            border-color: var(--primary);
+        }
 
-    .table-container {
-      background: white;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--gray-200);
-      overflow-x: auto;
-    }
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+        .resumen-solicitud {
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
 
-    th {
-      background: var(--gray-50);
-      padding: 1rem;
-      text-align: left;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: var(--gray-600);
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .resumen-solicitud.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
 
-    td {
-      padding: 1rem;
-      border-bottom: 1px solid var(--gray-100);
-      font-size: 0.875rem;
-    }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    tr:hover {
-      background: var(--gray-50);
-    }
+        .resumen-solicitud h4 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
+        .resumen-solicitud p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 0.5rem;
+        }
 
-    .status-pendiente { background: var(--warning-light); color: var(--warning); }
-    .status-aprobado { background: var(--success-light); color: var(--success); }
-    .status-prestado { background: var(--info-light); color: var(--info); }
-    .status-devuelto { background: var(--success-light); color: var(--success); }
-    .status-cancelado { background: var(--danger-light); color: var(--danger); }
+        .resumen-solicitud p strong {
+            color: var(--gray-600);
+            min-width: 130px;
+        }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--gray-100);
+        }
 
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-primary:hover { background: var(--primary-dark); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+        }
 
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-    .btn-success:hover { background: #0b9e6e; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
-    .btn-warning {
-      background: var(--warning);
-      color: white;
-    }
-    .btn-warning:hover { background: #d97706; }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-    .btn-danger {
-      background: var(--danger);
-      color: white;
-    }
-    .btn-danger:hover { background: #dc2626; }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+            flex: 0.5;
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--gray-300);
-      color: var(--gray-700);
-    }
-    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    .modal.active { display: flex; }
+        .badge-disponible {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            background: var(--success-light);
+            color: var(--success);
+            margin-left: 0.5rem;
+        }
 
-    .modal-content {
-      background: white;
-      border-radius: var(--radius);
-      max-width: 800px;
-      width: 90%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 1.5rem;
-    }
+        .info-box {
+            background: var(--info-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--info);
+            font-size: 0.85rem;
+        }
 
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .info-box i {
+            font-size: 1.2rem;
+        }
 
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--gray-500);
-    }
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .form-card {
+                padding: 1.5rem;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                flex: none;
+            }
+            .btn-outline {
+                flex: none;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            .info-usuario {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+            .resumen-solicitud p {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .resumen-solicitud p strong {
+                min-width: auto;
+            }
+        }
 
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--gray-700);
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
-      width: 100%;
-      padding: 0.6rem 1rem;
-      border: 1px solid var(--gray-300);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    .equipo-item {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.75rem;
-      background: var(--gray-50);
-      border-radius: 8px;
-      margin-bottom: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .equipo-item select {
-      flex: 2;
-      min-width: 150px;
-    }
-
-    .equipo-item input {
-      flex: 1;
-      min-width: 80px;
-    }
-
-    .equipo-item button {
-      padding: 0.3rem 0.75rem;
-    }
-
-    .info-usuario {
-      background: var(--primary-light);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .total-solicitud {
-      background: var(--gray-100);
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      text-align: right;
-      font-weight: bold;
-    }
-
-    .solicitud-resumen {
-      background: var(--gray-50);
-      border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-left: 4px solid var(--primary);
-    }
-
-    .solicitud-resumen h4 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .fa-spinner {
-      animation: spin 1s linear infinite;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .filters-grid { flex-direction: column; }
-      .filter-group { width: 100%; }
-      .equipo-item { flex-direction: column; }
-      .equipo-item input, .equipo-item select { width: 100%; }
-    }
-  </style>
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1rem;
+            }
+            .header {
+                padding: 1.2rem;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <div class="header">
-    <h1><i class="fas fa-tools"></i> Solicitud de Equipos</h1>
-    <p>Estudiantes y Docentes · Solicite equipos para sus prácticas clínicas</p>
-  </div>
-
-  <div class="info-usuario" id="infoUsuario">
-    <div><i class="fas fa-user-circle"></i> <strong>Usuario:</strong> <span id="usuarioNombre">Cargando...</span></div>
-    <div><i class="fas fa-id-card"></i> <strong>Rol:</strong> <span id="usuarioRol">-</span></div>
-    <div><i class="fas fa-clinic-medical"></i> <strong>Clínica:</strong> <span id="usuarioClinica">-</span></div>
-  </div>
-
-  <div class="nav-buttons">
-    <button class="nav-btn active" onclick="mostrarVista('solicitudes')">
-      <i class="fas fa-list"></i> Mis Solicitudes
-    </button>
-    <button class="nav-btn" onclick="mostrarVista('nueva')">
-      <i class="fas fa-plus"></i> Nueva Solicitud
-    </button>
-  </div>
-
-  <!-- Vista de Solicitudes -->
-  <div id="vistaSolicitudes">
-    <div class="stats-grid">
-      <div class="stat-card" onclick="filtrarPorEstado('PENDIENTE')">
-        <div class="number" id="countPendientes">0</div>
-        <div class="label">Solicitudes Pendientes</div>
-      </div>
-      <div class="stat-card" onclick="filtrarPorEstado('APROBADO')">
-        <div class="number" id="countAprobados">0</div>
-        <div class="label">Solicitudes Aprobadas</div>
-      </div>
-      <div class="stat-card" onclick="filtrarPorEstado('PRESTADO')">
-        <div class="number" id="countPrestados">0</div>
-        <div class="label">Equipos Prestados</div>
-      </div>
-      <div class="stat-card" onclick="filtrarPorEstado('DEVUELTO')">
-        <div class="number" id="countDevueltos">0</div>
-        <div class="label">Equipos Devueltos</div>
-      </div>
-    </div>
-
-    <div class="filters-card">
-      <div class="filters-grid">
-        <div class="filter-group">
-          <label><i class="fas fa-filter"></i> Estado</label>
-          <select id="filterStatusSolicitud">
-            <option value="todos">Todos</option>
-            <option value="PENDIENTE">Pendientes</option>
-            <option value="APROBADO">Aprobados</option>
-            <option value="PRESTADO">Prestados</option>
-            <option value="DEVUELTO">Devueltos</option>
-            <option value="CANCELADO">Cancelados</option>
-          </select>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-tools"></i> Solicitar Préstamo</h1>
+            <p>Complete el formulario para solicitar un equipo</p>
         </div>
-        <div class="filter-group">
-          <label><i class="fas fa-calendar"></i> Desde</label>
-          <input type="date" id="filterFechaDesde">
+
+        <div class="info-usuario">
+            <div class="info-usuario-item">
+                <i class="fas fa-user-circle"></i>
+                <span><strong>Estudiante:</strong> <span id="usuarioNombre">Cargando...</span></span>
+            </div>
+            <div class="info-usuario-item">
+                <i class="fas fa-clinic-medical"></i>
+                <span><strong>Clínica:</strong> <span id="usuarioClinica">-</span></span>
+            </div>
         </div>
-        <div class="filter-group">
-          <label><i class="fas fa-calendar"></i> Hasta</label>
-          <input type="date" id="filterFechaHasta">
+
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <span>La solicitud será enviada al docente seleccionado para su aprobación.</span>
         </div>
-        <div class="filter-group">
-          <label>&nbsp;</label>
-          <button class="btn btn-primary" id="btnRefreshSolicitudes"><i class="fas fa-sync-alt"></i> Actualizar</button>
-        </div>
-      </div>
-    </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>ID Solicitud</th>
-            <th>Fecha</th>
-            <th>Equipo</th>
-            <th>Estado</th>
-            <th>Fecha Devolución</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="solicitudesTableBody">
-          <tr><td colspan="6" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando solicitudes...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+        <div class="form-card">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i> Nueva Solicitud
+            </div>
+            <div class="form-subtitle">
+                <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                Complete todos los campos obligatorios <span style="color: var(--danger);">*</span>
+            </div>
 
-  <!-- Vista de Nueva Solicitud -->
-  <div id="vistaNueva" style="display: none;">
-    <div class="filters-card">
-      <h3 style="margin-bottom: 1rem;"><i class="fas fa-plus-circle"></i> Solicitar Equipo</h3>
-      
-      <div class="form-group">
-        <label><i class="fas fa-tag"></i> Seleccionar Equipo</label>
-        <select id="equipoSelect" style="width: 100%;">
-          <option value="">-- Seleccione un equipo --</option>
-        </select>
-      </div>
+            <form id="solicitudForm" novalidate>
+                <!-- Seleccionar Docente -->
+                <div class="form-group">
+                    <label for="docenteSelect">
+                        <i class="fas fa-user-md"></i> Docente <span class="required">*</span>
+                    </label>
+                    <select id="docenteSelect" required>
+                        <option value="">-- Seleccione un docente --</option>
+                    </select>
+                    <span class="helper-text">Seleccione el docente que aprobará la solicitud</span>
+                </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-calendar-alt"></i> Fecha Límite de Devolución</label>
-        <input type="date" id="fechaLimite">
-      </div>
+                <!-- Seleccionar Equipo -->
+                <div class="form-group">
+                    <label for="equipoSelect">
+                        <i class="fas fa-tag"></i> Equipo <span class="required">*</span>
+                    </label>
+                    <select id="equipoSelect" required>
+                        <option value="">-- Seleccione un equipo --</option>
+                    </select>
+                    <span class="helper-text">Seleccione el equipo que necesita para su práctica</span>
+                </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-comment"></i> Motivo de la Solicitud</label>
-        <textarea id="motivoSolicitud" placeholder="Describa el motivo de la solicitud..."></textarea>
-      </div>
+                <!-- Motivo -->
+                <div class="form-group">
+                    <label for="motivoSolicitud">
+                        <i class="fas fa-comment"></i> Motivo / Justificación <span class="required">*</span>
+                    </label>
+                    <textarea id="motivoSolicitud" placeholder="Describa el motivo de la solicitud..." required></textarea>
+                    <span class="helper-text">Explique brevemente para qué necesita el equipo</span>
+                </div>
 
-      <div class="form-group">
-        <label><i class="fas fa-clock"></i> Horario de Préstamo</label>
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 150px;">
-            <label style="font-size: 0.8rem; color: var(--gray-500);">Hora de Entrega</label>
-            <input type="time" id="horaEntrega">
-          </div>
-          <div style="flex: 1; min-width: 150px;">
-            <label style="font-size: 0.8rem; color: var(--gray-500);">Hora de Devolución</label>
-            <input type="time" id="horaDevolucion">
-          </div>
-        </div>
-      </div>
+                <!-- Resumen -->
+                <div class="resumen-solicitud" id="resumenSolicitud">
+                    <h4><i class="fas fa-clipboard-check"></i> Resumen de la Solicitud</h4>
+                    <p><strong>Docente:</strong> <span id="resumenDocente">-</span></p>
+                    <p><strong>Equipo:</strong> <span id="resumenEquipo">-</span></p>
+                    <p><strong>Código:</strong> <span id="resumenCodigo">-</span></p>
+                    <p><strong>Motivo:</strong> <span id="resumenMotivo">-</span></p>
+                </div>
 
-      <div class="solicitud-resumen" id="resumenSolicitud" style="display: none;">
-        <h4><i class="fas fa-clipboard-check"></i> Resumen de la Solicitud</h4>
-        <p><strong>Equipo:</strong> <span id="resumenEquipo">-</span></p>
-        <p><strong>Fecha límite:</strong> <span id="resumenFechaLimite">-</span></p>
-        <p><strong>Motivo:</strong> <span id="resumenMotivo">-</span></p>
-      </div>
-
-      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
-        <button class="btn btn-outline" onclick="limpiarSolicitud()">
-          <i class="fas fa-trash"></i> Limpiar
-        </button>
-        <button class="btn btn-primary" onclick="enviarSolicitud()">
-          <i class="fas fa-paper-plane"></i> Enviar Solicitud
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Detalle -->
-<div id="detalleModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-clipboard-list"></i> Detalle de la Solicitud</h3>
-      <button class="close-modal" onclick="closeDetalleModal()">&times;</button>
-    </div>
-    <div id="detalleModalBody"></div>
-    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;" id="accionesModal">
-    </div>
-  </div>
-</div>
-
-<script>
-let idUsuario = null;
-let tipoUsuario = null;
-let solicitudes = [];
-let equiposDisponibles = [];
-
-async function obtenerInfoUsuario() {
-    let userId = sessionStorage.getItem('idUsuario');
-    let userNombre = sessionStorage.getItem('nombreUsuario');
-    let userRol = sessionStorage.getItem('rolUsuario');
-    let userClinica = sessionStorage.getItem('clinicaUsuario');
-    
-    if (userId) {
-        document.getElementById('usuarioNombre').textContent = userNombre || 'Usuario';
-        document.getElementById('usuarioRol').textContent = userRol || 'Estudiante';
-        document.getElementById('usuarioClinica').textContent = userClinica || 'Clínica Principal';
-        return { id: parseInt(userId), rol: userRol };
-    }
-    
-    // Si no hay sesión, mostrar demo
-    document.getElementById('usuarioNombre').textContent = 'Estudiante Demo';
-    document.getElementById('usuarioRol').textContent = 'Estudiante';
-    document.getElementById('usuarioClinica').textContent = 'Clínica Odontológica';
-    return { id: 1, rol: 'ESTUDIANTE' };
-}
-
-async function cargarEquipos() {
-    try {
-        // Simular carga de equipos - Reemplazar con API real
-        const response = await fetch('/api/equipos/disponibles');
-        if (!response.ok) throw new Error('Error al cargar equipos');
-        equiposDisponibles = await response.json();
-        
-        const select = document.getElementById('equipoSelect');
-        select.innerHTML = '<option value="">-- Seleccione un equipo --</option>' +
-            equiposDisponibles.map(e => `<option value="${e.idEquipo}">${e.nombreEquipo} (${e.codigoEquipo})</option>`).join('');
-        
-        // Evento para mostrar resumen
-        select.addEventListener('change', actualizarResumen);
-        document.getElementById('fechaLimite').addEventListener('change', actualizarResumen);
-        document.getElementById('motivoSolicitud').addEventListener('input', actualizarResumen);
-        
-    } catch (error) {
-        console.error('Error:', error);
-        // Datos demo si falla la API
-        equiposDisponibles = [
-            { idEquipo: 1, nombreEquipo: 'Microscopio Clínico', codigoEquipo: 'MC-001' },
-            { idEquipo: 2, nombreEquipo: 'Lámpara de Curación', codigoEquipo: 'LC-002' },
-            { idEquipo: 3, nombreEquipo: 'Autoclave', codigoEquipo: 'AC-003' },
-            { idEquipo: 4, nombreEquipo: 'Rayos X Portátil', codigoEquipo: 'RX-004' },
-            { idEquipo: 5, nombreEquipo: 'Equipo de Ultrasonido', codigoEquipo: 'US-005' },
-            { idEquipo: 6, nombreEquipo: 'Silla Dental', codigoEquipo: 'SD-006' }
-        ];
-        const select = document.getElementById('equipoSelect');
-        select.innerHTML = '<option value="">-- Seleccione un equipo --</option>' +
-            equiposDisponibles.map(e => `<option value="${e.idEquipo}">${e.nombreEquipo} (${e.codigoEquipo})</option>`).join('');
-        select.addEventListener('change', actualizarResumen);
-        document.getElementById('fechaLimite').addEventListener('change', actualizarResumen);
-        document.getElementById('motivoSolicitud').addEventListener('input', actualizarResumen);
-    }
-}
-
-async function cargarSolicitudes() {
-    const tbody = document.getElementById('solicitudesTableBody');
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
-    
-    try {
-        // Simular carga de solicitudes - Reemplazar con API real
-        const response = await fetch(`/api/prestamos/usuario/${idUsuario}`);
-        if (!response.ok) throw new Error('Error al cargar solicitudes');
-        solicitudes = await response.json();
-        aplicarFiltrosSolicitudes();
-    } catch (error) {
-        console.error('Error:', error);
-        // Datos demo
-        solicitudes = [
-            { idPrestamoEquipo: 1, equipo: { nombreEquipo: 'Microscopio Clínico' }, fechaSolicitud: '2026-06-15', estado: 'PENDIENTE', fechaDevolucion: '2026-06-20' },
-            { idPrestamoEquipo: 2, equipo: { nombreEquipo: 'Lámpara de Curación' }, fechaSolicitud: '2026-06-10', estado: 'APROBADO', fechaDevolucion: '2026-06-18' },
-            { idPrestamoEquipo: 3, equipo: { nombreEquipo: 'Rayos X Portátil' }, fechaSolicitud: '2026-06-05', estado: 'PRESTADO', fechaDevolucion: '2026-06-12' },
-            { idPrestamoEquipo: 4, equipo: { nombreEquipo: 'Autoclave' }, fechaSolicitud: '2026-05-28', estado: 'DEVUELTO', fechaDevolucion: '2026-06-02' }
-        ];
-        aplicarFiltrosSolicitudes();
-    }
-}
-
-function aplicarFiltrosSolicitudes() {
-    const estadoFilter = document.getElementById('filterStatusSolicitud').value;
-    const fechaDesde = document.getElementById('filterFechaDesde').value;
-    const fechaHasta = document.getElementById('filterFechaHasta').value;
-    
-    let filtered = [...solicitudes];
-    
-    if (estadoFilter !== 'todos') {
-        filtered = filtered.filter(s => s.estado === estadoFilter);
-    }
-    
-    if (fechaDesde) {
-        filtered = filtered.filter(s => s.fechaSolicitud >= fechaDesde);
-    }
-    
-    if (fechaHasta) {
-        filtered = filtered.filter(s => s.fechaSolicitud <= fechaHasta);
-    }
-    
-    actualizarTablaSolicitudes(filtered);
-    actualizarEstadisticas();
-}
-
-function actualizarTablaSolicitudes(solicitudesFiltradas) {
-    const tbody = document.getElementById('solicitudesTableBody');
-    
-    if (solicitudesFiltradas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay solicitudes</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = solicitudesFiltradas.map(s => `
-        <tr>
-            <td><strong>#${s.idPrestamoEquipo}</strong></td>
-            <td>${formatDate(s.fechaSolicitud)}</td>
-            <td>${s.equipo?.nombreEquipo || 'Equipo'}</td>
-            <td>${getStatusBadge(s.estado)}</td>
-            <td>${s.fechaDevolucion ? formatDate(s.fechaDevolucion) : '-'}</td>
-            <td>
-                <button class="btn btn-outline" onclick="verDetalleSolicitud(${s.idPrestamoEquipo})" style="padding: 0.3rem 0.75rem;">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-                ${s.estado === 'APROBADO' ? `
-                    <button class="btn btn-success" onclick="devolverEquipo(${s.idPrestamoEquipo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
-                        <i class="fas fa-undo"></i> Devolver
+                <!-- Botones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="limpiarFormulario()">
+                        <i class="fas fa-undo-alt"></i> Limpiar
                     </button>
-                ` : ''}
-                ${s.estado === 'PENDIENTE' ? `
-                    <button class="btn btn-danger" onclick="cancelarSolicitud(${s.idPrestamoEquipo})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
-                        <i class="fas fa-times"></i> Cancelar
+                    <button type="button" class="btn btn-primary" id="btnEnviar" onclick="enviarSolicitud()">
+                        <i class="fas fa-paper-plane"></i> Enviar Solicitud
                     </button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
-}
-
-function actualizarEstadisticas() {
-    const pendientes = solicitudes.filter(s => s.estado === 'PENDIENTE').length;
-    const aprobados = solicitudes.filter(s => s.estado === 'APROBADO').length;
-    const prestados = solicitudes.filter(s => s.estado === 'PRESTADO').length;
-    const devueltos = solicitudes.filter(s => s.estado === 'DEVUELTO').length;
-    
-    document.getElementById('countPendientes').textContent = pendientes;
-    document.getElementById('countAprobados').textContent = aprobados;
-    document.getElementById('countPrestados').textContent = prestados;
-    document.getElementById('countDevueltos').textContent = devueltos;
-}
-
-function filtrarPorEstado(estado) {
-    document.getElementById('filterStatusSolicitud').value = estado;
-    aplicarFiltrosSolicitudes();
-}
-
-async function verDetalleSolicitud(idPrestamo) {
-    try {
-        const response = await fetch(`/api/prestamos/${idPrestamo}`);
-        if (!response.ok) throw new Error('Error');
-        const detalle = await response.json();
-        mostrarDetalle(detalle);
-    } catch (error) {
-        // Datos demo
-        const detalle = solicitudes.find(s => s.idPrestamoEquipo === idPrestamo);
-        if (detalle) mostrarDetalle(detalle);
-    }
-}
-
-function mostrarDetalle(detalle) {
-    document.getElementById('detalleModalBody').innerHTML = `
-        <div style="margin-bottom: 1rem; padding: 1rem; background: var(--gray-50); border-radius: 8px;">
-            <p><strong>📋 Solicitud #${detalle.idPrestamoEquipo}</strong></p>
-            <p><strong>📅 Fecha solicitud:</strong> ${formatDate(detalle.fechaSolicitud)}</p>
-            <p><strong>📊 Estado:</strong> ${getStatusBadge(detalle.estado)}</p>
-            <p><strong>🛠 Equipo:</strong> ${detalle.equipo?.nombreEquipo || 'N/A'}</p>
-            <p><strong>📆 Fecha límite devolución:</strong> ${detalle.fechaDevolucion ? formatDate(detalle.fechaDevolucion) : 'No definida'}</p>
-            <p><strong>⏰ Hora entrega:</strong> ${detalle.horaEntrega || 'No definida'}</p>
-            <p><strong>⏰ Hora devolución:</strong> ${detalle.horaDevolucion || 'No definida'}</p>
-            <p><strong>📝 Motivo:</strong> ${detalle.motivo || 'Sin motivo especificado'}</p>
+                </div>
+            </form>
         </div>
-    `;
-    
-    const accionesDiv = document.getElementById('accionesModal');
-    accionesDiv.innerHTML = '';
-    
-    if (detalle.estado === 'APROBADO') {
-        accionesDiv.innerHTML = `
-            <button class="btn btn-outline" onclick="closeDetalleModal()">Cerrar</button>
-            <button class="btn btn-success" onclick="devolverEquipo(${detalle.idPrestamoEquipo})">
-                <i class="fas fa-undo"></i> Devolver Equipo
-            </button>
-        `;
-    } else if (detalle.estado === 'PENDIENTE') {
-        accionesDiv.innerHTML = `
-            <button class="btn btn-outline" onclick="closeDetalleModal()">Cerrar</button>
-            <button class="btn btn-danger" onclick="cancelarSolicitud(${detalle.idPrestamoEquipo})">
-                <i class="fas fa-times"></i> Cancelar Solicitud
-            </button>
-        `;
-    } else {
-        accionesDiv.innerHTML = `<button class="btn btn-outline" onclick="closeDetalleModal()">Cerrar</button>`;
-    }
-    
-    document.getElementById('detalleModal').classList.add('active');
-}
+    </div>
 
-async function devolverEquipo(idPrestamo) {
-    const result = await Swal.fire({
-        title: '¿Devolver equipo?',
-        text: 'Confirme que el equipo está en buen estado',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10b981',
-        confirmButtonText: 'Sí, devolver',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch(`/api/prestamos/${idPrestamo}/devolver`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
+    <script>
+        let idEstudiante = null;
+        let equiposDisponibles = [];
+        let docentesDisponibles = [];
+        let solicitudEnviando = false;
+
+        async function obtenerInfoUsuario() {
+            try {
+                let userId = sessionStorage.getItem('idUsuario');
+                let userNombre = sessionStorage.getItem('nombreUsuario');
+                let userRol = sessionStorage.getItem('rolUsuario');
+
+                if (userId && userRol === 'ESTUDIANTE') {
+                    idEstudiante = parseInt(userId);
+                    document.getElementById('usuarioNombre').textContent = userNombre || 'Estudiante';
+                    document.getElementById('usuarioClinica').textContent = sessionStorage.getItem('clinicaUsuario') || 'Clínica Odontológica';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/usuario/actual', { credentials: 'include' });
+                    if (response.ok) {
+                        const usuario = await response.json();
+                        if (usuario && usuario.idUsuario) {
+                            idEstudiante = usuario.idUsuario;
+                            document.getElementById('usuarioNombre').textContent = usuario.nombreCompleto || 'Estudiante';
+                            document.getElementById('usuarioClinica').textContent = usuario.clinica || 'Clínica Odontológica';
+                            sessionStorage.setItem('idUsuario', usuario.idUsuario);
+                            sessionStorage.setItem('nombreUsuario', usuario.nombreCompleto);
+                            sessionStorage.setItem('rolUsuario', usuario.rol || 'ESTUDIANTE');
+                            return;
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('API de usuario no disponible:', apiError);
+                }
+
+                idEstudiante = 1;
+                document.getElementById('usuarioNombre').textContent = 'Estudiante Demo';
+                document.getElementById('usuarioClinica').textContent = 'Clínica Odontológica';
+            } catch (error) {
+                console.error('Error al obtener usuario:', error);
+                idEstudiante = 1;
+            }
+        }
+
+        // ============ CARGAR DOCENTES (usando /selectores) ============
+        async function cargarDocentes() {
+            const select = document.getElementById('docenteSelect');
+            select.innerHTML = '<option value="">-- Cargando docentes... --</option>';
+
+            try {
+                const response = await fetch('/api/docentes/selectores', { credentials: 'include' });
+                if (response.ok) {
+                    docentesDisponibles = await response.json();
+                    console.log('✅ Docentes cargados:', docentesDisponibles.length);
+                    console.log('📋 Docentes:', docentesDisponibles);
+                } else {
+                    throw new Error('API no disponible');
+                }
+            } catch (error) {
+                console.warn('Usando datos demo de docentes:', error);
+                docentesDisponibles = [
+                    { id: 1, nombre: 'Dr. Juan Pérez', especialidad: 'Endodoncia', codigo: 1001 },
+                    { id: 2, nombre: 'Dra. María Gómez', especialidad: 'Periodoncia', codigo: 1002 },
+                    { id: 3, nombre: 'Dr. Carlos López', especialidad: 'Ortodoncia', codigo: 1003 }
+                ];
+            }
+
+            if (docentesDisponibles.length === 0) {
+                select.innerHTML = '<option value="">-- No hay docentes disponibles --</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">-- Seleccione un docente --</option>' +
+                docentesDisponibles.map(d =>
+                    `<option value="${d.id}">
+                        ${d.nombre} ${d.especialidad ? `(${d.especialidad})` : ''}
+                    </option>`
+                ).join('');
+
+            select.addEventListener('change', actualizarResumen);
+        }
+
+        // ============ CARGAR EQUIPOS ============
+        async function cargarEquipos() {
+            const select = document.getElementById('equipoSelect');
+            select.innerHTML = '<option value="">-- Cargando equipos... --</option>';
+
+            try {
+                const response = await fetch('/api/equipos/disponibles', { credentials: 'include' });
+                if (response.ok) {
+                    equiposDisponibles = await response.json();
+                    console.log('✅ Equipos cargados:', equiposDisponibles.length);
+                } else {
+                    throw new Error('API no disponible');
+                }
+            } catch (error) {
+                console.warn('Usando datos demo de equipos:', error);
+                equiposDisponibles = [
+                    { idEquipo: 1, nombreEquipo: 'Microscopio Clínico', codigoEquipo: 'MC-001', estado: 'ACTIVO' },
+                    { idEquipo: 2, nombreEquipo: 'Lámpara de Curación', codigoEquipo: 'LC-002', estado: 'ACTIVO' },
+                    { idEquipo: 3, nombreEquipo: 'Autoclave', codigoEquipo: 'AC-003', estado: 'ACTIVO' },
+                    { idEquipo: 4, nombreEquipo: 'Rayos X Portátil', codigoEquipo: 'RX-004', estado: 'ACTIVO' }
+                ];
+            }
+
+            if (equiposDisponibles.length === 0) {
+                select.innerHTML = '<option value="">-- No hay equipos disponibles --</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">-- Seleccione un equipo --</option>' +
+                equiposDisponibles.map(e =>
+                    `<option value="${e.idEquipo}">
+                        ${e.nombreEquipo} 
+                        ${e.codigoEquipo ? `(${e.codigoEquipo})` : ''}
+                        <span class="badge-disponible">ACTIVO</span>
+                    </option>`
+                ).join('');
+
+            select.addEventListener('change', actualizarResumen);
+        }
+
+        // ============ ACTUALIZAR RESUMEN ============
+        function actualizarResumen() {
+            const docenteId = document.getElementById('docenteSelect').value;
+            const equipoId = document.getElementById('equipoSelect').value;
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+            const resumenDiv = document.getElementById('resumenSolicitud');
+
+            if (docenteId && equipoId && motivo) {
+                const docente = docentesDisponibles.find(d => d.id == docenteId);
+                const equipo = equiposDisponibles.find(e => e.idEquipo == equipoId);
+                
+                document.getElementById('resumenDocente').textContent = docente ? docente.nombre : '-';
+                document.getElementById('resumenEquipo').textContent = equipo ? equipo.nombreEquipo : '-';
+                document.getElementById('resumenCodigo').textContent = equipo ? equipo.codigoEquipo || '-' : '-';
+                document.getElementById('resumenMotivo').textContent = motivo;
+                resumenDiv.classList.add('visible');
+            } else {
+                resumenDiv.classList.remove('visible');
+            }
+        }
+
+        // ============ LIMPIAR FORMULARIO ============
+        function limpiarFormulario() {
+            document.getElementById('docenteSelect').value = '';
+            document.getElementById('equipoSelect').value = '';
+            document.getElementById('motivoSolicitud').value = '';
+            document.getElementById('resumenSolicitud').classList.remove('visible');
+            document.querySelectorAll('.form-group select, .form-group textarea')
+                .forEach(el => el.style.borderColor = '');
+            Swal.fire({
+                icon: 'info',
+                title: 'Formulario limpiado',
+                text: 'Puede comenzar una nueva solicitud',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // ============ VALIDAR ============
+        function validarFormulario() {
+            const docente = document.getElementById('docenteSelect').value;
+            const equipo = document.getElementById('equipoSelect').value;
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+
+            let isValid = true;
+            let errores = [];
+
+            if (!docente) {
+                errores.push('Seleccione un docente');
+                document.getElementById('docenteSelect').style.borderColor = 'var(--danger)';
+                isValid = false;
+            } else {
+                document.getElementById('docenteSelect').style.borderColor = '';
+            }
+
+            if (!equipo) {
+                errores.push('Seleccione un equipo');
+                document.getElementById('equipoSelect').style.borderColor = 'var(--danger)';
+                isValid = false;
+            } else {
+                document.getElementById('equipoSelect').style.borderColor = '';
+            }
+
+            if (!motivo || motivo.length < 5) {
+                errores.push('Ingrese un motivo válido (mínimo 5 caracteres)');
+                document.getElementById('motivoSolicitud').style.borderColor = 'var(--danger)';
+                isValid = false;
+            } else {
+                document.getElementById('motivoSolicitud').style.borderColor = '';
+            }
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Complete los campos requeridos',
+                    html: errores.map(e => `• ${e}`).join('<br>'),
+                    confirmButtonColor: 'var(--danger)'
+                });
+            }
+            return isValid;
+        }
+
+        // ============ ENVIAR SOLICITUD ============
+        async function enviarSolicitud() {
+            if (solicitudEnviando) return;
+            if (!validarFormulario()) return;
+
+            const idDocente = document.getElementById('docenteSelect').value;
+            const idEquipo = document.getElementById('equipoSelect').value;
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+
+            const docente = docentesDisponibles.find(d => d.id == idDocente);
+            const equipo = equiposDisponibles.find(e => e.idEquipo == idEquipo);
+
+            const result = await Swal.fire({
+                title: '📋 Confirmar Solicitud',
+                html: `
+                    <div style="text-align: left; background: var(--gray-50); padding: 1.2rem; border-radius: 8px; margin: 0.5rem 0;">
+                        <p style="margin: 0.3rem 0;"><strong>👨‍🏫 Docente:</strong> ${docente?.nombre || 'N/A'}</p>
+                        <p style="margin: 0.3rem 0;"><strong>🛠 Equipo:</strong> ${equipo?.nombreEquipo || 'N/A'}</p>
+                        <p style="margin: 0.3rem 0;"><strong>📋 Código:</strong> ${equipo?.codigoEquipo || 'N/A'}</p>
+                        <p style="margin: 0.3rem 0;"><strong>📝 Motivo:</strong> ${motivo}</p>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--gray-500); margin-top: 0.5rem;">
+                        <i class="fas fa-info-circle"></i> La solicitud será enviada al docente para su aprobación
+                    </p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#006D77',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '✅ Sí, solicitar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            });
+
+            if (!result.isConfirmed) return;
+
+            const btn = document.getElementById('btnEnviar');
+            solicitudEnviando = true;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Enviando...';
+
+            try {
+                const now = new Date();
+                const horaSolicitud = now.toTimeString().split(' ')[0];
+
+                const payload = {
+                    idEquipo: {
+                        idEquipo: parseInt(idEquipo)
+                    },
+                    idEstudiante: {
+                        idEstudiante: idEstudiante
+                    },
+                    idDocente: {
+                        idDocente: parseInt(idDocente)
+                    },
+                    observacionPrestamo: motivo,
+                    estadoDevolucion: "PENDIENTE_DOCENTE",
+                    horaSolicitud: horaSolicitud
+                };
+
+                console.log('📤 Enviando solicitud:', payload);
+
+                const response = await fetch('/api/prestamos-equipo/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    await Swal.fire({
+                        icon: 'success',
+                        title: '🎉 ¡Solicitud Enviada!',
+                        html: `
+                            <p>Su solicitud ha sido enviada correctamente.</p>
+                            <p style="font-size: 0.9rem; color: var(--gray-500);">
+                                <strong>ID Solicitud:</strong> ${data.idPrestamo || '#'}
+                            </p>
+                            <p style="font-size: 0.9rem; color: var(--gray-500);">
+                                <i class="fas fa-hourglass-half"></i> Espere la aprobación del docente
+                            </p>
+                        `,
+                        confirmButtonColor: '#006D77',
+                        confirmButtonText: '✅ Entendido'
+                    });
+                    limpiarFormulario();
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error al crear la solicitud');
+                }
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message || 'No se pudo crear la solicitud',
+                    confirmButtonColor: 'var(--danger)'
+                });
+            } finally {
+                solicitudEnviando = false;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitud';
+            }
+        }
+
+        // ============ INICIALIZACIÓN ============
+        document.addEventListener('DOMContentLoaded', async () => {
+            await obtenerInfoUsuario();
+            await cargarDocentes();
+            await cargarEquipos();
+            console.log('✅ Formulario de solicitud de equipos inicializado');
         });
-        
-        if (!response.ok) throw new Error('Error al devolver equipo');
-        
-        Swal.fire('¡Devuelto!', 'El equipo ha sido devuelto correctamente', 'success');
-        closeDetalleModal();
-        cargarSolicitudes();
-    } catch (error) {
-        Swal.fire('Error', 'No se pudo devolver el equipo', 'error');
-    }
-}
-
-async function cancelarSolicitud(idPrestamo) {
-    const result = await Swal.fire({
-        title: '¿Cancelar solicitud?',
-        text: 'Esta acción no se puede deshacer',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        confirmButtonText: 'Sí, cancelar',
-        cancelButtonText: 'No'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch(`/api/prestamos/${idPrestamo}/cancelar`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) throw new Error('Error al cancelar');
-        
-        Swal.fire('Cancelado', 'La solicitud ha sido cancelada', 'success');
-        closeDetalleModal();
-        cargarSolicitudes();
-    } catch (error) {
-        Swal.fire('Error', 'No se pudo cancelar la solicitud', 'error');
-    }
-}
-
-function actualizarResumen() {
-    const equipoId = document.getElementById('equipoSelect').value;
-    const fechaLimite = document.getElementById('fechaLimite').value;
-    const motivo = document.getElementById('motivoSolicitud').value;
-    const resumenDiv = document.getElementById('resumenSolicitud');
-    
-    if (equipoId && fechaLimite && motivo) {
-        const equipo = equiposDisponibles.find(e => e.idEquipo == equipoId);
-        document.getElementById('resumenEquipo').textContent = equipo ? `${equipo.nombreEquipo} (${equipo.codigoEquipo})` : '-';
-        document.getElementById('resumenFechaLimite').textContent = formatDate(fechaLimite);
-        document.getElementById('resumenMotivo').textContent = motivo;
-        resumenDiv.style.display = 'block';
-    } else {
-        resumenDiv.style.display = 'none';
-    }
-}
-
-function limpiarSolicitud() {
-    document.getElementById('equipoSelect').value = '';
-    document.getElementById('fechaLimite').value = '';
-    document.getElementById('motivoSolicitud').value = '';
-    document.getElementById('horaEntrega').value = '';
-    document.getElementById('horaDevolucion').value = '';
-    document.getElementById('resumenSolicitud').style.display = 'none';
-}
-
-async function enviarSolicitud() {
-    const idEquipo = document.getElementById('equipoSelect').value;
-    const fechaLimite = document.getElementById('fechaLimite').value;
-    const motivo = document.getElementById('motivoSolicitud').value;
-    const horaEntrega = document.getElementById('horaEntrega').value;
-    const horaDevolucion = document.getElementById('horaDevolucion').value;
-    
-    if (!idEquipo) {
-        Swal.fire('Error', 'Seleccione un equipo', 'error');
-        return;
-    }
-    
-    if (!fechaLimite) {
-        Swal.fire('Error', 'Ingrese la fecha límite de devolución', 'error');
-        return;
-    }
-    
-    if (!motivo || motivo.trim() === '') {
-        Swal.fire('Error', 'Ingrese el motivo de la solicitud', 'error');
-        return;
-    }
-    
-    const result = await Swal.fire({
-        title: 'Confirmar solicitud',
-        html: `<p>¿Está seguro de solicitar este equipo?</p>
-               <p><strong>Equipo:</strong> ${equiposDisponibles.find(e => e.idEquipo == idEquipo)?.nombreEquipo}</p>
-               <p><strong>Fecha límite:</strong> ${formatDate(fechaLimite)}</p>`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#006D77',
-        confirmButtonText: 'Sí, solicitar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const payload = {
-            idEquipo: parseInt(idEquipo),
-            fechaLimite: fechaLimite,
-            motivo: motivo,
-            horaEntrega: horaEntrega,
-            horaDevolucion: horaDevolucion,
-            idUsuario: idUsuario,
-            tipoUsuario: tipoUsuario
-        };
-        
-        const response = await fetch('/api/prestamos/solicitar', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        if (!response.ok) throw new Error('Error al crear solicitud');
-        
-        Swal.fire('¡Solicitud enviada!', 'La solicitud ha sido enviada correctamente', 'success');
-        limpiarSolicitud();
-        mostrarVista('solicitudes');
-        cargarSolicitudes();
-    } catch (error) {
-        Swal.fire('Error', error.message || 'No se pudo crear la solicitud', 'error');
-    }
-}
-
-function mostrarVista(vista) {
-    const vistaSolicitudes = document.getElementById('vistaSolicitudes');
-    const vistaNueva = document.getElementById('vistaNueva');
-    const botones = document.querySelectorAll('.nav-btn');
-    
-    if (vista === 'solicitudes') {
-        vistaSolicitudes.style.display = 'block';
-        vistaNueva.style.display = 'none';
-        botones[0].classList.add('active');
-        botones[1].classList.remove('active');
-        cargarSolicitudes();
-    } else {
-        vistaSolicitudes.style.display = 'none';
-        vistaNueva.style.display = 'block';
-        botones[0].classList.remove('active');
-        botones[1].classList.add('active');
-        cargarEquipos();
-    }
-}
-
-function closeDetalleModal() {
-    document.getElementById('detalleModal').classList.remove('active');
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES');
-}
-
-function getStatusBadge(status) {
-    const statusMap = {
-        'PENDIENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
-        'APROBADO': { class: 'status-aprobado', icon: 'fa-check-circle', text: 'Aprobado' },
-        'PRESTADO': { class: 'status-prestado', icon: 'fa-hand-holding', text: 'Prestado' },
-        'DEVUELTO': { class: 'status-devuelto', icon: 'fa-check-double', text: 'Devuelto' },
-        'CANCELADO': { class: 'status-cancelado', icon: 'fa-times-circle', text: 'Cancelado' }
-    };
-    const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
-    return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
-}
-
-// Event listeners
-document.getElementById('btnRefreshSolicitudes').addEventListener('click', () => cargarSolicitudes());
-document.getElementById('filterStatusSolicitud').addEventListener('change', () => aplicarFiltrosSolicitudes());
-document.getElementById('filterFechaDesde').addEventListener('change', () => aplicarFiltrosSolicitudes());
-document.getElementById('filterFechaHasta').addEventListener('change', () => aplicarFiltrosSolicitudes());
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetalleModal(); });
-
-// Inicialización
-document.addEventListener('DOMContentLoaded', async () => {
-    const info = await obtenerInfoUsuario();
-    idUsuario = info.id;
-    tipoUsuario = info.rol;
-    await cargarSolicitudes();
-    await cargarEquipos();
-});
-</script>
+    </script>
 </body>
 </html>
