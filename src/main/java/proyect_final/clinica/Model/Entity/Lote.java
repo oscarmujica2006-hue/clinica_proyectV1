@@ -14,36 +14,49 @@ import java.util.ArrayList;
 @Setter
 @Entity
 @Table(name = "lote")
-public class Lote{
+public class Lote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_lote")
     private Long idLote;
 
-    @Column(name = "numero_lote", nullable = false, unique = true, length = 50)
+    @Column(name = "numero_lote")
     private String numeroLote;
 
-    @Column(name = "fecha_ingreso", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_insumo")
+    private Insumo insumo;
+
+    @ManyToOne
+    @JoinColumn(name = "id_detalle_acta")
+    private DetalleActaEntrega detalleActaEntrega;
+
+    @Column(name = "fecha_ingreso")
     private LocalDate fechaIngreso;
 
     @Column(name = "fecha_vencimiento")
     private LocalDate fechaVencimiento;
 
-    @ManyToOne
-    @JoinColumn(name = "id_insumo", nullable = false)
-    private Insumo insumo;
-
-    @Column(name = "cantidad_inicial", nullable = false)
+    @Column(name = "cantidad_inicial")
     private Integer cantidadInicial;
 
-    @Column(name = "cantidad_disponible", nullable = false)
+    @Column(name = "cantidad_empaque")
+    private Integer cantidadEmpaque;
+    
+    @Column(name = "unidad_por_empaque")
+    private Integer unidadPorEmpaque;
+
+
+    @Column(name = "cantidad_disponible")
     private Integer cantidadDisponible;
 
-    @Column(name = "origen", length = 20)
-    private String origen;
+    @Column(name="estado_lote")
+    private String estadoLote;
 
     @Column(name = "observaciones")
     private String observaciones;
+
     @Column(name = "usu_reg_lot", length = 100)
     private String usuRegLot;
 
@@ -58,6 +71,4 @@ public class Lote{
     @Column(name = "fech_mod_lot")
     private LocalDateTime fechModLot;
 
-    @OneToMany(mappedBy = "lote", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DetalleLote> detallesLote = new ArrayList<>();
 }

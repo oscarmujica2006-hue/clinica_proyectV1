@@ -31,4 +31,9 @@ public class EncargadoViewController {
     public String mostrarInsumosConsumidos() {
         return "encargado_insumos/consumido_insumo/consumido-vista";
     }
+
+    @GetMapping("/registro_equi_ins/equi_insu-vista")
+    public String mostrarEquiposInsumos() {
+        return "encargado_insumos/registro_equi_ins/equi_insu-vista";
+    }
 }   

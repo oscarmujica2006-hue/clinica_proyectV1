@@ -24,6 +24,9 @@ public class Equipo {
     @Column(name = "nombre_equipo", length = 255, nullable = false)
     private String nombreEquipo;
 
+    @Column(name="estado_equipo")
+    private String estadoEquipo;
+
     // Auditoría
     @Column(name = "usu_reg_equ", length = 100)
     private String usuRegEqu;

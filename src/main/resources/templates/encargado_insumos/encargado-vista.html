@@ -39,12 +39,16 @@
                 <i class="fas fa-truck"></i>
                 <span class="menu-text">Insumos Consumidos</span>
             </li>
+            <li onclick="loadPage('/encargado_insumo/registro_equi_ins/equi_insu-vista', 'Equipos y Insumos', 'equipoInsumoFrame', this)">
+                <i class="fas fa-truck"></i>
+                <span class="menu-text">Insumos</span>
+            </li>
         </ul>
         
         <div class="user-info">
             <div class="user-avatar">HG</div>
             <div class="user-details">
-                <div class="user-name">Hanna Gover</div>
+                <div class="user-name" id="nombreUsuario">Hanna Gover</div>
             </div>
         </div>
     </div>
@@ -78,9 +82,17 @@
         <div id="consumidoContent" class="content-area">
             <iframe id="consumidoFrame" src="about:blank"></iframe>
         </div>
+        
+        <div id="equipoInsumoContent" class="content-area">
+            <iframe id="equipoInsumoFrame" src="about:blank"></iframe>
+        </div>
     </div>
 
     <script>
+        // ✅ Guardar el usuario en una variable global
+        window.usuarioGlobal = document.getElementById('nombreUsuario').textContent;
+        console.log('👤 Usuario global:', window.usuarioGlobal);
+
         // Toggle sidebar
         const toggleBtn = document.getElementById('toggleBtn');
         const sidebar = document.getElementById('sidebar');
@@ -109,6 +121,8 @@
                 document.getElementById('SoliEstudianteContent').classList.add('active');
             } else if (frameId === 'consumidoFrame') {
                 document.getElementById('consumidoContent').classList.add('active');
+            } else if (frameId === 'equipoInsumoFrame') {
+                document.getElementById('equipoInsumoContent').classList.add('active');
             }
             
             // Activar el item del menú clickeado
@@ -119,10 +133,13 @@
             // Actualizar el título de la página
             document.getElementById('pageTitle').textContent = pageTitle;
             
-            // Cargar la página en el iframe correspondiente
+            // ✅ Cargar la página en el iframe con el usuario como parámetro
             const frame = document.getElementById(frameId);
             if (frame) {
-                frame.src = pageUrl;
+                // Agregar el usuario como parámetro en la URL
+                const urlConUsuario = pageUrl + '?usuario=' + encodeURIComponent(window.usuarioGlobal);
+                frame.src = urlConUsuario;
+                console.log('📄 Cargando:', urlConUsuario);
             }
         }
 

@@ -37,11 +37,6 @@ public class DetallePedido  {
     @Column(name = "cantidad_pedida", nullable = false)
     private Integer cantidadPedida;
 
-    @Column(name = "cantidad_recibida")
-    private Integer cantidadRecibida;
-
-    @Column(name="saldo_pendiente")
-    private Integer saldoPendiente;
 
     @Column(name = "estado_det_pedido", nullable = false, length = 20 )
     private String estadoDetPedido;

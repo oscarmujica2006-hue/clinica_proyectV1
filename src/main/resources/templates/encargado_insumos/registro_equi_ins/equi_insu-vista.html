@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Insumos y Equipos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary: #006D77;
+            --primary-dark: #004d44;
+            --primary-light: #E6F4F5;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+        body {
+            background: #F0F4F8;
+            color: var(--gray-800);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .app {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        
+        /* HEADER */
+        .app-header {
+            background: linear-gradient(135deg, #006D77 0%, #004d44 100%);
+            padding: 1.5rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .app-header h1 {
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .app-header .sub {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* BOTÓN DE CAMBIO DE VISTA */
+        .btn-cambiar-vista {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        .btn-cambiar-vista:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .btn-cambiar-vista i {
+            font-size: 1.2rem;
+        }
+        .btn-cambiar-vista .badge-vista {
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        /* ESTADÍSTICAS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 20px 25px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .stat-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        /* CONTENEDOR DE PANELES */
+        .panels-container {
+            position: relative;
+            min-height: 500px;
+        }
+
+        /* PANEL */
+        .panel {
+            display: none;
+            padding: 25px;
+            animation: fadeIn 0.4s ease;
+        }
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .panel-header h2 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        /* FORMULARIOS */
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .form-row .grupo {
+            flex: 1;
+            min-width: 120px;
+        }
+        .form-row .grupo label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+        .form-row input, .form-row select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+        .form-row input:focus, .form-row select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,109,119,0.15);
+        }
+        .form-row button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            height: 44px;
+            white-space: nowrap;
+        }
+        .form-row button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        .form-row button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* TABLA */
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: var(--gray-50);
+        }
+        th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.9rem;
+        }
+        tbody tr:hover {
+            background: var(--primary-light);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+        }
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-success { background: #e8f5e9; color: var(--success); }
+        .badge-warning { background: #fff3e0; color: #f39c12; }
+        .badge-danger { background: #fdeaea; color: var(--danger); }
+        .badge-info { background: #e3f2fd; color: #1976d2; }
+
+        /* BOTONES DE ACCIÓN */
+        .btn-accion {
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-accion:hover { transform: translateY(-1px); }
+        .btn-accion.eliminar { color: var(--gray-500); }
+        .btn-accion.eliminar:hover { background: #fdeaea; color: var(--danger); }
+        .btn-accion.editar { color: var(--primary); }
+        .btn-accion.editar:hover { background: var(--primary-light); }
+
+        /* LOADING */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .app-header { padding: 1rem; }
+            .app-header h1 { font-size: 1.2rem; }
+            .stats { grid-template-columns: 1fr 1fr; padding: 15px; }
+            .panel { padding: 15px; }
+            .form-row .grupo { min-width: 100px; }
+            .btn-cambiar-vista { padding: 8px 16px; font-size: 0.85rem; }
+        }
+        @media (max-width: 480px) {
+            .stats { grid-template-columns: 1fr; }
+            .form-row { flex-direction: column; }
+            .form-row .grupo { min-width: 100%; }
+            .form-row button { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div>
+            <h1><i class="fas fa-tools"></i> Gestión de Insumos y Equipos</h1>
+            <div class="sub">
+                <i class="fas fa-user-circle"></i> 
+                Usuario: <span id="usuarioActual">Cargando...</span>
+            </div>
+        </div>
+        <!-- BOTÓN DE CAMBIO DE VISTA -->
+        <button class="btn-cambiar-vista" id="btnCambiarVista">
+            <i class="fas fa-exchange-alt"></i>
+            <span id="textoBoton">Ver Equipos</span>
+            <span class="badge-vista" id="badgeVista">Insumos</span>
+        </button>
+    </header>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="totalEquipos">0</div>
+            <div class="stat-label"><i class="fas fa-desktop"></i> Equipos Registrados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalInsumos">0</div>
+            <div class="stat-label"><i class="fas fa-boxes"></i> Insumos Registrados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalInsumosBajoStock">0</div>
+            <div class="stat-label"><i class="fas fa-exclamation-triangle"></i> Insumos con Stock Bajo</div>
+        </div>
+    </div>
+
+    <!-- PANELES -->
+    <div class="panels-container">
+
+        <!-- PANEL 1: INSUMOS (ACTIVO POR DEFECTO) -->
+        <div class="panel active" id="panelInsumos">
+            <div class="panel-header">
+                <h2><i class="fas fa-boxes"></i> Gestión de Insumos</h2>
+                <span style="font-size:0.85rem;color:var(--gray-500);">
+                    <i class="fas fa-info-circle"></i> Administre los insumos disponibles
+                </span>
+            </div>
+
+            <!-- Formulario para agregar insumo -->
+            <div class="form-row">
+                <div class="grupo">
+                    <label><i class="fas fa-tag"></i> Nombre del Insumo</label>
+                    <input type="text" id="inputNombreInsumo" placeholder="Ej. Tóner, Resma, Guantes" />
+                </div>
+                <div class="grupo">
+                    <label><i class="fas fa-hashtag"></i> Cantidad</label>
+                    <input type="number" id="inputCantidadInsumo" placeholder="0" min="0" value="1" />
+                </div>
+                <div class="grupo">
+                    <label><i class="fas fa-cube"></i> Unidad</label>
+                    <select id="selectUnidadInsumo">
+                        <option value="unidad">Unidad</option>
+                        <option value="kg">Kg</option>
+                        <option value="litro">Litro</option>
+                        <option value="resma">Resma</option>
+                        <option value="caja">Caja</option>
+                        <option value="cartucho">Cartucho</option>
+                        <option value="par">Par</option>
+                        <option value="metro">Metro</option>
+                    </select>
+                </div>
+                <div class="grupo" style="flex: 0.5; min-width: 100px;">
+                    <label><i class="fas fa-flag"></i> Stock Mínimo</label>
+                    <input type="number" id="inputStockMinimo" placeholder="5" min="0" value="5" />
+                </div>
+                <button id="btnAgregarInsumo"><i class="fas fa-plus"></i> Agregar</button>
+            </div>
+
+            <!-- Tabla de insumos -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Insumo</th>
+                            <th>Cantidad</th>
+                            <th>Unidad</th>
+                            <th>Stock Mínimo</th>
+                            <th>Estado</th>
+                            <th style="width: 80px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyInsumos">
+                        <tr><td colspan="7" class="empty-state"><i class="fas fa-box-open"></i><br>No hay insumos registrados</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PANEL 2: EQUIPOS -->
+        <div class="panel" id="panelEquipos">
+            <div class="panel-header">
+                <h2><i class="fas fa-desktop"></i> Gestión de Equipos</h2>
+                <span style="font-size:0.85rem;color:var(--gray-500);">
+                    <i class="fas fa-info-circle"></i> Administre los equipos y su estado
+                </span>
+            </div>
+
+            <!-- Formulario para agregar equipo -->
+            <div class="form-row">
+                <div class="grupo">
+                    <label><i class="fas fa-barcode"></i> Código</label>
+                    <input type="text" id="inputCodigoEquipo" placeholder="EQ-001" />
+                </div>
+                <div class="grupo">
+                    <label><i class="fas fa-tag"></i> Nombre del Equipo</label>
+                    <input type="text" id="inputNombreEquipo" placeholder="Ej. Impresora, Monitor" />
+                </div>
+                <div class="grupo">
+                    <label><i class="fas fa-circle"></i> Estado</label>
+                    <select id="selectEstadoEquipo">
+                        <option value="ACTIVO">🟢 Activo</option>
+                        <option value="INACTIVO">🔴 Inactivo</option>
+                        <option value="MANTENIMIENTO">🟡 Mantenimiento</option>
+                        <option value="BAJA">⚫ Baja</option>
+                    </select>
+                </div>
+                <button id="btnAgregarEquipo"><i class="fas fa-plus"></i> Agregar</button>
+            </div>
+
+            <!-- Tabla de equipos -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Código</th>
+                            <th>Equipo</th>
+                            <th>Estado</th>
+                            <th>Registrado por</th>
+                            <th style="width: 80px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyEquipos">
+                        <tr><td colspan="6" class="empty-state"><i class="fas fa-desktop"></i><br>No hay equipos registrados</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ========== OBTENER USUARIO DE LA URL ==========
+        function obtenerUsuarioDeURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const usuario = urlParams.get('usuario');
+            console.log('📥 Usuario recibido en URL:', usuario);
+            return usuario || 'Invitado';
+        }
+
+        // ========== CONFIGURACIÓN ==========
+        const API_URL = 'http://localhost:8080/api/equipos';
+        
+        // ✅ Obtener el usuario de la URL (enviado desde el padre)
+        const usuarioActual = obtenerUsuarioDeURL();
+        
+        // ✅ Mostrar el usuario en el header
+        document.getElementById('usuarioActual').textContent = usuarioActual;
+
+        console.log('👤 Usuario final:', usuarioActual);
+
+        // ========== ESTADO ==========
+        let insumos = [];
+        let equipos = [];
+        let vistaActual = 'insumos';
+        let contadorId = 0;
+
+        // ========== DOM ELEMENTS ==========
+        // Insumos
+        const inputNombreInsumo = document.getElementById('inputNombreInsumo');
+        const inputCantidadInsumo = document.getElementById('inputCantidadInsumo');
+        const selectUnidadInsumo = document.getElementById('selectUnidadInsumo');
+        const inputStockMinimo = document.getElementById('inputStockMinimo');
+        const btnAgregarInsumo = document.getElementById('btnAgregarInsumo');
+        const tbodyInsumos = document.getElementById('tbodyInsumos');
+        const totalInsumosSpan = document.getElementById('totalInsumos');
+        const totalInsumosBajoStockSpan = document.getElementById('totalInsumosBajoStock');
+
+        // Equipos
+        const inputCodigoEquipo = document.getElementById('inputCodigoEquipo');
+        const inputNombreEquipo = document.getElementById('inputNombreEquipo');
+        const selectEstadoEquipo = document.getElementById('selectEstadoEquipo');
+        const btnAgregarEquipo = document.getElementById('btnAgregarEquipo');
+        const tbodyEquipos = document.getElementById('tbodyEquipos');
+        const totalEquiposSpan = document.getElementById('totalEquipos');
+
+        // Vista
+        const btnCambiarVista = document.getElementById('btnCambiarVista');
+        const textoBoton = document.getElementById('textoBoton');
+        const badgeVista = document.getElementById('badgeVista');
+        const panelInsumos = document.getElementById('panelInsumos');
+        const panelEquipos = document.getElementById('panelEquipos');
+
+        // ========== FUNCIONES DE RENDER ==========
+
+        // Renderizar insumos
+        function renderizarInsumos() {
+            if (!insumos || insumos.length === 0) {
+                tbodyInsumos.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-box-open"></i><br>No hay insumos registrados</td></tr>`;
+            } else {
+                let html = '';
+                insumos.forEach((ins, index) => {
+                    const estado = ins.cantidad <= ins.stockMinimo ? 
+                        '<span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Stock Bajo</span>' :
+                        '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Disponible</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><strong>${escapeHtml(ins.nombre)}</strong></td>
+                            <td><span class="badge badge-info">${ins.cantidad}</span></td>
+                            <td>${escapeHtml(ins.unidad)}</td>
+                            <td>${ins.stockMinimo}</td>
+                            <td>${estado}</td>
+                            <td>
+                                <button class="btn-accion eliminar" onclick="eliminarInsumo(${index})" title="Eliminar insumo">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbodyInsumos.innerHTML = html;
+            }
+            
+            totalInsumosSpan.textContent = insumos.length;
+            const bajos = insumos.filter(i => i.cantidad <= i.stockMinimo).length;
+            totalInsumosBajoStockSpan.textContent = bajos;
+        }
+
+        // Renderizar equipos
+        function renderizarEquipos() {
+            if (!equipos || equipos.length === 0) {
+                tbodyEquipos.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-desktop"></i><br>No hay equipos registrados</td></tr>`;
+            } else {
+                let html = '';
+                equipos.forEach((eq, index) => {
+                    const estadoClass = eq.estado === 'ACTIVO' ? 'badge-success' :
+                                       eq.estado === 'INACTIVO' ? 'badge-danger' :
+                                       eq.estado === 'MANTENIMIENTO' ? 'badge-warning' : 'badge-info';
+                    
+                    html += `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td><code style="background:var(--gray-100);padding:2px 8px;border-radius:4px;">${escapeHtml(eq.codigo)}</code></td>
+                            <td><strong>${escapeHtml(eq.nombre)}</strong></td>
+                            <td><span class="badge ${estadoClass}">${escapeHtml(eq.estado)}</span></td>
+                            <td>${escapeHtml(eq.usuario)}</td>
+                            <td>
+                                <button class="btn-accion eliminar" onclick="eliminarEquipo(${index})" title="Eliminar equipo">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbodyEquipos.innerHTML = html;
+            }
+            totalEquiposSpan.textContent = equipos.length;
+        }
+
+        // ========== CRUD INSUMOS ==========
+        function agregarInsumo() {
+            const nombre = inputNombreInsumo.value.trim();
+            const cantidad = parseInt(inputCantidadInsumo.value) || 0;
+            const unidad = selectUnidadInsumo.value;
+            const stockMinimo = parseInt(inputStockMinimo.value) || 5;
+
+            if (!nombre) {
+                Swal.fire('Error', 'Ingrese el nombre del insumo', 'error');
+                return;
+            }
+            if (cantidad < 0) {
+                Swal.fire('Error', 'La cantidad no puede ser negativa', 'error');
+                return;
+            }
+
+            if (insumos.some(i => i.nombre.toLowerCase() === nombre.toLowerCase())) {
+                Swal.fire('Error', `El insumo "${nombre}" ya existe`, 'error');
+                return;
+            }
+
+            insumos.push({
+                id: ++contadorId,
+                nombre,
+                cantidad,
+                unidad,
+                stockMinimo
+            });
+
+            inputNombreInsumo.value = '';
+            inputCantidadInsumo.value = '1';
+            renderizarInsumos();
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Insumo agregado',
+                text: `${nombre} - ${cantidad} ${unidad}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        window.eliminarInsumo = function(index) {
+            if (!insumos || index >= insumos.length) return;
+            
+            Swal.fire({
+                title: '¿Eliminar insumo?',
+                text: `"${insumos[index].nombre}" será eliminado`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    insumos.splice(index, 1);
+                    renderizarInsumos();
+                    Swal.fire('Eliminado', 'Insumo eliminado correctamente', 'success');
+                }
+            });
+        };
+
+        // ========== CRUD EQUIPOS ==========
+        async function agregarEquipo() {
+            const codigo = inputCodigoEquipo.value.trim().toUpperCase();
+            const nombre = inputNombreEquipo.value.trim();
+            const estado = selectEstadoEquipo.value;
+
+            if (!codigo) {
+                Swal.fire('Error', 'Ingrese el código del equipo', 'error');
+                return;
+            }
+            if (!nombre) {
+                Swal.fire('Error', 'Ingrese el nombre del equipo', 'error');
+                return;
+            }
+
+            if (equipos.some(e => e.codigo === codigo)) {
+                Swal.fire('Error', `El equipo con código "${codigo}" ya existe`, 'error');
+                return;
+            }
+
+            btnAgregarEquipo.disabled = true;
+            btnAgregarEquipo.innerHTML = '<span class="loading-spinner"></span>';
+
+            try {
+                const response = await fetch(`${API_URL}/crear`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        codigo: codigo,
+                        nombre: nombre,
+                        estado: estado,
+                        usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.exito !== false) {
+                    equipos.push({
+                        id: result.id_equipo || Date.now(),
+                        codigo,
+                        nombre,
+                        estado,
+                        usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                    });
+
+                    inputCodigoEquipo.value = '';
+                    inputNombreEquipo.value = '';
+                    renderizarEquipos();
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Equipo creado',
+                        text: `${nombre} (${codigo}) - ${estado}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '❌ Error',
+                        text: result.mensaje || 'Error al crear el equipo'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                equipos.push({
+                    id: Date.now(),
+                    codigo,
+                    nombre,
+                    estado,
+                    usuario: usuarioActual  // ✅ Usar el usuario obtenido de la URL
+                });
+                inputCodigoEquipo.value = '';
+                inputNombreEquipo.value = '';
+                renderizarEquipos();
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Guardado local',
+                    text: 'El equipo se guardó localmente. Verifica la conexión con el servidor.'
+                });
+            } finally {
+                btnAgregarEquipo.disabled = false;
+                btnAgregarEquipo.innerHTML = '<i class="fas fa-plus"></i> Agregar';
+            }
+        }
+
+        window.eliminarEquipo = function(index) {
+            if (!equipos || index >= equipos.length) return;
+            
+            Swal.fire({
+                title: '¿Eliminar equipo?',
+                text: `"${equipos[index].nombre}" será eliminado`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const equipo = equipos[index];
+                    if (equipo.id && typeof equipo.id === 'number') {
+                        try {
+                            await fetch(`${API_URL}/${equipo.id}`, { method: 'DELETE' });
+                        } catch (e) {
+                            console.error('Error al eliminar en backend:', e);
+                        }
+                    }
+                    equipos.splice(index, 1);
+                    renderizarEquipos();
+                    Swal.fire('Eliminado', 'Equipo eliminado correctamente', 'success');
+                }
+            });
+        };
+
+        // ========== CARGAR EQUIPOS DESDE BACKEND ==========
+        async function cargarEquiposBackend() {
+            try {
+                const response = await fetch(API_URL);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        equipos = data.map(e => ({
+                            id: e.idEquipo || e.id,
+                            codigo: e.codigoEquipo || e.codigo,
+                            nombre: e.nombreEquipo || e.nombre,
+                            estado: e.estadoEquipo || e.estado || 'ACTIVO',
+                            usuario: e.usuRegEqu || e.usuario || 'admin'
+                        }));
+                        renderizarEquipos();
+                        return;
+                    }
+                }
+                // Si falla, usar datos de ejemplo
+                equipos = [
+                    { id: 1, codigo: 'EQ-001', nombre: 'Impresora HP LaserJet', estado: 'ACTIVO', usuario: usuarioActual },
+                    { id: 2, codigo: 'EQ-002', nombre: 'Monitor Samsung 24"', estado: 'ACTIVO', usuario: usuarioActual },
+                    { id: 3, codigo: 'EQ-003', nombre: 'Laptop Dell Latitude', estado: 'MANTENIMIENTO', usuario: usuarioActual }
+                ];
+                renderizarEquipos();
+            } catch (error) {
+                console.error('Error al cargar equipos:', error);
+                equipos = [
+                    { id: 1, codigo: 'EQ-001', nombre: 'Impresora HP LaserJet', estado: 'ACTIVO', usuario: usuarioActual },
+                    { id: 2, codigo: 'EQ-002', nombre: 'Monitor Samsung 24"', estado: 'ACTIVO', usuario: usuarioActual }
+                ];
+                renderizarEquipos();
+            }
+        }
+
+        // ========== CAMBIAR VISTA ==========
+        function cambiarVista() {
+            if (vistaActual === 'insumos') {
+                vistaActual = 'equipos';
+                panelInsumos.classList.remove('active');
+                panelEquipos.classList.add('active');
+                textoBoton.textContent = 'Ver Insumos';
+                badgeVista.textContent = 'Equipos';
+                btnCambiarVista.style.background = '#fff3e0';
+                btnCambiarVista.style.color = '#e67e22';
+            } else {
+                vistaActual = 'insumos';
+                panelEquipos.classList.remove('active');
+                panelInsumos.classList.add('active');
+                textoBoton.textContent = 'Ver Equipos';
+                badgeVista.textContent = 'Insumos';
+                btnCambiarVista.style.background = 'white';
+                btnCambiarVista.style.color = 'var(--primary)';
+            }
+        }
+
+        // ========== UTILIDADES ==========
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ========== EVENTOS ==========
+        btnAgregarInsumo.addEventListener('click', agregarInsumo);
+        inputNombreInsumo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarInsumo(); });
+        inputCantidadInsumo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarInsumo(); });
+
+        btnAgregarEquipo.addEventListener('click', agregarEquipo);
+        inputCodigoEquipo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarEquipo(); });
+        inputNombreEquipo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarEquipo(); });
+
+        btnCambiarVista.addEventListener('click', cambiarVista);
+
+        // ========== INICIALIZACIÓN ==========
+        async function init() {
+            await cargarEquiposBackend();
+
+            insumos = [
+                { id: 1, nombre: 'Tóner Negro', cantidad: 12, unidad: 'cartucho', stockMinimo: 5 },
+                { id: 2, nombre: 'Resma A4', cantidad: 25, unidad: 'resma', stockMinimo: 10 },
+                { id: 3, nombre: 'Cable USB-C', cantidad: 8, unidad: 'unidad', stockMinimo: 3 },
+                { id: 4, nombre: 'Mouse Óptico', cantidad: 2, unidad: 'unidad', stockMinimo: 5 },
+                { id: 5, nombre: 'Guantes Quirúrgicos', cantidad: 50, unidad: 'par', stockMinimo: 20 }
+            ];
+            renderizarInsumos();
+            contadorId = insumos.length;
+
+            vistaActual = 'insumos';
+            panelInsumos.classList.add('active');
+            panelEquipos.classList.remove('active');
+            textoBoton.textContent = 'Ver Equipos';
+            badgeVista.textContent = 'Insumos';
+            btnCambiarVista.style.background = 'white';
+            btnCambiarVista.style.color = 'var(--primary)';
+
+            console.log('✅ Gestión de insumos y equipos inicializada');
+            console.log(`👤 Usuario: ${usuarioActual}`);
+            console.log(`📦 Insumos: ${insumos.length}, 🖥️ Equipos: ${equipos.length}`);
+        }
+
+        // Exponer funciones globales para los onclick
+        window.eliminarInsumo = eliminarInsumo;
+        window.eliminarEquipo = eliminarEquipo;
+        window.agregarInsumo = agregarInsumo;
+        window.agregarEquipo = agregarEquipo;
+
+        // Iniciar
+        init();
+
+    })();
+</script>
+</body>
+</html>
