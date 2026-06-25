@@ -17,10 +17,10 @@ public class ArchivosViewController {
         return "archivos_encargado/Registro-paciente/paciente-vista"; 
     }  
 
-    @GetMapping("/gestion/gestion-vista")
-    public String mostrarGestion() {
-        return "archivos_encargado/gestion/gestion-vista"; 
-    }    
+    // @GetMapping("/gestion/gestion-vista")
+    // public String mostrarGestion() {
+    //     return "archivos_encargado/gestion/gestion-vista"; 
+    // }    
 
     @GetMapping("/prestamo/prestamo-vista")
     public String mostrarRegistro() {
