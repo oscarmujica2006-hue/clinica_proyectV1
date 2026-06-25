@@ -1,11 +1,8 @@
 package proyect_final.clinica.Model.Entity;
 import lombok.*;
-
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 
 @Getter
@@ -28,11 +25,11 @@ public class EncargadoRadiografia {
     @Column(name="codigo_encar_radiografia",nullable=false,length = 43)
     private Integer codigoEncarRadiografia;
     
-    @Column(name = "usu_reg_usuRad", length = 100)
-    private String usuRegUsuRad;
+    @Column(name = "usu_reg_usuRad")
+    private Integer usuRegUsuRad;
 
-    @Column(name = "usu_mod_usuRad", length = 100)
-    private String usuModUsuRad;
+    @Column(name = "usu_mod_usuRad")
+    private Integer usuModUsuRad;
 
     @CreationTimestamp
     @Column(name = "fech_reg_usuRad", updatable = false)

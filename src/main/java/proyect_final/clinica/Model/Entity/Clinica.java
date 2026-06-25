@@ -1,8 +1,6 @@
 package proyect_final.clinica.Model.Entity;
-
 import jakarta.persistence.*;
 import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -43,11 +41,11 @@ public class Clinica {
     @JsonIgnore
     private List<TipoTratamiento> tiposTratamiento;
 
-    @Column(name = "usu_reg_cli", length = 100)
-    private String usuRegCli;
+    @Column(name = "usu_reg_cli")
+    private Integer usuRegCli;
 
-    @Column(name = "usu_mod_cli", length = 100)
-    private String usuModCli;
+    @Column(name = "usu_mod_cli")
+    private Integer usuModCli;
 
     @CreationTimestamp
     @Column(name = "fech_reg_cli", updatable = false)
@@ -130,23 +128,20 @@ public class Clinica {
         this.tiposTratamiento = tiposTratamiento;
     }
 
-    // =============================================
-    // GETTERS Y SETTERS DE AUDITORÍA
-    // =============================================
 
-    public String getUsuRegCli() {
+    public Integer getUsuRegCli() {
         return usuRegCli;
     }
 
-    public void setUsuRegCli(String usuRegCli) {
+    public void setUsuRegCli(Integer usuRegCli) {
         this.usuRegCli = usuRegCli;
     }
 
-    public String getUsuModCli() {
+    public Integer getUsuModCli() {
         return usuModCli;
     }
 
-    public void setUsuModCli(String usuModCli) {
+    public void setUsuModCli(Integer usuModCli) {
         this.usuModCli = usuModCli;
     }
 

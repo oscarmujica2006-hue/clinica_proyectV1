@@ -34,11 +34,11 @@ public class TratamientoMedico  {
     @Column(name = "especifique", length = 50)
     private String especifiqueHemorragia;
 
-    @Column(name = "usu_reg_traMed", length = 100)
-    private String usuRegTraMed;
+    @Column(name = "usu_reg_traMed")
+    private Integer usuRegTraMed;
 
-    @Column(name = "usu_mod_traMed", length = 100)
-    private String usuModTraMed;
+    @Column(name = "usu_mod_traMed")
+    private Integer usuModTraMed;
 
     @CreationTimestamp
     @Column(name = "fech_reg_traMed", updatable = false)

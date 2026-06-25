@@ -26,11 +26,11 @@ public class OdontogramaFoto  {
     private String nombreOriginal;    // Nombre original del archivo
     private String tipoContenido;     // image/jpeg, etc.
     private Long tamano;             
-    @Column(name = "usu_reg_odoFot", length = 100)
-    private String usuRegOdoFot;
+    @Column(name = "usu_reg_odoFot")
+    private Integer usuRegOdoFot;
 
-    @Column(name = "usu_mod_odoFot", length = 100)
-    private String usuModOdoFot;
+    @Column(name = "usu_mod_odoFot")
+    private Integer usuModOdoFot;
 
     @CreationTimestamp
     @Column(name = "fech_reg_odoFot", updatable = false)

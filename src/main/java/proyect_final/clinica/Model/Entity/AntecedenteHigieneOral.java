@@ -40,11 +40,11 @@ public class AntecedenteHigieneOral  {
     @Column(name = "higiene_bucal", length = 20)
     private String higieneBucal;
 
-    @Column(name = "usu_reg_antHig", length = 100)
-    private String usuRegAntHig;
+    @Column(name = "usu_reg_antHig")
+    private Integer usuRegAntHig;
 
-    @Column(name = "usu_mod_antHig", length = 100)
-    private String usuModAntHig;
+    @Column(name = "usu_mod_antHig")
+    private Integer usuModAntHig;
 
     @CreationTimestamp
     @Column(name = "fech_reg_antHig", updatable = false)

@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             let pacientes = [];
             
             if (ci) {
-                // 🔥 Búsqueda por CI - devuelve un objeto
                 const url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
                 console.log('Buscando pacientes con URL:', url);
 
@@ -70,9 +69,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = await response.json();
                 console.log('Datos recibidos:', data);
 
-                // ✅ Si es un objeto con idPaciente, es un solo paciente
                 if (data && typeof data === 'object' && !Array.isArray(data) && data.idPaciente) {
-                    pacientes = [data];  // Convertir a array para mostrarlo
+                    pacientes = [data];
                 } else if (Array.isArray(data)) {
                     pacientes = data;
                 } else {
@@ -80,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
             } else if (nombre) {
-                // 🔥 Búsqueda por nombre - devuelve un array
                 const url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
                 console.log('Buscando pacientes con URL:', url);
 
@@ -116,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const item = document.createElement('div');
             item.className = 'result-item';
             
-            // ✅ Usar el DTO que ahora tiene nombreCompleto directamente
             const nombreCompleto = paciente.nombreCompleto || 
                 `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 'Sin nombre';
             
@@ -135,12 +131,10 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('=== SELECCIONANDO PACIENTE ===');
         console.log('Paciente DTO:', paciente);
         
-        // ✅ Ahora los datos vienen directamente en el DTO
         numHistoriaClinica.value = paciente.historialClinico || '';
         ciPaciente.value = paciente.ci || '';
         numExpediente.value = paciente.idPaciente || '';
         
-        // ✅ nombreCompleto ya viene en el DTO
         const nombreCompleto = paciente.nombreCompleto || 
             `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim();
         
@@ -150,14 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
         apellidoMaterno.value = paciente.apellidoMaterno || '';
         nombres.value = paciente.nombre || '';
         
-        // Sexo
         if (paciente.sexo) {
             const sexo = String(paciente.sexo).toUpperCase();
             document.getElementById('masculino').checked = sexo === 'M';
             document.getElementById('femenino').checked = sexo === 'F';
         }
 
-        // Headers
         headerExpediente.textContent = paciente.idPaciente || '-';
         headerHistoria.textContent = paciente.historialClinico || '-';
         headerCI.textContent = paciente.ci || '-';
@@ -174,62 +166,45 @@ document.addEventListener('DOMContentLoaded', function() {
     async function obtenerIdArchivoDelPaciente(paciente) {
         try {
             const ci = paciente.ci;
-            const idPaciente = paciente.idPaciente || paciente.id;
+            const nombre = paciente.nombreCompleto || paciente.nombre || '';
             
             console.log('=== BUSCANDO ARCHIVO ===');
             console.log('CI del paciente:', ci);
-            console.log('ID del paciente:', idPaciente);
+            console.log('Nombre del paciente:', nombre);
             
-            if (!ci && !idPaciente) {
-                console.error('No se tiene CI ni ID del paciente');
+            if (!ci && !nombre) {
+                console.error('No se tiene CI ni nombre del paciente');
                 showNotification('error', 'No se pudo obtener información del paciente', 'Error');
                 return null;
             }
             
-            // Opción 1: Buscar por CI usando el endpoint id-por-paciente
+            // Construir URL con los parámetros
+            let url = `${API_ARCHIVOS_URL}/id-por-paciente?`;
             if (ci) {
-                const url = `${API_ARCHIVOS_URL}/id-por-paciente?ci=${ci}`;
-                console.log('Buscando por CI - URL:', url);
-                
-                const response = await fetch(url);
-                console.log('Respuesta status:', response.status);
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('Respuesta del servidor:', result);
-                    
-                    if (result.success && result.found && result.idArchivo) {
-                        const idArchivo = result.idArchivo;
-                        document.getElementById('idArchivo').value = idArchivo;
-                        showNotification('success', `✅ Archivo encontrado<br><small>ID: ${idArchivo}</small>`, 'Archivo asignado');
-                        return idArchivo;
-                    } else {
-                        console.log('No se encontró archivo por CI. Resultado:', result);
-                    }
-                } else {
-                    console.log('Error en la petición por CI:', response.status);
-                }
+                url += `ci=${encodeURIComponent(ci)}`;
+            } else if (nombre) {
+                url += `nombre=${encodeURIComponent(nombre)}`;
             }
             
-            // Opción 2: Buscar por ID de paciente
-            if (idPaciente) {
-                const url = `${API_ARCHIVOS_URL}/paciente/${idPaciente}`;
-                console.log('Buscando por ID - URL:', url);
+            console.log('Buscando archivo con URL:', url);
+            
+            const response = await fetch(url);
+            console.log('Respuesta status:', response.status);
+            
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Respuesta del servidor:', result);
                 
-                const response = await fetch(url);
-                console.log('Respuesta status:', response.status);
-                
-                if (response.ok) {
-                    const archivo = await response.json();
-                    console.log('Archivo encontrado por ID:', archivo);
-                    
-                    if (archivo && (archivo.idArchivo || archivo.id)) {
-                        const idArchivo = archivo.idArchivo || archivo.id;
-                        document.getElementById('idArchivo').value = idArchivo;
-                        showNotification('success', `✅ Archivo encontrado por ID<br><small>ID: ${idArchivo}</small>`, 'Archivo asignado');
-                        return idArchivo;
-                    }
+                if (result.success && result.found && result.idArchivo) {
+                    const idArchivo = result.idArchivo;
+                    document.getElementById('idArchivo').value = idArchivo;
+                    showNotification('success', `✅ Archivo encontrado<br><small>ID: ${idArchivo}</small>`, 'Archivo asignado');
+                    return idArchivo;
+                } else {
+                    console.log('No se encontró archivo. Resultado:', result);
                 }
+            } else {
+                console.log('Error en la petición:', response.status);
             }
             
             // Si llegamos aquí, no se encontró archivo
@@ -237,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('warning', 
                 `⚠️ No se encontró archivo para este paciente<br>
                 <small>CI: ${ci || 'N/A'}<br>
-                ID Paciente: ${idPaciente || 'N/A'}</small>`, 
+                Nombre: ${nombre || 'N/A'}</small>`, 
                 'Archivo no encontrado'
             );
             document.getElementById('idArchivo').value = '';
@@ -464,7 +439,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const idArchivo = document.getElementById('idArchivo').value;
         const fechaLimitePrestamo = document.getElementById('fechaLimitePrestamo').value;
         const tipoPrestamo = document.getElementById('tipoPrestamo').value;
-        const encargadoPrestamo = document.getElementById('encargadoPrestamo').value.trim();
         const motivoPrestamo = document.getElementById('motivoPrestamo')?.value.trim() || '';
 
         try {
@@ -479,12 +453,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
+            // ⭐ ELIMINADO: encargadoPrestamo - se obtiene de la sesión en el backend
             const prestamoData = {
                 idArchivo: parseInt(idArchivo),
                 idEstudiante: parseInt(idEstudiante),
                 fechaLimitePrestamo: fechaLimitePrestamo,
                 tipoPrestamo: tipoPrestamo,
-                encargadoPrestamo: encargadoPrestamo,
                 motivoPrestamo: motivoPrestamo || null
             };
 
@@ -536,20 +510,18 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('error', 'El tipo de préstamo es obligatorio');
             return false;
         }
-        if (!document.getElementById('encargadoPrestamo').value.trim()) {
-            showNotification('error', 'El encargado es obligatorio');
-            return false;
-        }
+        // ⭐ ELIMINADA: validación de encargadoPrestamo
         return true;
     }
 
     function limpiarFormularioPrestamo() {
         document.getElementById('fechaLimitePrestamo').value = '';
         document.getElementById('tipoPrestamo').value = '';
-        document.getElementById('encargadoPrestamo').value = '';
         document.getElementById('motivoPrestamo').value = '';
         document.getElementById('idEstudiante').value = '';
         document.getElementById('codigoEstudianteBusqueda').value = '';
+        document.getElementById('idArchivo').value = '';
+        // ⭐ ELIMINADO: encargadoPrestamo
     }
 
     // ===== NOTIFICACIONES =====

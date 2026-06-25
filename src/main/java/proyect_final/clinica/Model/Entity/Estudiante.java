@@ -39,11 +39,11 @@ public class Estudiante {
     @Column(name="bloqueado",nullable=false)
     private Boolean bloqueado;
     
-    @Column(name = "usu_reg_usuEst", length = 100)
-    private String usuRegUsuEst;
+    @Column(name = "usu_reg_usuEst")
+    private Integer usuRegUsuEst;
 
-    @Column(name = "usu_mod_usuEst", length = 100)
-    private String usuModUsuEst;
+    @Column(name = "usu_mod_usuEst")
+    private Integer usuModUsuEst;
 
     @CreationTimestamp
     @Column(name = "fech_reg_usuEst", updatable = false)

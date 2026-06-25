@@ -26,11 +26,11 @@ public class CaraDetRevi  {
     @ManyToOne
     @JoinColumn(name = "id_cara_diente", nullable = false)
     private CaraDiente caraDiente;
-    @Column(name = "usu_reg_carDetRev", length = 100)
-    private String usuRegCarDetRev;
+    @Column(name = "usu_reg_carDetRev")
+    private Integer usuRegCarDetRev;
 
-    @Column(name = "usu_mod_carDetRev", length = 100)
-    private String usuModCarDetRev;
+    @Column(name = "usu_mod_carDetRev")
+    private Integer usuModCarDetRev;
 
     @CreationTimestamp
     @Column(name = "fech_reg_carDetRev", updatable = false)

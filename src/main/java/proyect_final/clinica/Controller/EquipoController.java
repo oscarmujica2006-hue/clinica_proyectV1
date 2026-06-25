@@ -19,39 +19,34 @@ public class EquipoController {
     @Autowired
     private EquipoService equipoService;
 
-    // ✅ Obtener usuario de la sesión HTTP
-    private String getUsuarioDeSesion(HttpServletRequest request) {
+    // ✅ Obtener ID de usuario de la sesión HTTP
+    private Integer getIdUsuarioDeSesion(HttpServletRequest request) {
         try {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                String nombreCompleto = (String) session.getAttribute("nombreUsuario");
-                if (nombreCompleto != null && !nombreCompleto.isEmpty()) {
-                    return nombreCompleto;
-                }
-                
-                String nombreUsuario = (String) session.getAttribute("nombreUsuario");
-                if (nombreUsuario != null && !nombreUsuario.isEmpty()) {
-                    return nombreUsuario;
+                Integer idUsuario = (Integer) session.getAttribute("idUsuario");
+                if (idUsuario != null) {
+                    return idUsuario;
                 }
             }
         } catch (Exception e) {
-            System.err.println("Error al obtener usuario de sesión: " + e.getMessage());
+            System.err.println("Error al obtener ID de usuario de sesión: " + e.getMessage());
         }
-        return "SISTEMA";
+        return 1; // Usuario por defecto (SISTEMA)
     }
 
     // ✅ CREAR EQUIPO
     @PostMapping("/crear")
     public ResponseEntity<?> crearEquipo(@RequestBody EquipoDTO equipoDTO, HttpServletRequest request) {
         try {
-            String usuarioAutenticado = getUsuarioDeSesion(request);
-            System.out.println("Usuario autenticado (sesión): " + usuarioAutenticado);
+            Integer usuarioId = getIdUsuarioDeSesion(request); // ✅ AHORA ES INTEGER
+            System.out.println("ID de usuario autenticado (sesión): " + usuarioId);
 
             String resultado = equipoService.crearEquipoConFuncion(
                 equipoDTO.getCodigo(),
                 equipoDTO.getNombre(),
                 equipoDTO.getEstado(),
-                usuarioAutenticado
+                usuarioId // ✅ AHORA PASAMOS INTEGER
             );
 
             if (resultado.startsWith("ERROR:")) {
@@ -131,7 +126,8 @@ public class EquipoController {
                                                @RequestBody EquipoDTO equipoDTO,
                                                HttpServletRequest request) {
         try {
-            String usuarioAutenticado = getUsuarioDeSesion(request);
+            Integer usuarioId = getIdUsuarioDeSesion(request); // ✅ AHORA ES INTEGER
+            System.out.println("ID de usuario para actualización: " + usuarioId);
             
             Optional<Equipo> equipoOpt = equipoService.obtenerPorId(id);
             if (!equipoOpt.isPresent()) {
@@ -142,7 +138,7 @@ public class EquipoController {
             equipo.setCodigoEquipo(equipoDTO.getCodigo());
             equipo.setNombreEquipo(equipoDTO.getNombre());
             equipo.setEstadoEquipo(equipoDTO.getEstado());
-            equipo.setUsuModEqu(usuarioAutenticado);
+            equipo.setUsuModEqu(usuarioId); // ✅ AHORA PASAMOS INTEGER
             
             equipoService.guardar(equipo);
             

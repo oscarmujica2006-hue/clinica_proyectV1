@@ -11,8 +11,7 @@ public class PrestamoActualDTO {
     private LocalDate fechaPrestamo;
     private LocalDate fechaLimitePrestamo;  // ← Cambiado
     private String tipoPrestamo;
-    private String motivoPrestamo;           // ← Cambiado
-    private String encargadoPrestamo;        // ← Cambiado
+    private String motivoPrestamo;          
     private String estadoPrestamo;           // ← Cambiado
     
     // Datos del estudiante (solo IDs porque tu entidad guarda IDs)
@@ -33,7 +32,6 @@ public class PrestamoActualDTO {
             this.fechaLimitePrestamo = prestamo.getFechaLimitePrestamo();
             this.tipoPrestamo = prestamo.getTipoPrestamo();
             this.motivoPrestamo = prestamo.getMotivoPrestamo();
-            this.encargadoPrestamo = prestamo.getEncargadoPrestamo();
             this.estadoPrestamo = prestamo.getEstadoPrestamo();
             
             // Datos del estudiante (solo IDs)

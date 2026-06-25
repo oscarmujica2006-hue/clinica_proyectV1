@@ -3,6 +3,8 @@ package proyect_final.clinica.Controller;
 import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Dao.EstudianteRepository;
 import proyect_final.clinica.Model.Dto.PacienteBusquedaDTO;
+import proyect_final.clinica.Model.Dto.PacienteRegistroDTO;
+import proyect_final.clinica.Model.Dto.RegistroPacienteResultadoDTO;
 import proyect_final.clinica.Model.Entity.Paciente;
 import proyect_final.clinica.Service.PacienteService;
 import proyect_final.clinica.Service.PrestamoActualService;
@@ -296,5 +298,19 @@ public class PacienteController {
         }
         
         return ResponseEntity.ok(respuesta);
+    }
+
+    @PostMapping("/registrar-completo")
+    public ResponseEntity<RegistroPacienteResultadoDTO> registrarPacienteCompleto(
+            @RequestBody PacienteRegistroDTO dto) {
+        
+        RegistroPacienteResultadoDTO resultado = 
+            pacienteService.registrarPacienteCompleto(dto);
+        
+        if (resultado.getExito()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(resultado);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resultado);
+        }
     }
 }

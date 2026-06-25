@@ -37,11 +37,11 @@ public class SolicitudDetInsumo  {
     @Column(name = "estado_det_insumo", nullable = false, length = 20)
     private String estadoSoliDetalle;
 
-    @Column(name = "usu_reg_solDetIns", length = 100)
-    private String usuRegSolDetIns;
+    @Column(name = "usu_reg_solDetIns")
+    private Integer usuRegSolDetIns;
 
-    @Column(name = "usu_mod_solDetIns", length = 100)
-    private String usuModSolDetIns;
+    @Column(name = "usu_mod_solDetIns")
+    private Integer usuModSolDetIns;
 
     @CreationTimestamp
     @Column(name = "fech_reg_solDetIns", updatable = false)

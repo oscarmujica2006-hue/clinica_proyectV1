@@ -27,10 +27,10 @@ public class Turno {
     @Column(name="hora_fin",nullable=false)
     private String horaFin;
     @Column(name = "usu_reg_tur", length = 100)
-    private String usuRegTur;
+    private Integer usuRegTur;
 
     @Column(name = "usu_mod_tur", length = 100)
-    private String usuModTur;
+    private Integer usuModTur;
 
     @CreationTimestamp
     @Column(name = "fech_reg_tur", updatable = false)

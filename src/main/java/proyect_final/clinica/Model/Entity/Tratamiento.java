@@ -31,11 +31,11 @@ public class Tratamiento {
     @Column(name = "descripcion_tratamiento", length = 255)
     private String descripcionTratamiento;
 
-    @Column(name = "usu_reg_tra", length = 100)
-    private String usuRegTra;
+    @Column(name = "usu_reg_tra")
+    private Integer usuRegTra;
 
-    @Column(name = "usu_mod_tra", length = 100)
-    private String usuModTra;
+    @Column(name = "usu_mod_tra")
+    private Integer usuModTra;
 
     @CreationTimestamp
     @Column(name = "fech_reg_tra", updatable = false)

@@ -28,11 +28,11 @@ public class ConsentimientoFoto  {
     private String tipoContenidoConsentimiento ;    
     private Long tamanoConsentimiento;             
 
-    @Column(name = "usu_reg_conFot", length = 100)
-    private String usuRegConFot;
+    @Column(name = "usu_reg_conFot")
+    private Integer usuRegConFot;
 
-    @Column(name = "usu_mod_conFot", length = 100)
-    private String usuModConFot;
+    @Column(name = "usu_mod_conFot")
+    private Integer usuModConFot;
 
     @CreationTimestamp
     @Column(name = "fech_reg_conFot", updatable = false)

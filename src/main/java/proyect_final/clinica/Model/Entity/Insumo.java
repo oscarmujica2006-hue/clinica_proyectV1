@@ -3,7 +3,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,11 +32,11 @@ public class Insumo {
     @Column(name="ultima_actualizacion",nullable=false)
     private LocalDate ultimaActualizacion;
 
-    @Column(name = "usu_reg_ins", length = 100)
-    private String usuRegIns;
+    @Column(name = "usu_reg_ins")
+    private Integer usuRegIns;
 
-    @Column(name = "usu_mod_ins", length = 100)
-    private String usuModIns;
+    @Column(name = "usu_mod_ins")
+    private Integer usuModIns;
 
     @CreationTimestamp
     @Column(name = "fech_reg_ins", updatable = false)

@@ -35,9 +35,10 @@ public class EquipoServiceImpl implements EquipoService {
     public void eliminar(Long id) {
         equipoRepository.deleteById(id);
     }
+    
     // ✅ CREAR EQUIPO CON FUNCIÓN (devuelve String)
     @Override
-    public String crearEquipoConFuncion(String codigo, String nombre, String estado, String usuario) {
+    public String crearEquipoConFuncion(String codigo, String nombre, String estado, Integer usuario) {
         try {
             // Validaciones básicas
             if (codigo == null || codigo.trim().isEmpty()) {
@@ -47,12 +48,15 @@ public class EquipoServiceImpl implements EquipoService {
                 return "ERROR: El nombre es obligatorio";
             }
             
+            // ✅ CORREGIDO: Si usuario es null, usar 1 (SISTEMA) en lugar de "SISTEMA"
+            Integer usuarioId = (usuario != null) ? usuario : 1;
+            
             // Llamar a la función de PostgreSQL
             Object[] resultadoArray = equipoRepository.crearEquipoConUsuario(
                 codigo.toUpperCase().trim(),
                 nombre.trim(),
                 estado != null ? estado : "ACTIVO",
-                usuario != null ? usuario : "SISTEMA"
+                usuarioId  // ✅ AHORA PASAMOS INTEGER
             );
             
             // El resultado viene como Object[], convertir a String
@@ -66,9 +70,6 @@ public class EquipoServiceImpl implements EquipoService {
             return "ERROR: " + e.getMessage();
         }
     }
-
-
-
 
     @Override
     @Transactional

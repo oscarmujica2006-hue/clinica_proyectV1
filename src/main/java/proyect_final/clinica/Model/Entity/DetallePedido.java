@@ -41,11 +41,11 @@ public class DetallePedido  {
     @Column(name = "estado_det_pedido", nullable = false, length = 20 )
     private String estadoDetPedido;
 
-    @Column(name = "usu_reg_detPedIns", length = 100)
-    private String usuRegDetPedIns;
+    @Column(name = "usu_reg_detPedIns")
+    private Integer usuRegDetPedIns;
 
-    @Column(name = "usu_mod_detPedIns", length = 100)
-    private String usuModDetPedIns;
+    @Column(name = "usu_mod_detPedIns")
+    private Integer usuModDetPedIns;
 
     @CreationTimestamp
     @Column(name = "fech_reg_detPedIns", updatable = false)

@@ -23,11 +23,11 @@ public class Rote  {
     @Column(name="nombre_rote", length = 100)
     private String nombreRote;
 
-    @Column(name = "usu_reg_rot", length = 100)
-    private String usuRegRot;
+    @Column(name = "usu_reg_rot")
+    private Integer usuRegRot;
 
-    @Column(name = "usu_mod_rot", length = 100)
-    private String usuModRot;
+    @Column(name = "usu_mod_rot")
+    private Integer usuModRot;
 
     @CreationTimestamp
     @Column(name = "fech_reg_rot", updatable = false)

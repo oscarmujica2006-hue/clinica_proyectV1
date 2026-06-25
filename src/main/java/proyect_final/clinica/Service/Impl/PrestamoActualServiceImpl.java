@@ -262,4 +262,11 @@ public class PrestamoActualServiceImpl implements PrestamoActualService {
     public List<PrestamoActual> buscarPorEstado(String estado) {
         return prestamoRepository.findByEstadoPrestamo(estado);
     }
+// Agrega este método al final de PrestamoActualServiceImpl
+@Override
+public int contarPrestamosActivos(Long idEstudiante) {
+    List<PrestamoActual> prestamos = prestamoRepository
+        .findByIdEstudianteAndEstadoPrestamo(idEstudiante, "ACTIVO");
+    return prestamos.size();
+}
 }

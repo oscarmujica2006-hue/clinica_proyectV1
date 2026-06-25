@@ -1,15 +1,10 @@
 package proyect_final.clinica.Model.Entity;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 @Getter
 @Setter
 
@@ -40,11 +35,11 @@ public class Docente {
     @ManyToOne
     @JoinColumn(name = "id_clinica")
     private Clinica clinica;
-    @Column(name = "usu_reg_usuDoc", length = 100)
-    private String usuRegUsuDoc;
+    @Column(name = "usu_reg_usuDoc")
+    private Integer usuRegUsuDoc;
 
-    @Column(name = "usu_mod_usuDoc", length = 100)
-    private String usuModUsuDoc;
+    @Column(name = "usu_mod_usuDoc")
+    private Integer usuModUsuDoc;
 
     @CreationTimestamp
     @Column(name = "fech_reg_usuDoc", updatable = false)

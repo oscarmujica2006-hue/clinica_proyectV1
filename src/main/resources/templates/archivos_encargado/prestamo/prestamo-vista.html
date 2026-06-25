@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historia Clínica Odontológica U.A.P.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- <link rel="stylesheet" href="/archivo_static/archivo_css_v1.css"> -->
     <style>
         /* ESTILOS GENERALES RENOVADOS */
         * {
@@ -16,17 +15,17 @@
         }
 
         :root {
-            --primary: #1E40AF;      /* Azul médico profesional */
-            --secondary: #059669;    /* Verde salud */
-            --accent: #DC2626;       /* Rojo para acentos */
-            --light-bg: #F8FAFC;     /* Fondo claro */
-            --card-bg: #FFFFFF;      /* Fondo tarjetas */
-            --text-dark: #1E293B;    /* Texto oscuro */
-            --text-light: #64748B;   /* Texto claro */
-            --border: #E2E8F0;       /* Bordes */
-            --success: #10B981;      /* Verde éxito */
-            --warning: #F59E0B;      /* Amarillo advertencia */
-            --danger: #EF4444;       /* Rojo peligro */
+            --primary: #1E40AF;
+            --secondary: #059669;
+            --accent: #DC2626;
+            --light-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
         }
 
         body {
@@ -35,14 +34,13 @@
             min-height: 100vh;
         }
 
-        /* CONTENEDOR PRINCIPAL */
         .container {
             width: 100%;
             min-height: 100vh;
             background: white;
         }
 
-        /* ENCABEZADO MEJORADO CON INFORMACIÓN INTEGRADA */
+        /* ENCABEZADO */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
             color: white;
@@ -71,7 +69,6 @@
             margin: 0 auto;
         }
 
-        /* TÍTULO PRINCIPAL MEJORADO - BLANCO BRILLANTE */
         .main-title {
             font-size: 2.5rem;
             font-weight: 800;
@@ -98,7 +95,6 @@
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
 
-        /* INFORMACIÓN DEL PACIENTE EN CABECERA */
         .patient-info-header {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -283,7 +279,6 @@
             font-size: 1.8rem;
         }
 
-        /* FILAS Y CAMPOS DEL FORMULARIO */
         .form-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -343,7 +338,6 @@
             grid-column: 1 / -1;
         }
 
-        /* CHECKBOX GROUP MEJORADO */
         .checkbox-group {
             display: flex;
             gap: 25px;
@@ -382,47 +376,28 @@
             font-size: 0.95rem;
         }
 
-        /* TABLAS DE ENFERMEDADES */
-        .diseases-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        .field-instruction {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .diseases-table th {
-            background: linear-gradient(135deg, var(--primary), #3730A3);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-weight: 600;
+        .field-instruction i {
+            color: var(--warning);
             font-size: 0.9rem;
         }
 
-        .diseases-table td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .diseases-table input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        /* VALIDATION MESSAGES */
-        .validation-message {
-            font-size: 0.85rem;
+        .required-field::after {
+            content: " *";
             color: var(--danger);
-            margin-top: 5px;
-            display: none;
+            font-weight: bold;
         }
 
-        /* BOTONES PRINCIPALES */
+        /* BOTONES */
         .btn {
             padding: 14px 35px;
             border: none;
@@ -465,7 +440,7 @@
             box-shadow: none !important;
         }
 
-        /* MENSAJES DE ESTADO */
+        /* MENSAJES */
         .message-container {
             padding: 20px;
             background: white;
@@ -523,7 +498,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* MEJORAS EN LOS SELECT */
         select {
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
@@ -533,225 +507,10 @@
             padding-right: 40px;
         }
 
-        /* TEXTAREA */
         textarea {
             resize: vertical;
             min-height: 80px;
             font-family: inherit;
-        }
-
-        /* INSTRUCCIONES Y AYUDAS */
-        .field-instruction {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 5px;
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .field-instruction i {
-            color: var(--warning);
-            font-size: 0.9rem;
-        }
-
-        /* REQUIRED FIELD INDICATOR */
-        .required-field::after {
-            content: " *";
-            color: var(--danger);
-            font-weight: bold;
-        }
-
-        /* ODONTOGRAMA STYLES */
-        .odontograma-section {
-            background: var(--light-bg);
-            padding: 30px;
-            border-bottom: 1px solid var(--border);
-            position: relative;
-        }
-
-        .odontograma-section::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 5px;
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
-        }
-
-        .odontograma-container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            margin: 20px 0;
-        }
-
-        .dental-chart {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 10px;
-            padding: 20px;
-        }
-
-        .tooth {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background: white;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .tooth:hover {
-            transform: scale(1.1);
-            border-color: var(--primary);
-        }
-
-        .tooth.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        .current-selection {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin: 15px 0;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .area-selector {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin: 15px 0;
-        }
-
-        .area-selector-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .area-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .area-btn {
-            padding: 10px 20px;
-            border: 2px solid var(--border);
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .area-btn:hover {
-            border-color: var(--primary);
-            background: var(--light-bg);
-        }
-
-        .area-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .diagnostic-criteria {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .criteria-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .criteria-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .criteria-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
-
-        .sano-color { background: #10B981; }
-        .cariado-color { background: #EF4444; }
-        .obturado-color { background: #3B82F6; }
-        .perdido-caries-color { background: #8B5A2B; }
-        .perdido-otra-color { background: #6B7280; }
-        .soporte-color { background: #F59E0B; }
-        .no-erupcionado-color { background: #9333EA; }
-        .traumatismo-color { background: #EC4899; }
-        .no-registrado-color { background: #9CA3AF; }
-        .extraccion-color { background: #DC2626; }
-        .traumatismo-fractura-color { background: #7C3AED; }
-
-        .cpod-section {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 25px 0;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .cpod-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .cpod-item span {
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .cpod-item input {
-            width: 60px;
-            text-align: center;
-            padding: 8px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .tooth-actions {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
         }
 
         /* RESPONSIVE */
@@ -775,10 +534,6 @@
                 grid-template-columns: 1fr;
             }
             
-            .diseases-table {
-                font-size: 0.9rem;
-            }
-            
             .btn {
                 min-width: 180px;
                 padding: 12px 25px;
@@ -786,23 +541,6 @@
             
             .checkbox-group {
                 gap: 15px;
-            }
-            
-            .dental-chart {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .diagnostic-criteria {
-                grid-template-columns: 1fr;
-            }
-            
-            .cpod-section {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-            
-            .area-buttons {
-                justify-content: center;
             }
         }
 
@@ -826,27 +564,150 @@
                 gap: 10px;
             }
             
-            .tooth-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
             .btn {
                 width: 100%;
                 max-width: 300px;
             }
         }
+ 
+       /* ... todos tus estilos existentes ... */
+        
+        /* NUEVOS ESTILOS PARA PESTAÑAS */
+        .tabs-container {
+            background: var(--light-bg);
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 0;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+            background: rgba(30, 64, 175, 0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ESTILOS PARA LA TABLA DE PRÉSTAMOS */
+        .prestamos-table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .prestamos-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .prestamos-table th {
+            background: linear-gradient(135deg, var(--primary), #3730A3);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .prestamos-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .prestamos-table tr:hover {
+            background: rgba(30, 64, 175, 0.05);
+        }
+
+        .prestamos-table .vencido-row {
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+
+        .badge-estado {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-activo {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-vencido {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-devuelto {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-devolver {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-devolver:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-devolver:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .prestamo-count {
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ENCABEZADO MEJORADO CON INFORMACIÓN INTEGRADA -->
+        <!-- ENCABEZADO -->
         <div class="header">
             <div class="header-content">
                 <h1 class="main-title"><i class="fas fa-tooth"></i> HISTORIA CLÍNICA ODONTOLÓGICA U.A.P.</h1>
                 <p class="header-subtitle">Universidad Amazónica de Pando - Sistema Integral de Gestión Dental</p>
                 
-                <!-- INFORMACIÓN DEL PACIENTE EN CABECERA -->
                 <div class="patient-info-header">
                     <div class="info-item">
                         <div class="info-label">Número de Expediente Clínico:</div>
@@ -879,204 +740,530 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE BÚSQUEDA DE PACIENTES -->
-        <div class="search-section">
-            <h1><i class="fas fa-search"></i> BUSCAR PACIENTE</h1>
-            
-            <div class="search-form">
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-user"></i> NOMBRE Y APELLIDOS</label>
-                    <input type="text" id="nombreBusqueda" placeholder="Ingrese nombre completo">
-                    <div class="field-instruction">
-                        <i class="fas fa-info-circle"></i> Complete al menos este campo o el de CI
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-id-card"></i> C.I.</label>
-                    <input type="text" id="ciBusqueda" placeholder="Ingrese CI">
-                    <div class="field-instruction">
-                        <i class="fas fa-info-circle"></i> Complete al menos este campo o el de nombre
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="search-btn" id="btnBuscarPaciente">
-                        <i class="fas fa-search"></i> BUSCAR PACIENTE
-                    </button>
-                </div>
-            </div>
-            
-            <div class="search-info">
-                <i class="fas fa-lightbulb"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
-            </div>
-            
-            <!-- Resultados de búsqueda -->
-            <div class="search-results" id="resultadosBusquedaPaciente">
-                <div class="results-header">Resultados de la búsqueda</div>
-                <div class="results-list" id="listaResultadosPaciente">
-                    <!-- Los resultados se cargarán aquí dinámicamente -->
-                </div>
-            </div>
+        <!-- ⭐ PESTAÑAS ⭐ -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="tab-registro">
+                <i class="fas fa-plus-circle"></i> Nuevo Préstamo
+            </button>
+            <button class="tab-btn" data-tab="tab-prestamos">
+                <i class="fas fa-list"></i> Préstamos Activos
+                <span class="prestamo-count" id="prestamosCount">0</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-devueltos">
+                <i class="fas fa-check-circle"></i> Devueltos
+                <span class="prestamo-count" id="devueltosCount">0</span>
+            </button>
         </div>
 
-        <!-- Formulario de datos del paciente -->
-        <div class="form-section">
-            <h2 class="section-title"><i class="fas fa-address-card"></i> DATOS DE IDENTIFICACIÓN DEL PACIENTE</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-file-medical"></i> N.º de Historia Clínica</label>
-                    <input type="text" id="numHistoriaClinica" readonly>
-                    <div class="field-instruction">
-                        <i class="fas fa-exclamation-triangle"></i> Campo generado automáticamente
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-id-card"></i> C.I.</label>
-                    <input type="text" id="ciPaciente" readonly>
-                    <div class="field-instruction">
-                        <i class="fas fa-exclamation-triangle"></i> Campo obtenido del paciente
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-folder"></i> N.º de Expediente Clínico</label>
-                    <input type="text" id="numExpediente" readonly>
-                    <div class="field-instruction">
-                        <i class="fas fa-exclamation-triangle"></i> Campo generado automáticamente
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Sección de datos personales -->
-        <div class="form-section">
-            <h2 class="section-title"><i class="fas fa-user-circle"></i> DATOS PERSONALES DEL PACIENTE</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-user"></i> Apellido Paterno</label>
-                    <input type="text" id="apellidoPaterno" readonly>
-                    <div class="field-instruction">
-                        <i class="fas fa-exclamation-circle"></i> Campo obligatorio
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-user"></i> Apellido Materno</label>
-                    <input type="text" id="apellidoMaterno" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-signature"></i> Nombres</label>
-                    <input type="text" id="nombres" readonly>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-user-tag"></i> Nombre completo</label>
-                    <input type="text" id="personaInformacion">
-                    <div class="field-instruction">
-                        <i class="fas fa-edit"></i> Complete el nombre completo de la persona
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-birthday-cake"></i> Edad</label>
-                    <input type="text" id="edadPaciente" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-venus-mars"></i> Sexo</label>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="radio" id="masculino" name="sexo" value="M">
-                            <label for="masculino">Masculino</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="radio" id="femenino" name="sexo" value="F">
-                            <label for="femenino">Femenino</label>
+        <!-- ⭐ PESTAÑA 1: NUEVO PRÉSTAMO ⭐ -->
+        <div id="tab-registro" class="tab-content active">
+            <!-- SECCIÓN DE BÚSQUEDA DE PACIENTES -->
+            <div class="search-section">
+                <h1><i class="fas fa-search"></i> BUSCAR PACIENTE</h1>
+                
+                <div class="search-form">
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-user"></i> NOMBRE Y APELLIDOS</label>
+                        <input type="text" id="nombreBusqueda" placeholder="Ingrese nombre completo">
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Complete al menos este campo o el de CI
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-
-
-        <!-- SECCIÓN DE BÚSQUEDA PARA ESTUDIANTWES-->
-        <div class="search-section">
-            <h1><i class="fas fa-search"></i> BUSCAR ESTUDIANTE</h1>
-            
-            <div class="search-form">
-                <div class="form-group">
-                    <label class="required-field"><i class="fas fa-id-card"></i> R.U. DEL ESTUDIANTE</label>
-                    <input type="text" id="codigoEstudianteBusqueda" placeholder="Ingrese RU">
-                    <div class="field-instruction">
-                        <i class="fas fa-info-circle"></i> Complete al menos este campo o el de nombre
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-id-card"></i> C.I.</label>
+                        <input type="text" id="ciBusqueda" placeholder="Ingrese CI">
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Complete al menos este campo o el de nombre
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="search-btn" id="btnBuscarEstudiante">
-                        <i class="fas fa-search"></i> BUSCAR ESTUDIANTE
-                    </button>
-                </div>
-            </div>
-            
-            <div class="search-info">
-                <i class="fas fa-lightbulb"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
-            </div>
-            
-            <!-- Resultados de búsqueda -->
-            <div class="search-results" id="resultadosBusquedaEstudiante">
-                <div class="results-header">Resultados de la búsqueda</div>
-                <div class="results-list" id="listaResultadosEstudiante">
-                    <!-- Los resultados se cargarán aquí dinámicamente -->
+                    <div class="form-group">
+                        <button type="button" class="search-btn" id="btnBuscarPaciente">
+                            <i class="fas fa-search"></i> BUSCAR PACIENTE
+                        </button>
+                    </div>
                 </div>
                 
+                <div class="search-info">
+                    <i class="fas fa-lightbulb"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
+                </div>
+                
+                <div class="search-results" id="resultadosBusquedaPaciente">
+                    <div class="results-header">Resultados de la búsqueda</div>
+                    <div class="results-list" id="listaResultadosPaciente"></div>
+                </div>
+            </div>
+
+            <!-- Formulario de datos del paciente -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-address-card"></i> DATOS DE IDENTIFICACIÓN DEL PACIENTE</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-file-medical"></i> N.º de Historia Clínica</label>
+                        <input type="text" id="numHistoriaClinica" readonly>
+                        <div class="field-instruction">
+                            <i class="fas fa-exclamation-triangle"></i> Campo generado automáticamente
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-id-card"></i> C.I.</label>
+                        <input type="text" id="ciPaciente" readonly>
+                        <div class="field-instruction">
+                            <i class="fas fa-exclamation-triangle"></i> Campo obtenido del paciente
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-folder"></i> N.º de Expediente Clínico</label>
+                        <input type="text" id="numExpediente" readonly>
+                        <div class="field-instruction">
+                            <i class="fas fa-exclamation-triangle"></i> Campo generado automáticamente
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección de datos personales -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-circle"></i> DATOS PERSONALES DEL PACIENTE</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-user"></i> Apellido Paterno</label>
+                        <input type="text" id="apellidoPaterno" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-user"></i> Apellido Materno</label>
+                        <input type="text" id="apellidoMaterno" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-signature"></i> Nombres</label>
+                        <input type="text" id="nombres" readonly>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-user-tag"></i> Nombre completo</label>
+                        <input type="text" id="personaInformacion">
+                        <div class="field-instruction">
+                            <i class="fas fa-edit"></i> Complete el nombre completo de la persona
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-birthday-cake"></i> Edad</label>
+                        <input type="text" id="edadPaciente" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-venus-mars"></i> Sexo</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="radio" id="masculino" name="sexo" value="M">
+                                <label for="masculino">Masculino</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="radio" id="femenino" name="sexo" value="F">
+                                <label for="femenino">Femenino</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE BÚSQUEDA PARA ESTUDIANTES -->
+            <div class="search-section">
+                <h1><i class="fas fa-search"></i> BUSCAR ESTUDIANTE</h1>
+                
+                <div class="search-form">
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-id-card"></i> R.U. DEL ESTUDIANTE</label>
+                        <input type="text" id="codigoEstudianteBusqueda" placeholder="Ingrese RU">
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Ingrese el código del estudiante
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="search-btn" id="btnBuscarEstudiante">
+                            <i class="fas fa-search"></i> BUSCAR ESTUDIANTE
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-info">
+                    <i class="fas fa-lightbulb"></i> Busque el estudiante por su código universitario (RU)
+                </div>
+                
+                <div class="search-results" id="resultadosBusquedaEstudiante">
+                    <div class="results-header">Resultados de la búsqueda</div>
+                    <div class="results-list" id="listaResultadosEstudiante"></div>
+                </div>
+            </div>
+
+            <!-- Datos del préstamo -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-file-alt"></i> DATOS DEL PRÉSTAMO</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-calendar-alt"></i> Fecha Límite del Préstamo</label>
+                        <input type="date" id="fechaLimitePrestamo">
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Fecha límite para la devolución
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="required-field"><i class="fas fa-random"></i> Tipo de Préstamo</label>
+                        <select id="tipoPrestamo">
+                            <option value="">Seleccione tipo de préstamo</option>
+                            <option value="PRESTAMO">Préstamo</option>
+                            <option value="DEVOLUCION">Devolución</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-file-signature"></i> Motivo del Préstamo</label>
+                        <input type="text" id="motivoPrestamo" placeholder="Ingrese el motivo del préstamo">
+                        <div class="field-instruction">
+                            <i class="fas fa-info-circle"></i> Opcional - Describa el motivo del préstamo
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CAMPOS OCULTOS PARA ENVÍO -->
+                <input type="hidden" id="idEstudiante">
+                <input type="hidden" id="idArchivo">
+            </div>
+            
+            <!-- Botón de envío final -->
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group" style="text-align: center; width: 100%;">
+                        <button type="button" class="btn btn-primary" id="enviarFormulario" style="padding: 16px 40px; font-size: 1.1rem;">
+                            <i class="fas fa-save"></i> GUARDAR REGISTRO DE PRÉSTAMO
+                        </button>
+                        <div class="field-instruction" style="margin-top: 15px;">
+                            <i class="fas fa-shield-alt"></i> El encargado del préstamo se registrará automáticamente desde tu sesión
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- datos de rellenar archivos -->
-        <div class="form-section">
-            <h2 class="section-title"><i class="fas fa-file-alt"></i> FECHA DE ARCHIVO</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label><i class="fas fa-calendar-alt"></i> Fecha Limite del prestamo</label>
-                    <input type="date" id="fechaLimitePrestamo" placeholder="Ingrese la fecha limite del prestamo">
+        <!-- ⭐ PESTAÑA 2: PRÉSTAMOS ACTIVOS ⭐ -->
+        <div id="tab-prestamos" class="tab-content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-list"></i> PRÉSTAMOS ACTIVOS</h2>
+                <div id="prestamosActivosContainer">
+                    <div class="prestamos-table-container">
+                        <table class="prestamos-table" id="tablaPrestamosActivos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Paciente</th>
+                                    <th>CI</th>
+                                    <th>Estudiante</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Límite</th>
+                                    <th>Días Restantes</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyPrestamosActivos">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
+                                        <p>Cargando préstamos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label><i class="fas fa-random"></i> Tipo Prestamo</label>
-                    <select id="tipoPrestamo" placeholder="Ingrese el tipo de prestamo">
-                        <option value="">Seleccione tipo de prestamo</option>
-                        <option value="Prestamo">Prestamo</option>
-                        <option value="Devolucion">Devolucion</option>
-                    </select>
-                </div>
-
-
-                <div class="form-group">
-                    <label><i class="fas fa-file-signature"></i> Motivo del Prestamo</label>
-                    <input type="text" id="motivoPrestamo" placeholder="Ingrese el motivo del prestamo">
             </div>
-            
-            <div class="form-group">
-                    <label><i class="fas fa-user-check"></i> encargado Prestamo</label>
-                    <input type="text" id="encargadoPrestamo" placeholder="Ingrese el encargado del prestamo">
-            </div>
+        </div>
 
-            <input type="hidden" id="idEstudiante">
-            <input type="hidden" id="idArchivo">
-        </div>        
-        
-        <!-- Botón de envío final -->
-        <div class="form-section">
-            <div class="form-row">
-                <div class="form-group" style="text-align: center; width: 100%;">
-                    <button type="button" class="btn btn-primary" id="enviarFormulario" style="padding: 16px 40px; font-size: 1.1rem;">
-                        <i class="fas fa-save"></i> GUARDAR REGISTRO DE PRESTAMO
-                    </button>
-                    <div class="field-instruction" style="margin-top: 15px;">
-                        <i class="fas fa-shield-alt"></i> Todos los campos marcados con <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> son obligatorios
+        <!-- ⭐ PESTAÑA 3: DEVUELTOS ⭐ -->
+        <div id="tab-devueltos" class="tab-content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-check-circle"></i> PRÉSTAMOS DEVUELTOS</h2>
+                <div id="prestamosDevueltosContainer">
+                    <div class="prestamos-table-container">
+                        <table class="prestamos-table" id="tablaPrestamosDevueltos">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Paciente</th>
+                                    <th>CI</th>
+                                    <th>Estudiante</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Días Retraso</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyPrestamosDevueltos">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 40px;">
+                                        <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
+                                        <p>Cargando préstamos devueltos...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script th:src="@{/archivo_static/prestamo-static/prestamo_v1.js}"></script>
+    <script>
+        // ===== FUNCIONALIDAD DE PESTAÑAS =====
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remover clase active de todos los botones y contenidos
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Activar el botón clickeado
+                this.classList.add('active');
+                
+                // Mostrar el contenido correspondiente
+                const tabId = this.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+                
+                // Si se abrió la pestaña de préstamos activos o devueltos, recargar datos
+                if (tabId === 'tab-prestamos') {
+                    cargarPrestamosActivos();
+                } else if (tabId === 'tab-devueltos') {
+                    cargarPrestamosDevueltos();
+                }
+            });
+        });
 
+        // ===== CARGAR PRÉSTAMOS ACTIVOS =====
+        async function cargarPrestamosActivos() {
+            const tbody = document.getElementById('tbodyPrestamosActivos');
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
+                <p>Cargando préstamos...</p>
+            </td></tr>`;
+
+            try {
+                const response = await fetch('/api/prestamos-actuales');
+                if (!response.ok) throw new Error('Error al cargar préstamos');
+                
+                const prestamos = await response.json();
+                const activos = prestamos.filter(p => p.estadoPrestamo === 'ACTIVO' || p.estadoPrestamo === 'VENCIDO');
+                
+                // Actualizar contador
+                document.getElementById('prestamosCount').textContent = activos.length;
+                
+                if (activos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-check-circle" style="font-size: 40px; color: var(--success);"></i>
+                        <p>No hay préstamos activos</p>
+                    </td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                for (const prestamo of activos) {
+                    // Obtener datos del paciente y estudiante
+                    const [paciente, estudiante] = await Promise.all([
+                        obtenerPacientePorArchivo(prestamo.idArchivo),
+                        obtenerEstudiantePorId(prestamo.idEstudiante)
+                    ]);
+                    
+                    const diasRestantes = calcularDiasRestantes(prestamo.fechaLimitePrestamo);
+                    const esVencido = diasRestantes < 0;
+                    
+                    html += `
+                        <tr class="${esVencido ? 'vencido-row' : ''}">
+                            <td><strong>${prestamo.idPrestamo || prestamo.id}</strong></td>
+                            <td>${paciente?.nombreCompleto || 'N/A'}</td>
+                            <td>${paciente?.ci || 'N/A'}</td>
+                            <td>${estudiante?.nombreCompleto || 'N/A'} (${estudiante?.codigoEstudiante || 'N/A'})</td>
+                            <td>${formatearFecha(prestamo.fechaPrestamo)}</td>
+                            <td>${formatearFecha(prestamo.fechaLimitePrestamo)}</td>
+                            <td>
+                                <span style="color: ${esVencido ? 'var(--danger)' : 'var(--success)'}; font-weight: 600;">
+                                    ${esVencido ? 'VENCIDO' : diasRestantes + ' días'}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge-estado ${esVencido ? 'badge-vencido' : 'badge-activo'}">
+                                    ${esVencido ? 'VENCIDO' : 'ACTIVO'}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn-devolver" onclick="registrarDevolucion(${prestamo.idPrestamo || prestamo.id})" 
+                                        ${esVencido ? 'style="background: var(--warning);"' : ''}>
+                                    <i class="fas fa-undo-alt"></i> ${esVencido ? 'Devolver Vencido' : 'Devolver'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                tbody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error al cargar préstamos activos:', error);
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 30px;"></i>
+                    <p>Error al cargar los préstamos</p>
+                </td></tr>`;
+            }
+        }
+
+        // ===== CARGAR PRÉSTAMOS DEVUELTOS =====
+        async function cargarPrestamosDevueltos() {
+            const tbody = document.getElementById('tbodyPrestamosDevueltos');
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 30px; color: var(--primary);"></i>
+                <p>Cargando préstamos devueltos...</p>
+            </td></tr>`;
+
+            try {
+                const response = await fetch('/api/prestamos-actuales');
+                if (!response.ok) throw new Error('Error al cargar préstamos');
+                
+                const prestamos = await response.json();
+                const devueltos = prestamos.filter(p => p.estadoPrestamo === 'DEVUELTO');
+                
+                // Actualizar contador
+                document.getElementById('devueltosCount').textContent = devueltos.length;
+                
+                if (devueltos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--text-light);">
+                        <i class="fas fa-folder-open" style="font-size: 40px;"></i>
+                        <p>No hay préstamos devueltos</p>
+                    </td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                for (const prestamo of devueltos) {
+                    const [paciente, estudiante] = await Promise.all([
+                        obtenerPacientePorArchivo(prestamo.idArchivo),
+                        obtenerEstudiantePorId(prestamo.idEstudiante)
+                    ]);
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${prestamo.idPrestamo || prestamo.id}</strong></td>
+                            <td>${paciente?.nombreCompleto || 'N/A'}</td>
+                            <td>${paciente?.ci || 'N/A'}</td>
+                            <td>${estudiante?.nombreCompleto || 'N/A'} (${estudiante?.codigoEstudiante || 'N/A'})</td>
+                            <td>${formatearFecha(prestamo.fechaPrestamo)}</td>
+                            <td>${formatearFecha(prestamo.fechaDevolucion) || 'N/A'}</td>
+                            <td>${prestamo.diasRetraso || 0} días</td>
+                            <td>
+                                <span class="badge-estado badge-devuelto">
+                                    <i class="fas fa-check"></i> DEVUELTO
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+                tbody.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error al cargar préstamos devueltos:', error);
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--danger);">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 30px;"></i>
+                    <p>Error al cargar los préstamos devueltos</p>
+                </td></tr>`;
+            }
+        }
+
+        // ===== FUNCIONES AUXILIARES =====
+        function formatearFecha(fecha) {
+            if (!fecha) return 'N/A';
+            const d = new Date(fecha);
+            return d.toLocaleDateString('es-ES');
+        }
+
+        function calcularDiasRestantes(fechaLimite) {
+            if (!fechaLimite) return 0;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const limite = new Date(fechaLimite);
+            limite.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        async function obtenerPacientePorArchivo(idArchivo) {
+            try {
+                const response = await fetch(`/api/archivos/${idArchivo}`);
+                if (!response.ok) return null;
+                const archivo = await response.json();
+                return archivo.paciente || null;
+            } catch {
+                return null;
+            }
+        }
+
+        async function obtenerEstudiantePorId(idEstudiante) {
+            try {
+                const response = await fetch(`/api/estudiantes/${idEstudiante}`);
+                if (!response.ok) return null;
+                return await response.json();
+            } catch {
+                return null;
+            }
+        }
+
+        // ===== REGISTRAR DEVOLUCIÓN =====
+        window.registrarDevolucion = async function(id) {
+            if (!confirm('¿Estás seguro de registrar la devolución de este préstamo?')) return;
+
+            try {
+                const response = await fetch(`/api/prestamos-actuales/${id}/devolver`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    showNotification('✅ Devolución registrada correctamente', 'success');
+                    // Recargar las tablas
+                    cargarPrestamosActivos();
+                    cargarPrestamosDevueltos();
+                } else {
+                    throw new Error('Error al registrar devolución');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('❌ Error al registrar devolución', 'error');
+            }
+        };
+
+        // ===== NOTIFICACIONES =====
+        function showNotification(message, type = 'success') {
+            const container = document.querySelector('.message-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'flex';
+            messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => messageDiv.remove(), 500);
+            }, 5000);
+        }
+
+        // ===== INICIALIZAR =====
+        // Cargar préstamos activos al inicio
+        setTimeout(() => {
+            cargarPrestamosActivos();
+            cargarPrestamosDevueltos();
+        }, 500);
+    </script>
+
+    <script th:src="@{/archivo_static/prestamo-static/prestamo_v1.js}"></script>
 </body>
 </html>

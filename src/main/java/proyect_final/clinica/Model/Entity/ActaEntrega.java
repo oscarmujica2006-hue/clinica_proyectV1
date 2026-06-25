@@ -33,11 +33,11 @@ public class ActaEntrega {
     @Column(name = "observacion")
     private String observacion;
 
-    @Column(name = "usu_reg_acta", length = 100)
-    private String usuRegActa;
+    @Column(name = "usu_reg_acta")
+    private Integer usuRegActa;
 
-    @Column(name = "usu_mod_acta", length = 100)
-    private String usuModActa;
+    @Column(name = "usu_mod_acta")
+    private Integer usuModActa;
 
     @CreationTimestamp
     @Column(name = "fech_reg_acta", updatable = false)

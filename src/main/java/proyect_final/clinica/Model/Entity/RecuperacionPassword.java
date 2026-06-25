@@ -32,11 +32,11 @@ public class RecuperacionPassword  {
     @Column(name="usado",nullable=false)
     private Boolean usado;
 
-    @Column(name = "usu_reg_recPas", length = 100)
-    private String usuRegRecPas;
+    @Column(name = "usu_reg_recPas")
+    private Integer usuRegRecPas;
 
-    @Column(name = "usu_mod_recPas", length = 100)
-    private String usuModRecPas;
+    @Column(name = "usu_mod_recPas")
+    private Integer usuModRecPas;
 
     @CreationTimestamp
     @Column(name = "fech_reg_recPas", updatable = false)

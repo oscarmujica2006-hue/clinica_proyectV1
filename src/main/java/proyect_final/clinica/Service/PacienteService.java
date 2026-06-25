@@ -2,6 +2,8 @@ package proyect_final.clinica.Service;
 
 import proyect_final.clinica.Model.Entity.Paciente;
 import java.util.List;
+import proyect_final.clinica.Model.Dto.PacienteRegistroDTO;
+import proyect_final.clinica.Model.Dto.RegistroPacienteResultadoDTO;
 import java.util.Optional;
 
 public interface PacienteService {
@@ -39,4 +41,8 @@ public interface PacienteService {
     
     List<Paciente> buscarPorCi(Integer ci);
     List<Paciente> buscarPorCiContaining(String ci);
+
+
+
+    RegistroPacienteResultadoDTO registrarPacienteCompleto(PacienteRegistroDTO dto);
 }

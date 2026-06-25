@@ -24,11 +24,11 @@ public class UnidadMedida {
     @Column(name = "descripcion_unidad", length = 255)
     private String descripcionUnidad;
 
-    @Column(name = "usu_reg_uniMed", length = 100)
-    private String usuRegUniMed;
+    @Column(name = "usu_reg_uniMed")
+    private Integer usuRegUniMed;
 
-    @Column(name = "usu_mod_uniMed", length = 100)
-    private String usuModUniMed;
+    @Column(name = "usu_mod_uniMed")
+    private Integer usuModUniMed;
 
     @CreationTimestamp
     @Column(name = "fech_reg_uniMed", updatable = false)

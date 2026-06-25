@@ -38,11 +38,11 @@ public class InscripcionMateria  {
     @Column(name="estado_inscripcion")
     private String estadoInscripcion ;
 
-    @Column(name = "usu_reg_insMat", length = 100)
-    private String usuRegInsMat;
+    @Column(name = "usu_reg_insMat")
+    private Integer usuRegInsMat;
 
-    @Column(name = "usu_mod_insMat", length = 100)
-    private String usuModInsMat;
+    @Column(name = "usu_mod_insMat")
+    private Integer usuModInsMat;
 
     @CreationTimestamp
     @Column(name = "fech_reg_insMat", updatable = false)

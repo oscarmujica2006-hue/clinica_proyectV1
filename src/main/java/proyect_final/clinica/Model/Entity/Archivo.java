@@ -33,11 +33,11 @@ public class Archivo  {
     @JoinColumn(name = "id_paciente", nullable = false)  
     private Paciente paciente;
 
-    @Column(name = "usu_reg_arc", length = 100)
-    private String usuRegArc;
+    @Column(name = "usu_reg_arc")
+    private Integer usuRegArc;
 
-    @Column(name = "usu_mod_arc", length = 100)
-    private String usuModArc;
+    @Column(name = "usu_mod_arc")
+    private Integer usuModArc;
 
     @CreationTimestamp
     @Column(name = "fech_reg_arc", updatable = false)

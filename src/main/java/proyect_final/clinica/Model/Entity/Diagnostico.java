@@ -68,11 +68,11 @@ public class Diagnostico  {
 
     @Column(name = "total_piezas_temporales")
     private Integer totalPiezasTemporales;
-    @Column(name = "usu_reg_dia", length = 100)
-    private String usuRegDia;
+    @Column(name = "usu_reg_dia")
+    private Integer usuRegDia;
 
-    @Column(name = "usu_mod_dia", length = 100)
-    private String usuModDia;
+    @Column(name = "usu_mod_dia")
+    private Integer usuModDia;
 
     @CreationTimestamp
     @Column(name = "fech_reg_dia", updatable = false)

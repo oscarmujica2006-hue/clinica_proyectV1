@@ -37,11 +37,11 @@ public class ExamenIntraOral {
 
     @Column(name = "utiliza_protesis_dental")
     private Boolean utilizaProtesisDental;
-    @Column(name = "usu_reg_exaInt", length = 100)
-    private String usuRegExaInt;
+    @Column(name = "usu_reg_exaInt")
+    private Integer usuRegExaInt;
 
-    @Column(name = "usu_mod_exaInt", length = 100)
-    private String usuModExaInt;
+    @Column(name = "usu_mod_exaInt")
+    private Integer usuModExaInt;
 
     @CreationTimestamp
     @Column(name = "fech_reg_exaInt", updatable = false)

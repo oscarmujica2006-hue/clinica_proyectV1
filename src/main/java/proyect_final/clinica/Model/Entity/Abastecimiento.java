@@ -38,11 +38,11 @@ public class Abastecimiento {
     private String estadoAbastecimiento;
 
 
-    @Column(name = "usu_reg_abas", length = 100)
-    private String usuRegAbas;
+    @Column(name = "usu_reg_abas")
+    private Integer usuRegAbas;
 
-    @Column(name = "usu_mod_abas", length = 100)
-    private String usuModAbas;
+    @Column(name = "usu_mod_abas")
+    private Integer usuModAbas;
 
     @CreationTimestamp
     @Column(name = "fech_reg_abas", updatable = false)

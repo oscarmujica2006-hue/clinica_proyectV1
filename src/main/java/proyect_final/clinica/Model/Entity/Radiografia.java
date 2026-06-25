@@ -28,11 +28,11 @@ public class Radiografia {
     @Column(name = "precio_rayo", nullable = false, length = 500)
     private Double precioRayo;
     
-    @Column(name = "usu_reg_rad", length = 100)
-    private String usuRegRad;
+    @Column(name = "usu_reg_rad")
+    private Integer usuRegRad;
 
-    @Column(name = "usu_mod_rad", length = 100)
-    private String usuModRad;
+    @Column(name = "usu_mod_rad")
+    private Integer usuModRad;
 
     @CreationTimestamp
     @Column(name = "fech_reg_rad", updatable = false)

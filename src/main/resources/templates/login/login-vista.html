@@ -147,6 +147,25 @@
                             window.location.href = '/director';
                         });
                     }
+                    // ⭐ NUEVO CASO PARA RECEPCION
+                    else if (data.tipoUsuario === 'RECEPCION') {
+                        // ✅ GUARDAR ID DE RECEPCION
+                        sessionStorage.setItem('idRecepcion', data.idEspecifico);
+                        console.log('✅ Recepcion ID guardado:', data.idEspecifico);
+                        
+                        Swal.fire({
+                            title: '📋 Bienvenido Recepción',
+                            text: `${data.nombre} ${data.apellidos}`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true,
+                            background: '#f0f9ff',
+                            iconColor: '#3b82f6'
+                        }).then(() => {
+                            window.location.href = '/archivos';
+                        });
+                    }
                     else if (data.tipoUsuario === 'ADMIN') {
                         sessionStorage.setItem('idAdmin', data.idEspecifico);
                         

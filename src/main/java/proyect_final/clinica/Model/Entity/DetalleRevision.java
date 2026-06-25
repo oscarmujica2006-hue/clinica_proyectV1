@@ -1,12 +1,9 @@
 package proyect_final.clinica.Model.Entity;
-
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -33,11 +30,11 @@ public class DetalleRevision  {
 
     @Column(name = "observaciones")
     private String observaciones;
-    @Column(name = "usu_reg_detRev", length = 100)
-    private String usuRegDetRev;
+    @Column(name = "usu_reg_detRev")
+    private Integer usuRegDetRev;
 
-    @Column(name = "usu_mod_detRev", length = 100)
-    private String usuModDetRev;
+    @Column(name = "usu_mod_detRev")
+    private Integer usuModDetRev;
 
     @CreationTimestamp
     @Column(name = "fech_reg_detRev", updatable = false)

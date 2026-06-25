@@ -4,7 +4,6 @@ import lombok.*;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -48,10 +47,10 @@ public class DetalleAbastecimiento {
     private String estadoDetalle;
 
     @Column(name = "usu_reg_detAbas", length = 100)
-    private String usuRegDetAbas;
+    private Integer usuRegDetAbas;
 
     @Column(name = "usu_mod_detAbas", length = 100)
-    private String usuModDetAbas;
+    private Integer usuModDetAbas;
 
     @CreationTimestamp
     @Column(name = "fech_reg_detAbas", updatable = false)

@@ -29,11 +29,11 @@ public class TipoPaciente {
 
     @Column(name = "edad_max")
     private Integer edadMax;
-    @Column(name = "usu_reg_tipPac", length = 100)
-    private String usuRegTipPac;
+    @Column(name = "usu_reg_tipPac")
+    private Integer usuRegTipPac;
 
-    @Column(name = "usu_mod_tipPac", length = 100)
-    private String usuModTipPac;
+    @Column(name = "usu_mod_tipPac")
+    private Integer usuModTipPac;
 
     @CreationTimestamp
     @Column(name = "fech_reg_tipPac", updatable = false)

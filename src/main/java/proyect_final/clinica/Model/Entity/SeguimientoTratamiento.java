@@ -53,11 +53,11 @@ public class SeguimientoTratamiento {
 
     @Column(name = "plan_accion")
     private String planAccion;
-    @Column(name = "usu_reg_segTra", length = 100)
-    private String usuRegSegTra;
+    @Column(name = "usu_reg_segTra")
+    private Integer usuRegSegTra;
 
-    @Column(name = "usu_mod_segTra", length = 100)
-    private String usuModSegTra;
+    @Column(name = "usu_mod_segTra")
+    private Integer usuModSegTra;
 
     @CreationTimestamp
     @Column(name = "fech_reg_segTra", updatable = false)

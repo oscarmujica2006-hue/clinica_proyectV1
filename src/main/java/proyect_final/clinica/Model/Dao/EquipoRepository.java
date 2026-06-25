@@ -16,7 +16,7 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
         @Param("codigo") String codigo,
         @Param("nombre") String nombre,
         @Param("estado") String estado,
-        @Param("usuario") String usuario
+        @Param("usuario") Integer usuario
     );
 
 }

@@ -16,8 +16,8 @@ public class Recepcion {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_encargado_radiografia")
-    private Long idEncargadoRadiografia;
+    @Column(name = "id_recepcion")
+    private Long idRecepcion;
 
 
     @ManyToOne
@@ -29,10 +29,10 @@ public class Recepcion {
     private Integer codigoRecepcion;
     
     @Column(name = "usu_reg_usuRecp", length = 100)
-    private String usuRegUsuRecp;
+    private Integer usuRegUsuRecp;
 
     @Column(name = "usu_mod_usuRecp", length = 100)
-    private String usuModUsuRecp;
+    private Integer usuModUsuRecp;
 
     @CreationTimestamp
     @Column(name = "fech_reg_usuRecp", updatable = false)

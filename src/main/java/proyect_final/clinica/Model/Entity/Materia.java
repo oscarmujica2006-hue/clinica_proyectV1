@@ -1,10 +1,7 @@
 package proyect_final.clinica.Model.Entity;
-
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,11 +29,11 @@ public class Materia  {
     @ManyToOne
     @JoinColumn(name = "id_clinica", nullable = false)
     private Clinica clinica;    
-    @Column(name = "usu_reg_mat", length = 100)
-    private String usuRegMat;
+    @Column(name = "usu_reg_mat")
+    private Integer usuRegMat;
 
-    @Column(name = "usu_mod_mat", length = 100)
-    private String usuModMat;
+    @Column(name = "usu_mod_mat")
+    private Integer usuModMat;
 
     @CreationTimestamp
     @Column(name = "fech_reg_mat", updatable = false)

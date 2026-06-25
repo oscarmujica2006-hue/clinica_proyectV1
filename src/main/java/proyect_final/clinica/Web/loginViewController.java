@@ -1,10 +1,12 @@
 package proyect_final.clinica.Web;
+
 import proyect_final.clinica.Model.Dto.LoginRequest;
 import proyect_final.clinica.Model.Dto.LoginResponse;
 import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Entity.Docente;
 import proyect_final.clinica.Model.Entity.Director;
 import proyect_final.clinica.Model.Entity.EncargadoInsumo;
+import proyect_final.clinica.Model.Entity.Recepcion;
 import proyect_final.clinica.Service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +62,6 @@ public class loginViewController {
                         session.setAttribute("idEstudiante", estudiante.getIdEstudiante());
                         session.setAttribute("codigoEstudiante", estudiante.getCodigoEstudiante());
                         
-                        // ⭐ DECLARAR VARIABLES
                         String email = usuario.getEmail();
                         Integer codigoEstudiante = estudiante.getCodigoEstudiante();
                         
@@ -72,8 +73,8 @@ public class loginViewController {
                             true, "Login exitoso", nombre, apellidos,
                             estudiante.getGestion(), usuario.getIdUsuario(), 
                             estudiante.getIdEstudiante(),
-                            email,                    // ⭐ AHORA SÍ
-                            codigoEstudiante          // ⭐ AHORA SÍ
+                            email,
+                            codigoEstudiante
                         );
                         response.setTipoUsuario("ESTUDIANTE");
                         return ResponseEntity.ok(response);
@@ -82,6 +83,7 @@ public class loginViewController {
                             .body(new LoginResponse(false, "Estudiante bloqueado"));
                     }
                     break;
+                    
                 case "DOCENTE":
                     Docente docente = authResult.getDocente();
                     if (docente != null && docente.getEstado()) {
@@ -101,11 +103,9 @@ public class loginViewController {
                     }
                     break;
                 
-                // ✅ CASO PARA ENCARGADO_INSUMO - CORREGIDO
                 case "ENCARGADO_INSUMO":
                     EncargadoInsumo encargado = authResult.getEncargadoInsumo();
                     if (encargado != null) {
-                        // Usar el método correcto: getIdEncargadoInsumo()
                         Long idEncargado = encargado.getIdEncargadoInsumo();
                         session.setAttribute("idEncargadoInsumo", idEncargado);
                         session.setAttribute("areaResponsabilidad", encargado.getArea_responsabilidad());
@@ -121,12 +121,9 @@ public class loginViewController {
                     }
                     break;
 
-
-
                 case "DIRECTOR":
                     Director director = authResult.getDirector();
                     if (director != null) {
-                        // Usar el método correcto: getIdDirector()
                         Long idUsuarioClinica = director.getIdUsuarioClinica();
                         session.setAttribute("idDirector", idUsuarioClinica);
                         System.out.println("✅ SESIÓN DIRECTOR - ID: " + idUsuarioClinica);
@@ -136,6 +133,24 @@ public class loginViewController {
                             usuario.getIdUsuario(), idUsuarioClinica
                         );
                         response.setTipoUsuario("DIRECTOR");
+                        return ResponseEntity.ok(response);
+                    }
+                    break;
+
+                case "RECEPCION":
+                    Recepcion recepcion = authResult.getRecepcion();
+                    if (recepcion != null) {
+                        Long idRecepcion = recepcion.getIdRecepcion();
+                        session.setAttribute("idRecepcion", idRecepcion);
+                        session.setAttribute("codigoRecepcion", recepcion.getCodigoRecepcion());
+                        
+                        System.out.println("✅ SESIÓN RECEPCION - ID: " + idRecepcion);
+                        
+                        LoginResponse response = new LoginResponse(
+                            true, "Login exitoso", nombre, apellidos,
+                            usuario.getIdUsuario(), idRecepcion
+                        );
+                        response.setTipoUsuario("RECEPCION");
                         return ResponseEntity.ok(response);
                     }
                     break;
@@ -172,6 +187,7 @@ public class loginViewController {
         sesionInfo.put("idDocente", session.getAttribute("idDocente"));
         sesionInfo.put("idEncargadoInsumo", session.getAttribute("idEncargadoInsumo"));
         sesionInfo.put("idDirector", session.getAttribute("idDirector"));
+        sesionInfo.put("idRecepcion", session.getAttribute("idRecepcion"));
         sesionInfo.put("autenticado", session.getAttribute("idUsuario") != null);
         
         return ResponseEntity.ok(sesionInfo);
@@ -184,6 +200,8 @@ public class loginViewController {
         }
         return "encargado_insumo/encargado-vista";
     }
+
+    // ⭐ ELIMINADO: @GetMapping("/archivos") - Ya existe en ArchivosViewController
 
     @GetMapping("/solicitud-password/vista-solicitud")
     public String paginaResetearPassword() {

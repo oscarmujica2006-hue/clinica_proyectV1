@@ -1,11 +1,7 @@
 package proyect_final.clinica.Model.Entity;
 import lombok.*;
 import jakarta.persistence.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -35,11 +31,11 @@ public class DetalleActaEntrega {
     private Lote lote;
 
 
-    @Column(name = "usu_reg_detActa", length = 100)
-    private String usuRegDetActa;
+    @Column(name = "usu_reg_detActa")
+    private Integer usuRegDetActa;
 
-    @Column(name = "usu_mod_detActa", length = 100)
-    private String usuModDetActa;
+    @Column(name = "usu_mod_detActa")
+    private Integer usuModDetActa;
 
     @CreationTimestamp
     @Column(name = "fech_reg_detActa", updatable = false)

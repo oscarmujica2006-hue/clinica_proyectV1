@@ -12,10 +12,8 @@ public interface PrestamoActualRepository extends JpaRepository<PrestamoActual, 
     List<PrestamoActual> findByTipoPrestamo(String tipoPrestamo);
     List<PrestamoActual> findByFechaPrestamo(LocalDate fechaPrestamo);
     List<PrestamoActual> findByFechaLimitePrestamo(LocalDate fechaLimitePrestamo);
-    List<PrestamoActual> findByEncargadoPrestamo(String encargadoPrestamo);
     List<PrestamoActual> findByFechaDevolucion(LocalDate fechaDevolucion);
     List<PrestamoActual> findByTipoPrestamoContainingIgnoreCase(String tipoPrestamo);
-    List<PrestamoActual> findByEncargadoPrestamoContainingIgnoreCase(String encargadoPrestamo);
     List<PrestamoActual> findByEstadoPrestamo(String estadoPrestamo);
 
         // Buscar préstamo activo de un estudiante

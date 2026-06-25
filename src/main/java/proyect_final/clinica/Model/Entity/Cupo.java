@@ -1,10 +1,7 @@
 package proyect_final.clinica.Model.Entity;
-
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +28,11 @@ public class Cupo  {
     @Column(name = "cupos_disponibles")
     private Integer cuposDisponibles;
 
-    @Column(name = "usu_reg_cup", length = 100)
-    private String usuRegCup;
+    @Column(name = "usu_reg_cup")
+    private Integer usuRegCup;
 
-    @Column(name = "usu_mod_cup", length = 100)
-    private String usuModCup;
+    @Column(name = "usu_mod_cup")
+    private Integer usuModCup;
 
     @CreationTimestamp
     @Column(name = "fech_reg_cup", updatable = false)

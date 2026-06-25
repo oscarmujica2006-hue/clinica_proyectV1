@@ -2,11 +2,9 @@ package proyect_final.clinica.Model.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -40,11 +38,11 @@ public class Persona  {
     private Character sexo; // 'M' o 'F'
 
 
-    @Column(name = "usu_reg_per", length = 100)
-    private String usuRegPer;
+    @Column(name = "usu_reg_per")
+    private Integer usuRegPer;
 
-    @Column(name = "usu_mod_per", length = 100)
-    private String usuModPer;
+    @Column(name = "usu_mod_per")
+    private Integer usuModPer;
 
     @CreationTimestamp
     @Column(name = "fech_reg_per", updatable = false)

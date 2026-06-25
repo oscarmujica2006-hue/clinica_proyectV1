@@ -28,11 +28,11 @@ public class Equipo {
     private String estadoEquipo;
 
     // Auditoría
-    @Column(name = "usu_reg_equ", length = 100)
-    private String usuRegEqu;
+    @Column(name = "usu_reg_equ")
+    private Integer usuRegEqu;
 
-    @Column(name = "usu_mod_equ", length = 100)
-    private String usuModEqu;
+    @Column(name = "usu_mod_equ")
+    private Integer usuModEqu;
 
     @CreationTimestamp
     @Column(name = "fech_reg_equ", updatable = false)

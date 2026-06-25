@@ -1,13 +1,9 @@
 package proyect_final.clinica.Model.Entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -42,11 +38,11 @@ public class Consentimiento  {
 
     @Column(name = "estado_consentimiento")
     private String estado ;
-    @Column(name = "usu_reg_con", length = 100)
-    private String usuRegCon;
+    @Column(name = "usu_reg_con")
+    private Integer usuRegCon;
 
-    @Column(name = "usu_mod_con", length = 100)
-    private String usuModCon;
+    @Column(name = "usu_mod_con")
+    private Integer usuModCon;
 
     @CreationTimestamp
     @Column(name = "fech_reg_con", updatable = false)

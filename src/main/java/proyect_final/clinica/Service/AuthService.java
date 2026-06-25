@@ -5,11 +5,13 @@ import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Entity.Docente;
 import proyect_final.clinica.Model.Entity.EncargadoInsumo;
 import proyect_final.clinica.Model.Entity.Director;
+import proyect_final.clinica.Model.Entity.Recepcion; // ⭐ IMPORTAR RECEPCION
 import proyect_final.clinica.Model.Dao.UsuarioRepository;
 import proyect_final.clinica.Model.Dao.EstudianteRepository;
 import proyect_final.clinica.Model.Dao.DocenteRepository;
 import proyect_final.clinica.Model.Dao.DirectorRepository;
 import proyect_final.clinica.Model.Dao.EncargadoInsumoRepository;
+import proyect_final.clinica.Model.Dao.RecepcionRepository; // ⭐ IMPORTAR REPOSITORY
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -32,14 +34,15 @@ public class AuthService {
     @Autowired
     private DirectorRepository directorRepository;
 
+    @Autowired
+    private RecepcionRepository recepcionRepository; // ⭐ INYECTAR REPOSITORY
+
     public Optional<AuthResult> autenticar(String username, String password) {
-        // Buscar usuario por nombre de usuario
         Optional<Usuario> usuarioOpt = usuarioRepository.findByNombreUsuario(username);
         
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
             
-            // Verificar contraseña y estado activo
             if (usuario.getContraseña().equals(password) && usuario.getEstado()) {
                 
                 // Verificar si es estudiante
@@ -54,16 +57,22 @@ public class AuthService {
                     return Optional.of(new AuthResult(usuario, docenteOpt.get(), "DOCENTE"));
                 }
                 
-                // ✅ Verificar si es encargado de insumos
+                // Verificar si es encargado de insumos
                 Optional<EncargadoInsumo> encargadoOpt = encargadoInsumoRepository.findByUsuario(usuario);
                 if (encargadoOpt.isPresent()) {
                     return Optional.of(new AuthResult(usuario, encargadoOpt.get(), "ENCARGADO_INSUMO"));
                 }
 
-                // ✅ Verificar si es director
+                // Verificar si es director
                 Optional<Director> directorOpt = directorRepository.findByUsuario(usuario);
                 if (directorOpt.isPresent()) {
                     return Optional.of(new AuthResult(usuario, directorOpt.get(), "DIRECTOR"));
+                }
+
+                // ⭐ VERIFICAR SI ES RECEPCION
+                Optional<Recepcion> recepcionOpt = recepcionRepository.findByUsuario(usuario);
+                if (recepcionOpt.isPresent()) {
+                    return Optional.of(new AuthResult(usuario, recepcionOpt.get(), "RECEPCION"));
                 }
                 
                 // Si es solo usuario (admin u otro tipo)
@@ -77,7 +86,7 @@ public class AuthService {
     // Clase interna para el resultado
     public static class AuthResult {
         private Usuario usuario;
-        private Object perfil; // Estudiante, Docente, EncargadoInsumo, etc.
+        private Object perfil;
         private String tipo;
 
         public AuthResult(Usuario usuario, Object perfil, String tipo) {
@@ -98,14 +107,17 @@ public class AuthService {
             return perfil instanceof Docente ? (Docente) perfil : null;
         }
         
-        
         public EncargadoInsumo getEncargadoInsumo() {
             return perfil instanceof EncargadoInsumo ? (EncargadoInsumo) perfil : null;
         }
 
-     
         public Director getDirector() {
             return perfil instanceof Director ? (Director) perfil : null;
+        }
+
+        // ⭐ GETTER PARA RECEPCION
+        public Recepcion getRecepcion() {
+            return perfil instanceof Recepcion ? (Recepcion) perfil : null;
         }
     }
 }

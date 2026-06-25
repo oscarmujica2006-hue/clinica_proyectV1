@@ -97,14 +97,9 @@ public class ArchivoController {
                 pacienteData.put("id", paciente.getIdPaciente());
                 pacienteData.put("ci", paciente.getCi());
                 pacienteData.put("nombreCompleto", getNombreCompleto(paciente.getPersona()));
-                
-                // AHORA SÍ, el historial clínico está en el paciente, no en la persona
                 pacienteData.put("historialClinico", paciente.getHistorialClinico());
                 pacienteData.put("telefono", paciente.getTelefono());
                 pacienteData.put("direccion", paciente.getDireccion());
-                
-                
-                
                 
                 response.put("paciente", pacienteData);
 
@@ -130,48 +125,60 @@ public class ArchivoController {
         }
     }
 
-
-
-
-
-    // ✅ ENDPOINT ESPECÍFICO: Obtener solo el ID del archivo
-    @GetMapping("/id-por-paciente")
-    public ResponseEntity<?> getIdArchivoPorPaciente(
-            @RequestParam(required = false) Integer ci,
-            @RequestParam(required = false) String nombre) {
+// ✅ ENDPOINT - Usa el método que funciona
+@GetMapping("/id-por-paciente")
+public ResponseEntity<?> getIdArchivoPorPaciente(
+        @RequestParam(required = false) String ci,
+        @RequestParam(required = false) String nombre) {
+    
+    try {
+        Integer ciInt = null;
+        String nombreBusqueda = null;
         
-        try {
-            // Validar que al menos un parámetro tenga valor
-            if ((ci == null || ci == 0) && 
-                (nombre == null || nombre.trim().isEmpty())) {
-                
-                return ResponseEntity.badRequest().body(
-                    createErrorResponse("Debe proporcionar CI o nombre del paciente")
-                );
+        // Determinar qué parámetro usar
+        if (ci != null && !ci.trim().isEmpty()) {
+            try {
+                ciInt = Integer.parseInt(ci.trim());
+            } catch (NumberFormatException e) {
+                nombreBusqueda = ci.trim();
             }
-            
-            // Buscar solo el ID
-            var idArchivoOpt = archivoService.findIdArchivoByPacienteCiOrNombre(ci, nombre);
-            
-            if (idArchivoOpt.isPresent()) {
-                Map<String, Object> response = createSuccessResponse("ID de archivo encontrado");
-                response.put("idArchivo", idArchivoOpt.get());
-                response.put("found", true);
-                
-                return ResponseEntity.ok(response);
-            } else {
-                Map<String, Object> response = createErrorResponse("No se encontró archivo", false);
-                response.put("found", false);
-                response.put("idArchivo", null);
-                
-                return ResponseEntity.ok(response);
-            }
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(createErrorResponse("Error: " + e.getMessage()));
         }
+        
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            nombreBusqueda = nombre.trim();
+        }
+        
+        if (ciInt == null && (nombreBusqueda == null || nombreBusqueda.isEmpty())) {
+            return ResponseEntity.badRequest().body(
+                createErrorResponse("Debe proporcionar CI o nombre del paciente")
+            );
+        }
+        
+        // ⭐ USAR EL MÉTODO QUE FUNCIONA
+        Optional<Archivo> archivoOpt = archivoService.buscarArchivoPorCiONombre(ciInt, nombreBusqueda);
+        
+        if (archivoOpt.isPresent()) {
+            Archivo archivo = archivoOpt.get();
+            Map<String, Object> response = createSuccessResponse("ID de archivo encontrado");
+            response.put("idArchivo", archivo.getIdArchivo());
+            response.put("found", true);
+            response.put("codigoArchivo", archivo.getCodigoArchivo());
+            
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = createErrorResponse("No se encontró archivo", false);
+            response.put("found", false);
+            response.put("idArchivo", null);
+            
+            return ResponseEntity.ok(response);
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createErrorResponse("Error: " + e.getMessage()));
     }
+}
     
     // ✅ ENDPOINT: Verificar si paciente tiene archivo
     @GetMapping("/verificar/{idPaciente}")
@@ -224,8 +231,6 @@ public class ArchivoController {
         }
         return response;
     }
-
-
 
     @GetMapping("/paciente/{idPaciente}")
     public ResponseEntity<Archivo> getArchivoByPacienteId(@PathVariable Long idPaciente) {

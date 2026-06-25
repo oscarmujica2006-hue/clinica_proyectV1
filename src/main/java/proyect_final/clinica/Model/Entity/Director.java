@@ -31,11 +31,11 @@ public class Director {
 
     @Column(name = "fecha_fin", nullable = false )
     private LocalDate fechaFin;
-    @Column(name = "usu_reg_usuCli", length = 100)
-    private String usuRegUsuCli;
+    @Column(name = "usu_reg_usuCli")
+    private Integer usuRegUsuCli;
 
-    @Column(name = "usu_mod_usuCli", length = 100)
-    private String usuModUsuCli;
+    @Column(name = "usu_mod_usuCli")
+    private Integer usuModUsuCli;
 
     @CreationTimestamp
     @Column(name = "fech_reg_usuCli", updatable = false)

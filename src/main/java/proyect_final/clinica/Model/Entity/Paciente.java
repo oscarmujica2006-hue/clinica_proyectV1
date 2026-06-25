@@ -1,12 +1,9 @@
 package proyect_final.clinica.Model.Entity;
-
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -59,15 +56,18 @@ public class Paciente {
     @Column(nullable = false)
     private Integer ci;
 
+    @Column(name="patologia_familiar", length = 100)
+    private String patologiaFamiliar;
+
 
     @ManyToOne
     @JoinColumn(name = "id_tipo_paciente", nullable = false)
     private TipoPaciente tipoPaciente;
-    @Column(name = "usu_reg_pac", length = 100)
-    private String usuRegPac;
+    @Column(name = "usu_reg_pac")
+    private Integer usuRegPac;
 
-    @Column(name = "usu_mod_pac", length = 100)
-    private String usuModPac;
+    @Column(name = "usu_mod_pac")
+    private Integer usuModPac;
 
     @CreationTimestamp
     @Column(name = "fech_reg_pac", updatable = false)

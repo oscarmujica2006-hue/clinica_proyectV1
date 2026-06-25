@@ -1,13 +1,9 @@
 package proyect_final.clinica.Model.Entity;
-
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 @Getter
 @Setter
@@ -28,11 +24,11 @@ public class DetalleSeguimiento {
     @JoinColumn(name="id_radiografia", nullable = false)
     private Radiografia radiografia;
 
-    @Column(name = "usu_reg_detSeg", length = 100)
-    private String usuRegDetSeg;
+    @Column(name = "usu_reg_detSeg")
+    private Integer usuRegDetSeg;
 
-    @Column(name = "usu_mod_detSeg", length = 100)
-    private String usuModDetSeg;
+    @Column(name = "usu_mod_detSeg")
+    private Integer usuModDetSeg;
 
     @CreationTimestamp
     @Column(name = "fech_reg_detSeg", updatable = false)

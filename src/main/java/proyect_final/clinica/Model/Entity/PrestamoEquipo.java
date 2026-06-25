@@ -55,11 +55,11 @@ public class PrestamoEquipo {
     private String observacionPrestamo;
 
 
-    @Column(name = "usu_reg_preEqu", length = 100)
-    private String usuRegPreEqu;
+    @Column(name = "usu_reg_preEqu")
+    private Integer usuRegPreEqu;
 
-    @Column(name = "usu_mod_preEqu", length = 100)
-    private String usuModPreEqu;
+    @Column(name = "usu_mod_preEqu")
+    private Integer usuModPreEqu;
 
     @CreationTimestamp
     @Column(name = "fech_reg_preEqu", updatable = false)

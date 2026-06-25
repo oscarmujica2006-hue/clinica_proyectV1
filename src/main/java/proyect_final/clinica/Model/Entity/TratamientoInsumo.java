@@ -26,11 +26,11 @@ public class TratamientoInsumo  {
 
     @Column(name = "cantidad_requerida", nullable = false)
     private Integer cantidadRequerida;
-    @Column(name = "usu_reg_traIns", length = 100)
-    private String usuRegTraIns;
+    @Column(name = "usu_reg_traIns")
+    private Integer usuRegTraIns;
 
-    @Column(name = "usu_mod_traIns", length = 100)
-    private String usuModTraIns;
+    @Column(name = "usu_mod_traIns")
+    private Integer usuModTraIns;
 
     @CreationTimestamp
     @Column(name = "fech_reg_traIns", updatable = false)

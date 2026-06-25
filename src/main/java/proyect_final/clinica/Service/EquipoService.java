@@ -12,7 +12,7 @@ public interface EquipoService {
         String codigoEquipo,
         String nombreEquipo,
         String estadoEquipo,
-        String usuario
+        Integer usuario
     );
 
     List<Equipo> obtenerTodos();

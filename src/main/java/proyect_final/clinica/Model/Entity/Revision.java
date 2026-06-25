@@ -29,11 +29,11 @@ public class Revision  {
 
     @Column(name = "observaciones_generales")
     private String observacionesGenerales;
-    @Column(name = "usu_reg_rev", length = 100)
-    private String usuRegRev;
+    @Column(name = "usu_reg_rev")
+    private Integer usuRegRev;
 
-    @Column(name = "usu_mod_rev", length = 100)
-    private String usuModRev;
+    @Column(name = "usu_mod_rev")
+    private Integer usuModRev;
 
     @CreationTimestamp
     @Column(name = "fech_reg_rev", updatable = false)

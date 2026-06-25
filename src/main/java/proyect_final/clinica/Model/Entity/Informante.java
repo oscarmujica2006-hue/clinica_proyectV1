@@ -33,11 +33,11 @@ public class Informante{
     @Column(length = 20)
     private String telefono;
 
-     @Column(name = "usu_reg_inf", length = 100)
-    private String usuRegInf;
+     @Column(name = "usu_reg_inf")
+    private Integer usuRegInf;
 
-    @Column(name = "usu_mod_inf", length = 100)
-    private String usuModInf;
+    @Column(name = "usu_mod_inf")
+    private Integer usuModInf;
 
     @CreationTimestamp
     @Column(name = "fech_reg_inf", updatable = false)

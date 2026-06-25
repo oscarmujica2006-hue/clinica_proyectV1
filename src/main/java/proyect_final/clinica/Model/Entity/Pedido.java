@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.util.ArrayList;
 
 @Getter 
@@ -33,11 +31,11 @@ public class Pedido {
     private String estadoPedido;    
 
 
-    @Column(name = "usu_reg_ped", length = 100)
-    private String usuRegPed;
+    @Column(name = "usu_reg_ped")
+    private Integer usuRegPed;
 
-    @Column(name = "usu_mod_ped", length = 100)
-    private String usuModPed;
+    @Column(name = "usu_mod_ped")
+    private Integer usuModPed;
 
     @CreationTimestamp
     @Column(name = "fech_reg_ped", updatable = false)

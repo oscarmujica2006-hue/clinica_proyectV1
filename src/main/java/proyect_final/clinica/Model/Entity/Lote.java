@@ -3,12 +3,9 @@ import lombok.*;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -57,11 +54,11 @@ public class Lote {
     @Column(name = "observaciones")
     private String observaciones;
 
-    @Column(name = "usu_reg_lot", length = 100)
-    private String usuRegLot;
+    @Column(name = "usu_reg_lot")
+    private Integer usuRegLot;
 
-    @Column(name = "usu_mod_lot", length = 100)
-    private String usuModLot;
+    @Column(name = "usu_mod_lot")
+    private Integer usuModLot;
 
     @CreationTimestamp
     @Column(name = "fech_reg_lot", updatable = false)

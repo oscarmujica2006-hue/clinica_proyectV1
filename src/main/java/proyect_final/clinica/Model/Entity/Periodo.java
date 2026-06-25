@@ -28,11 +28,11 @@ public class Periodo  {
 
     @Column(name="fecha_fin")
     private LocalDate fechaFin;
-    @Column(name = "usu_reg_per", length = 100)
-    private String usuRegPer;
+    @Column(name = "usu_reg_per")
+    private Integer usuRegPer;
 
-    @Column(name = "usu_mod_per", length = 100)
-    private String usuModPer;
+    @Column(name = "usu_mod_per")
+    private Integer usuModPer;
 
     @CreationTimestamp
     @Column(name = "fech_reg_per", updatable = false)

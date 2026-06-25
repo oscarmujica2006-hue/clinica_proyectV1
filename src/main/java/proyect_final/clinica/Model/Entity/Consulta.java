@@ -69,11 +69,11 @@ public class Consulta  {
     private PrestamoActual prestamo;
 
 
-    @Column(name = "usu_reg_con", length = 100)
-    private String usuRegCon;
+    @Column(name = "usu_reg_con")
+    private Integer usuRegCon;
 
-    @Column(name = "usu_mod_con", length = 100)
-    private String usuModCon;
+    @Column(name = "usu_mod_con")
+    private Integer usuModCon;
 
     @CreationTimestamp
     @Column(name = "fech_reg_con", updatable = false)

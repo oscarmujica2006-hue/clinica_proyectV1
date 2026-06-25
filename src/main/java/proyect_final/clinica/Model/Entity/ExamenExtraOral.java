@@ -1,10 +1,7 @@
 package proyect_final.clinica.Model.Entity;
-
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,11 +26,11 @@ public class ExamenExtraOral  {
     @Column(length = 100)
     private String respirador;
 
-    @Column(name = "usu_reg_exaExt", length = 100)
-    private String usuRegExaExt;
+    @Column(name = "usu_reg_exaExt")
+    private Integer usuRegExaExt;
 
-    @Column(name = "usu_mod_exaExt", length = 100)
-    private String usuModExaExt;
+    @Column(name = "usu_mod_exaExt")
+    private Integer usuModExaExt;
 
     @CreationTimestamp
     @Column(name = "fech_reg_exaExt", updatable = false)

@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -34,8 +33,8 @@ public class PrestamoActual {
     private LocalDate fechaLimitePrestamo;
     @Column(name = "tipo_prestamo", nullable = false)
     private String tipoPrestamo;
-    @Column(name = "encargado_prestamo", nullable = false)
-    private String encargadoPrestamo;
+    @Column(name = "id_recepcion", nullable = false)
+    private Long idRecepcion;
     @Column(name = "fecha_devolucion", nullable = true)
     private LocalDate fechaDevolucion;
     
@@ -48,11 +47,11 @@ public class PrestamoActual {
     @Column(name="dias_retraso" , nullable = true)
     private Integer diasRetraso;
 
-    @Column(name = "usu_reg_preAct", length = 100)
-    private String usuRegPreAct;
+    @Column(name = "usu_reg_preAct")
+    private Integer usuRegPreAct;
 
-    @Column(name = "usu_mod_preAct", length = 100)
-    private String usuModPreAct;
+    @Column(name = "usu_mod_preAct")
+    private Integer usuModPreAct;
 
     @CreationTimestamp
     @Column(name = "fech_reg_preAct", updatable = false)

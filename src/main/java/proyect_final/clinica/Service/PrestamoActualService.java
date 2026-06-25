@@ -18,6 +18,7 @@ public interface PrestamoActualService {
     // BÚSQUEDAS ESPECÍFICAS
     List<PrestamoActual> buscarPorIdEstudiante(Long idEstudiante);
     List<PrestamoActual> buscarPorIdArchivo(Long idArchivo);
+    List<PrestamoActual> buscarPorEstado(String estado);
     
     // MÉTODOS DE NEGOCIO
     PrestamoActual registrarPrestamo(PrestamoActual prestamo);
@@ -28,10 +29,7 @@ public interface PrestamoActualService {
     // NUEVOS MÉTODOS PARA VALIDACIÓN
     Optional<PrestamoActual> obtenerPrestamoActivoPorEstudiante(Long idEstudiante);
     Map<String, Object> obtenerInfoPacientePrestado(Long idEstudiante);
-
-
-
     
-    // ✅ CORRECTO - Solo la declaración del método
-    List<PrestamoActual> buscarPorEstado(String estado);
+    // ⭐ NUEVO MÉTODO PARA CONTAR PRÉSTAMOS ACTIVOS
+    int contarPrestamosActivos(Long idEstudiante);
 }

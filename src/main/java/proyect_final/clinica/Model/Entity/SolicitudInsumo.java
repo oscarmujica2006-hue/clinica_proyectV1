@@ -1,13 +1,10 @@
 package proyect_final.clinica.Model.Entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import java.util.List;
-
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import lombok.*;
 @Getter
 @Setter
@@ -30,11 +27,11 @@ public class SolicitudInsumo{
 
     @Column(name = "estado_solicitud", nullable = false)
     private String estadoSolicitud;
-    @Column(name = "usu_reg_solIns", length = 100)
-    private String usuRegSolIns;
+    @Column(name = "usu_reg_solIns")
+    private Integer usuRegSolIns;
 
-    @Column(name = "usu_mod_solIns", length = 100)
-    private String usuModSolIns;
+    @Column(name = "usu_mod_solIns")
+    private Integer usuModSolIns;
 
     @CreationTimestamp
     @Column(name = "fech_reg_solIns", updatable = false)

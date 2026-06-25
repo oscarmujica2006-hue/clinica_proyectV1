@@ -31,11 +31,11 @@ public class Recibo  {
 
     @Column(name="estado_pago", nullable = false )
     private String estadoPago;
-    @Column(name = "usu_reg_rec", length = 100)
-    private String usuRegRec;
+    @Column(name = "usu_reg_rec")
+    private Integer usuRegRec;
 
-    @Column(name = "usu_mod_rec", length = 100)
-    private String usuModRec;
+    @Column(name = "usu_mod_rec")
+    private Integer usuModRec;
 
     @CreationTimestamp
     @Column(name = "fech_reg_rec", updatable = false)

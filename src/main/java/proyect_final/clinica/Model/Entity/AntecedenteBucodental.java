@@ -35,11 +35,11 @@ public class AntecedenteBucodental {
     @Column(length = 100)
     private String otrosHabitos;
 
-    @Column(name = "usu_reg_antBuc", length = 100)
-    private String usuRegAntBuc;
+    @Column(name = "usu_reg_antBuc")
+    private Integer usuRegAntBuc;
 
-    @Column(name = "usu_mod_antBuc", length = 100)
-    private String usuModAntBuc;
+    @Column(name = "usu_mod_antBuc")
+    private Integer usuModAntBuc;
 
     @CreationTimestamp
     @Column(name = "fech_reg_antBuc", updatable = false)
