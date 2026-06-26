@@ -20,10 +20,7 @@ public class Diagnostico  {
     @Column(name = "id_diagnostico")
     private Long idDiagnostico;
 
-    @ManyToOne
-    @JoinColumn(name = "id_consulta", nullable = false)
-    private Consulta consulta;
-
+  
     @ManyToOne
     @JoinColumn(name = "id_revision")
     private Revision revision;
@@ -81,8 +78,5 @@ public class Diagnostico  {
     @UpdateTimestamp
     @Column(name = "fech_mod_dia")
     private LocalDateTime fechModDia;
-
-    @OneToMany(mappedBy = "diagnostico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DiagnosticoTratamiento> diagnosticosTratamientos = new ArrayList<>();
 
 }

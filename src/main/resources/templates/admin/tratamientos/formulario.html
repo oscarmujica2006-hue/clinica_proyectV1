@@ -211,7 +211,7 @@
             animation: fadeIn 0.5s ease-out;
         }
 
-        /* Estilos para el modal personalizado (como el de tipos) */
+        /* Estilos para el modal personalizado */
         .custom-modal {
             display: none;
             position: fixed;
@@ -355,7 +355,6 @@
                         <tr>
                             <th>ID</th>
                             <th>Nombre</th>
-                            <th>Tipo</th>
                             <th>Precio</th>
                             <th>Descripción</th>
                             <th>Acciones</th>
@@ -369,7 +368,7 @@
         </div>
     </div>
 
-    <!-- Modal personalizado para crear/editar (como el de tipos) -->
+    <!-- Modal personalizado para crear/editar -->
     <div class="custom-modal" id="tratamientoModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -386,13 +385,6 @@
                     <div class="mb-3">
                         <label class="form-label">Nombre del Tratamiento</label>
                         <input type="text" class="form-control" id="nombreTratamiento" required maxlength="100" placeholder="Ingrese el nombre del tratamiento">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de Tratamiento</label>
-                        <select class="form-select" id="tipoTratamiento" required>
-                            <option value="">Seleccione un tipo</option>
-                        </select>
                     </div>
                     
                     <div class="mb-3">
@@ -421,7 +413,6 @@
         // Cargar datos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             cargarTratamientos();
-            cargarTiposTratamiento();
         });
 
         // Función para cargar tratamientos
@@ -438,10 +429,7 @@
                             <td>${tratamiento.idTratamiento}</td>
                             <td>${tratamiento.nombreTratamiento}</td>
                             <td>
-                                <span class="badge bg-info">${tratamiento.tipoTratamiento?.nombreTipo || 'Sin tipo'}</span>
-                            </td>
-                            <td>
-                                <span class="badge-precio">${tratamiento.precioTratamiento ? tratamiento.precioTratamiento.toFixed(2) + 'Bs' : '0.00Bs'}</span>
+                                <span class="badge-precio">${tratamiento.precioTratamiento ? tratamiento.precioTratamiento.toFixed(2) + ' Bs' : '0.00 Bs'}</span>
                             </td>
                             <td>${tratamiento.descripcionTratamiento || '-'}</td>
                             <td>
@@ -459,26 +447,6 @@
                 .catch(error => {
                     console.error('Error:', error);
                     mostrarAlerta('Error al cargar los tratamientos', 'error');
-                });
-        }
-
-        // Función para cargar tipos de tratamiento en el select
-        function cargarTiposTratamiento() {
-            fetch('/api/tipos-tratamiento')
-                .then(response => response.json())
-                .then(data => {
-                    const select = document.getElementById('tipoTratamiento');
-                    select.innerHTML = '<option value="">Seleccione un tipo</option>';
-                    
-                    data.forEach(tipo => {
-                        const option = document.createElement('option');
-                        option.value = tipo.idTipoTratamiento;
-                        option.textContent = tipo.nombreTipo;
-                        select.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
                 });
         }
 
@@ -504,7 +472,6 @@
                     document.getElementById('modalTitle').innerHTML = '<i class="bi bi-pencil"></i> Editar Tratamiento';
                     document.getElementById('idTratamiento').value = tratamiento.idTratamiento;
                     document.getElementById('nombreTratamiento').value = tratamiento.nombreTratamiento;
-                    document.getElementById('tipoTratamiento').value = tratamiento.tipoTratamiento?.idTipoTratamiento || '';
                     document.getElementById('precioTratamiento').value = tratamiento.precioTratamiento;
                     document.getElementById('descripcionTratamiento').value = tratamiento.descripcionTratamiento || '';
                     
@@ -516,29 +483,36 @@
                 });
         }
 
-        // Función para guardar tratamiento
+        // Función para guardar tratamiento - VERSIÓN CORREGIDA
         function guardarTratamiento() {
             const id = document.getElementById('idTratamiento').value;
-            const nombre = document.getElementById('nombreTratamiento').value;
-            const tipoId = document.getElementById('tipoTratamiento').value;
+            const nombre = document.getElementById('nombreTratamiento').value.trim();
             const precio = document.getElementById('precioTratamiento').value;
-            const descripcion = document.getElementById('descripcionTratamiento').value;
+            const descripcion = document.getElementById('descripcionTratamiento').value.trim();
 
-            if (!nombre || !tipoId || !precio) {
-                mostrarAlerta('Por favor complete los campos requeridos', 'error');
+            // Validar campos requeridos
+            if (!nombre) {
+                mostrarAlerta('Por favor ingrese el nombre del tratamiento', 'error');
+                return;
+            }
+            
+            if (!precio || parseFloat(precio) <= 0) {
+                mostrarAlerta('Por favor ingrese un precio válido (mayor a 0)', 'error');
                 return;
             }
 
+            // Crear el objeto de datos
             const tratamientoData = {
-                idTratamiento: id || null,
+                idTratamiento: id ? parseInt(id) : null,
                 nombreTratamiento: nombre,
                 precioTratamiento: parseFloat(precio),
-                descripcionTratamiento: descripcion,
-                tipoTratamiento: { idTipoTratamiento: parseInt(tipoId) }
+                descripcionTratamiento: descripcion || null
             };
 
             const method = id ? 'PUT' : 'POST';
             const url = id ? `/api/tratamientos/${id}` : '/api/tratamientos';
+
+            console.log('Enviando:', tratamientoData); // Debug
 
             fetch(url, {
                 method: method,
@@ -553,12 +527,14 @@
                     cargarTratamientos();
                     mostrarAlerta(id ? 'Tratamiento actualizado con éxito' : 'Tratamiento creado con éxito', 'success');
                 } else {
-                    throw new Error('Error al guardar');
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Error al guardar');
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                mostrarAlerta('Error al guardar el tratamiento', 'error');
+                mostrarAlerta('Error al guardar: ' + error.message, 'error');
             });
         }
 

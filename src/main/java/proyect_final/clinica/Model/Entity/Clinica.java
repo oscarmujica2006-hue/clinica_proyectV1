@@ -37,9 +37,6 @@ public class Clinica {
     @JsonIgnore
     private List<Materia> materias;
 
-    @OneToMany(mappedBy = "clinica")
-    @JsonIgnore
-    private List<TipoTratamiento> tiposTratamiento;
 
     @Column(name = "usu_reg_cli")
     private Integer usuRegCli;
@@ -119,16 +116,6 @@ public class Clinica {
     public void setMaterias(List<Materia> materias) {
         this.materias = materias;
     }
-
-    public List<TipoTratamiento> getTiposTratamiento() {
-        return tiposTratamiento;
-    }
-
-    public void setTiposTratamiento(List<TipoTratamiento> tiposTratamiento) {
-        this.tiposTratamiento = tiposTratamiento;
-    }
-
-
     public Integer getUsuRegCli() {
         return usuRegCli;
     }

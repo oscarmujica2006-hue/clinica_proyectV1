@@ -3,6 +3,8 @@ package proyect_final.clinica.Web;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -26,6 +28,18 @@ public class EstudianteViewController {
         return "estudiantes/Revision/revision";
     }    
     
+
+
+    @GetMapping("/Revision/evolucion-clinica")
+    public String mostrarEvolucionClinica(@RequestParam(required = false) Long id, Model model) {
+        if (id != null) {
+            model.addAttribute("idDiagnostico", id);
+        }
+        return "estudiantes/Revision/evolucion-clinica";
+    }
+
+
+
     @GetMapping("/consentimiento/consentimiento-vista")
     public String mostrarConsentimiento() {
         return "estudiantes/consentimiento/consentimiento-vista";

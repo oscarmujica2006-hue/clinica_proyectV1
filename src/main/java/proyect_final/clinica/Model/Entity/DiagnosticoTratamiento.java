@@ -1,4 +1,5 @@
 package proyect_final.clinica.Model.Entity;
+
 import lombok.*;
 import jakarta.persistence.*;
 import java.util.List;
@@ -17,37 +18,51 @@ public class DiagnosticoTratamiento {
     @Column(name = "id_diag_trat")
     private Long idDiagTrat;
 
-    @ManyToOne
-    @JoinColumn(name = "id_diagnostico", nullable = false)
-    private Diagnostico diagnostico;
-
+    @OneToOne
+    @JoinColumn(name = "id_evolucion_clinica", nullable = false)
+    private EvolucionClinica evolucionClinica;
     @ManyToOne
     @JoinColumn(name = "id_tratamiento", nullable = false)
     private Tratamiento tratamiento;
 
-    @Column(name = "observaciones")
+    @Column(name = "cantidad_planeada")
+    private Integer cantidadPlaneada;
+    
+    @Column(name = "cantidad_realizada")
+    private Integer cantidadRealizada;
+    
+    @Column(name = "cantidad_pendiente")
+    private Integer cantidadPendiente;
+
+    @Column(name = "observaciones", length = 500)
     private String observaciones;
 
-    @Column(name="diente_afectado", length=50)
-    private String dienteAfectado;  
+    @Column(name = "estado", length = 50)
+    private String estado;  // PENDIENTE, EN_PROCESO, COMPLETADO, CANCELADO
 
-    @Column(name = "usu_reg_diaTra")
+    @Column(name = "usu_reg_dia_tra")
     private Integer usuRegDiaTra;
 
-    @Column(name = "usu_mod_diaTra")
+    @Column(name = "usu_mod_dia_tra")
     private Integer usuModDiaTra;
 
     @CreationTimestamp
-    @Column(name = "fech_reg_diaTra", updatable = false)
+    @Column(name = "fech_reg_dia_tra", updatable = false)
     private LocalDateTime fechRegDiaTra;
 
     @UpdateTimestamp
-    @Column(name = "fech_mod_diaTra")
+    @Column(name = "fech_mod_dia_tra")
     private LocalDateTime fechModDiaTra;
 
-    @OneToMany(mappedBy = "diagnosticoTratamiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Consentimiento> consentimientos = new ArrayList<>();
+    // ✅ Relación con DiagnosticoTratamientoDiente
+    @OneToMany(mappedBy = "diagnosticoTratamiento", cascade = CascadeType.ALL)
+    private List<DiagnosticoTratamientoDiente> dientes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "diagnosticoTratamiento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TratamientoRealizado> tratamientosRealizados = new ArrayList<>();
+    // ✅ Relación con Consentimiento
+    @OneToOne(mappedBy = "diagnosticoTratamiento")
+    private Consentimiento consentimiento;
+
+    // ✅ Relación con SolicitudRadiografia
+    @OneToMany(mappedBy = "diagnosticoTratamiento")
+    private List<SolicitudRadiografia> solicitudesRadiografia = new ArrayList<>();
 }

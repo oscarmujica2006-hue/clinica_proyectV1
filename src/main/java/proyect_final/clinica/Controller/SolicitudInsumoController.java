@@ -38,22 +38,24 @@ public class SolicitudInsumoController {
             dto.put("fechaSolicitud", s.getFechaSolicitud());
             dto.put("estadoSolicitud", s.getEstadoSolicitud());
             
-            // Obtener datos a través de DiagnosticoTratamiento
             DiagnosticoTratamiento diagTrat = s.getDiagnosticoTratamiento();
             if (diagTrat != null) {
-                // Obtener paciente
-                Diagnostico diagnostico = diagTrat.getDiagnostico();
-                if (diagnostico != null && diagnostico.getConsulta() != null && 
-                    diagnostico.getConsulta().getPaciente() != null) {
-                    Paciente paciente = diagnostico.getConsulta().getPaciente();
-                    if (paciente.getPersona() != null) {
-                        dto.put("pacienteNombre", paciente.getPersona().getNombre() + " " + 
-                                                 paciente.getPersona().getApellidoPaterno());
-                        dto.put("pacienteCi", paciente.getCi());
+                // ✅ CORREGIDO: Obtener diagnóstico desde la evolución clínica
+                EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
+                if (evolucion != null) {
+                    Diagnostico diagnostico = evolucion.getDiagnostico();
+                    if (diagnostico != null && diagnostico.getRevision() != null && 
+                        diagnostico.getRevision().getConsulta() != null && 
+                        diagnostico.getRevision().getConsulta().getPaciente() != null) {
+                        Paciente paciente = diagnostico.getRevision().getConsulta().getPaciente();
+                        if (paciente.getPersona() != null) {
+                            dto.put("pacienteNombre", paciente.getPersona().getNombre() + " " + 
+                                                     paciente.getPersona().getApellidoPaterno());
+                            dto.put("pacienteCi", paciente.getCi());
+                        }
                     }
                 }
                 
-                // Obtener tratamiento
                 Tratamiento tratamiento = diagTrat.getTratamiento();
                 if (tratamiento != null) {
                     dto.put("tratamientoNombre", tratamiento.getNombreTratamiento());
@@ -123,31 +125,30 @@ public class SolicitudInsumoController {
         detalle.put("fechaSolicitud", solicitud.getFechaSolicitud());
         detalle.put("estadoSolicitud", solicitud.getEstadoSolicitud());
         
-        // Obtener datos a través de DiagnosticoTratamiento
         DiagnosticoTratamiento diagTrat = solicitud.getDiagnosticoTratamiento();
         if (diagTrat != null) {
-            // Paciente
-            Diagnostico diagnostico = diagTrat.getDiagnostico();
-            if (diagnostico != null && diagnostico.getConsulta() != null && 
-                diagnostico.getConsulta().getPaciente() != null) {
-                Persona p = diagnostico.getConsulta().getPaciente().getPersona();
-                if (p != null) {
-                    detalle.put("pacienteNombre", p.getNombre() + " " + p.getApellidoPaterno());
+            // ✅ CORREGIDO: Obtener diagnóstico desde la evolución clínica
+            EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
+            if (evolucion != null) {
+                Diagnostico diagnostico = evolucion.getDiagnostico();
+                if (diagnostico != null && diagnostico.getRevision() != null && 
+                    diagnostico.getRevision().getConsulta() != null && 
+                    diagnostico.getRevision().getConsulta().getPaciente() != null) {
+                    Persona p = diagnostico.getRevision().getConsulta().getPaciente().getPersona();
+                    if (p != null) {
+                        detalle.put("pacienteNombre", p.getNombre() + " " + p.getApellidoPaterno());
+                    }
                 }
             }
             
-            // Tratamiento
             Tratamiento tratamiento = diagTrat.getTratamiento();
             if (tratamiento != null) {
                 detalle.put("tratamientoNombre", tratamiento.getNombreTratamiento());
             }
             
-            // Observaciones
             detalle.put("observaciones", diagTrat.getObservaciones());
-            detalle.put("dienteAfectado", diagTrat.getDienteAfectado());
         }
         
-        // Insumos
         List<SolDetInsumoDTO> insumos = new ArrayList<>();
         if (solicitud.getDetalles() != null) {
             for (SolicitudDetInsumo det : solicitud.getDetalles()) {
@@ -179,14 +180,19 @@ public class SolicitudInsumoController {
             
             DiagnosticoTratamiento diagTrat = s.getDiagnosticoTratamiento();
             if (diagTrat != null) {
-                Diagnostico diagnostico = diagTrat.getDiagnostico();
-                if (diagnostico != null && diagnostico.getConsulta() != null && 
-                    diagnostico.getConsulta().getPaciente() != null) {
-                    Paciente paciente = diagnostico.getConsulta().getPaciente();
-                    if (paciente != null && paciente.getPersona() != null) {
-                        dto.put("pacienteNombre", paciente.getPersona().getNombre() + " " + 
-                                                 paciente.getPersona().getApellidoPaterno());
-                        dto.put("pacienteCi", paciente.getCi());
+                // ✅ CORREGIDO: Obtener diagnóstico desde la evolución clínica
+                EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
+                if (evolucion != null) {
+                    Diagnostico diagnostico = evolucion.getDiagnostico();
+                    if (diagnostico != null && diagnostico.getRevision() != null && 
+                        diagnostico.getRevision().getConsulta() != null && 
+                        diagnostico.getRevision().getConsulta().getPaciente() != null) {
+                        Paciente paciente = diagnostico.getRevision().getConsulta().getPaciente();
+                        if (paciente != null && paciente.getPersona() != null) {
+                            dto.put("pacienteNombre", paciente.getPersona().getNombre() + " " + 
+                                                     paciente.getPersona().getApellidoPaterno());
+                            dto.put("pacienteCi", paciente.getCi());
+                        }
                     }
                 }
                 

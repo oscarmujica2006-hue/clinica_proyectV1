@@ -1,5 +1,6 @@
 package proyect_final.clinica.Service;
 
+import proyect_final.clinica.Model.Dto.ProgresoMateriaDTO;
 // import proyect_final.clinica.Model.Dto.ProgresoMateriaDTO;
 import proyect_final.clinica.Model.Entity.Estudiante;
 import java.util.List;
@@ -26,7 +27,7 @@ public interface EstudianteService {
     
     Optional<Estudiante> buscarPorNombreUsuario(String username);
 
-    // List<ProgresoMateriaDTO> obtenerProgresoPorEstudiante(Long idEstudiante);
-
+    List<ProgresoMateriaDTO> obtenerProgresoPorEstudiante(Long idEstudiante);
+    
     
 }

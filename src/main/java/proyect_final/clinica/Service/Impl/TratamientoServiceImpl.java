@@ -36,9 +36,5 @@ public class TratamientoServiceImpl implements TratamientoService {
     }   
 
 
-    public List<Tratamiento> obtenerPorTipoTratamiento(Long idTipoTratamiento) {
-    return tratamientoRepository.findByTipoTratamientoIdTipoTratamiento(idTipoTratamiento);
 
-
-}
 }

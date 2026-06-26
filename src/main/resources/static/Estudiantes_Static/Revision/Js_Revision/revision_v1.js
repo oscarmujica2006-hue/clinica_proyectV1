@@ -2073,3 +2073,198 @@ document.addEventListener('DOMContentLoaded', async function() {
     generarOdontograma();
     calcularIndices();
 })();
+
+// ============================================================
+// ===== FUNCIONALIDAD SOAP - EVALUACIÓN CLÍNICA =====
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener elementos del SOAP
+    const btnAbrirSoap = document.getElementById('btnAbrirSoap');
+    const seccionSoap = document.getElementById('seccionSoap');
+    const btnCancelarSoap = document.getElementById('btnCancelarSoap');
+    const btnGuardarSoap = document.getElementById('btnGuardarSoap');
+
+    // Verificar que existan los elementos
+    if (!btnAbrirSoap || !seccionSoap) {
+        console.warn('⚠️ Elementos SOAP no encontrados');
+        return;
+    }
+
+    // ===== ABRIR SOAP =====
+    btnAbrirSoap.addEventListener('click', function() {
+        const idDiagnostico = document.getElementById('diagnosticoIdGuardado').textContent;
+        
+        console.log('🔍 ID Diagnóstico obtenido:', idDiagnostico);
+        
+        if (!idDiagnostico || idDiagnostico === '-' || idDiagnostico === 'N/A' || idDiagnostico === '') {
+            Swal.fire({
+                title: '⚠️ Error',
+                text: 'Primero debe guardar el diagnóstico para poder registrar la evolución clínica.',
+                icon: 'warning',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#f59e0b'
+            });
+            return;
+        }
+
+        // Llenar ID del diagnóstico
+        const idInput = document.getElementById('idDiagnosticoSoap');
+        if (idInput) idInput.value = idDiagnostico;
+        
+        // Fecha y hora actual
+        const now = new Date();
+        const fechaInput = document.getElementById('fechaSoap');
+        const horaInput = document.getElementById('horaSoap');
+        if (fechaInput) fechaInput.value = now.toISOString().split('T')[0];
+        if (horaInput) horaInput.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        // Mostrar sección con animación
+        seccionSoap.style.display = 'block';
+        setTimeout(() => {
+            seccionSoap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+        
+        // Guardar en localStorage
+        localStorage.setItem('idDiagnosticoActual', idDiagnostico);
+        sessionStorage.setItem('idDiagnosticoActual', idDiagnostico);
+    });
+
+    // ===== CERRAR SOAP =====
+    function cerrarSoap() {
+        seccionSoap.style.display = 'none';
+        // Limpiar campos
+        const campos = ['subjetivoSoap', 'objetivoSoap', 'analisisSoap', 'planAccionSoap', 
+                       'presionSoap', 'frecuenciaCardiacaSoap', 'frecuenciaRespiratoriaSoap', 
+                       'temperaturaSoap', 'pesoSoap'];
+        campos.forEach(id => {
+            const elem = document.getElementById(id);
+            if (elem) elem.value = '';
+        });
+    }
+
+    if (btnCancelarSoap) {
+        btnCancelarSoap.addEventListener('click', cerrarSoap);
+    }
+
+    // ===== GUARDAR SOAP =====
+    if (btnGuardarSoap) {
+        btnGuardarSoap.addEventListener('click', async function() {
+            const idDiagnostico = document.getElementById('idDiagnosticoSoap').value;
+            
+            if (!idDiagnostico || idDiagnostico === '-' || idDiagnostico === 'N/A') {
+                mostrarAlerta('No hay diagnóstico seleccionado', 'error');
+                return;
+            }
+
+            // Validar campos obligatorios
+            const campos = [
+                { id: 'subjetivoSoap', nombre: 'Subjetivo' },
+                { id: 'objetivoSoap', nombre: 'Objetivo' },
+                { id: 'analisisSoap', nombre: 'Análisis' },
+                { id: 'planAccionSoap', nombre: 'Plan de Acción' }
+            ];
+
+            for (const campo of campos) {
+                const elem = document.getElementById(campo.id);
+                if (!elem || !elem.value.trim()) {
+                    mostrarAlerta(`El campo "${campo.nombre}" es obligatorio`, 'error');
+                    elem?.focus();
+                    return;
+                }
+            }
+
+            // Validar números
+            const numFields = [
+                { id: 'frecuenciaCardiacaSoap', nombre: 'Frecuencia Cardíaca' },
+                { id: 'frecuenciaRespiratoriaSoap', nombre: 'Frecuencia Respiratoria' },
+                { id: 'temperaturaSoap', nombre: 'Temperatura' },
+                { id: 'pesoSoap', nombre: 'Peso' }
+            ];
+
+            for (const field of numFields) {
+                const elem = document.getElementById(field.id);
+                if (elem && elem.value && isNaN(elem.value)) {
+                    mostrarAlerta(`"${field.nombre}" debe ser un número válido`, 'error');
+                    elem.focus();
+                    return;
+                }
+            }
+
+            const evoData = {
+                idDiagnostico: parseInt(idDiagnostico),
+                fechaHora: document.getElementById('fechaSoap').value + 'T' + document.getElementById('horaSoap').value + ':00',
+                tipoRegistro: document.getElementById('tipoRegistroSoap').value,
+                subjetivo: document.getElementById('subjetivoSoap').value.trim(),
+                objetivo: document.getElementById('objetivoSoap').value.trim(),
+                analisis: document.getElementById('analisisSoap').value.trim(),
+                planAccion: document.getElementById('planAccionSoap').value.trim(),
+                presionArterial: document.getElementById('presionSoap').value.trim(),
+                frecuenciaCardiaca: document.getElementById('frecuenciaCardiacaSoap').value || null,
+                frecuenciaRespiratoria: document.getElementById('frecuenciaRespiratoriaSoap').value || null,
+                temperatura: document.getElementById('temperaturaSoap').value || null,
+                peso: document.getElementById('pesoSoap').value || null
+            };
+
+            const btnGuardar = btnGuardarSoap;
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                const response = await fetch('/api/evolucion-clinica/guardar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(evoData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
+                const resultado = await response.json();
+                console.log('✅ Respuesta:', resultado);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Evolución Guardada',
+                    text: `ID: ${resultado.idEvolucionClinica}`,
+                    confirmButtonColor: '#9C27B0',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                // Cerrar sección después de guardar
+                setTimeout(() => {
+                    cerrarSoap();
+                }, 1500);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                mostrarAlerta('Error al guardar: ' + error.message, 'error');
+            } finally {
+                btnGuardar.disabled = false;
+                btnGuardar.innerHTML = '<i class="fas fa-save"></i> GUARDAR EVOLUCIÓN';
+            }
+        });
+    }
+
+    // Función mostrarAlerta (si no existe)
+    if (typeof mostrarAlerta === 'undefined') {
+        window.mostrarAlerta = function(mensaje, tipo) {
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${tipo}`;
+            const iconos = { success: '✅ ', error: '❌ ', info: 'ℹ️ ', warning: '⚠️ ' };
+            toast.innerHTML = `${iconos[tipo] || ''}${mensaje}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOutUp 0.3s ease-out';
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 300);
+            }, 4000);
+        };
+    }
+});
+
+console.log('✅ Funcionalidad SOAP cargada correctamente');

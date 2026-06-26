@@ -6,8 +6,8 @@
     <title>Historia Clínica Odontológica U.A.P.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-                /* ... TODOS TUS ESTILOS EXISTENTES ... */
-                /* ESTILOS GENERALES RENOVADOS */
+        /* ... TODOS TUS ESTILOS EXISTENTES ... */
+        /* ESTILOS GENERALES RENOVADOS */
         * {
             margin: 0;
             padding: 0;
@@ -455,266 +455,192 @@
             box-shadow: none !important;
         }
 
-        .message-container {
-            padding: 20px;
-            background: white;
-            border-bottom: 1px solid var(--border);
+        /* BOTÓN EVALUACIÓN CLÍNICA - MORADO */
+        .btn-evaluacion {
+            background: linear-gradient(135deg, #9C27B0, #6A1B9A) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 10px !important;
+            padding: 14px 35px !important;
+            font-size: 1.1rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4) !important;
+            width: 100% !important;
+            max-width: 400px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+        }
+        .btn-evaluacion:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.5) !important;
+        }
+        .btn-evaluacion:active {
+            transform: scale(0.97) !important;
         }
 
-        .message {
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 0;
+        /* MODAL SOAP - FONDO OSCURO */
+        .modal-overlay {
             display: none;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            animation: fadeIn 0.3s ease-out;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .success {
-            background-color: #D1FAE5;
-            color: #065F46;
-            border: 1px solid #A7F3D0;
-        }
-
-        .error {
-            background-color: #FEE2E2;
-            color: #991B1B;
-            border: 1px solid #FECACA;
-        }
-
-        .loading {
-            display: none;
-            padding: 20px;
-            text-align: center;
-            color: var(--text-light);
-            font-size: 1.1rem;
-            background: white;
-            margin: 0;
-        }
-
-        .loading i {
-            margin-right: 10px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 12px;
-            padding-right: 40px;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-            font-family: inherit;
-        }
-
-        .field-instruction {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 5px;
-            font-style: italic;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .field-instruction i {
-            color: var(--warning);
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .main-title {
-                font-size: 1.5rem;
-            }
-            
-            .main-title i {
-                font-size: 1.6rem;
-                margin-right: 10px;
-            }
-            
-            .header-subtitle {
-                font-size: 0.9rem;
-            }
-            
-            .search-section, .form-section {
-                padding: 20px 15px;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-            }
-            
-            .section-title i {
-                font-size: 1.3rem;
-            }
-            
-            .form-row {
-                gap: 15px;
-            }
-            
-            .btn {
-                padding: 12px 20px;
-                min-width: 100%;
-            }
-            
-            .patient-info-header {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-        }
-
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #DC2626, #B91C1C);
-            color: white;
-            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        .modal-overlay.active {
+            display: flex;
         }
 
-        .btn-danger:active {
-            transform: scale(0.96);
-            background: linear-gradient(135deg, #B91C1C, #991B1B);
-            box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+        /* MODAL SOAP - CONTENIDO */
+        .modal-soap {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
         }
 
-        @media (hover: hover) {
-            .btn-danger:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
 
-        @media (min-width: 768px) {
-            .button-group {
-                flex-direction: row;
-                justify-content: center;
-            }
-            
-            .btn {
-                width: auto;
-                min-width: 200px;
-            }
+        .modal-soap .section-title {
+            color: #6A1B9A !important;
+            border-bottom-color: #9C27B0 !important;
         }
-/* Estilo especial para Otros y Ninguno en la misma línea */
-.otros-ninguno-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-    align-items: flex-end;
-}
+        .modal-soap .section-title i {
+            color: #9C27B0 !important;
+        }
 
-.otros-ninguno-row .form-group {
-    flex: 1;
-    min-width: 0;
-}
+        .modal-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0 10px;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
 
-.otros-ninguno-row .form-group:first-child {
-    flex: 2;
-    min-width: 120px;
-}
+        /* SOAP GRID */
+        .soap-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .soap-grid .full-width {
+            grid-column: 1 / -1;
+        }
 
-.otros-ninguno-row .form-group:last-child {
-    flex: 1;
-    min-width: 90px;
-}
-
-/* Reducir el padding del input de Otros */
-.otros-ninguno-row .form-group:first-child input {
-    padding: 12px 12px;
-    font-size: 0.95rem;
-}
-
-/* Ajustar el checkbox de Ninguno */
-.otros-ninguno-row .form-group:last-child div {
-    min-height: 42px;
-    gap: 8px;
-}
-
-.otros-ninguno-row .form-group:last-child input[type="checkbox"] {
-    width: 20px !important;
-    height: 20px !important;
-}
-
-        /* En móvil, mantenerlos en la misma línea */
         @media (max-width: 768px) {
-            .otros-ninguno-row {
-                flex-wrap: nowrap; 
+            .soap-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .otros-ninguno-row .form-group:first-child {
-                flex: 2;
-                min-width: 0;
+            .soap-grid .full-width {
+                grid-column: 1;
             }
-            
-            .otros-ninguno-row .form-group:last-child {
-                flex: 1;
-                min-width: 0;
+            .modal-soap {
+                padding: 20px 15px;
+                max-height: 95vh;
             }
-            
-            .otros-ninguno-row .form-group:first-child input {
-                padding: 10px 8px;
-                font-size: 0.85rem;
-            }
-            
-            .otros-ninguno-row .form-group label {
-                font-size: 0.8rem;
-            }
-            
-            .otros-ninguno-row .form-group label i {
-                font-size: 0.8rem;
-            }
-            
-            .otros-ninguno-row .form-group:last-child div {
-                min-height: 38px;
-                gap: 5px;
-            }
-            
-            .otros-ninguno-row .form-group:last-child input[type="checkbox"] {
-                width: 18px !important;
-                height: 18px !important;
+            .modal-overlay {
+                padding: 10px;
             }
         }
 
-        /* Para pantallas muy pequeñas (menos de 400px) */
-        @media (max-width: 400px) {
-            .otros-ninguno-row {
-                gap: 8px;
-            }
-            
-            .otros-ninguno-row .form-group:first-child input {
-                padding: 8px 6px;
-                font-size: 0.8rem;
-            }
-            
-            .otros-ninguno-row .form-group label {
-                font-size: 0.75rem;
-            }
-        }        
+        /* BOTONES SOAP */
+        .btn-soap-guardar {
+            background: linear-gradient(135deg, #9C27B0, #6A1B9A) !important;
+            color: white !important;
+        }
+        .btn-soap-cancelar {
+            background: #9E9E9E !important;
+            color: white !important;
+        }
+        .btn-soap-guardar:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4) !important;
+        }
+        .btn-soap-cancelar:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+        }
+
+        .form-row-horizontal {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .form-row-horizontal .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* TOAST NOTIFICATIONS */
+        .toast-notification {
+            position: fixed;
+            top: 70px;
+            left: 16px;
+            right: 16px;
+            z-index: 99999;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            animation: slideInDown 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        @keyframes slideInDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slideOutUp {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-100%); opacity: 0; }
+        }
+        .toast-success { background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; border-left: 4px solid #FFD700; }
+        .toast-error { background: linear-gradient(135deg, #f44336, #c62828); color: white; border-left: 4px solid #FFD700; }
+        .toast-info { background: linear-gradient(135deg, #2196F3, #1565C0); color: white; border-left: 4px solid #FFD700; }
+        .toast-warning { background: linear-gradient(135deg, #FF9800, #E65100); color: white; border-left: 4px solid #FFD700; }
+
         /* ESTILOS PARA EL ODONTOGRAMA */
         .odontograma-section {
             background: var(--light-bg);
@@ -843,7 +769,6 @@
             border-radius: 5px;
         }
 
-        /* Estilos para las áreas según diagnóstico */
         .center.sano, .left.sano, .right.sano, .top.sano, .bottom.sano {
             fill: #d4edda !important;
         }
@@ -1096,6 +1021,8 @@
                 padding: 5px 10px;
                 font-size: 10px;
             }
+        }
+
         .confirmation-box {
             background-color: #f0fdf4;
             border: 2px solid #10b981;
@@ -1124,8 +1051,263 @@
             color: #64748b;
             font-size: 14px;
         }
+
+        .message-container {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
         }
-        
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 0;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease-out;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .success {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+        }
+
+        .error {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FECACA;
+        }
+
+        .loading {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            background: white;
+            margin: 0;
+        }
+
+        .loading i {
+            margin-right: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2364748B' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .field-instruction {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 5px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .field-instruction i {
+            color: var(--warning);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 1.5rem;
+            }
+            
+            .main-title i {
+                font-size: 1.6rem;
+                margin-right: 10px;
+            }
+            
+            .header-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .search-section, .form-section {
+                padding: 20px 15px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .section-title i {
+                font-size: 1.3rem;
+            }
+            
+            .form-row {
+                gap: 15px;
+            }
+            
+            .btn {
+                padding: 12px 20px;
+                min-width: 100%;
+            }
+            
+            .patient-info-header {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #DC2626, #B91C1C);
+            color: white;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:active {
+            transform: scale(0.96);
+            background: linear-gradient(135deg, #B91C1C, #991B1B);
+            box-shadow: 0 1px 4px rgba(220, 38, 38, 0.4);
+        }
+
+        @media (hover: hover) {
+            .btn-danger:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .btn {
+                width: auto;
+                min-width: 200px;
+            }
+        }
+
+        .otros-ninguno-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+
+        .otros-ninguno-row .form-group {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .otros-ninguno-row .form-group:first-child {
+            flex: 2;
+            min-width: 120px;
+        }
+
+        .otros-ninguno-row .form-group:last-child {
+            flex: 1;
+            min-width: 90px;
+        }
+
+        .otros-ninguno-row .form-group:first-child input {
+            padding: 12px 12px;
+            font-size: 0.95rem;
+        }
+
+        .otros-ninguno-row .form-group:last-child div {
+            min-height: 42px;
+            gap: 8px;
+        }
+
+        .otros-ninguno-row .form-group:last-child input[type="checkbox"] {
+            width: 20px !important;
+            height: 20px !important;
+        }
+
+        @media (max-width: 768px) {
+            .otros-ninguno-row {
+                flex-wrap: nowrap; 
+            }
+            
+            .otros-ninguno-row .form-group:first-child {
+                flex: 2;
+                min-width: 0;
+            }
+            
+            .otros-ninguno-row .form-group:last-child {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .otros-ninguno-row .form-group:first-child input {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            
+            .otros-ninguno-row .form-group label {
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group label i {
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group:last-child div {
+                min-height: 38px;
+                gap: 5px;
+            }
+            
+            .otros-ninguno-row .form-group:last-child input[type="checkbox"] {
+                width: 18px !important;
+                height: 18px !important;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .otros-ninguno-row {
+                gap: 8px;
+            }
+            
+            .otros-ninguno-row .form-group:first-child input {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .otros-ninguno-row .form-group label {
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1770,6 +1952,123 @@
             </div>
         </div>
 
+        <!-- ===== BOTÓN PARA ABRIR EVALUACIÓN CLÍNICA ===== -->
+        <div class="form-section" style="text-align: center; border-left: 4px solid #9C27B0;">
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                <button type="button" class="btn-evaluacion" id="btnAbrirSoap">
+                    <i class="fas fa-file-medical-alt"></i> REGISTRAR EVALUACIÓN CLÍNICA (SOAP)
+                </button>
+                <p style="font-size: 0.8rem; color: #64748b;">
+                    <i class="fas fa-arrow-right"></i> Complete la evolución del paciente
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== MODAL SOAP ===== -->
+        <div class="modal-overlay" id="modalSoap">
+            <div class="modal-soap">
+                <button class="modal-close" id="btnCerrarModal">&times;</button>
+                
+                <h2 class="section-title">
+                    <i class="fas fa-file-medical-alt"></i> EVALUACIÓN CLÍNICA (SOAP)
+                </h2>
+                
+                <!-- Información del diagnóstico -->
+                <div class="form-row-horizontal">
+                    <div class="form-group">
+                        <label><i class="fas fa-id-tag"></i> ID Diagnóstico:</label>
+                        <input type="text" id="idDiagnosticoSoap" readonly style="background-color: #f3e5f5; border-color: #ce93d8;">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-check"></i> Fecha <span style="color: #f44336;">*</span></label>
+                        <input type="date" id="fechaSoap">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Hora <span style="color: #f44336;">*</span></label>
+                        <input type="time" id="horaSoap">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Tipo de Registro:</label>
+                        <select id="tipoRegistroSoap" style="border-color: #ce93d8;">
+                            <option value="INICIAL">INICIAL</option>
+                            <option value="CONTROL" selected>CONTROL</option>
+                            <option value="FINAL">FINAL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- SOAP Grid -->
+                <div class="soap-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-user-md"></i> S - Subjetivo <span style="color: #f44336;">*</span></label>
+                        <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">
+                            <i class="fas fa-info-circle"></i> Síntomas que refiere el paciente
+                        </p>
+                        <textarea id="subjetivoSoap" rows="3" placeholder="Ej: Dolor al masticar en el lado derecho..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-stethoscope"></i> O - Objetivo <span style="color: #f44336;">*</span></label>
+                        <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">
+                            <i class="fas fa-info-circle"></i> Hallazgos clínicos observados
+                        </p>
+                        <textarea id="objetivoSoap" rows="3" placeholder="Ej: Se observa caries en diente 27..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-brain"></i> A - Análisis <span style="color: #f44336;">*</span></label>
+                        <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">
+                            <i class="fas fa-info-circle"></i> Interpretación de los hallazgos
+                        </p>
+                        <textarea id="analisisSoap" rows="3" placeholder="Ej: Paciente requiere obturación..." style="min-height: 80px;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tasks"></i> P - Plan de Acción <span style="color: #f44336;">*</span></label>
+                        <p style="font-size: 0.8rem; color: #666; margin-bottom: 5px;">
+                            <i class="fas fa-info-circle"></i> Plan a seguir para el paciente
+                        </p>
+                        <textarea id="planAccionSoap" rows="3" placeholder="Ej: Programar obturación para la próxima sesión..." style="min-height: 80px;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Signos Vitales -->
+                <div class="form-row-horizontal">
+                    <div class="form-group">
+                        <label><i class="fas fa-heart"></i> Presión Arterial</label>
+                        <input type="text" id="presionSoap" placeholder="Ej: 120/80">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-heartbeat"></i> Frecuencia Cardíaca</label>
+                        <input type="number" id="frecuenciaCardiacaSoap" placeholder="lpm">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lungs"></i> Frecuencia Respiratoria</label>
+                        <input type="number" id="frecuenciaRespiratoriaSoap" placeholder="rpm">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-thermometer-half"></i> Temperatura</label>
+                        <input type="number" step="0.1" id="temperaturaSoap" placeholder="°C">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-weight"></i> Peso</label>
+                        <input type="number" step="0.1" id="pesoSoap" placeholder="kg">
+                    </div>
+                </div>
+
+                <!-- Botones SOAP -->
+                <div class="form-row">
+                    <div class="form-group" style="text-align: center;">
+                        <div class="button-group" style="flex-direction: row; justify-content: center;">
+                            <button type="button" class="btn btn-soap-guardar" id="btnGuardarSoap" style="padding: 14px 35px;">
+                                <i class="fas fa-save"></i> GUARDAR EVOLUCIÓN
+                            </button>
+                            <button type="button" class="btn btn-soap-cancelar" id="btnCancelarSoap" style="padding: 14px 35px;">
+                                <i class="fas fa-times"></i> CANCELAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== SECCIÓN PARA SUBIR FOTOS DESPUÉS DE GUARDAR ===== -->
         <div class="form-section" id="seccionFotos" style="display: none;">
             <h2 class="section-title"><i class="fas fa-images"></i> SUBIR FOTOS DEL ODONTOGRAMA</h2>
@@ -1807,5 +2106,205 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script th:src="@{/Estudiantes_Static/Revision/Js_Revision/revision_v1.js}"></script>
+    <script>
+        // ============================================================
+        // ===== FUNCIONALIDAD SOAP - MODAL =====
+        // ============================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del modal
+            const modal = document.getElementById('modalSoap');
+            const btnAbrir = document.getElementById('btnAbrirSoap');
+            const btnCerrar = document.getElementById('btnCerrarModal');
+            const btnCancelar = document.getElementById('btnCancelarSoap');
+            const btnGuardar = document.getElementById('btnGuardarSoap');
+
+            // Verificar elementos
+            if (!modal || !btnAbrir) {
+                console.warn('⚠️ Elementos SOAP no encontrados');
+                return;
+            }
+
+            // ===== ABRIR MODAL =====
+            btnAbrir.addEventListener('click', function() {
+                const idDiagnostico = document.getElementById('diagnosticoIdGuardado').textContent;
+                
+                if (!idDiagnostico || idDiagnostico === '-' || idDiagnostico === 'N/A' || idDiagnostico === '') {
+                    Swal.fire({
+                        title: '⚠️ Error',
+                        text: 'Primero debe guardar el diagnóstico para poder registrar la evolución clínica.',
+                        icon: 'warning',
+                        confirmButtonText: 'Aceptar',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
+
+                // Llenar ID
+                document.getElementById('idDiagnosticoSoap').value = idDiagnostico;
+                
+                // Fecha y hora actual
+                const now = new Date();
+                document.getElementById('fechaSoap').value = now.toISOString().split('T')[0];
+                document.getElementById('horaSoap').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                // Mostrar modal
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Guardar en localStorage
+                localStorage.setItem('idDiagnosticoActual', idDiagnostico);
+                sessionStorage.setItem('idDiagnosticoActual', idDiagnostico);
+            });
+
+            // ===== CERRAR MODAL =====
+            function cerrarModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+                // Limpiar campos
+                const campos = ['subjetivoSoap', 'objetivoSoap', 'analisisSoap', 'planAccionSoap', 
+                               'presionSoap', 'frecuenciaCardiacaSoap', 'frecuenciaRespiratoriaSoap', 
+                               'temperaturaSoap', 'pesoSoap'];
+                campos.forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) elem.value = '';
+                });
+            }
+
+            if (btnCerrar) btnCerrar.addEventListener('click', cerrarModal);
+            if (btnCancelar) btnCancelar.addEventListener('click', cerrarModal);
+
+            // Cerrar al hacer clic fuera
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) cerrarModal();
+            });
+
+            // Cerrar con ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    cerrarModal();
+                }
+            });
+
+            // ===== GUARDAR SOAP =====
+            if (btnGuardar) {
+                btnGuardar.addEventListener('click', async function() {
+                    const idDiagnostico = document.getElementById('idDiagnosticoSoap').value;
+                    
+                    if (!idDiagnostico || idDiagnostico === '-' || idDiagnostico === 'N/A') {
+                        mostrarAlerta('No hay diagnóstico seleccionado', 'error');
+                        return;
+                    }
+
+                    // Validar campos obligatorios
+                    const campos = [
+                        { id: 'subjetivoSoap', nombre: 'Subjetivo' },
+                        { id: 'objetivoSoap', nombre: 'Objetivo' },
+                        { id: 'analisisSoap', nombre: 'Análisis' },
+                        { id: 'planAccionSoap', nombre: 'Plan de Acción' }
+                    ];
+
+                    for (const campo of campos) {
+                        const elem = document.getElementById(campo.id);
+                        if (!elem || !elem.value.trim()) {
+                            mostrarAlerta(`El campo "${campo.nombre}" es obligatorio`, 'error');
+                            elem?.focus();
+                            return;
+                        }
+                    }
+
+                    // Validar números
+                    const numFields = [
+                        { id: 'frecuenciaCardiacaSoap', nombre: 'Frecuencia Cardíaca' },
+                        { id: 'frecuenciaRespiratoriaSoap', nombre: 'Frecuencia Respiratoria' },
+                        { id: 'temperaturaSoap', nombre: 'Temperatura' },
+                        { id: 'pesoSoap', nombre: 'Peso' }
+                    ];
+
+                    for (const field of numFields) {
+                        const elem = document.getElementById(field.id);
+                        if (elem && elem.value && isNaN(elem.value)) {
+                            mostrarAlerta(`"${field.nombre}" debe ser un número válido`, 'error');
+                            elem.focus();
+                            return;
+                        }
+                    }
+
+                    const evoData = {
+                        idDiagnostico: parseInt(idDiagnostico),
+                        fechaHora: document.getElementById('fechaSoap').value + 'T' + document.getElementById('horaSoap').value + ':00',
+                        tipoRegistro: document.getElementById('tipoRegistroSoap').value,
+                        subjetivo: document.getElementById('subjetivoSoap').value.trim(),
+                        objetivo: document.getElementById('objetivoSoap').value.trim(),
+                        analisis: document.getElementById('analisisSoap').value.trim(),
+                        planAccion: document.getElementById('planAccionSoap').value.trim(),
+                        presionArterial: document.getElementById('presionSoap').value.trim(),
+                        frecuenciaCardiaca: document.getElementById('frecuenciaCardiacaSoap').value || null,
+                        frecuenciaRespiratoria: document.getElementById('frecuenciaRespiratoriaSoap').value || null,
+                        temperatura: document.getElementById('temperaturaSoap').value || null,
+                        peso: document.getElementById('pesoSoap').value || null
+                    };
+
+                    const btnGuardarSoap = btnGuardar;
+                    btnGuardarSoap.disabled = true;
+                    btnGuardarSoap.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+                    try {
+                        const response = await fetch('/api/evolucion-clinica/guardar', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(evoData)
+                        });
+
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            throw new Error(`Error ${response.status}: ${errorText}`);
+                        }
+
+                        const resultado = await response.json();
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: '✅ Evolución Guardada',
+                            text: `ID: ${resultado.idEvolucionClinica}`,
+                            confirmButtonColor: '#9C27B0',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+
+                        setTimeout(() => {
+                            cerrarModal();
+                        }, 1500);
+
+                    } catch (error) {
+                        console.error('❌ Error:', error);
+                        mostrarAlerta('Error al guardar: ' + error.message, 'error');
+                    } finally {
+                        btnGuardarSoap.disabled = false;
+                        btnGuardarSoap.innerHTML = '<i class="fas fa-save"></i> GUARDAR EVOLUCIÓN';
+                    }
+                });
+            }
+
+            // Función mostrarAlerta (si no existe)
+            if (typeof mostrarAlerta === 'undefined') {
+                window.mostrarAlerta = function(mensaje, tipo) {
+                    const toast = document.createElement('div');
+                    toast.className = `toast-notification toast-${tipo}`;
+                    const iconos = { success: '✅ ', error: '❌ ', info: 'ℹ️ ', warning: '⚠️ ' };
+                    toast.innerHTML = `${iconos[tipo] || ''}${mensaje}`;
+                    document.body.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.animation = 'slideOutUp 0.3s ease-out';
+                        setTimeout(() => {
+                            if (toast.parentNode) toast.parentNode.removeChild(toast);
+                        }, 300);
+                    }, 4000);
+                };
+            }
+        });
+
+        console.log('✅ Funcionalidad SOAP cargada correctamente');
+    </script>
 </body>
 </html>

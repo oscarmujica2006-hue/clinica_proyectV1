@@ -18,9 +18,6 @@ public class Tratamiento {
     @Column(name = "id_tratamiento")
     private Long idTratamiento;
 
-    @OneToOne
-    @JoinColumn(name = "id_tipo_tratamiento", nullable = false)
-    private TipoTratamiento tipoTratamiento;
 
     @Column(name = "nombre_tratamiento", nullable = false, length = 100)
     private String nombreTratamiento;

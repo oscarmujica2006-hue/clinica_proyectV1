@@ -127,6 +127,22 @@
             gap: 0.25rem;
         }
 
+        .badge-cupos {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 600;
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            font-size: 0.65rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .badge-cupos-bajo {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .badge-cupos-critico {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
         /* Botones con feedback táctil */
         button {
             cursor: pointer;
@@ -150,6 +166,20 @@
         .materia-card:active {
             border-color: #3b82f6;
             box-shadow: 0 4px 12px -4px rgba(59, 130, 246, 0.2);
+        }
+
+        .cupo-card {
+            border: 1px solid rgba(203, 213, 225, 0.5);
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .cupo-card-bajo {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        
+        .cupo-card-critico {
+            background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
         }
 
         /* Tabla responsive para móvil */
@@ -179,7 +209,7 @@
 
         /* Input mejorado para móvil */
         input[type="number"] {
-            font-size: 16px; /* Previene zoom automático en iOS */
+            font-size: 16px;
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 0.5rem 0.75rem;
@@ -314,6 +344,23 @@
             </div>
         </div>
 
+        <!-- ===== SECCIÓN DE CUPOS DISPONIBLES ===== -->
+        <div class="bg-white rounded-2xl shadow-custom p-4 mb-4">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-ticket-alt text-green-500"></i> Cupos Disponibles
+                </h2>
+                <span class="text-xs text-gray-500" id="cuposLastUpdate">
+                    <i class="far fa-clock"></i> --
+                </span>
+            </div>
+            <div id="cuposContainer" class="space-y-2">
+                <div class="text-center py-4 text-gray-500 text-sm">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando cupos...
+                </div>
+            </div>
+        </div>
+
         <!-- Contenedor de datos del estudiante -->
         <div id="studentDashboard" class="bg-white rounded-2xl shadow-custom p-4">
             <div class="flex justify-between items-center flex-wrap gap-2 mb-4">
@@ -343,12 +390,85 @@
 
     <script>
         // Configuración de la API
-        const API_BASE_URL = ''; // Si está en el mismo origen, vacío; si no, ej: 'http://localhost:8080'
+        const API_BASE_URL = '';
 
         let currentStudentId = null;
         let isRefreshing = false;
 
-        // Función para obtener el progreso desde el backend
+        // ========== CARGAR CUPOS DISPONIBLES ==========
+        async function cargarCupos() {
+            const container = document.getElementById('cuposContainer');
+            if (!container) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/cupos/todos-con-detalles`);
+                if (!response.ok) {
+                    throw new Error('Error al cargar cupos');
+                }
+                
+                const cupos = await response.json();
+                console.log('📦 Cupos cargados:', cupos);
+                
+                if (!cupos || cupos.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-4 text-gray-500 text-sm bg-gray-50 rounded-xl">
+                            <i class="fas fa-info-circle"></i> No hay cupos disponibles
+                        </div>`;
+                    document.getElementById('cuposLastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+                    return;
+                }
+                
+                let html = '';
+                for (const c of cupos) {
+                    const cuposDisp = c.cuposDisponibles || 0;
+                    let badgeClass = 'badge-cupos';
+                    let cardClass = 'cupo-card';
+                    
+                    if (cuposDisp <= 0) {
+                        badgeClass += ' badge-cupos-critico';
+                        cardClass += ' cupo-card-critico';
+                    } else if (cuposDisp <= 3) {
+                        badgeClass += ' badge-cupos-bajo';
+                        cardClass += ' cupo-card-bajo';
+                    }
+                    
+                    const iconoCupo = cuposDisp > 0 ? 'fa-ticket' : 'fa-times-circle';
+                    const textoCupo = cuposDisp > 0 ? `${cuposDisp} cupos` : 'Sin cupos';
+                    
+                    html += `
+                        <div class="flex items-center justify-between p-3 rounded-xl ${cardClass} border border-gray-100">
+                            <div class="flex-1 min-w-0">
+                                <div class="font-semibold text-sm text-gray-800 truncate">
+                                    <i class="fas fa-tooth text-xs text-blue-500"></i> ${escapeHtml(c.tratamientoNombre || 'Sin nombre')}
+                                </div>
+                                <div class="text-xs text-gray-500 truncate">
+                                    <i class="fas fa-graduation-cap"></i> ${escapeHtml(c.materiaNombre || 'Sin materia')}
+                                    <span class="mx-1">·</span>
+                                    <i class="fas fa-tag"></i> ${c.tratamientoPrecio ? '$' + Number(c.tratamientoPrecio).toFixed(0) : 'N/A'}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold ${cuposDisp > 0 ? 'text-green-600' : 'text-red-600'}">
+                                    <i class="fas ${iconoCupo}"></i> ${cuposDisp}
+                                </span>
+                                <span class="${badgeClass} text-xs">${textoCupo}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                container.innerHTML = html;
+                document.getElementById('cuposLastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+                
+            } catch (error) {
+                console.error('❌ Error cargando cupos:', error);
+                container.innerHTML = `
+                    <div class="text-center py-4 text-red-500 text-sm bg-red-50 rounded-xl">
+                        <i class="fas fa-exclamation-triangle"></i> Error al cargar cupos: ${error.message}
+                    </div>`;
+            }
+        }
+
+        // ========== FUNCIONES DE PROGRESO ==========
         async function fetchStudentProgress(studentId) {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}/progreso`);
@@ -366,7 +486,6 @@
             }
         }
 
-        // Función para obtener información adicional del estudiante
         async function fetchStudentInfo(studentId) {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/estudiantes/${studentId}`);
@@ -380,7 +499,6 @@
             }
         }
 
-        // Renderizar el dashboard con los datos (optimizado para móvil)
         function renderDashboard(materiasData, studentInfo) {
             const container = document.getElementById('materiasContainer');
             if (!materiasData || materiasData.length === 0) {
@@ -461,7 +579,6 @@
             }
             container.innerHTML = html;
 
-            // Actualizar datos del estudiante
             if (studentInfo) {
                 document.getElementById('studentCode').innerHTML = `<i class="fas fa-qrcode"></i> Código: <span class="font-mono font-semibold text-gray-800">${studentInfo.codigoEstudiante || '---'}</span>`;
             } else {
@@ -471,7 +588,7 @@
             document.getElementById('lastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
         }
 
-        // Función principal para cargar datos
+        // ========== FUNCIÓN PRINCIPAL PARA CARGAR DATOS ==========
         async function loadData(studentId, showLoading = true) {
             if (!studentId) return;
             if (isRefreshing) return;
@@ -490,12 +607,17 @@
                     }
                 }
                 
+                // Cargar progreso y cupos en paralelo
                 const [progreso, studentInfo] = await Promise.all([
                     fetchStudentProgress(studentId),
                     fetchStudentInfo(studentId)
                 ]);
                 
                 renderDashboard(progreso, studentInfo);
+                
+                // Cargar cupos después de renderizar el progreso
+                await cargarCupos();
+                
             } catch (error) {
                 const container = document.getElementById('materiasContainer');
                 container.innerHTML = `
@@ -512,7 +634,7 @@
             }
         }
 
-        // Pull to refresh
+        // ========== PULL TO REFRESH ==========
         function initPullToRefresh() {
             let startY = 0;
             let isPulling = false;
@@ -540,7 +662,7 @@
             });
         }
 
-        // Eventos
+        // ========== EVENTOS ==========
         document.getElementById('loadStudentBtn')?.addEventListener('click', () => {
             const newId = parseInt(document.getElementById('studentIdInput').value);
             if (isNaN(newId)) {
@@ -552,11 +674,9 @@
             loadData(currentStudentId, true);
         });
 
-        // Botón de actualizar manual
         document.getElementById('refreshBtn').addEventListener('click', () => {
             if (currentStudentId) {
                 const refreshIcon = document.getElementById('refreshIcon');
-                // Añadir animación al icono
                 refreshIcon.classList.add('fa-spin-slow');
                 loadData(currentStudentId, true);
                 setTimeout(() => { 
@@ -567,7 +687,7 @@
             }
         });
 
-        // Inicialización
+        // ========== INICIALIZACIÓN ==========
         const storedId = sessionStorage.getItem('idEstudiante');
         if (storedId && !isNaN(parseInt(storedId))) {
             currentStudentId = parseInt(storedId);
@@ -582,9 +702,10 @@
                     <i class="fas fa-id-card text-5xl mb-3 opacity-40"></i>
                     <p class="text-sm">Ingresa tu ID para ver tu progreso</p>
                 </div>`;
+            cargarCupos(); // Cargar cupos aunque no haya estudiante
         }
 
-        // Escapar HTML
+        // ========== UTILIDADES ==========
         function escapeHtml(str) {
             if (!str) return '';
             return str.replace(/[&<>]/g, function(m) {
@@ -602,6 +723,8 @@
                 e.stopPropagation();
             });
         });
+
+        console.log('✅ Página de progreso cargada correctamente');
     </script>
 </body>
 </html>

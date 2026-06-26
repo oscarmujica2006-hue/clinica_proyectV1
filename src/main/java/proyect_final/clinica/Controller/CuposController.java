@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -147,4 +148,48 @@ public class CuposController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+
+    @GetMapping("/todos-con-detalles")
+    public ResponseEntity<?> obtenerTodosLosCuposConDetalles() {
+        try {
+            List<Cupo> cupos = cupoService.listarTodos();
+            
+            List<Map<String, Object>> response = cupos.stream()
+                .map(c -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("idCupo", c.getIdCupo());
+                    map.put("cuposDisponibles", c.getCuposDisponibles());
+                    
+                    // Datos de la materia
+                    map.put("materiaId", c.getMateria().getId_materia());
+                    map.put("materiaNombre", c.getMateria().getNombreMateria());
+                    map.put("materiaCodigo", c.getMateria().getCodigoMateria());
+                    
+                    // Datos del tratamiento
+                    map.put("tratamientoId", c.getTratamiento().getIdTratamiento());
+                    map.put("tratamientoNombre", c.getTratamiento().getNombreTratamiento());
+                    map.put("tratamientoDescripcion", c.getTratamiento().getDescripcionTratamiento());
+                    map.put("tratamientoPrecio", c.getTratamiento().getPrecioTratamiento());
+                    
+                    return map;
+                })
+                .collect(java.util.stream.Collectors.toList());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "error", "Error al obtener cupos: " + e.getMessage()
+            ));
+        }
+    }
+
+
+
+
+
+
+
+
 }

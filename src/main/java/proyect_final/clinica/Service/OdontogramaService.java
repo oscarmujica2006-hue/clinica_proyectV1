@@ -153,7 +153,7 @@ public class OdontogramaService {
     private void guardarDiagnosticoCompleto(Revision revision, Consulta consulta, Map<String, Object> diagnosticoData) {
         Diagnostico diagnostico = new Diagnostico();
         diagnostico.setRevision(revision);
-        diagnostico.setConsulta(consulta);
+        diagnostico.getRevision().getConsulta();
         
         // ===== CPO-D (Permanentes) =====
         diagnostico.setCpoCariados(getIntValue(diagnosticoData, "cpo_cariados"));

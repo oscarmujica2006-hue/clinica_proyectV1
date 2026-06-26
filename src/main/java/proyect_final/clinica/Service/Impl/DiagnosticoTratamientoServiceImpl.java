@@ -15,8 +15,8 @@ public class DiagnosticoTratamientoServiceImpl implements DiagnosticoTratamiento
     private DiagnosticoTratamientoRepository diagnosticoTratamientoRepository;
 
     @Override
-    public List<DiagnosticoTratamiento> findByDiagnosticoId(Long idDiagnostico) {
-        return diagnosticoTratamientoRepository.findByDiagnostico_IdDiagnostico(idDiagnostico);
+    public List<DiagnosticoTratamiento> findAll() {
+        return diagnosticoTratamientoRepository.findAll();
     }
 
     @Override
@@ -27,5 +27,20 @@ public class DiagnosticoTratamientoServiceImpl implements DiagnosticoTratamiento
     @Override
     public DiagnosticoTratamiento guardar(DiagnosticoTratamiento diagnosticoTratamiento) {
         return diagnosticoTratamientoRepository.save(diagnosticoTratamiento);
+    }
+
+    @Override
+    public void eliminar(Long id) {
+        diagnosticoTratamientoRepository.deleteById(id);
+    }
+
+    @Override
+    public List<DiagnosticoTratamiento> findByEvolucionClinicaId(Long idEvolucionClinica) {
+        return diagnosticoTratamientoRepository.findByEvolucionClinica_IdEvolucionClinica(idEvolucionClinica);
+    }
+
+    @Override
+    public List<DiagnosticoTratamiento> findByTratamientoId(Long idTratamiento) {
+        return diagnosticoTratamientoRepository.findByTratamiento_IdTratamiento(idTratamiento);
     }
 }

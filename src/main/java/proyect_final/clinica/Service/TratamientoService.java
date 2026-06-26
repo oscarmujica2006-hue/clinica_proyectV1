@@ -12,6 +12,5 @@ public interface TratamientoService {
         Tratamiento guardar(Tratamiento tratamiento);
         
         void eliminar(Long id);
-        List<Tratamiento> obtenerPorTipoTratamiento(Long idTipoTratamiento);
 
 }
