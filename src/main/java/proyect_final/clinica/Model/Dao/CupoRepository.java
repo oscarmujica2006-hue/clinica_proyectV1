@@ -45,4 +45,10 @@ public interface CupoRepository extends JpaRepository<Cupo, Long> {
     
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Cupo c WHERE c.tratamiento.idTratamiento = :idTratamiento AND c.materia.id_materia = :idMateria")
     boolean existsCupoByTratamientoIdAndMateriaId(@Param("idTratamiento") Long idTratamiento, @Param("idMateria") Long idMateria);
+
+
+    @Query(value = "SELECT * FROM fn_obtener_progreso_estudiante(:idEstudiante)", nativeQuery = true)
+    List<Object[]> llamarFnProgresoEstudiante(@Param("idEstudiante") Long idEstudiante);
+   
+
 }

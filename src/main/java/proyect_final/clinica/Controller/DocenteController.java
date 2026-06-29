@@ -291,20 +291,19 @@ public class DocenteController {
         }
     }
 
-    // ==================== ✅ APROBAR PROCEDIMIENTO (CON RECIBO) ====================
     @PutMapping("/procedimientos/{idDientePlan}/aprobar")
     public ResponseEntity<?> aprobarProcedimiento(
             @PathVariable Long idDientePlan,
             @RequestParam Long docenteId) {
         try {
-            // 1. Obtener el diente del plan
+            // 1. Obtener el diente
             DiagnosticoTratamientoDiente dientePlan = dientePlanService.obtenerPorId(idDientePlan)
-                .orElseThrow(() -> new RuntimeException("Diente del plan no encontrado"));
+                .orElseThrow(() -> new RuntimeException("Diente no encontrado"));
             
-            // 2. Verificar estado
+            // 2. Validar estado
             if (!"PENDIENTE_APROBACION".equals(dientePlan.getEstado())) {
                 return ResponseEntity.badRequest().body(Map.of(
-                    "error", "El diente no está en estado pendiente de aprobación. Estado actual: " + dientePlan.getEstado()
+                    "error", "El diente no está pendiente de aprobación"
                 ));
             }
             
@@ -312,26 +311,18 @@ public class DocenteController {
             DiagnosticoTratamiento plan = dientePlan.getDiagnosticoTratamiento();
             Long idTratamiento = plan.getTratamiento().getIdTratamiento();
             
-            // 4. Descontar cupo
+            // 4. SOLO VALIDAR que hay cupos (NO descontar)
             Cupo cupo = cupoService.findByTratamientoId(idTratamiento);
-            
-            if (cupo == null) {
+            if (cupo == null || cupo.getCuposDisponibles() <= 0) {
                 return ResponseEntity.badRequest().body(Map.of(
-                    "error", "No hay cupo disponible para este tratamiento"
+                    "error", "No hay cupos disponibles"
                 ));
             }
             
-            if (cupo.getCuposDisponibles() <= 0) {
-                return ResponseEntity.badRequest().body(Map.of(
-                    "error", "No hay cupos disponibles para este tratamiento"
-                ));
-            }
+            // ❌ ELIMINADO: cupo.setCuposDisponibles(cupo.getCuposDisponibles() - 1);
+            // ❌ ELIMINADO: cupoService.guardar(cupo);
             
-            int nuevoCupo = cupo.getCuposDisponibles() - 1;
-            cupo.setCuposDisponibles(nuevoCupo);
-            cupoService.guardar(cupo);
-            
-            // 5. Cambiar estado
+            // 5. Cambiar estado - EL TRIGGER DESCUENTA EL CUPO
             dientePlan.setEstado("APROBADO");
             dientePlanService.guardar(dientePlan);
             
@@ -355,39 +346,22 @@ public class DocenteController {
             
             diagnosticoTratamientoService.guardar(plan);
             
-            // ✅ 7. GENERAR RECIBO POR TRATAMIENTO
-            Double precioTratamiento = plan.getTratamiento().getPrecioTratamiento();
-            Long idEvolucionClinica = plan.getEvolucionClinica().getIdEvolucionClinica();
-            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
-            
-            String concepto = "Tratamiento: " + plan.getTratamiento().getNombreTratamiento() + 
-                             " - Diente " + dientePlan.getDiente();
-            
-            reciboService.generarRecibo(
-                "TRATAMIENTO",
-                idDientePlan,
-                concepto,
-                precioTratamiento != null ? precioTratamiento : 0.0,
-                idEvolucionClinica,
-                idConsentimiento
-            );
+            // 7. Obtener cupos actualizados (después del trigger)
+            Cupo cupoActualizado = cupoService.findByTratamientoId(idTratamiento);
+            int cuposRestantes = cupoActualizado != null ? cupoActualizado.getCuposDisponibles() : 0;
             
             return ResponseEntity.ok(Map.of(
-                "mensaje", "✅ Procedimiento aprobado correctamente y registrado en el recibo",
-                "idDientePlan", idDientePlan,
-                "nuevoEstado", "APROBADO",
-                "cuposRestantes", nuevoCupo,
+                "mensaje", "✅ Procedimiento aprobado - Trigger descontó el cupo",
+                "cuposRestantes", cuposRestantes,
                 "progreso", aprobados + "/" + total
             ));
             
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of(
-                "error", "Error al aprobar: " + e.getMessage()
+                "error", "Error: " + e.getMessage()
             ));
         }
     }
-
     // ==================== RECHAZAR PROCEDIMIENTO ====================
     @PutMapping("/procedimientos/{idDientePlan}/rechazar")
     public ResponseEntity<?> rechazarProcedimiento(
