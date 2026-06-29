@@ -65,6 +65,11 @@ public class EstudianteViewController {
     public String mostrarSoliEquipo() {
         return "estudiantes/soli-equipo/solicitud_equipo-vista";
     }
+     @GetMapping("/soli-radiografia/soli_radiografia-vista")
+    public String mostrarSoliRadiografia() {
+        return "estudiantes/soli-radiografia/soli_radiografia-vista";
+    }
     
+
 
 }

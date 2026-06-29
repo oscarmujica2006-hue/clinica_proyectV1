@@ -33,6 +33,9 @@ public class DocenteController {
     @Autowired
     private DiagnosticoService diagnosticoService;
 
+    @Autowired
+    private ReciboService reciboService;
+
     // ==================== ENDPOINTS EXISTENTES ====================
     
     @GetMapping
@@ -200,20 +203,14 @@ public class DocenteController {
         return ResponseEntity.ok(estadisticas);
     }
 
-    // ==================== NUEVOS ENDPOINTS PARA VALIDACIÓN ====================
-
-    /**
-     * OBTENER PROCEDIMIENTOS PENDIENTES DE APROBACIÓN
-     * GET /api/docentes/procedimientos-pendientes?docenteId=1
-     */
+    // ==================== PROCEDIMIENTOS PENDIENTES ====================
+    
     @GetMapping("/procedimientos-pendientes")
     public ResponseEntity<?> obtenerProcedimientosPendientes(@RequestParam Long docenteId) {
         try {
-            // Obtener el docente para saber su clínica
             Docente docente = docenteService.obtenerPorId(docenteId)
                 .orElseThrow(() -> new RuntimeException("Docente no encontrado"));
             
-            // Obtener la clínica del docente
             Clinica clinica = docente.getClinica();
             if (clinica == null) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -221,16 +218,10 @@ public class DocenteController {
                 ));
             }
             
-            // Buscar todos los dientes en estado "PENDIENTE_APROBACION"
-            // que pertenezcan a la clínica del docente
             List<Map<String, Object>> procedimientosPendientes = new ArrayList<>();
             List<DiagnosticoTratamiento> todosPlanes = diagnosticoTratamientoService.findAll();
             
             for (DiagnosticoTratamiento plan : todosPlanes) {
-                // Verificar que el plan pertenece a la clínica del docente
-                // Asumiendo que el tratamiento tiene una relación con la clínica
-                // o que el diagnóstico está asociado a una consulta con clínica
-                
                 List<DiagnosticoTratamientoDiente> dientes = dientePlanService
                     .findByDiagnosticoTratamientoId(plan.getIdDiagTrat());
                 
@@ -240,10 +231,9 @@ public class DocenteController {
                         map.put("idDientePlan", diente.getIdDiagnosticoTratamientoDiente());
                         map.put("diente", diente.getDiente());
                         map.put("estado", diente.getEstado());
-                        
-                        // Datos del plan
                         map.put("idPlan", plan.getIdDiagTrat());
                         map.put("tratamientoNombre", plan.getTratamiento().getNombreTratamiento());
+                        map.put("precioTratamiento", plan.getTratamiento().getPrecioTratamiento()); // ✅ AGREGAR PRECIO
                         
                         // Obtener paciente
                         EvolucionClinica evolucion = plan.getEvolucionClinica();
@@ -260,7 +250,7 @@ public class DocenteController {
                             }
                         }
                         
-                        // Obtener el detalle de la evolución (procedimiento realizado)
+                        // Obtener el detalle de la evolución
                         List<DetalleEvolucionClinica> detalles = detalleEvolucionService
                             .findByDientePlanId(diente.getIdDiagnosticoTratamientoDiente());
                         
@@ -271,7 +261,6 @@ public class DocenteController {
                             map.put("fechaRegistro", ultimoDetalle.getFechRegDetEvo());
                         }
                         
-                        // Obtener cupos disponibles para este tratamiento
                         int cuposDisponibles = obtenerCuposDisponibles(plan.getTratamiento().getIdTratamiento());
                         map.put("cuposDisponibles", cuposDisponibles);
                         
@@ -280,7 +269,6 @@ public class DocenteController {
                 }
             }
             
-            // Calcular estadísticas
             long totalPendientes = procedimientosPendientes.size();
             long totalAprobados = contarAprobados();
             long totalRechazados = contarRechazados();
@@ -303,10 +291,7 @@ public class DocenteController {
         }
     }
 
-    /**
-     * APROBAR PROCEDIMIENTO - Descuenta del cupo
-     * PUT /api/docentes/procedimientos/{idDientePlan}/aprobar?docenteId=1
-     */
+    // ==================== ✅ APROBAR PROCEDIMIENTO (CON RECIBO) ====================
     @PutMapping("/procedimientos/{idDientePlan}/aprobar")
     public ResponseEntity<?> aprobarProcedimiento(
             @PathVariable Long idDientePlan,
@@ -316,18 +301,18 @@ public class DocenteController {
             DiagnosticoTratamientoDiente dientePlan = dientePlanService.obtenerPorId(idDientePlan)
                 .orElseThrow(() -> new RuntimeException("Diente del plan no encontrado"));
             
-            // 2. Verificar que esté en estado PENDIENTE_APROBACION
+            // 2. Verificar estado
             if (!"PENDIENTE_APROBACION".equals(dientePlan.getEstado())) {
                 return ResponseEntity.badRequest().body(Map.of(
                     "error", "El diente no está en estado pendiente de aprobación. Estado actual: " + dientePlan.getEstado()
                 ));
             }
             
-            // 3. Obtener el plan de tratamiento
+            // 3. Obtener el plan
             DiagnosticoTratamiento plan = dientePlan.getDiagnosticoTratamiento();
             Long idTratamiento = plan.getTratamiento().getIdTratamiento();
             
-            // 4. DESCONTAR DEL CUPO
+            // 4. Descontar cupo
             Cupo cupo = cupoService.findByTratamientoId(idTratamiento);
             
             if (cupo == null) {
@@ -342,16 +327,15 @@ public class DocenteController {
                 ));
             }
             
-            // Descontar el cupo
             int nuevoCupo = cupo.getCuposDisponibles() - 1;
             cupo.setCuposDisponibles(nuevoCupo);
             cupoService.guardar(cupo);
             
-            // 5. Cambiar estado del diente a APROBADO
+            // 5. Cambiar estado
             dientePlan.setEstado("APROBADO");
             dientePlanService.guardar(dientePlan);
             
-            // 6. Actualizar progreso del plan
+            // 6. Actualizar progreso
             List<DiagnosticoTratamientoDiente> todosDientes = dientePlanService
                 .findByDiagnosticoTratamientoId(plan.getIdDiagTrat());
             
@@ -371,8 +355,25 @@ public class DocenteController {
             
             diagnosticoTratamientoService.guardar(plan);
             
+            // ✅ 7. GENERAR RECIBO POR TRATAMIENTO
+            Double precioTratamiento = plan.getTratamiento().getPrecioTratamiento();
+            Long idEvolucionClinica = plan.getEvolucionClinica().getIdEvolucionClinica();
+            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
+            
+            String concepto = "Tratamiento: " + plan.getTratamiento().getNombreTratamiento() + 
+                             " - Diente " + dientePlan.getDiente();
+            
+            reciboService.generarRecibo(
+                "TRATAMIENTO",
+                idDientePlan,
+                concepto,
+                precioTratamiento != null ? precioTratamiento : 0.0,
+                idEvolucionClinica,
+                idConsentimiento
+            );
+            
             return ResponseEntity.ok(Map.of(
-                "mensaje", "✅ Procedimiento aprobado correctamente",
+                "mensaje", "✅ Procedimiento aprobado correctamente y registrado en el recibo",
                 "idDientePlan", idDientePlan,
                 "nuevoEstado", "APROBADO",
                 "cuposRestantes", nuevoCupo,
@@ -387,10 +388,7 @@ public class DocenteController {
         }
     }
 
-    /**
-     * RECHAZAR PROCEDIMIENTO
-     * PUT /api/docentes/procedimientos/{idDientePlan}/rechazar
-     */
+    // ==================== RECHAZAR PROCEDIMIENTO ====================
     @PutMapping("/procedimientos/{idDientePlan}/rechazar")
     public ResponseEntity<?> rechazarProcedimiento(
             @PathVariable Long idDientePlan,
@@ -412,11 +410,9 @@ public class DocenteController {
                 ));
             }
             
-            // Volver a estado REALIZADO para que el estudiante pueda corregir
             dientePlan.setEstado("REALIZADO");
             dientePlanService.guardar(dientePlan);
             
-            // Registrar observaciones del rechazo en el detalle de evolución
             List<DetalleEvolucionClinica> detalles = detalleEvolucionService
                 .findByDientePlanId(idDientePlan);
             
@@ -440,17 +436,13 @@ public class DocenteController {
         }
     }
 
-    /**
-     * OBTENER ESTADÍSTICAS DEL DOCENTE
-     * GET /api/docentes/{docenteId}/estadisticas
-     */
+    // ==================== ESTADÍSTICAS ====================
     @GetMapping("/{docenteId}/estadisticas")
     public ResponseEntity<?> obtenerEstadisticasDocente(@PathVariable Long docenteId) {
         try {
             Docente docente = docenteService.obtenerPorId(docenteId)
                 .orElseThrow(() -> new RuntimeException("Docente no encontrado"));
             
-            // Contar procedimientos por estado
             long pendientes = 0;
             long aprobados = 0;
             long rechazados = 0;
@@ -472,7 +464,6 @@ public class DocenteController {
                 }
             }
             
-            // Obtener cupos totales disponibles
             int cuposRestantes = obtenerCuposTotalesDisponibles();
             
             return ResponseEntity.ok(Map.of(

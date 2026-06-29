@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Radiografía</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #7C3AED;
+            --primary-dark: #5B21B6;
+            --primary-light: #EDE9FE;
+            --success: #10B981;
+            --success-light: #D1FAE5;
+            --warning: #F59E0B;
+            --warning-light: #FEF3C7;
+            --danger: #EF4444;
+            --danger-light: #FEE2E2;
+            --info: #3B82F6;
+            --info-light: #DBEAFE;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius: 1rem;
+            --radius-sm: 0.75rem;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #F5F7FA 0%, #F0F4F8 100%);
+            color: var(--gray-800);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .info-usuario {
+            background: var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-usuario-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-700);
+            font-size: 0.9rem;
+        }
+
+        .info-usuario-item i {
+            color: var(--primary);
+            width: 18px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 1.8rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: var(--gray-700);
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .form-group .helper-text {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+            margin-top: 0.25rem;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .form-group select:hover,
+        .form-group textarea:hover,
+        .form-group input:hover {
+            border-color: var(--primary);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .dientes-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            min-height: 50px;
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            border: 2px dashed var(--gray-300);
+            margin-top: 8px;
+        }
+
+        .diente-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--primary);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .diente-tag .remove-diente {
+            cursor: pointer;
+            color: var(--gray-500);
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            padding: 0 4px;
+        }
+
+        .diente-tag .remove-diente:hover {
+            color: var(--danger);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .resumen-solicitud {
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+
+        .resumen-solicitud.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .resumen-solicitud h4 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .resumen-solicitud p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .resumen-solicitud p strong {
+            color: var(--gray-600);
+            min-width: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--gray-100);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.8rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--gray-300);
+            color: var(--gray-700);
+            flex: 0.5;
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .info-box {
+            background: var(--info-light);
+            border-radius: var(--radius-sm);
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--info);
+            font-size: 0.85rem;
+        }
+
+        .info-box i {
+            font-size: 1.2rem;
+        }
+
+        .search-diagnostico-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .search-diagnostico-container input {
+            flex: 1;
+        }
+
+        .btn-sm {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex: none;
+        }
+
+        /* Estilos para los dientes del diagnóstico */
+        .dientes-diagnostico-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px;
+            min-height: 50px;
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--primary);
+            margin-top: 8px;
+        }
+
+        .diente-diagnostico-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 2px solid var(--gray-300);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .diente-diagnostico-tag:hover {
+            transform: scale(1.05);
+        }
+
+        .diente-diagnostico-tag.seleccionado {
+            background: var(--success-light);
+            border-color: var(--success);
+        }
+
+        .diente-diagnostico-tag .diente-numero {
+            background: var(--gray-300);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .diente-diagnostico-tag.seleccionado .diente-numero {
+            background: var(--success);
+        }
+
+        .diente-diagnostico-tag .estado-badge {
+            font-size: 0.6rem;
+            padding: 0 6px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        .diente-diagnostico-tag .estado-badge.pendiente {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .diente-diagnostico-tag .estado-badge.realizado {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .diente-diagnostico-tag .estado-badge.cancelado {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .acciones-dientes {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .form-card {
+                padding: 1.5rem;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+                flex: none;
+            }
+            .btn-outline {
+                flex: none;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            .info-usuario {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.3rem;
+            }
+            .resumen-solicitud p {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            .resumen-solicitud p strong {
+                min-width: auto;
+            }
+            .search-diagnostico-container {
+                flex-direction: column;
+            }
+            .btn-sm {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card {
+                padding: 1rem;
+            }
+            .header {
+                padding: 1.2rem;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-x-ray"></i> Solicitar Radiografía</h1>
+            <p>Complete el formulario para solicitar una radiografía</p>
+        </div>
+
+        <div class="info-usuario">
+            <div class="info-usuario-item">
+                <i class="fas fa-user-circle"></i>
+                <span><strong>Estudiante:</strong> <span id="usuarioNombre">Cargando...</span></span>
+            </div>
+            <div class="info-usuario-item">
+                <i class="fas fa-tooth"></i>
+                <span><strong>Diagnóstico ID:</strong> <span id="diagnosticoIdInfo">-</span></span>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-info-circle"></i>
+            <span>Busque un diagnóstico tratamiento por ID para ver sus dientes y seleccionar los que serán radiografiados.</span>
+        </div>
+
+        <div class="form-card">
+            <div class="form-title">
+                <i class="fas fa-plus-circle"></i> Nueva Solicitud de Radiografía
+            </div>
+            <div class="form-subtitle">
+                <i class="fas fa-info-circle" style="color: var(--primary);"></i>
+                Complete todos los campos obligatorios <span style="color: var(--danger);">*</span>
+            </div>
+
+            <form id="solicitudForm" novalidate>
+                <!-- Buscar Diagnóstico Tratamiento -->
+                <div class="form-group">
+                    <label for="buscarDiagnostico">
+                        <i class="fas fa-search"></i> Buscar Diagnóstico Tratamiento <span class="required">*</span>
+                    </label>
+                    <div class="search-diagnostico-container">
+                        <input type="text" id="buscarDiagnostico" placeholder="Ingrese ID del diagnóstico tratamiento (ej: 1, 2, 3...)" inputmode="numeric">
+                        <button type="button" class="btn btn-primary btn-sm" id="btnBuscarDiagnostico">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                    <span class="helper-text">Ingrese el ID del diagnóstico tratamiento para ver los dientes asociados</span>
+                </div>
+
+                <!-- Información del Diagnóstico y Dientes -->
+                <div id="infoDiagnostico" style="display: none; background: var(--primary-light); padding: 1rem; border-radius: var(--radius-sm); margin-bottom: 1.5rem; border: 2px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                        <strong><i class="fas fa-tooth"></i> Dientes del Diagnóstico Tratamiento #<span id="infoIdDiagnostico">-</span></strong>
+                        <span style="font-size: 0.8rem; color: var(--gray-500);">
+                            <i class="fas fa-info-circle"></i> Click para seleccionar/deseleccionar
+                        </span>
+                    </div>
+                    
+                    <div id="dientesDiagnostico" class="dientes-diagnostico-container">
+                        <span style="color: var(--gray-400); font-size: 0.9rem; width: 100%; text-align: center;">
+                            <i class="fas fa-info-circle"></i> No hay dientes registrados en este diagnóstico
+                        </span>
+                    </div>
+                    
+                    <div class="acciones-dientes">
+                        <button type="button" class="btn btn-sm" id="btnSeleccionarTodos" style="background: var(--primary); color: white; padding: 0.3rem 1rem; font-size: 0.8rem; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-check-double"></i> Seleccionar Todos
+                        </button>
+                        <button type="button" class="btn btn-sm" id="btnDeseleccionarTodos" style="background: var(--gray-300); color: var(--gray-700); padding: 0.3rem 1rem; font-size: 0.8rem; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-times"></i> Deseleccionar Todos
+                        </button>
+                        <span id="contadorDientes" style="font-size: 0.8rem; color: var(--gray-500); display: flex; align-items: center; margin-left: auto;"></span>
+                    </div>
+                </div>
+
+                <!-- Seleccionar Radiografía -->
+                <div class="form-group">
+                    <label for="radiografiaSelect">
+                        <i class="fas fa-x-ray"></i> Tipo de Radiografía <span class="required">*</span>
+                    </label>
+                    <select id="radiografiaSelect" required>
+                        <option value="">-- Seleccione una radiografía --</option>
+                    </select>
+                    <span class="helper-text">Seleccione el tipo de radiografía que necesita</span>
+                </div>
+
+                <!-- Dientes Seleccionados -->
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-list"></i> Dientes seleccionados para radiografiar <span class="required">*</span>
+                    </label>
+                    <div id="dientesSeleccionados" class="dientes-tags-container">
+                        <span style="color: var(--gray-400); font-size: 0.9rem; width: 100%; text-align: center;">
+                            <i class="fas fa-info-circle"></i> No hay dientes seleccionados
+                        </span>
+                    </div>
+                    <button type="button" class="btn btn-outline" id="btnLimpiarDientes" style="margin-top: 10px; padding: 0.4rem 1rem; font-size: 0.8rem; flex: none;">
+                        <i class="fas fa-trash-alt"></i> Limpiar selección
+                    </button>
+                </div>
+
+                <!-- Motivo -->
+                <div class="form-group">
+                    <label for="motivoSolicitud">
+                        <i class="fas fa-comment"></i> Motivo / Justificación <span class="required">*</span>
+                    </label>
+                    <textarea id="motivoSolicitud" placeholder="Describa el motivo de la solicitud de radiografía..." required></textarea>
+                    <span class="helper-text">Explique brevemente por qué necesita esta radiografía</span>
+                </div>
+
+                <!-- Resumen -->
+                <div class="resumen-solicitud" id="resumenSolicitud">
+                    <h4><i class="fas fa-clipboard-check"></i> Resumen de la Solicitud</h4>
+                    <p><strong>Diagnóstico ID:</strong> <span id="resumenDiagnostico">-</span></p>
+                    <p><strong>Radiografía:</strong> <span id="resumenRadiografia">-</span></p>
+                    <p><strong>Dientes:</strong> <span id="resumenDientes">-</span></p>
+                    <p><strong>Motivo:</strong> <span id="resumenMotivo">-</span></p>
+                </div>
+
+                <!-- Botones -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="limpiarFormulario()">
+                        <i class="fas fa-undo-alt"></i> Limpiar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnEnviar" onclick="enviarSolicitud()">
+                        <i class="fas fa-paper-plane"></i> Enviar Solicitud
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============ VARIABLES GLOBALES ============
+        let idEstudiante = null;
+        let diagnosticoSeleccionado = null;
+        let dientesSeleccionados = []; // Guarda los números de diente
+        let dientesSeleccionadosIds = []; // Guarda los IDs de DiagnosticoTratamientoDiente
+        let dientesDiagnosticoData = [];
+        let radiografiasDisponibles = [];
+        let diagnosticoIdActual = null;
+
+        // ============ OBTENER USUARIO ============
+        async function obtenerInfoUsuario() {
+            try {
+                let userId = sessionStorage.getItem('idUsuario');
+                let userNombre = sessionStorage.getItem('nombreUsuario');
+
+                if (userId) {
+                    idEstudiante = parseInt(userId);
+                    document.getElementById('usuarioNombre').textContent = userNombre || 'Estudiante';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/usuario/actual', { credentials: 'include' });
+                    if (response.ok) {
+                        const usuario = await response.json();
+                        if (usuario && usuario.idUsuario) {
+                            idEstudiante = usuario.idUsuario;
+                            document.getElementById('usuarioNombre').textContent = usuario.nombreCompleto || 'Estudiante';
+                            sessionStorage.setItem('idUsuario', usuario.idUsuario);
+                            sessionStorage.setItem('nombreUsuario', usuario.nombreCompleto);
+                            return;
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('API de usuario no disponible:', apiError);
+                }
+
+                idEstudiante = 1;
+                document.getElementById('usuarioNombre').textContent = 'Estudiante Demo';
+            } catch (error) {
+                console.error('Error al obtener usuario:', error);
+                idEstudiante = 1;
+            }
+        }
+
+        // ============ CARGAR RADIOGRAFÍAS ============
+        async function cargarRadiografias() {
+            const select = document.getElementById('radiografiaSelect');
+            select.innerHTML = '<option value="">-- Cargando radiografías... --</option>';
+
+            try {
+                const response = await fetch('/api/radiografias/activas', { credentials: 'include' });
+                if (response.ok) {
+                    radiografiasDisponibles = await response.json();
+                    console.log('✅ Radiografías cargadas:', radiografiasDisponibles.length);
+                } else {
+                    throw new Error('API no disponible');
+                }
+            } catch (error) {
+                console.warn('Usando datos demo de radiografías:', error);
+                radiografiasDisponibles = [
+                    { idRadiografia: 1, nombreRayo: 'Radiografía Periapical', precioRayo: 45000 },
+                    { idRadiografia: 2, nombreRayo: 'Radiografía Panorámica', precioRayo: 120000 },
+                    { idRadiografia: 3, nombreRayo: 'Radiografía Lateral de Cráneo', precioRayo: 85000 },
+                    { idRadiografia: 4, nombreRayo: 'Radiografía Oclusal', precioRayo: 35000 }
+                ];
+            }
+
+            if (radiografiasDisponibles.length === 0) {
+                select.innerHTML = '<option value="">-- No hay radiografías disponibles --</option>';
+                return;
+            }
+
+            select.innerHTML = '<option value="">-- Seleccione una radiografía --</option>' +
+                radiografiasDisponibles.map(r =>
+                    `<option value="${r.idRadiografia}">
+                        ${r.nombreRayo} 
+                        ${r.precioRayo ? `($${Number(r.precioRayo).toLocaleString()})` : ''}
+                    </option>`
+                ).join('');
+
+            select.addEventListener('change', actualizarResumen);
+        }
+
+        // ============ BUSCAR DIAGNÓSTICO TRATAMIENTO ============
+        document.getElementById('btnBuscarDiagnostico').addEventListener('click', async function() {
+            const input = document.getElementById('buscarDiagnostico');
+            const idDiagnostico = input.value.trim();
+
+            if (!idDiagnostico) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Ingrese un ID',
+                    text: 'Por favor, ingrese el ID del diagnóstico tratamiento',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+
+            try {
+                // Nuevo endpoint para buscar diagnóstico tratamiento por ID
+                const response = await fetch(`/api/solicitudes-radiografia/diagnostico-tratamiento/${idDiagnostico}/dientes`, { 
+                    credentials: 'include' 
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('Diagnóstico tratamiento no encontrado');
+                    }
+                    throw new Error('Error al buscar diagnóstico');
+                }
+
+                const dientes = await response.json();
+                console.log('📦 Dientes encontrados:', dientes);
+
+                if (!dientes || dientes.length === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'ℹ️ Sin dientes',
+                        text: `El diagnóstico tratamiento #${idDiagnostico} no tiene dientes registrados`,
+                        confirmButtonColor: '#3B82F6'
+                    });
+                    document.getElementById('infoDiagnostico').style.display = 'none';
+                    diagnosticoSeleccionado = null;
+                    dientesDiagnosticoData = [];
+                    dientesSeleccionados = [];
+                    dientesSeleccionadosIds = [];
+                    return;
+                }
+
+                // Guardar datos
+                diagnosticoIdActual = parseInt(idDiagnostico);
+                dientesDiagnosticoData = dientes;
+                diagnosticoSeleccionado = { idDiagnosticoTratamiento: diagnosticoIdActual };
+                
+                // Limpiar selecciones anteriores
+                dientesSeleccionados = [];
+                dientesSeleccionadosIds = [];
+                
+                // Mostrar información
+                document.getElementById('infoDiagnostico').style.display = 'block';
+                document.getElementById('infoIdDiagnostico').textContent = diagnosticoIdActual;
+                document.getElementById('diagnosticoIdInfo').textContent = diagnosticoIdActual;
+                
+                // Renderizar dientes
+                renderizarDientesDiagnostico(dientes);
+                renderizarDientesSeleccionados();
+                actualizarResumen();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Dientes encontrados',
+                    text: `${dientes.length} diente(s) encontrados en el diagnóstico #${idDiagnostico}`,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message || 'Error al buscar el diagnóstico',
+                    confirmButtonColor: '#EF4444'
+                });
+                document.getElementById('infoDiagnostico').style.display = 'none';
+                diagnosticoSeleccionado = null;
+                dientesDiagnosticoData = [];
+                dientesSeleccionados = [];
+                dientesSeleccionadosIds = [];
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-search"></i> Buscar';
+            }
+        });
+
+        // Enter para buscar
+        document.getElementById('buscarDiagnostico').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('btnBuscarDiagnostico').click();
+            }
+        });
+
+        // ============ RENDERIZAR DIENTES DEL DIAGNÓSTICO ============
+        function renderizarDientesDiagnostico(dientes) {
+            const container = document.getElementById('dientesDiagnostico');
+            
+            if (!dientes || dientes.length === 0) {
+                container.innerHTML = `
+                    <span style="color: var(--gray-400); font-size: 0.9rem; width: 100%; text-align: center;">
+                        <i class="fas fa-info-circle"></i> No hay dientes registrados en este diagnóstico
+                    </span>
+                `;
+                return;
+            }
+            
+            // Ordenar dientes por número
+            dientes.sort((a, b) => a.diente - b.diente);
+            
+            let html = '';
+            dientes.forEach(diente => {
+                const isSelected = dientesSeleccionados.includes(diente.diente);
+                const estadoClass = diente.estado ? diente.estado.toLowerCase() : '';
+                
+                html += `
+                    <div class="diente-diagnostico-tag ${isSelected ? 'seleccionado' : ''}"
+                        onclick="toggleDienteDiagnostico(${diente.diente}, ${diente.idDiagnosticoTratamientoDiente})">
+                        <span class="diente-numero">${diente.diente}</span>
+                        Diente ${diente.diente}
+                        ${diente.estado ? `<span class="estado-badge ${estadoClass}">${diente.estado}</span>` : ''}
+                        ${isSelected ? '<i class="fas fa-check-circle" style="color: #10B981; margin-left: 4px;"></i>' : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            actualizarContadorDientes();
+        }
+
+        // ============ TOGGLE DIENTE DEL DIAGNÓSTICO ============
+        function toggleDienteDiagnostico(numeroDiente, idDientePlan) {
+            const index = dientesSeleccionados.indexOf(numeroDiente);
+            
+            if (index === -1) {
+                // Agregar diente
+                dientesSeleccionados.push(numeroDiente);
+                dientesSeleccionadosIds.push(idDientePlan);
+            } else {
+                // Quitar diente
+                dientesSeleccionados.splice(index, 1);
+                dientesSeleccionadosIds.splice(index, 1);
+            }
+            
+            // Re-renderizar
+            renderizarDientesDiagnostico(dientesDiagnosticoData);
+            renderizarDientesSeleccionados();
+            actualizarResumen();
+        }
+
+        // ============ RENDERIZAR DIENTES SELECCIONADOS ============
+        function renderizarDientesSeleccionados() {
+            const container = document.getElementById('dientesSeleccionados');
+            
+            if (dientesSeleccionados.length === 0) {
+                container.innerHTML = `
+                    <span style="color: var(--gray-400); font-size: 0.9rem; width: 100%; text-align: center;">
+                        <i class="fas fa-info-circle"></i> No hay dientes seleccionados para radiografiar
+                    </span>
+                `;
+                return;
+            }
+            
+            // Ordenar y mostrar
+            const sorted = [...dientesSeleccionados].sort((a, b) => a - b);
+            
+            let html = '';
+            sorted.forEach((num, idx) => {
+                // Buscar el ID correspondiente
+                const originalIndex = dientesSeleccionados.indexOf(num);
+                const id = originalIndex !== -1 ? dientesSeleccionadosIds[originalIndex] : null;
+                
+                html += `
+                    <span class="diente-tag" style="background: #D1FAE5; border-color: #10B981;">
+                        <span style="background: #10B981; color: white; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;">
+                            ${num}
+                        </span>
+                        Diente ${num}
+                        <button class="remove-diente" onclick="eliminarDienteSeleccionado(${num})" title="Eliminar" style="background: none; border: none; cursor: pointer; color: var(--gray-500);">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </span>
+                `;
+            });
+            
+            container.innerHTML = html;
+            actualizarContadorDientes();
+        }
+
+        // ============ ELIMINAR DIENTE SELECCIONADO ============
+        function eliminarDienteSeleccionado(numero) {
+            const index = dientesSeleccionados.indexOf(numero);
+            if (index !== -1) {
+                dientesSeleccionados.splice(index, 1);
+                dientesSeleccionadosIds.splice(index, 1);
+            }
+            renderizarDientesDiagnostico(dientesDiagnosticoData);
+            renderizarDientesSeleccionados();
+            actualizarResumen();
+        }
+
+        // ============ ACTUALIZAR CONTADOR DE DIENTES ============
+        function actualizarContadorDientes() {
+            const total = dientesDiagnosticoData.length;
+            const seleccionados = dientesSeleccionados.length;
+            const contador = document.getElementById('contadorDientes');
+            if (contador) {
+                contador.textContent = `${seleccionados} de ${total} seleccionados`;
+            }
+        }
+
+        // ============ SELECCIONAR / DESELECCIONAR TODOS ============
+        document.getElementById('btnSeleccionarTodos').addEventListener('click', function() {
+            if (!dientesDiagnosticoData || dientesDiagnosticoData.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ No hay dientes',
+                    text: 'No hay dientes registrados en este diagnóstico',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+            
+            // Guardar números e IDs
+            dientesSeleccionados = dientesDiagnosticoData.map(d => d.diente);
+            dientesSeleccionadosIds = dientesDiagnosticoData.map(d => d.idDiagnosticoTratamientoDiente);
+            
+            renderizarDientesDiagnostico(dientesDiagnosticoData);
+            renderizarDientesSeleccionados();
+            actualizarResumen();
+            
+            Swal.fire({
+                icon: 'success',
+                title: `✅ ${dientesSeleccionados.length} dientes seleccionados`,
+                timer: 1000,
+                showConfirmButton: false
+            });
+        });
+
+        document.getElementById('btnDeseleccionarTodos').addEventListener('click', function() {
+            if (dientesSeleccionados.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'ℹ️ Ya están deseleccionados',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+                return;
+            }
+            
+            dientesSeleccionados = [];
+            dientesSeleccionadosIds = [];
+            
+            renderizarDientesDiagnostico(dientesDiagnosticoData);
+            renderizarDientesSeleccionados();
+            actualizarResumen();
+        });
+
+        document.getElementById('btnLimpiarDientes').addEventListener('click', function() {
+            if (dientesSeleccionados.length === 0) return;
+            
+            Swal.fire({
+                title: '¿Limpiar todos los dientes seleccionados?',
+                text: 'Se eliminarán todos los dientes seleccionados para radiografiar',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Sí, limpiar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    dientesSeleccionados = [];
+                    dientesSeleccionadosIds = [];
+                    renderizarDientesDiagnostico(dientesDiagnosticoData);
+                    renderizarDientesSeleccionados();
+                    actualizarResumen();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Selección limpiada',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        });
+
+        // ============ ACTUALIZAR RESUMEN ============
+        function actualizarResumen() {
+            const radiografiaId = document.getElementById('radiografiaSelect').value;
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+            const resumenDiv = document.getElementById('resumenSolicitud');
+
+            if (diagnosticoSeleccionado && radiografiaId && dientesSeleccionados.length > 0 && motivo) {
+                const radiografia = radiografiasDisponibles.find(r => r.idRadiografia == radiografiaId);
+                
+                document.getElementById('resumenDiagnostico').textContent = `#${diagnosticoSeleccionado.idDiagnosticoTratamiento}`;
+                document.getElementById('resumenRadiografia').textContent = radiografia ? radiografia.nombreRayo : 'N/A';
+                document.getElementById('resumenDientes').textContent = dientesSeleccionados.join(', ');
+                document.getElementById('resumenMotivo').textContent = motivo;
+                resumenDiv.classList.add('visible');
+            } else {
+                resumenDiv.classList.remove('visible');
+            }
+        }
+
+        document.getElementById('motivoSolicitud').addEventListener('input', actualizarResumen);
+
+        // ============ LIMPIAR FORMULARIO ============
+        function limpiarFormulario() {
+            document.getElementById('buscarDiagnostico').value = '';
+            document.getElementById('radiografiaSelect').value = '';
+            document.getElementById('motivoSolicitud').value = '';
+            document.getElementById('infoDiagnostico').style.display = 'none';
+            document.getElementById('resumenSolicitud').classList.remove('visible');
+            document.getElementById('diagnosticoIdInfo').textContent = '-';
+            
+            dientesSeleccionados = [];
+            dientesSeleccionadosIds = [];
+            dientesDiagnosticoData = [];
+            diagnosticoSeleccionado = null;
+            diagnosticoIdActual = null;
+            
+            renderizarDientesDiagnostico([]);
+            renderizarDientesSeleccionados();
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'Formulario limpiado',
+                text: 'Puede comenzar una nueva solicitud',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // ============ VALIDAR ============
+        function validarFormulario() {
+            if (!diagnosticoSeleccionado) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Diagnóstico requerido',
+                    text: 'Busque y seleccione un diagnóstico tratamiento',
+                    confirmButtonColor: '#EF4444'
+                });
+                return false;
+            }
+
+            const radiografia = document.getElementById('radiografiaSelect').value;
+            if (!radiografia) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Radiografía requerida',
+                    text: 'Seleccione un tipo de radiografía',
+                    confirmButtonColor: '#EF4444'
+                });
+                return false;
+            }
+
+            if (dientesSeleccionados.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Dientes requeridos',
+                    text: 'Seleccione al menos un diente para radiografiar',
+                    confirmButtonColor: '#EF4444'
+                });
+                return false;
+            }
+
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+            if (!motivo || motivo.length < 5) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Motivo requerido',
+                    text: 'Ingrese un motivo válido (mínimo 5 caracteres)',
+                    confirmButtonColor: '#EF4444'
+                });
+                return false;
+            }
+
+            return true;
+        }
+
+        // ============ ENVIAR SOLICITUD ============
+        async function enviarSolicitud() {
+            if (!validarFormulario()) return;
+
+            const radiografiaId = document.getElementById('radiografiaSelect').value;
+            const motivo = document.getElementById('motivoSolicitud').value.trim();
+            const radiografia = radiografiasDisponibles.find(r => r.idRadiografia == radiografiaId);
+
+            // ✅ Usar los IDs de DiagnosticoTratamientoDiente que ya tenemos
+            const idsDientesPlan = dientesSeleccionadosIds.map(id => Number(id));
+
+            if (idsDientesPlan.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: 'No se pudieron obtener los IDs de los dientes seleccionados',
+                    confirmButtonColor: '#EF4444'
+                });
+                return;
+            }
+
+            console.log('📤 IDs de DiagnosticoTratamientoDiente a enviar:', idsDientesPlan);
+
+            const result = await Swal.fire({
+                title: '📋 Confirmar Solicitud',
+                html: `
+                    <div style="text-align: left; background: var(--gray-50); padding: 1.2rem; border-radius: 8px; margin: 0.5rem 0;">
+                        <p style="margin: 0.3rem 0;"><strong>🔍 Diagnóstico ID:</strong> #${diagnosticoSeleccionado.idDiagnosticoTratamiento}</p>
+                        <p style="margin: 0.3rem 0;"><strong>📷 Radiografía:</strong> ${radiografia?.nombreRayo || 'N/A'}</p>
+                        <p style="margin: 0.3rem 0;"><strong>🦷 Dientes:</strong> ${dientesSeleccionados.join(', ')}</p>
+                        <p style="margin: 0.3rem 0;"><strong>📝 Motivo:</strong> ${motivo}</p>
+                        <p style="margin: 0.3rem 0; font-size: 0.7rem; color: var(--gray-400);">
+                            IDs dientes: ${idsDientesPlan.join(', ')}
+                        </p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#7C3AED',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: '✅ Sí, solicitar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            });
+
+            if (!result.isConfirmed) return;
+
+            const btn = document.getElementById('btnEnviar');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Enviando...';
+
+            try {
+                const payload = {
+                    idDiagnosticoTratamiento: Number(diagnosticoSeleccionado.idDiagnosticoTratamiento),
+                    idRadiografia: Number(radiografiaId),
+                    motivo: motivo,
+                    idsDientesPlan: idsDientesPlan
+                };
+
+                console.log('📤 Enviando solicitud de radiografía:', payload);
+
+                const response = await fetch('/api/solicitudes-radiografia/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Error al crear solicitud');
+                }
+
+                const data = await response.json();
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '🎉 ¡Solicitud Enviada!',
+                    html: `
+                        <p>Su solicitud de radiografía ha sido enviada correctamente.</p>
+                        <p style="font-size: 0.9rem; color: var(--gray-500);">
+                            <i class="fas fa-hourglass-half"></i> Espere la aprobación del docente
+                        </p>
+                        <p style="font-size: 0.8rem; color: var(--gray-400);">
+                            ID Solicitud: ${data.idSolicitud || 'N/A'}
+                        </p>
+                    `,
+                    confirmButtonColor: '#7C3AED',
+                    confirmButtonText: '✅ Entendido'
+                });
+                limpiarFormulario();
+
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message || 'No se pudo crear la solicitud',
+                    confirmButtonColor: '#EF4444'
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Solicitud';
+            }
+        }
+
+        // ============ INICIALIZAR ============
+        document.addEventListener('DOMContentLoaded', async () => {
+            await obtenerInfoUsuario();
+            await cargarRadiografias();
+            console.log('✅ Formulario de solicitud de radiografía inicializado');
+        });
+    </script>
+</body>
+</html>

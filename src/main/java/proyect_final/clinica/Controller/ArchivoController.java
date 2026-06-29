@@ -20,7 +20,6 @@ public class ArchivoController {
     @Autowired
     private ArchivoService archivoService;
 
-    // Métodos existentes...
     @GetMapping
     public ResponseEntity<List<Archivo>> getAllArchivos() {
         List<Archivo> archivos = archivoService.getAllArchivos();
@@ -125,7 +124,6 @@ public class ArchivoController {
         }
     }
 
-// ✅ ENDPOINT - Usa el método que funciona
 @GetMapping("/id-por-paciente")
 public ResponseEntity<?> getIdArchivoPorPaciente(
         @RequestParam(required = false) String ci,
@@ -154,7 +152,6 @@ public ResponseEntity<?> getIdArchivoPorPaciente(
             );
         }
         
-        // ⭐ USAR EL MÉTODO QUE FUNCIONA
         Optional<Archivo> archivoOpt = archivoService.buscarArchivoPorCiONombre(ciInt, nombreBusqueda);
         
         if (archivoOpt.isPresent()) {
@@ -180,7 +177,7 @@ public ResponseEntity<?> getIdArchivoPorPaciente(
     }
 }
     
-    // ✅ ENDPOINT: Verificar si paciente tiene archivo
+    //  Verificar si paciente tiene archivo
     @GetMapping("/verificar/{idPaciente}")
     public ResponseEntity<?> verificarPacienteTieneArchivo(@PathVariable Long idPaciente) {
         try {

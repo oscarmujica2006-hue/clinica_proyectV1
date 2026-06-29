@@ -15,22 +15,22 @@ public class SolicitudRadiografia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSolicitudRadiografia;
     
-    // ✅ CORREGIDO: Nombre más claro
+    
     @ManyToOne
     @JoinColumn(name = "id_diagnostico_tratamiento")
     private DiagnosticoTratamiento diagnosticoTratamiento;
     
     @ManyToOne
     @JoinColumn(name = "id_radiografia")
-    private Radiografia radiografia;  // ✅ Cambiado de idRadiografia a radiografia
+    private Radiografia radiografia; 
 
     @Column(name = "fecha_solicitud")
     private LocalDateTime fechaSolicitud;
     
-    @Column(name = "estado", length = 50)  // ✅ Cambiado de est_soli_radio a estado
-    private String estado;  // SOLICITADA, APROBADA, REALIZADA, CANCELADA
+    @Column(name = "est_soli_radi", length = 50)  
+    private String estado;  
     
-    @Column(name = "motivo", length = 500)  // ✅ Agregado campo motivo
+    @Column(name = "motivo", length = 500)  
     private String motivo;
 
     @Column(name = "usu_reg_sol_rad")

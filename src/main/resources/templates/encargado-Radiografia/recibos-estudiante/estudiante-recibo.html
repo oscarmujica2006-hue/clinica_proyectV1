@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- (mismo head que antes) -->
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        h1 {
+            color: #0D47A1;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-section input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            min-width: 250px;
+        }
+
+        .search-section button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-section button:hover {
+            background: #0D47A1;
+        }
+
+        .recibos-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .recibos-table th,
+        .recibos-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .recibos-table th {
+            background-color: #f8f9fa;
+            color: #0D47A1;
+            font-weight: 600;
+        }
+
+        .recibos-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .estado-pendiente {
+            background: #ff9800;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-pagar {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-pagar:hover {
+            background: #388E3C;
+        }
+
+        .btn-pagar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <i class="fas fa-file-invoice"></i>
+            Recibos Pendientes por Estudiante
+        </h1>
+
+        <!-- Buscador por código de estudiante -->
+        <div class="search-section">
+            <input type="number" id="codigoEstudiante" placeholder="Código del estudiante" value="2024006" min="1">
+            <button id="btnBuscar">
+                <i class="fas fa-search"></i> Buscar recibos pendientes
+            </button>
+        </div>
+
+        <!-- Área de mensajes -->
+        <div id="mensaje" style="display: none;"></div>
+
+        <!-- Tabla de recibos -->
+        <table class="recibos-table" id="tablaRecibos">
+            <thead>
+                <tr>
+                    <th>ID Recibo</th>
+                    <th>ID Seguimiento</th>
+                    <th>Fecha Emisión</th>
+                    <th>Monto Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="recibosBody">
+                <tr>
+                    <td colspan="6" class="no-data">
+                        Ingrese un código de estudiante y haga clic en buscar
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+<script>
+    const API_BASE = '/api/seguimientos';
+    const codigoInput = document.getElementById('codigoEstudiante');
+    const btnBuscar = document.getElementById('btnBuscar');
+    const recibosBody = document.getElementById('recibosBody');
+    const mensajeDiv = document.getElementById('mensaje');
+
+    function mostrarMensaje(tipo, texto) {
+        mensajeDiv.style.display = 'flex';
+        mensajeDiv.className = tipo === 'error' ? 'error-message' : 'success-message';
+        mensajeDiv.innerHTML = `<i class="fas ${tipo === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${texto}`;
+        setTimeout(() => {
+            mensajeDiv.style.display = 'none';
+        }, 5000);
+    }
+
+    async function cargarRecibosPendientes(codigo) {
+        try {
+            recibosBody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+
+            const response = await fetch(`${API_BASE}/recibos/pendientes/estudiante/codigo/${codigo}`);
+            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+
+            const recibos = await response.json();
+
+            if (recibos.length === 0) {
+                recibosBody.innerHTML = '<tr><td colspan="6" class="no-data">No hay recibos pendientes para este estudiante</td></tr>';
+                return;
+            }
+
+            // --- 1. Agrupar recibos por idConsentimiento ---
+            const gruposPorConsentimiento = {};
+            recibos.forEach(recibo => {
+                const idCons = recibo.idConsentimiento;
+                if (!gruposPorConsentimiento[idCons]) {
+                    gruposPorConsentimiento[idCons] = [];
+                }
+                gruposPorConsentimiento[idCons].push(recibo);
+            });
+
+            let html = '';
+
+            // --- 2. Procesar cada consentimiento por separado ---
+            Object.keys(gruposPorConsentimiento).forEach(idConsentimiento => {
+                const recibosConsentimiento = gruposPorConsentimiento[idConsentimiento];
+
+                // Ordenar recibos de este consentimiento por fecha descendente (más reciente primero)
+                const ordenados = [...recibosConsentimiento].sort((a, b) => new Date(b.fechaEmision) - new Date(a.fechaEmision));
+                const ultimoIdSeguimiento = ordenados[0].idSeguimiento;
+                // Filtrar solo los recibos del último seguimiento de este consentimiento
+                const recibosUltimoSeguimiento = recibosConsentimiento.filter(r => r.idSeguimiento === ultimoIdSeguimiento);
+
+                // Calcular total del último seguimiento
+                const totalSeguimiento = recibosUltimoSeguimiento.reduce((sum, r) => sum + r.montoTotal, 0);
+
+                // --- Encabezado del consentimiento ---
+                html += `
+                    <tr style="background-color: #d1c4e9; font-weight: bold;">
+                        <td colspan="6">Consentimiento #${idConsentimiento} - Último seguimiento (ID: ${ultimoIdSeguimiento})</td>
+                    </tr>
+                `;
+
+                // --- Filas de los recibos de este seguimiento ---
+                recibosUltimoSeguimiento.forEach(recibo => {
+                    const fecha = new Date(recibo.fechaEmision).toLocaleString('es-ES', {
+                        year: 'numeric', month: '2-digit', day: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    html += `
+                        <tr>
+                            <td>${recibo.idRecibo}</td>
+                            <td>${recibo.idSeguimiento}</td>
+                            <td>${fecha}</td>
+                            <td>$${recibo.montoTotal.toFixed(2)}</td>
+                            <td><span class="estado-pendiente">${recibo.estadoPago}</span></td>
+                            <td>
+                                <button class="btn-pagar" onclick="pagarRecibo(${recibo.idRecibo})">
+                                    <i class="fas fa-check"></i> Pagar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                // --- Fila con el total de este seguimiento ---
+                html += `
+                    <tr style="background-color: #e8eaf6; font-weight: bold;">
+                        <td colspan="3" style="text-align: right;">TOTAL ESTE SEGUIMIENTO:</td>
+                        <td>$${totalSeguimiento.toFixed(2)}</td>
+                        <td colspan="2"></td>
+                    </tr>
+                `;
+
+                // Espaciado entre consentimientos
+                html += `<tr><td colspan="6" style="padding: 5px;"></td></tr>`;
+            });
+
+            recibosBody.innerHTML = html;
+
+            mostrarMensaje('success', 'Mostrando últimos seguimientos por consentimiento.');
+        } catch (error) {
+            console.error(error);
+            recibosBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${error.message}</td></tr>`;
+            mostrarMensaje('error', 'No se pudieron cargar los recibos.');
+        }
+    }
+
+    async function pagarRecibo(idRecibo) {
+        if (!confirm('¿Marcar este recibo como pagado?')) return;
+        try {
+            const response = await fetch(`${API_BASE}/recibos/${idRecibo}/pagar`, { method: 'PUT' });
+            if (!response.ok) throw new Error('Error al pagar');
+            mostrarMensaje('success', `Recibo #${idRecibo} pagado`);
+            const codigo = codigoInput.value.trim();
+            if (codigo) cargarRecibosPendientes(codigo);
+        } catch (error) {
+            mostrarMensaje('error', error.message);
+        }
+    }
+
+    btnBuscar.addEventListener('click', () => {
+        const codigo = codigoInput.value.trim();
+        if (!codigo) {
+            mostrarMensaje('error', 'Debe ingresar un código de estudiante');
+            return;
+        }
+        cargarRecibosPendientes(codigo);
+    });
+
+    codigoInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnBuscar.click();
+    });
+
+    window.addEventListener('load', () => {
+        if (codigoInput.value) {
+            cargarRecibosPendientes(codigoInput.value);
+        }
+    });
+</script>
+</body>
+</html>

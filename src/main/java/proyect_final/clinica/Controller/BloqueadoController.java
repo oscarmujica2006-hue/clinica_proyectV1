@@ -27,6 +27,6 @@ public class BloqueadoController {
             }
         }
         
-        return "bloqueado";  // Crear esta vista
+        return "bloqueado";  
     }
 }

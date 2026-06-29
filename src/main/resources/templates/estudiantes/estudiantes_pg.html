@@ -147,17 +147,20 @@
       <div class="feature-card card-pharmacy" onclick="cargarConsentimiento()">
         <div class="card-icon"><i class="fas fa-file-contract"></i></div>
         <h3>Consentimiento</h3>
-        <p>Documentos legales</p>
       </div>
       <div class="feature-card card-doctriod" onclick="cargarSeguimiento()">
         <div class="card-icon"><i class="fas fa-edit"></i></div>
         <h3>Seguimiento</h3>
-        <p>Evolución clínica</p>
+      </div>
+
+      <div class="feature-card card-doctriod" onclick="cargarSoliRadiografia()">
+        <div class="card-icon"><i class="fas fa-edit"></i></div>
+        <h3>Radiografìa</h3>
       </div>
       <div class="feature-card card-emergency" onclick="cargarSolicitudHerramienta()">
         <div class="card-icon"><i class="fas fa-address-card"></i></div>
         <h3>Solicitud Herramienta</h3>
-        <p>Nuevo ingreso</p>
+       
       </div>
     </div>
 
@@ -202,9 +205,7 @@
 </div>
 
 <script>
-  // ============================================
-  // ⭐ Cargar datos guardados en el LOGIN
-  // ============================================
+
   
   function cargarDatosPerfil() {
     const nombreEstudiante = sessionStorage.getItem('nombreUsuario');
@@ -261,7 +262,7 @@
   function cargarNuevaConsulta() { window.location.href = '/estudiantes/Revision/revision'; }
   function cargarConsentimiento() { window.location.href = '/estudiantes/consentimiento/consentimiento-vista'; }
   function cargarSeguimiento() { window.location.href = '/estudiantes/seguimiento/seguimiento-vista'; }
-
+  function cargarSoliRadiografia() { window.location.href = '/estudiantes/soli-radiografia/soli_radiografia-vista'; }
   window.onclick = function(event) {
     const modal = document.getElementById('profileModal');
     if (event.target === modal) closeProfileModal();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validar Procedimientos - Docente</title>
+    <title>Validar Procedimientos y Consentimientos - Docente</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -29,6 +29,35 @@
         }
         .header h1 { font-size: 28px; display: flex; align-items: center; gap: 10px; }
         .header p { opacity: 0.9; margin-top: 5px; }
+        
+        /* Navegación entre pestañas */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: var(--dark);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .tab-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .tab-btn i { margin-right: 8px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -52,6 +81,7 @@
         .text-success { color: var(--success); }
         .text-danger { color: var(--danger); }
         .text-purple { color: var(--purple); }
+
         .card {
             background: white;
             border-radius: 10px;
@@ -81,6 +111,7 @@
             transition: all 0.3s;
         }
         .btn-refresh:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(52,152,219,0.3); }
+        
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
         thead { background-color: var(--primary); color: white; }
@@ -88,6 +119,7 @@
         tbody tr { border-bottom: 1px solid #e0e0e0; transition: background-color 0.2s; }
         tbody tr:hover { background-color: #f5f9ff; }
         td { padding: 15px 12px; font-size: 14px; vertical-align: middle; }
+        
         .badge {
             display: inline-block;
             padding: 5px 12px;
@@ -100,6 +132,7 @@
         .badge-danger { background-color: #fdeaea; color: var(--danger); }
         .badge-info { background-color: #e3f2fd; color: var(--secondary); }
         .badge-purple { background-color: #f3e5f5; color: var(--purple); }
+        
         .btn {
             display: inline-flex;
             align-items: center;
@@ -123,9 +156,11 @@
         .btn-secondary:hover { background-color: #7f8c8d; transform: translateY(-2px); }
         .btn-purple { background-color: var(--purple); color: white; }
         .btn-purple:hover { background-color: #7B1FA2; transform: translateY(-2px); }
+        
         .empty-state { padding: 40px 20px; text-align: center; color: var(--gray); }
         .empty-state i { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
         .text-center { text-align: center; }
+        
         .cupo-info {
             display: inline-block;
             background: #e8f5e9;
@@ -135,13 +170,41 @@
             font-weight: 600;
             font-size: 13px;
         }
-        .cupo-bajo {
-            background: #fff3e0;
-            color: var(--warning);
+        .cupo-bajo { background: #fff3e0; color: var(--warning); }
+        .cupo-critico { background: #fdeaea; color: var(--danger); }
+
+        /* Filtros */
+        .search-container { margin-bottom: 20px; }
+        .filter-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .cupo-critico {
-            background: #fdeaea;
-            color: var(--danger);
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        .filter-group { flex: 1; min-width: 180px; }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 14px;
+        }
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .filter-group input:focus, .filter-group select:focus {
+            border-color: var(--secondary);
+            outline: none;
         }
 
         /* Modal */
@@ -162,7 +225,7 @@
             padding: 0;
             border-radius: 12px;
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
             animation: modalOpen 0.3s ease;
         }
@@ -183,6 +246,7 @@
         .close { color: white; font-size: 28px; font-weight: bold; cursor: pointer; background: none; border: none; }
         .close:hover { opacity: 0.7; }
         .modal-body { padding: 25px; max-height: 60vh; overflow-y: auto; }
+        
         .info-box {
             background: #f8f9fa;
             padding: 15px;
@@ -217,14 +281,19 @@
         }
         .form-actions .btn { padding: 12px 25px; font-size: 15px; }
         
+        .image-preview { max-width: 100%; max-height: 400px; border-radius: 8px; }
+        .image-info { margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 8px; }
+        .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .image-grid { grid-template-columns: 1fr; } }
+
         @media (max-width: 768px) {
             th, td { padding: 10px 8px; font-size: 12px; }
             .btn-sm { padding: 4px 8px; font-size: 11px; }
             .stats { grid-template-columns: 1fr 1fr; }
             .modal-content { margin: 10% auto; width: 95%; }
-            .form-actions { flex-direction: column; }
-            .form-actions .btn { width: 100%; justify-content: center; }
-            .header h1 { font-size: 20px; }
+            .filter-row { flex-direction: column; }
+            .filter-group { min-width: 100%; }
+            .tabs .tab-btn { flex: 1; text-align: center; padding: 10px 15px; font-size: 14px; }
         }
         @media (max-width: 480px) {
             .stats { grid-template-columns: 1fr; }
@@ -236,62 +305,168 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-user-check"></i> Validar Procedimientos</h1>
-            <p>Revise y valide los procedimientos realizados por los estudiantes</p>
+            <h1><i class="fas fa-user-check"></i> Panel del Docente</h1>
+            <p>Gestión de consentimientos y validación de procedimientos</p>
         </div>
 
-        <!-- Estadísticas -->
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-value text-warning" id="totalPendientes">0</div>
-                <div class="stat-label">⏳ Pendientes de Aprobación</div>
+        <!-- Pestañas de navegación -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="consentimientos">
+                <i class="fas fa-file-signature"></i> Consentimientos
+            </button>
+            <button class="tab-btn" data-tab="procedimientos">
+                <i class="fas fa-stethoscope"></i> Procedimientos
+            </button>
+        </div>
+
+        <!-- ==================== TAB 1: CONSENTIMIENTOS ==================== -->
+        <div id="tab-consentimientos" class="tab-content active">
+            <!-- Estadísticas de Consentimientos -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value text-warning" id="totalPendientes">0</div>
+                    <div class="stat-label">⏳ Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-success" id="totalAprobadosCons">0</div>
+                    <div class="stat-label">✅ Aprobados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-danger" id="totalRechazadosCons">0</div>
+                    <div class="stat-label">❌ Rechazados</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value text-success" id="totalAprobados">0</div>
-                <div class="stat-label">✅ Aprobados</div>
+
+            <!-- Filtros -->
+            <div class="search-container">
+                <div class="filter-card">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label><i class="fas fa-id-card"></i> CI del Paciente</label>
+                            <input type="text" id="filtroCi" placeholder="Buscar por CI...">
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-filter"></i> Estado</label>
+                            <select id="filtroEstado">
+                                <option value="todos">📋 Todos</option>
+                                <option value="PENDIENTE">⏳ Pendientes</option>
+                                <option value="APROBADO">✅ Aprobados</option>
+                                <option value="RECHAZADO">❌ Rechazados</option>
+                            </select>
+                        </div>
+                        <div class="filter-group" style="flex: 0;">
+                            <button class="btn btn-success" onclick="aplicarFiltrosConsentimientos()">
+                                <i class="fas fa-search"></i> Filtrar
+                            </button>
+                            <button class="btn btn-secondary" onclick="limpiarFiltrosConsentimientos()">
+                                <i class="fas fa-undo"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value text-danger" id="totalRechazados">0</div>
-                <div class="stat-label">❌ Rechazados</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value text-purple" id="totalCuposRestantes">0</div>
-                <div class="stat-label">📊 Cupos Restantes</div>
+
+            <!-- Tabla de Consentimientos -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-signature"></i> Mis Consentimientos Asignados</h2>
+                    <button class="btn-refresh" onclick="cargarConsentimientos()">
+                        <i class="fas fa-sync-alt"></i> Recargar
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tratamiento</th>
+                                    <th>Estudiante</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Documentos</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyConsentimientos">
+                                <tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Tabla de Procedimientos Pendientes -->
-        <div class="card">
-            <div class="card-header">
-                <h2><i class="fas fa-list"></i> Procedimientos Pendientes de Aprobación</h2>
-                <button class="btn-refresh" onclick="recargar()">
-                    <i class="fas fa-sync-alt"></i> Recargar
-                </button>
+        <!-- ==================== TAB 2: PROCEDIMIENTOS ==================== -->
+        <div id="tab-procedimientos" class="tab-content">
+            <!-- Estadísticas de Procedimientos -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value text-warning" id="totalProcPendientes">0</div>
+                    <div class="stat-label">⏳ Pendientes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-success" id="totalProcAprobados">0</div>
+                    <div class="stat-label">✅ Aprobados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-danger" id="totalProcRechazados">0</div>
+                    <div class="stat-label">❌ Rechazados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-purple" id="totalCuposRestantes">0</div>
+                    <div class="stat-label">📊 Cupos Restantes</div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Paciente</th>
-                                <th>Tratamiento</th>
-                                <th>Diente</th>
-                                <th>Procedimiento</th>
-                                <th>Fecha</th>
-                                <th>Cupos</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyProcedimientos">
-                            <tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando procedimientos...</td></tr>
-                        </tbody>
-                    </table>
+
+            <!-- Tabla de Procedimientos -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-list"></i> Procedimientos Pendientes de Aprobación</h2>
+                    <button class="btn-refresh" onclick="cargarProcedimientos()">
+                        <i class="fas fa-sync-alt"></i> Recargar
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paciente</th>
+                                    <th>Tratamiento</th>
+                                    <th>Diente</th>
+                                    <th>Procedimiento</th>
+                                    <th>Fecha</th>
+                                    <th>Cupos</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyProcedimientos">
+                                <tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando procedimientos...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal para Aprobar/Rechazar -->
+    <!-- ==================== MODALES ==================== -->
+
+    <!-- Modal para ver imágenes de consentimiento -->
+    <div id="modalImagen" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-image"></i> Documentos del Consentimiento</h3>
+                <span class="close close-imagen">&times;</span>
+            </div>
+            <div class="modal-body" id="modalImagenBody">
+                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para validar procedimiento -->
     <div id="modalAccion" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -328,7 +503,6 @@
         </div>
     </div>
 
-    <!-- SweetAlert2 para alertas bonitas -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
@@ -339,6 +513,10 @@
         let currentDiente = null;
         let currentProcedimiento = null;
         let currentCupos = 0;
+
+        // Filtros de consentimientos
+        let filtroCiActual = '';
+        let filtroEstadoActual = 'todos';
 
         // ========== OBTENER DOCENTE ID ==========
         async function obtenerDocenteId() {
@@ -352,7 +530,6 @@
                         return true;
                     }
                 }
-                // Fallback para pruebas
                 docenteId = 1;
                 console.log('⚠️ Usando docente ID por defecto:', docenteId);
                 return true;
@@ -363,44 +540,233 @@
             }
         }
 
-        // ========== CARGAR PROCEDIMIENTOS PENDIENTES ==========
+        // ========== PESTAÑAS ==========
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+                
+                // Cargar datos según la pestaña
+                if (this.dataset.tab === 'consentimientos') {
+                    cargarConsentimientos();
+                } else if (this.dataset.tab === 'procedimientos') {
+                    cargarProcedimientos();
+                }
+            });
+        });
+
+        // ========== CONSENTIMIENTOS ==========
+        async function cargarConsentimientos() {
+            if (!docenteId) await obtenerDocenteId();
+            
+            const tbody = document.getElementById('tbodyConsentimientos');
+            tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando consentimientos...</td></tr>';
+            
+            try {
+                const url = `/consentimientos/todos-json?idDocente=${docenteId}`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Error al cargar consentimientos');
+                
+                let consentimientos = await response.json();
+                
+                // Aplicar filtros
+                if (filtroCiActual && filtroCiActual.trim() !== '') {
+                    consentimientos = consentimientos.filter(c => 
+                        c.ciPaciente && c.ciPaciente.toLowerCase().includes(filtroCiActual.toLowerCase())
+                    );
+                }
+                if (filtroEstadoActual !== 'todos') {
+                    consentimientos = consentimientos.filter(c => c.estado === filtroEstadoActual);
+                }
+                
+                renderizarTablaConsentimientos(consentimientos);
+                
+                // Actualizar estadísticas
+                const allResponse = await fetch(`/consentimientos/todos-json?idDocente=${docenteId}`);
+                const all = await allResponse.json();
+                document.getElementById('totalPendientes').textContent = all.filter(c => c.estado === 'PENDIENTE').length;
+                document.getElementById('totalAprobadosCons').textContent = all.filter(c => c.estado === 'APROBADO').length;
+                document.getElementById('totalRechazadosCons').textContent = all.filter(c => c.estado === 'RECHAZADO').length;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function renderizarTablaConsentimientos(consentimientos) {
+            const tbody = document.getElementById('tbodyConsentimientos');
+            
+            if (consentimientos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i> No hay consentimientos que coincidan con los filtros</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            for (const c of consentimientos) {
+                let badgeClass = '', estadoTexto = '';
+                switch(c.estado) {
+                    case 'PENDIENTE': badgeClass = 'badge-warning'; estadoTexto = '⏳ Pendiente'; break;
+                    case 'APROBADO': badgeClass = 'badge-success'; estadoTexto = '✅ Aprobado'; break;
+                    case 'RECHAZADO': badgeClass = 'badge-danger'; estadoTexto = '❌ Rechazado'; break;
+                    default: badgeClass = 'badge'; estadoTexto = c.estado;
+                }
+                
+                const botonesAccion = c.estado === 'PENDIENTE' ? `
+                    <button class="btn btn-success btn-sm" onclick="aprobarConsentimiento(${c.idConsentimiento})">
+                        <i class="fas fa-check"></i> Aprobar
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="rechazarConsentimiento(${c.idConsentimiento})">
+                        <i class="fas fa-times"></i> Rechazar
+                    </button>
+                ` : `<span class="badge ${badgeClass}">${estadoTexto}</span>`;
+                
+                html += `
+                    <tr>
+                        <td>
+                            <strong>${escapeHtml(c.pacienteNombre)}</strong><br>
+                            <small style="color: #666;">CI: ${escapeHtml(c.ciPaciente || 'N/A')}</small>
+                        </td>
+                        <td>${escapeHtml(c.tratamientoNombre)}</td>
+                        <td>${escapeHtml(c.estudianteNombre)}</td>
+                        <td>${c.fecha ? new Date(c.fecha).toLocaleDateString() : '-'}</td>
+                        <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
+                        <td class="text-center">
+                            <button class="btn btn-info btn-sm" onclick="verFotos(${c.idConsentimiento})">
+                                <i class="fas fa-image"></i> Ver
+                            </button>
+                        </td>
+                        <td class="text-center">${botonesAccion}</td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = html;
+        }
+
+        async function verFotos(idConsentimiento) {
+            const modal = document.getElementById('modalImagen');
+            const modalBody = document.getElementById('modalImagenBody');
+            
+            modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Cargando imágenes...</p></div>';
+            modal.style.display = 'block';
+            
+            try {
+                const response = await fetch(`/api/consentimiento-fotos/consentimiento/${idConsentimiento}`);
+                if (!response.ok) throw new Error('Error al cargar las imágenes');
+                
+                const fotos = await response.json();
+                
+                if (fotos.length === 0) {
+                    modalBody.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>No hay documentos adjuntos</p></div>';
+                } else {
+                    let html = '<div class="image-grid">';
+                    for (const foto of fotos) {
+                        const ruta = foto.rutaArchivo || foto.rutaArchivoConsentimiento;
+                        html += `
+                            <div style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 15px;">
+                                <img src="${ruta}" class="image-preview" onerror="this.src='https://via.placeholder.com/600x400?text=Error+al+cargar+imagen'">
+                                <div class="image-info">
+                                    <p><strong><i class="fas fa-file"></i> Archivo:</strong> ${escapeHtml(foto.nombreOriginal || foto.nombreConsentimientoOriginal || 'Sin nombre')}</p>
+                                    <p><strong><i class="fas fa-weight-hanging"></i> Tamaño:</strong> ${formatearTamanio(foto.tamano || foto.tamanoConsentimiento)}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    html += '</div>';
+                    modalBody.innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                modalBody.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Error: ${error.message}</p></div>`;
+            }
+        }
+
+        async function aprobarConsentimiento(id) {
+            if (!confirm('¿Está seguro de APROBAR este consentimiento?')) return;
+            
+            try {
+                const response = await fetch(`/consentimientos/${id}/estado?estado=APROBADO`, { method: 'PUT' });
+                if (response.ok) {
+                    Swal.fire({ icon: 'success', title: '✅ Aprobado', text: 'Consentimiento aprobado correctamente' });
+                    cargarConsentimientos();
+                } else {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            }
+        }
+
+        async function rechazarConsentimiento(id) {
+            if (!confirm('¿Está seguro de RECHAZAR este consentimiento?')) return;
+            
+            try {
+                const response = await fetch(`/consentimientos/${id}/estado?estado=RECHAZADO`, { method: 'PUT' });
+                if (response.ok) {
+                    Swal.fire({ icon: 'info', title: '❌ Rechazado', text: 'Consentimiento rechazado correctamente' });
+                    cargarConsentimientos();
+                } else {
+                    const error = await response.text();
+                    throw new Error(error);
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            }
+        }
+
+        function aplicarFiltrosConsentimientos() {
+            filtroCiActual = document.getElementById('filtroCi').value.trim();
+            filtroEstadoActual = document.getElementById('filtroEstado').value;
+            cargarConsentimientos();
+        }
+
+        function limpiarFiltrosConsentimientos() {
+            document.getElementById('filtroCi').value = '';
+            document.getElementById('filtroEstado').value = 'todos';
+            filtroCiActual = '';
+            filtroEstadoActual = 'todos';
+            cargarConsentimientos();
+        }
+
+        // ========== PROCEDIMIENTOS ==========
         async function cargarProcedimientos() {
+            if (!docenteId) await obtenerDocenteId();
+            
             const tbody = document.getElementById('tbodyProcedimientos');
             tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando procedimientos...</td></tr>';
             
             try {
-                // ✅ CORREGIDO: Usar /api/docentes/ (plural)
                 const response = await fetch(`/api/docentes/procedimientos-pendientes?docenteId=${docenteId}`);
-                
                 if (!response.ok) {
                     const error = await response.text();
                     throw new Error(error);
                 }
                 
                 const data = await response.json();
-                console.log('📦 Datos:', data);
-                
                 const procedimientos = data.procedimientos || [];
                 
-                // Actualizar estadísticas
-                document.getElementById('totalPendientes').textContent = data.totalPendientes || procedimientos.length;
-                document.getElementById('totalAprobados').textContent = data.totalAprobados || 0;
-                document.getElementById('totalRechazados').textContent = data.totalRechazados || 0;
+                document.getElementById('totalProcPendientes').textContent = data.totalPendientes || procedimientos.length;
+                document.getElementById('totalProcAprobados').textContent = data.totalAprobados || 0;
+                document.getElementById('totalProcRechazados').textContent = data.totalRechazados || 0;
                 document.getElementById('totalCuposRestantes').textContent = data.cuposRestantes || 0;
                 
-                renderizarTabla(procedimientos);
+                renderizarTablaProcedimientos(procedimientos);
                 
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('Error:', error);
                 tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</td></tr>`;
             }
         }
 
-        function renderizarTabla(procedimientos) {
+        function renderizarTablaProcedimientos(procedimientos) {
             const tbody = document.getElementById('tbodyProcedimientos');
             
             if (procedimientos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-check-circle"></i> ✅ No hay procedimientos pendientes de aprobación</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-check-circle"></i> ✅ No hay procedimientos pendientes</td></tr>';
                 return;
             }
             
@@ -444,7 +810,6 @@
             tbody.innerHTML = html;
         }
 
-        // ========== MODAL APROBAR ==========
         function abrirModalAprobar(idDientePlan, paciente, tratamiento, diente, procedimiento, observaciones, cupos) {
             currentDientePlanId = idDientePlan;
             currentPaciente = paciente;
@@ -464,7 +829,6 @@
             document.getElementById('modalAccion').style.display = 'block';
         }
 
-        // ========== APROBAR ==========
         document.getElementById('btnAprobar').addEventListener('click', async function() {
             if (!currentDientePlanId) return;
             
@@ -474,7 +838,6 @@
             btn.disabled = true;
             
             try {
-                // ✅ CORREGIDO: Usar /api/docentes/ (plural)
                 const response = await fetch(`/api/docentes/procedimientos/${currentDientePlanId}/aprobar?docenteId=${docenteId}`, {
                     method: 'PUT'
                 });
@@ -492,39 +855,27 @@
                     html: `
                         <p><strong>${result.mensaje}</strong></p>
                         <p>Cupos restantes: <strong>${result.cuposRestantes}</strong></p>
-                        <p>Progreso: <strong>${result.progreso || 'N/A'}</strong></p>
                     `,
                     confirmButtonColor: '#27ae60'
                 });
                 
-                cerrarModal();
-                recargar();
+                cerrarModalAccion();
+                cargarProcedimientos();
                 
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Error',
-                    text: error.message,
-                    confirmButtonColor: '#e74c3c'
-                });
+                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message });
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
         });
 
-        // ========== RECHAZAR ==========
         document.getElementById('btnRechazar').addEventListener('click', async function() {
             if (!currentDientePlanId) return;
             
             const motivo = document.getElementById('motivoRechazo').value.trim();
             if (!motivo) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: '⚠️ Motivo requerido',
-                    text: 'Por favor, ingrese el motivo del rechazo',
-                    confirmButtonColor: '#f39c12'
-                });
+                Swal.fire({ icon: 'warning', title: '⚠️ Motivo requerido', text: 'Ingrese el motivo del rechazo' });
                 return;
             }
             
@@ -534,7 +885,6 @@
             btn.disabled = true;
             
             try {
-                // ✅ CORREGIDO: Usar /api/docentes/ (plural)
                 const response = await fetch(`/api/docentes/procedimientos/${currentDientePlanId}/rechazar`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -551,23 +901,14 @@
                 Swal.fire({
                     icon: 'info',
                     title: '❌ Procedimiento Rechazado',
-                    html: `
-                        <p><strong>${result.mensaje}</strong></p>
-                        <p>Motivo: <em>${motivo}</em></p>
-                    `,
-                    confirmButtonColor: '#e74c3c'
+                    text: result.mensaje || 'Procedimiento rechazado correctamente'
                 });
                 
-                cerrarModal();
-                recargar();
+                cerrarModalAccion();
+                cargarProcedimientos();
                 
             } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: '❌ Error',
-                    text: error.message,
-                    confirmButtonColor: '#e74c3c'
-                });
+                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message });
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -575,9 +916,16 @@
         });
 
         // ========== FUNCIONES UTILIDAD ==========
-        function cerrarModal() {
+        function cerrarModalAccion() {
             document.getElementById('modalAccion').style.display = 'none';
             currentDientePlanId = null;
+        }
+
+        function formatearTamanio(bytes) {
+            if (!bytes) return 'Desconocido';
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(1024));
+            return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
         }
 
         function escapeHtml(str) {
@@ -591,28 +939,40 @@
             });
         }
 
-        function recargar() {
-            cargarProcedimientos();
-        }
-
-        // ========== EVENTOS ==========
-        document.querySelector('.close-modal')?.addEventListener('click', cerrarModal);
-        document.getElementById('btnCancelarModal')?.addEventListener('click', cerrarModal);
+        // ========== EVENTOS MODALES ==========
+        document.querySelector('.close-imagen')?.addEventListener('click', () => {
+            document.getElementById('modalImagen').style.display = 'none';
+        });
+        document.querySelector('.close-modal')?.addEventListener('click', cerrarModalAccion);
+        document.getElementById('btnCancelarModal')?.addEventListener('click', cerrarModalAccion);
         
         window.onclick = function(event) {
+            if (event.target === document.getElementById('modalImagen')) {
+                document.getElementById('modalImagen').style.display = 'none';
+            }
             if (event.target === document.getElementById('modalAccion')) {
-                cerrarModal();
+                cerrarModalAccion();
             }
         };
+
+        // Enter en filtro CI
+        document.getElementById('filtroCi')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') aplicarFiltrosConsentimientos();
+        });
 
         // ========== INICIALIZAR ==========
         (async function() {
             await obtenerDocenteId();
+            await cargarConsentimientos();
             await cargarProcedimientos();
             
-            // Recargar automáticamente cada 30 segundos
+            // Auto-refresh cada 30 segundos
             setInterval(() => {
-                cargarProcedimientos();
+                if (document.getElementById('tab-consentimientos').classList.contains('active')) {
+                    cargarConsentimientos();
+                } else if (document.getElementById('tab-procedimientos').classList.contains('active')) {
+                    cargarProcedimientos();
+                }
             }, 30000);
         })();
     </script>

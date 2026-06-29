@@ -39,7 +39,7 @@ public class ActaEntregaController {
     @PostMapping("/crear-lote")
     public ResponseEntity<?> crearLoteDesdeAbastecimiento(@RequestBody Map<String, Object> body) {
         try {
-            // ✅ Validar que existan los campos requeridos
+            //  Validar que existan los campos requeridos
             if (!body.containsKey("idDetalleActa")) {
                 return ResponseEntity.badRequest().body(Map.of("error", "El campo idDetalleActa es requerido"));
             }
@@ -52,13 +52,13 @@ public class ActaEntregaController {
                 return ResponseEntity.badRequest().body(Map.of("error", "La fecha de vencimiento es requerida"));
             }
             
-            // ✅ Obtener valores con validación
+            //  Obtener valores con validación
             Long idDetalleActa = Long.valueOf(body.get("idDetalleActa").toString());
             String numeroLote = body.get("numeroLote").toString();
             String fechaVencimientoStr = body.get("fechaVencimiento").toString();
             LocalDate fechaVencimiento = LocalDate.parse(fechaVencimientoStr);
             
-            // ✅ Campos opcionales con valores por defecto
+            //  Campos opcionales con valores por defecto
             Integer cantidadEmpaque = body.containsKey("cantidadEmpaque") && body.get("cantidadEmpaque") != null ? 
                 Integer.valueOf(body.get("cantidadEmpaque").toString()) : 1;
             
@@ -96,7 +96,7 @@ public class ActaEntregaController {
             lote.setCantidadInicial(cantidadEntregada);
             lote.setCantidadDisponible(cantidadEntregada);
             
-            // ✅ Campos opcionales
+            //  Campos opcionales
             if (cantidadEmpaque != null && cantidadEmpaque > 0) {
                 lote.setCantidadEmpaque(cantidadEmpaque);
             }

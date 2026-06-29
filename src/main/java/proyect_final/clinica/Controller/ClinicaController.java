@@ -45,7 +45,7 @@ public class ClinicaController {
         return ResponseEntity.ok(resultado);
     }
 
-    // Método auxiliar para obtener nombre completo (puedes ponerlo en el controller o usar un service)
+    // Método auxiliar para obtener nombre completo 
     private String obtenerNombreCompletoDocente(Docente docente) {
         if (docente.getUsuario() != null && docente.getUsuario().getPersona() != null) {
             Persona p = docente.getUsuario().getPersona();
@@ -54,7 +54,6 @@ public class ClinicaController {
         return "Docente";
     }
 
-    // GET /api/clinicas/{id} - Obtener una clínica por ID
     @GetMapping("/{id}")
     public ResponseEntity<Clinica> obtenerPorId(@PathVariable Long id) {
         return clinicaService.obtenerPorId(id)
@@ -62,26 +61,24 @@ public class ClinicaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // GET /api/clinicas/buscar/nombre?
     @GetMapping("/buscar/nombre")
     public ResponseEntity<List<Clinica>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(clinicaService.buscarPorNombre(nombre));
     }
 
-    // GET /api/clinicas/buscar/turno?
     @GetMapping("/buscar/turno")
     public ResponseEntity<List<Clinica>> buscarPorTurno(@RequestParam String turno) {
         return ResponseEntity.ok(clinicaService.buscarPorTurno(turno));
     }
 
-    // POST /api/clinicas - Crear nueva clínica
+    //  Crear nueva clínica
     @PostMapping
     public ResponseEntity<Clinica> crear(@RequestBody Clinica clinica) {
         Clinica nuevaClinica = clinicaService.guardar(clinica);
         return ResponseEntity.ok(nuevaClinica);
     }
 
-    // DELETE /api/clinicas/{id} - Eliminar clínica
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         clinicaService.eliminar(id);

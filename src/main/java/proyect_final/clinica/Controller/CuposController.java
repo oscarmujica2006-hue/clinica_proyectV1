@@ -117,7 +117,6 @@ public class CuposController {
         }
     }
 
-    // ✅ AGREGAR MÉTODO PUT PARA ACTUALIZAR CUPOS
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarCupo(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
         try {

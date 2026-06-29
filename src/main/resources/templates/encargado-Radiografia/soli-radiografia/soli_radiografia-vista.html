@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Solicitudes de Radiografía</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0D47A1, #1565C0);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.6rem;
+            margin: 0;
+        }
+
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .header .badge-encargada {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #1565C0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #1565C0;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0D47A1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
+        }
+
+        .btn-success {
+            background: #2E7D32;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-danger {
+            background: #c62828;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(198, 40, 40, 0.3);
+        }
+
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #616161;
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #1565C0;
+            color: #1565C0;
+        }
+        .btn-outline:hover {
+            background: #1565C0;
+            color: white;
+        }
+
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+            border-radius: 8px;
+        }
+
+        .resumen-item {
+            text-align: center;
+        }
+
+        .resumen-item .numero {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .resumen-item .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .resumen-item .numero.total {
+            color: #0D47A1;
+        }
+        .resumen-item .numero.pendiente {
+            color: #e65100;
+        }
+        .resumen-item .numero.aprobado {
+            color: #2e7d32;
+        }
+        .resumen-item .numero.rechazado {
+            color: #c62828;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .solicitudes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .solicitudes-table th,
+        .solicitudes-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .solicitudes-table th {
+            background-color: #f8f9fa;
+            color: #0D47A1;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .solicitudes-table tr:hover {
+            background-color: #f5f9ff;
+        }
+
+        .solicitudes-table .estado-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .estado-pendiente {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .estado-aprobado {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .estado-rechazado {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .estado-realizado {
+            background: #e3f2fd;
+            color: #0D47A1;
+        }
+
+        .text-monto {
+            font-weight: 600;
+        }
+        .text-verde {
+            color: #2e7d32;
+        }
+        .text-rojo {
+            color: #c62828;
+        }
+        .text-azul {
+            color: #0D47A1;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #1565C0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Modal Rechazo */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #0D47A1;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-body .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-body .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .modal-body .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-body .form-group textarea:focus {
+            outline: none;
+            border-color: #1565C0;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .filters-section {
+                flex-direction: column;
+            }
+            .filter-group {
+                min-width: 100%;
+            }
+            .resumen {
+                grid-template-columns: 1fr 1fr;
+            }
+            .solicitudes-table {
+                font-size: 12px;
+            }
+            .solicitudes-table th,
+            .solicitudes-table td {
+                padding: 8px 10px;
+            }
+            .acciones {
+                flex-direction: column;
+            }
+            .btn-sm {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .resumen {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fas fa-x-ray"></i>
+                    Gestión de Radiografías
+                </h1>
+                <div class="subtitle">
+                    <i class="fas fa-info-circle"></i> Gestione las solicitudes de radiografías de los pacientes
+                </div>
+            </div>
+            <div class="badge-encargada">
+                <i class="fas fa-user-md"></i>
+                <span>Encargada: <strong id="nombreEncargada">Radióloga</strong></span>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="estadoFiltro"><i class="fas fa-filter"></i> Estado</label>
+                <select id="estadoFiltro">
+                    <option value="todos">Todos</option>
+                    <option value="PENDIENTE" selected>Pendientes</option>
+                    <option value="APROBADO">Aprobados</option>
+                    <option value="RECHAZADO">Rechazados</option>
+                    <option value="REALIZADO">Realizados</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="fechaInicio"><i class="fas fa-calendar-alt"></i> Desde</label>
+                <input type="date" id="fechaInicio">
+            </div>
+            <div class="filter-group">
+                <label for="fechaFin"><i class="fas fa-calendar-alt"></i> Hasta</label>
+                <input type="date" id="fechaFin">
+            </div>
+            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
+                <button class="btn btn-primary" id="btnBuscar" style="height: 42px;">
+                    <i class="fas fa-search"></i> Filtrar
+                </button>
+            </div>
+            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
+                <button class="btn btn-secondary" id="btnLimpiar" style="height: 42px;">
+                    <i class="fas fa-undo"></i> Limpiar
+                </button>
+            </div>
+            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
+                <button class="btn btn-success" onclick="cargarSolicitudes()" style="height: 42px;">
+                    <i class="fas fa-sync-alt"></i> Recargar
+                </button>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div id="resumenContainer" class="resumen">
+            <div class="resumen-item">
+                <div class="numero total" id="totalSolicitudes">0</div>
+                <div class="label">Total Solicitudes</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero pendiente" id="totalPendientes">0</div>
+                <div class="label">⏳ Pendientes</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero aprobado" id="totalAprobados">0</div>
+                <div class="label">✅ Aprobados</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero rechazado" id="totalRechazados">0</div>
+                <div class="label">❌ Rechazados</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero total" id="totalRecibos" style="color: #0D47A1;">$0.00</div>
+                <div class="label">💰 Total en Recibos</div>
+            </div>
+        </div>
+
+        <!-- Tabla de Solicitudes -->
+        <div class="table-container">
+            <table class="solicitudes-table">
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">#ID</th>
+                        <th>Paciente</th>
+                        <th>Radiografía</th>
+                        <th>Dientes</th>
+                        <th>Motivo</th>
+                        <th>Fecha</th>
+                        <th style="text-align: center;">Estado</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="solicitudesBody">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top: 10px;">Cargando solicitudes...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Rechazo -->
+    <div class="modal-overlay" id="modalRechazo">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-times-circle"></i> Rechazar Solicitud</h2>
+                <button class="modal-close" onclick="cerrarModalRechazo()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Motivo del rechazo <span style="color: red;">*</span></label>
+                    <textarea id="motivoRechazo" placeholder="Ingrese el motivo del rechazo..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModalRechazo()">Cancelar</button>
+                <button class="btn btn-danger" id="btnConfirmarRechazo">
+                    <i class="fas fa-check"></i> Confirmar Rechazo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let currentSolicitudId = null;
+
+        // ============ ELEMENTOS ============
+        const btnBuscar = document.getElementById('btnBuscar');
+        const btnLimpiar = document.getElementById('btnLimpiar');
+        const estadoFiltro = document.getElementById('estadoFiltro');
+        const fechaInicio = document.getElementById('fechaInicio');
+        const fechaFin = document.getElementById('fechaFin');
+        const solicitudesBody = document.getElementById('solicitudesBody');
+
+        // ============ FUNCIONES ============
+
+        function getEstadoBadge(estado) {
+            const clases = {
+                'PENDIENTE': 'estado-pendiente',
+                'APROBADO': 'estado-aprobado',
+                'RECHAZADO': 'estado-rechazado',
+                'REALIZADO': 'estado-realizado'
+            };
+            const labels = {
+                'PENDIENTE': '⏳ PENDIENTE',
+                'APROBADO': '✅ APROBADO',
+                'RECHAZADO': '❌ RECHAZADO',
+                'REALIZADO': '📷 REALIZADO'
+            };
+            return `<span class="estado-badge ${clases[estado] || 'estado-pendiente'}">${labels[estado] || estado}</span>`;
+        }
+
+        function formatearMoneda(monto) {
+            return monto ? `$${monto.toFixed(2)}` : '$0.00';
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return '-';
+            return new Date(fecha).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function formatearDientes(detalles) {
+            if (!detalles || detalles.length === 0) return '-';
+            return detalles.map(d => d.diente || d.dienteNumero).filter(d => d).join(', ');
+        }
+
+        // ============ CARGAR SOLICITUDES ============
+        async function cargarSolicitudes() {
+            const estado = estadoFiltro.value;
+            const desde = fechaInicio.value;
+            const hasta = fechaFin.value;
+
+            solicitudesBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando solicitudes...</p>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                // Cargar solicitudes según estado
+                let url = `${API_BASE}/api/solicitudes-radiografia`;
+                if (estado !== 'todos') {
+                    url += `/estado/${estado}`;
+                }
+
+                let response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Error al cargar solicitudes');
+                }
+
+                let solicitudes = await response.json();
+
+                // Aplicar filtros de fecha
+                if (desde) {
+                    const fechaDesde = new Date(desde);
+                    fechaDesde.setHours(0, 0, 0);
+                    solicitudes = solicitudes.filter(s => s.fechaSolicitud && new Date(s.fechaSolicitud) >= fechaDesde);
+                }
+                if (hasta) {
+                    const fechaHasta = new Date(hasta);
+                    fechaHasta.setHours(23, 59, 59);
+                    solicitudes = solicitudes.filter(s => s.fechaSolicitud && new Date(s.fechaSolicitud) <= fechaHasta);
+                }
+
+                if (!solicitudes || solicitudes.length === 0) {
+                    solicitudesBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="no-data">
+                                <i class="fas fa-inbox" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                No hay solicitudes de radiografía
+                            </td>
+                        </tr>
+                    `;
+                    actualizarResumen([]);
+                    return;
+                }
+
+                actualizarResumen(solicitudes);
+
+                let html = '';
+                for (const solicitud of solicitudes) {
+                    const estado = solicitud.estado || 'PENDIENTE';
+                    
+                    // Obtener detalles (dientes)
+                    let detalles = [];
+                    let dientesStr = '-';
+                    try {
+                        const detResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${solicitud.idSolicitudRadiografia}/detalles`);
+                        if (detResponse.ok) {
+                            detalles = await detResponse.json();
+                            dientesStr = formatearDientes(detalles);
+                        }
+                    } catch (e) {
+                        console.warn('Error al cargar detalles:', e);
+                    }
+
+                    // Obtener nombre del paciente
+                    let pacienteNombre = 'N/A';
+                    try {
+                        if (solicitud.diagnosticoTratamiento && solicitud.diagnosticoTratamiento.evolucionClinica) {
+                            // Intentar obtener paciente
+                        }
+                    } catch (e) {}
+
+                    html += `
+                        <tr>
+                            <td><strong>#${solicitud.idSolicitudRadiografia}</strong></td>
+                            <td>${pacienteNombre}</td>
+                            <td>${solicitud.radiografia ? solicitud.radiografia.nombreRayo : 'N/A'}</td>
+                            <td>${dientesStr}</td>
+                            <td>${solicitud.motivo || '-'}</td>
+                            <td>${formatearFecha(solicitud.fechaSolicitud)}</td>
+                            <td style="text-align: center;">${getEstadoBadge(estado)}</td>
+                            <td style="text-align: center;">
+                                <div class="acciones">
+                                    ${estado === 'PENDIENTE' ? `
+                                        <button class="btn btn-success btn-sm" onclick="aprobarSolicitud(${solicitud.idSolicitudRadiografia})" title="Aprobar">
+                                            <i class="fas fa-check"></i> Aprobar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="abrirModalRechazo(${solicitud.idSolicitudRadiografia})" title="Rechazar">
+                                            <i class="fas fa-times"></i> Rechazar
+                                        </button>
+                                    ` : `
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalle(${solicitud.idSolicitudRadiografia})" title="Ver detalle">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
+                                    `}
+                                    ${estado === 'APROBADO' ? `
+                                        <button class="btn btn-info btn-sm" onclick="marcarRealizado(${solicitud.idSolicitudRadiografia})" title="Marcar como realizado">
+                                            <i class="fas fa-camera"></i> Realizado
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                solicitudesBody.innerHTML = html;
+
+            } catch (error) {
+                console.error('Error:', error);
+                solicitudesBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 20px; text-align: center; color: #c62828;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                            Error: ${error.message}
+                            <br><button class="btn btn-primary" onclick="cargarSolicitudes()" style="margin-top: 10px;">Reintentar</button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function actualizarResumen(solicitudes) {
+            let total = solicitudes.length;
+            let pendientes = 0, aprobados = 0, rechazados = 0, realizados = 0;
+            let totalRecibos = 0;
+
+            solicitudes.forEach(s => {
+                const estado = s.estado || 'PENDIENTE';
+                if (estado === 'PENDIENTE') pendientes++;
+                else if (estado === 'APROBADO') aprobados++;
+                else if (estado === 'RECHAZADO') rechazados++;
+                else if (estado === 'REALIZADO') realizados++;
+                
+                // Sumar al recibo si está aprobado
+                if (estado === 'APROBADO' || estado === 'REALIZADO') {
+                    totalRecibos += s.radiografia?.precioRayo || 0;
+                }
+            });
+
+            document.getElementById('totalSolicitudes').textContent = total;
+            document.getElementById('totalPendientes').textContent = pendientes;
+            document.getElementById('totalAprobados').textContent = aprobados;
+            document.getElementById('totalRechazados').textContent = rechazados;
+            document.getElementById('totalRecibos').textContent = formatearMoneda(totalRecibos);
+        }
+
+        // ============ APROBAR SOLICITUD ============
+        async function aprobarSolicitud(id) {
+            const result = await Swal.fire({
+                title: '¿Aprobar solicitud?',
+                text: 'Al aprobar, se generará el recibo automáticamente',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#2E7D32',
+                cancelButtonColor: '#757575',
+                confirmButtonText: '✅ Sí, aprobar',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/aprobar`, {
+                    method: 'PUT'
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al aprobar');
+                }
+
+                const data = await response.json();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Solicitud aprobada',
+                    html: `
+                        <p>La solicitud fue aprobada correctamente</p>
+                        <p><strong>Precio:</strong> ${formatearMoneda(data.precio || 0)}</p>
+                        <p style="color: #2e7d32;"><i class="fas fa-check-circle"></i> El recibo se generó automáticamente</p>
+                    `,
+                    confirmButtonColor: '#2E7D32'
+                });
+
+                cargarSolicitudes();
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            }
+        }
+
+        // ============ RECHAZAR SOLICITUD ============
+        function abrirModalRechazo(id) {
+            currentSolicitudId = id;
+            document.getElementById('motivoRechazo').value = '';
+            document.getElementById('modalRechazo').classList.add('active');
+        }
+
+        function cerrarModalRechazo() {
+            document.getElementById('modalRechazo').classList.remove('active');
+            currentSolicitudId = null;
+        }
+
+        document.getElementById('btnConfirmarRechazo').addEventListener('click', async function() {
+            const motivo = document.getElementById('motivoRechazo').value.trim();
+            if (!motivo) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Motivo requerido',
+                    text: 'Ingrese el motivo del rechazo',
+                    confirmButtonColor: '#FF9800'
+                });
+                return;
+            }
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${currentSolicitudId}/rechazar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo: motivo })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al rechazar');
+                }
+
+                const data = await response.json();
+
+                Swal.fire({
+                    icon: 'info',
+                    title: '❌ Solicitud rechazada',
+                    text: data.mensaje || 'La solicitud fue rechazada correctamente',
+                    confirmButtonColor: '#c62828'
+                });
+
+                cerrarModalRechazo();
+                cargarSolicitudes();
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            } finally {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check"></i> Confirmar Rechazo';
+            }
+        });
+
+        // ============ MARCAR COMO REALIZADO ============
+        async function marcarRealizado(id) {
+            const result = await Swal.fire({
+                title: '¿Marcar como realizado?',
+                text: 'Confirme que la radiografía fue realizada',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0D47A1',
+                cancelButtonColor: '#757575',
+                confirmButtonText: '✅ Sí, realizada',
+                cancelButtonText: 'Cancelar'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                // Endpoint para marcar como realizado (debes implementarlo en el backend)
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/realizado`, {
+                    method: 'PUT'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al marcar como realizado');
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Radiografía realizada',
+                    text: 'La radiografía fue marcada como realizada',
+                    confirmButtonColor: '#0D47A1'
+                });
+
+                cargarSolicitudes();
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            }
+        }
+
+        // ============ VER DETALLE ============
+        async function verDetalle(id) {
+            try {
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}`);
+                if (!response.ok) throw new Error('Error al obtener detalle');
+
+                const data = await response.json();
+
+                // Obtener detalles (dientes)
+                let dientesStr = '-';
+                try {
+                    const detResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/detalles`);
+                    if (detResponse.ok) {
+                        const detalles = await detResponse.json();
+                        dientesStr = detalles.map(d => d.diente || d.dienteNumero).filter(d => d).join(', ');
+                    }
+                } catch (e) {}
+
+                Swal.fire({
+                    title: '📋 Detalle de Solicitud',
+                    html: `
+                        <div style="text-align: left; padding: 10px;">
+                            <p><strong>ID:</strong> #${data.idSolicitudRadiografia}</p>
+                            <p><strong>Radiografía:</strong> ${data.radiografia?.nombreRayo || 'N/A'}</p>
+                            <p><strong>Dientes:</strong> ${dientesStr}</p>
+                            <p><strong>Motivo:</strong> ${data.motivo || '-'}</p>
+                            <p><strong>Estado:</strong> ${getEstadoBadge(data.estado)}</p>
+                            <p><strong>Fecha:</strong> ${formatearFecha(data.fechaSolicitud)}</p>
+                            <p><strong>Precio:</strong> ${formatearMoneda(data.radiografia?.precioRayo || 0)}</p>
+                        </div>
+                    `,
+                    confirmButtonColor: '#0D47A1'
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            }
+        }
+
+        // ============ EVENTOS ============
+        btnBuscar.addEventListener('click', cargarSolicitudes);
+        btnLimpiar.addEventListener('click', () => {
+            estadoFiltro.value = 'PENDIENTE';
+            fechaInicio.value = '';
+            fechaFin.value = '';
+            cargarSolicitudes();
+        });
+
+        estadoFiltro.addEventListener('change', cargarSolicitudes);
+        fechaInicio.addEventListener('change', cargarSolicitudes);
+        fechaFin.addEventListener('change', cargarSolicitudes);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModalRechazo();
+        });
+
+        document.getElementById('modalRechazo').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalRechazo();
+        });
+
+        // ============ INICIALIZAR ============
+        window.addEventListener('load', () => {
+            const hoy = new Date();
+            const hace30Dias = new Date();
+            hace30Dias.setDate(hoy.getDate() - 30);
+            fechaInicio.value = hace30Dias.toISOString().split('T')[0];
+            fechaFin.value = hoy.toISOString().split('T')[0];
+            estadoFiltro.value = 'PENDIENTE';
+            cargarSolicitudes();
+        });
+    </script>
+</body>
+</html>

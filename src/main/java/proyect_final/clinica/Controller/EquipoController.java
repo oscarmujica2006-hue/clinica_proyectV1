@@ -19,7 +19,7 @@ public class EquipoController {
     @Autowired
     private EquipoService equipoService;
 
-    // ✅ Obtener ID de usuario de la sesión HTTP
+    // Obtener ID de usuario de la sesión HTTP
     private Integer getIdUsuarioDeSesion(HttpServletRequest request) {
         try {
             HttpSession session = request.getSession(false);
@@ -35,18 +35,17 @@ public class EquipoController {
         return 1; // Usuario por defecto (SISTEMA)
     }
 
-    // ✅ CREAR EQUIPO
     @PostMapping("/crear")
     public ResponseEntity<?> crearEquipo(@RequestBody EquipoDTO equipoDTO, HttpServletRequest request) {
         try {
-            Integer usuarioId = getIdUsuarioDeSesion(request); // ✅ AHORA ES INTEGER
+            Integer usuarioId = getIdUsuarioDeSesion(request); 
             System.out.println("ID de usuario autenticado (sesión): " + usuarioId);
 
             String resultado = equipoService.crearEquipoConFuncion(
                 equipoDTO.getCodigo(),
                 equipoDTO.getNombre(),
                 equipoDTO.getEstado(),
-                usuarioId // ✅ AHORA PASAMOS INTEGER
+                usuarioId 
             );
 
             if (resultado.startsWith("ERROR:")) {
@@ -68,7 +67,6 @@ public class EquipoController {
         }
     }
 
-    // ==================== OBTENER EQUIPOS DISPONIBLES ====================
     @GetMapping("/disponibles")
     public ResponseEntity<?> obtenerEquiposDisponibles() {
         try {
@@ -126,7 +124,7 @@ public class EquipoController {
                                                @RequestBody EquipoDTO equipoDTO,
                                                HttpServletRequest request) {
         try {
-            Integer usuarioId = getIdUsuarioDeSesion(request); // ✅ AHORA ES INTEGER
+            Integer usuarioId = getIdUsuarioDeSesion(request); 
             System.out.println("ID de usuario para actualización: " + usuarioId);
             
             Optional<Equipo> equipoOpt = equipoService.obtenerPorId(id);
@@ -138,7 +136,7 @@ public class EquipoController {
             equipo.setCodigoEquipo(equipoDTO.getCodigo());
             equipo.setNombreEquipo(equipoDTO.getNombre());
             equipo.setEstadoEquipo(equipoDTO.getEstado());
-            equipo.setUsuModEqu(usuarioId); // ✅ AHORA PASAMOS INTEGER
+            equipo.setUsuModEqu(usuarioId); 
             
             equipoService.guardar(equipo);
             

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubic Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+
+</head>
+<body>          
+    <!-- Sidebar -->    
+    <div class="sidebar" id="sidebar">
+        <div class="logo">
+            <div>
+                <h1>PANEL</h1>
+                <h1>Encargado de Caja</h1>
+            </div>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <ul class="menu">
+
+            <li onclick="loadPage('/radiografia/soli-radiografia/soli_radiografia-vista', '', 'reciboFrame', this)">
+                <i class="fas fa-user-injured"></i>
+                <span class="menu-text">Radiografia</span>
+            </li>
+
+            <li onclick="loadPage('/caja/recibos-estudiante/estudiante-recibo', 'estudiante Recibo', 'estudianteReciboFrame', this)">
+                <i class="fas fa-user-injured"></i>
+                <span class="menu-text">Recibos de Estudiantes</span>
+            </li>
+            <li onclick="loadPage('/doctor/estado_consentimiento/estadoConsentimiento', 'Consentimiento', 'ConsentimientoEstadoFrame', this)">
+                <i class="fas fa-box"></i>
+                <span class="menu-text">Consentimiento</span>
+            </li>
+            <li onclick="loadPage('/doctor/desbloqueoEstudiante/desbloqueo', 'Desbloqueo Estudiante', 'desbloqueoFrame', this)">
+                <i class="fas fa-edit"></i>
+                <span class="menu-text">Desbloqueo Estudiante</span>
+            </li>
+            <li onclick="loadPage('/doctor/Registro-Estudiante/estudiante-vista', 'Registro Estudiante', 'registroEstudianteFrame', this)">
+                <i class="fas fa-table"></i>
+                <span class="menu-text">Registro Estudiante</span>
+            </li>
+
+            <li onclick="loadPage('/doctor/Archivo/archivo-vista', ' Archivos', 'ArchivosFrame', this)">
+                <i class="fas fa-folder-open"></i>
+                <span class="menu-text">Buscar Archivos</span>
+            </li>
+        </ul>
+        <div class="user-info">
+            <div class="user-avatar">HG</div>
+            <div class="user-details">
+                <div class="user-name">Hanna Gover</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content" id="mainContent">
+
+        <div id="reciboContent" class="content-area">
+            <iframe id="reciboFrame" src="about:blank"></iframe>
+        </div>
+
+
+        <!-- Contenido de Nuevo Paciente -->
+        <div id="estudianteReciboContent" class="content-area">
+            <iframe id="estudianteReciboFrame" src="about:blank"></iframe>
+        </div>
+        
+        <!-- Contenido de Consentimiento -->
+        <div id="ConsentimientoEstadoContent" class="content-area">
+            <iframe id="ConsentimientoEstadoFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Desbloqueo Estudiante -->
+        <div id="desbloqueoContent" class="content-area">
+            <iframe id="desbloqueoFrame" src="about:blank"></iframe>
+        </div>
+
+        <!-- Contenido de Registro Estudiante -->
+        <div id="registroEstudianteContent" class="content-area">
+            <iframe id="registroEstudianteFrame" src="about:blank"></iframe>
+        </div>
+
+            <!-- Contenido de Archivos -->
+            <div id="ArchivosContent" class="content-area">
+                <iframe id="ArchivosFrame" src="about:blank"></iframe>
+            </div>
+    </div>
+
+    <script>
+        // Toggle sidebar
+        const toggleBtn = document.getElementById('toggleBtn');
+        const sidebar = document.getElementById('sidebar');
+        
+        toggleBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+        });
+
+        function loadPage(pageUrl, pageTitle, frameId, menuItem) {
+            console.log('Cargando:', pageUrl, 'en iframe:', frameId);
+            
+            // 1. Ocultar todos los contenidos
+            document.querySelectorAll('.content-area').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 2. Desactivar todos los items del menú
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 3. Activar el item del menú clickeado
+            if (menuItem) {
+                menuItem.classList.add('active');
+            }
+            
+            // 4. Determinar qué contenedor activar según el frameId
+            let contentId = '';
+            if (frameId === 'historiaClinicaFrame') {
+                contentId = 'nuevoPacienteContent';
+            }else if (frameId === 'reciboFrame') {
+                contentId = 'reciboContent';
+            }
+            else if (frameId === 'estudianteReciboFrame') {
+                contentId = 'estudianteReciboContent';
+            }
+            
+            else if (frameId === 'ConsentimientoEstadoFrame') {
+                contentId = 'ConsentimientoEstadoContent';
+            } else if (frameId === 'desbloqueoFrame') {
+                contentId = 'desbloqueoContent';
+            } else if (frameId === 'registroEstudianteFrame') {
+                contentId = 'registroEstudianteContent';
+            } else if (frameId === 'ArchivosFrame') {
+                contentId = 'ArchivosContent';
+            }
+            
+            if (contentId) {
+                document.getElementById(contentId).classList.add('active');
+            } else {
+                console.error('No se encontró contentId para frameId:', frameId);
+                return;
+            }
+            
+            // 5. Cargar la URL en el iframe
+            const frame = document.getElementById(frameId);
+            if (frame) {
+                frame.src = pageUrl;
+            } else {
+                console.error('Iframe no encontrado:', frameId);
+            }
+            
+            // 6. Opcional: actualizar título de la página si tienes un elemento para ello
+            // document.getElementById('pageTitle').textContent = pageTitle;
+        }
+
+        // Cargar una página por defecto al iniciar (opcional)
+        window.onload = function() {
+            // Simular clic en el primer elemento del menú
+            const firstMenuItem = document.querySelector('.menu li');
+            if (firstMenuItem) {
+                firstMenuItem.click();
+            }
+        };
+    </script>
+</body>
+</html>
