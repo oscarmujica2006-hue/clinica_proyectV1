@@ -197,10 +197,11 @@ public class ReciboController {
         return ResponseEntity.ok(dtos);
     }
 
-    // ==================== OBTENER RECIBOS POR CONSENTIMIENTO ====================
+    // ==================== OBTENER RECIBOS POR CONSENTIMIENTO =================
     @GetMapping("/consentimiento/{idConsentimiento}")
     public ResponseEntity<List<ReciboDTO>> obtenerPorConsentimiento(@PathVariable Long idConsentimiento) {
-        List<Recibo> recibos = reciboService.findByConsentimientoId(idConsentimiento);
+        // ✅ CAMBIAR: usar findByConsentimientoIdList en lugar de findByConsentimientoId
+        List<Recibo> recibos = reciboService.findByConsentimientoIdList(idConsentimiento);
         List<ReciboDTO> dtos = recibos.stream()
             .map(this::convertirAReciboDTO)
             .collect(Collectors.toList());

@@ -26,6 +26,10 @@ public class SolicitudRadiografia {
 
     @Column(name = "fecha_solicitud")
     private LocalDateTime fechaSolicitud;
+
+    @ManyToOne
+    @JoinColumn(name = "id_estudiante")
+    private Estudiante estudiante;
     
     @Column(name = "est_soli_radi", length = 50)  
     private String estado;  

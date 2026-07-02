@@ -15,4 +15,10 @@ public interface InsumoRepository extends JpaRepository<Insumo, Long> {
         @Param("fechaFin") String fechaFin
     );
 
+    @Query(value = "SELECT * FROM fn_stock_bajo()", nativeQuery = true)
+    List<Object[]> findStockBajo();
+
+
+
+
 }

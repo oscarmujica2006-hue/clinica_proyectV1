@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Abastecimientos · Encargada de Insumos</title>
+  <title>Gestión de Lotes · Encargada de Insumos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    /* Mantén tus estilos igual */
     * {
       margin: 0;
       padding: 0;
@@ -77,6 +78,10 @@
       gap: 0.75rem;
     }
 
+    .header p {
+      opacity: 0.9;
+    }
+
     .nav-buttons {
       display: flex;
       gap: 1rem;
@@ -94,6 +99,7 @@
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: var(--shadow-sm);
+      position: relative;
     }
 
     .nav-btn.active {
@@ -106,30 +112,13 @@
       box-shadow: var(--shadow-md);
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: var(--radius-sm);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-    }
-
-    .stat-card .number {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .stat-card .label {
-      color: var(--gray-600);
-      font-size: 0.875rem;
+    .badge-count {
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      padding: 0.1rem 0.6rem;
+      font-size: 0.7rem;
+      margin-left: 0.3rem;
     }
 
     .filters-card {
@@ -161,7 +150,8 @@
       margin-bottom: 0.25rem;
     }
 
-    .filter-group select, .filter-group input {
+    .filter-group select,
+    .filter-group input {
       width: 100%;
       padding: 0.6rem 1rem;
       border: 1px solid var(--gray-300);
@@ -214,8 +204,9 @@
 
     .status-pendiente { background: var(--warning-light); color: var(--warning); }
     .status-recibido { background: var(--success-light); color: var(--success); }
-    .status-enviado { background: var(--info-light); color: var(--info); }
     .status-abastecido { background: var(--purple-light); color: var(--purple); }
+    .status-completado { background: var(--success-light); color: var(--success); }
+    .status-disponible { background: var(--success-light); color: var(--success); }
 
     .btn {
       display: inline-flex;
@@ -249,6 +240,11 @@
     }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 
+    .btn-sm {
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -267,8 +263,8 @@
     .modal-content {
       background: white;
       border-radius: var(--radius);
-      max-width: 700px;
-      width: 90%;
+      max-width: 900px;
+      width: 95%;
       max-height: 85vh;
       overflow-y: auto;
       padding: 1.5rem;
@@ -290,6 +286,9 @@
       cursor: pointer;
       color: var(--gray-500);
     }
+    .close-modal:hover {
+      color: var(--gray-800);
+    }
 
     .form-group {
       margin-bottom: 1rem;
@@ -303,18 +302,15 @@
       color: var(--gray-700);
     }
 
-    .form-group input, .form-group select, .form-group textarea {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
       padding: 0.6rem 1rem;
       border: 1px solid var(--gray-300);
       border-radius: var(--radius-sm);
       font-size: 0.875rem;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      background: white;
     }
 
     .info-encargada {
@@ -343,11 +339,19 @@
     .insumo-item {
       display: flex;
       justify-content: space-between;
-      padding: 0.5rem 0;
+      padding: 0.75rem 0;
       border-bottom: 1px solid var(--gray-200);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .insumo-item:last-child {
+      border-bottom: none;
     }
 
     .text-center { text-align: center; }
+    .text-muted { color: var(--gray-500); }
+    .text-danger { color: var(--danger); }
     .mt-2 { margin-top: 0.5rem; }
     .mb-2 { margin-bottom: 0.5rem; }
     .font-bold { font-weight: 700; }
@@ -363,98 +367,64 @@
 
     @media (max-width: 768px) {
       .container { padding: 1rem; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .filters-grid { flex-direction: column; }
       .filter-group { width: 100%; }
-      .form-row { grid-template-columns: 1fr; }
+      .insumo-item { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 <div class="container">
+  <!-- HEADER -->
   <div class="header">
-    <h1><i class="fas fa-boxes"></i> Gestión de Abastecimientos</h1>
-    <p>Encargada de Insumos · Gestione la recepción de abastecimientos</p>
+    <h1><i class="fas fa-boxes"></i> Gestión de Lotes</h1>
+    <p>Encargada de Insumos · Cree lotes desde actas de entrega</p>
   </div>
 
+  <!-- INFO ENCARGADA -->
   <div class="info-encargada" id="infoEncargada">
     <div><i class="fas fa-user-circle"></i> <strong>Encargada:</strong> <span id="encargadaNombre">Cargando...</span></div>
     <div><i class="fas fa-id-card"></i> <strong>ID:</strong> <span id="encargadaId">-</span></div>
     <div><i class="fas fa-store"></i> <strong>Rol:</strong> Encargada de Insumos</div>
   </div>
 
+  <!-- NAVEGACIÓN -->
   <div class="nav-buttons">
-    <button class="nav-btn active" onclick="mostrarVista('abastecimientos')">
-      <i class="fas fa-truck"></i> Abastecimientos Pendientes
+    <button class="nav-btn active" onclick="mostrarVista('actas')">
+      <i class="fas fa-file-signature"></i> Actas Pendientes
+      <span class="badge-count" id="actasPendientesCount">0</span>
     </button>
     <button class="nav-btn" onclick="mostrarVista('historial')">
-      <i class="fas fa-history"></i> Historial de Recepciones
-    </button>
-    <button class="nav-btn" onclick="mostrarVista('solicitar')">
-      <i class="fas fa-clipboard-list"></i> Solicitar Pedido
+      <i class="fas fa-history"></i> Historial de Lotes
     </button>
   </div>
 
-  <!-- Vista de Abastecimientos Pendientes -->
-  <div id="vistaAbastecimientos">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="number" id="countPendientes">0</div>
-        <div class="label">Pendientes de Recepción</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="countRecibidos">0</div>
-        <div class="label">Recibidos este mes</div>
-      </div>
-      <div class="stat-card">
-        <div class="number" id="countInsumos">0</div>
-        <div class="label">Insumos por recibir</div>
-      </div>
-    </div>
-
+  <!-- ==================== VISTA ACTAS PENDIENTES ==================== -->
+  <div id="vistaActas">
     <div class="filters-card">
-      <div class="filters-grid">
-        <div class="filter-group">
-          <label><i class="fas fa-filter"></i> Estado</label>
-          <select id="filterEstado">
-            <option value="todos">Todos</option>
-            <option value="ENVIADO">Enviados</option>
-            <option value="ABASTECIDO">Abastecidos</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label><i class="fas fa-search"></i> Buscar</label>
-          <input type="text" id="filterSearch" placeholder="N° Lote, Pedido...">
-        </div>
-        <div class="filter-group">
-          <label>&nbsp;</label>
-          <button class="btn btn-primary" id="btnRefresh"><i class="fas fa-sync-alt"></i> Actualizar</button>
-        </div>
-      </div>
+      <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-file-signature"></i> Actas de Entrega Pendientes de Lote</h3>
+      <p class="text-muted">Seleccione un acta para crear los lotes correspondientes</p>
     </div>
 
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>ID Lote</th>
-            <th>N° Lote</th>
-            <th>Fecha Envío</th>
-            <th>Pedido</th>
-            <th>Abastecedor</th>
+            <th>N° Acta</th>
+            <th>Fecha</th>
+            <th>Abastecimiento</th>
             <th>Insumos</th>
-            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="abastecimientosTableBody">
-          <tr><td colspan="8" class="text-center" style="padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando abastecimientos...</td</tr>
+        <tbody id="actasTableBody">
+          <tr><td colspan="5" class="text-center" style="padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Vista de Historial -->
+  <!-- ==================== VISTA HISTORIAL ==================== -->
   <div id="vistaHistorial" style="display: none;">
     <div class="filters-card">
       <div class="filters-grid">
@@ -470,95 +440,61 @@
           <label>&nbsp;</label>
           <button class="btn btn-primary" onclick="cargarHistorial()"><i class="fas fa-search"></i> Buscar</button>
         </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <button class="btn btn-outline" onclick="cargarTodosLosLotes()"><i class="fas fa-undo"></i> Todos</button>
+        </div>
       </div>
     </div>
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Fecha Recepción</th>
+            <th>Fecha Ingreso</th>
             <th>N° Lote</th>
             <th>Insumo</th>
-            <th>Cantidad</th>
-            <th>Fecha Vencimiento</th>
-            <th>Abastecedor</th>
-            <th>Observación</th>
+            <th>Empaques</th>
+            <th>Unid/Emp</th>
+            <th>Total Unidades</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
           </tr>
         </thead>
         <tbody id="historialTableBody">
-          <tr><td colspan="7" class="text-center" style="padding: 2rem;">Seleccione fechas para ver el historial</td</tr>
+          <tr><td colspan="8" class="text-center" style="padding: 2rem;">Seleccione fechas o presione "Todos"</td></tr>
         </tbody>
       </table>
     </div>
   </div>
-
-  <!-- Vista de Solicitar Pedido -->
-  <div id="vistaSolicitar" style="display: none;">
-    <div class="filters-card">
-      <h3 style="margin-bottom: 1rem;"><i class="fas fa-clipboard-list"></i> Nueva Solicitud de Pedido</h3>
-      <div class="form-group">
-        <label><i class="fas fa-box"></i> Seleccionar Insumos</label>
-        <div id="insumosSeleccionados">
-          <div class="form-row" style="gap: 0.5rem; margin-bottom: 0.5rem;">
-            <select id="insumoSelect" style="flex: 2;">
-              <option value="">-- Seleccione un insumo --</option>
-            </select>
-            <input type="number" id="cantidad" placeholder="Cantidad" min="1" style="flex: 1;">
-            <select id="unidadMedida" style="flex: 1;">
-              <option value="">-- Unidad --</option>
-            </select>
-            <button class="btn btn-success" onclick="agregarInsumo()">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-        </div>
-        <div id="listaInsumos" style="margin-top: 1rem;"></div>
-      </div>
-      <div class="total-pedido" style="background: var(--gray-100); padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: right; font-weight: bold;">
-        Total: 0 unidades
-      </div>
-      <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
-        <button class="btn btn-outline" onclick="limpiarPedido()">
-          <i class="fas fa-trash"></i> Limpiar
-        </button>
-        <button class="btn btn-primary" onclick="enviarSolicitud()">
-          <i class="fas fa-paper-plane"></i> Enviar Solicitud
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- Modal de Recepción -->
-<div id="recepcionModal" class="modal">
+<!-- ==================== MODAL CREAR LOTE ==================== -->
+<div id="crearLoteModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="fas fa-check-circle"></i> Confirmar Recepción</h3>
-      <button class="close-modal" onclick="closeRecepcionModal()">&times;</button>
+      <h3><i class="fas fa-box"></i> Crear Lote desde Acta</h3>
+      <button class="close-modal" onclick="closeCrearLoteModal()">&times;</button>
     </div>
-    <div id="recepcionBody"></div>
-    <div class="form-group">
-      <label><i class="fas fa-comment"></i> Observación (opcional)</label>
-      <textarea id="observacion" rows="3" placeholder="Ingrese alguna observación sobre la recepción..."></textarea>
-    </div>
+    <div id="crearLoteBody"></div>
     <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-      <button class="btn btn-outline" onclick="closeRecepcionModal()">Cancelar</button>
-      <button class="btn btn-success" id="btnConfirmarRecepcion" onclick="confirmarRecepcion()">
-        <i class="fas fa-check"></i> Confirmar Recepción
+      <button class="btn btn-outline" onclick="closeCrearLoteModal()">Cancelar</button>
+      <button class="btn btn-success" onclick="confirmarCrearLote()">
+        <i class="fas fa-save"></i> Crear Lote(s)
       </button>
     </div>
   </div>
 </div>
 
 <script>
+// =====================================================================
+// VARIABLES GLOBALES
+// =====================================================================
 let idEncargado = null;
-let lotesPendientes = [];
-let insumosDisponibles = [];
-let unidadesMedida = [];
-let insumosPedido = [];
-let loteSeleccionado = null;
+let actasPendientes = [];
 
-// ========== INICIALIZACIÓN ==========
+// =====================================================================
+// INICIALIZACIÓN
+// =====================================================================
 async function obtenerIdEncargado() {
     let usuarioId = sessionStorage.getItem('idUsuario');
     let nombreUsuario = sessionStorage.getItem('nombreUsuario');
@@ -580,235 +516,263 @@ async function obtenerIdEncargado() {
     return null;
 }
 
-async function cargarInsumos() {
+// =====================================================================
+// ACTAS PENDIENTES
+// =====================================================================
+async function cargarActasPendientes() {
+    const tbody = document.getElementById('actasTableBody');
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+    
     try {
-        const response = await fetch('/api/pedidos/insumos');
-        if (!response.ok) throw new Error('Error al cargar insumos');
-        insumosDisponibles = await response.json();
+        const response = await fetch('/api/actas-entrega/pendientes');
+        if (!response.ok) throw new Error('Error al cargar actas');
+        actasPendientes = await response.json();
         
-        const select = document.getElementById('insumoSelect');
-        select.innerHTML = '<option value="">-- Seleccione un insumo --</option>' +
-            insumosDisponibles.map(i => `<option value="${i.idInsumo}" data-unidad="${i.unidadBase}">${i.nombreInsumo} (Stock: ${i.stockTotal})</option>`).join('');
+        document.getElementById('actasPendientesCount').textContent = actasPendientes.length;
+        actualizarTablaActas();
     } catch (error) {
         console.error('Error:', error);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error al cargar actas</td></tr>';
     }
 }
 
-async function cargarUnidadesMedida() {
-    try {
-        const response = await fetch('/api/unidades-medida');
-        if (!response.ok) throw new Error('Error al cargar unidades');
-        unidadesMedida = await response.json();
-        
-        const select = document.getElementById('unidadMedida');
-        select.innerHTML = '<option value="">-- Seleccione unidad --</option>' +
-            unidadesMedida.map(u => `<option value="${u.idUnidad}">${u.nombreUnidad}</option>`).join('');
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-async function cargarAbastecimientos() {
-    try {
-        // Obtener lotes donde el id_recepcion sea el encargado actual y estado = 'ENVIADO' o 'ABASTECIDO'
-        const response = await fetch(`/api/det-pedido-lote/por-recepcion/${idEncargado}`);
-        if (!response.ok) throw new Error('Error al cargar abastecimientos');
-        const detalles = await response.json();
-        
-        // Agrupar por lote
-        const lotesMap = new Map();
-        detalles.forEach(det => {
-            if (!lotesMap.has(det.idPedidoLote)) {
-                lotesMap.set(det.idPedidoLote, {
-                    idPedidoLote: det.idPedidoLote,
-                    numeroLote: det.numeroLote,
-                    fechaSoliEnviada: det.fechaSoliEnviada,
-                    estadoLote: det.estadoLote,
-                    idPedido: det.idPedido,
-                    abastecedor: det.abastecedor,
-                    insumos: []
-                });
-            }
-            lotesMap.get(det.idPedidoLote).insumos.push(det);
-        });
-        
-        lotesPendientes = Array.from(lotesMap.values());
-        aplicarFiltros();
-    } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('abastecimientosTableBody').innerHTML = '<tr><td colspan="8" class="text-center">Error al cargar datos</td></tr>';
-    }
-}
-
-function aplicarFiltros() {
-    const estadoFilter = document.getElementById('filterEstado').value;
-    const searchFilter = document.getElementById('filterSearch').value.toLowerCase();
+function actualizarTablaActas() {
+    const tbody = document.getElementById('actasTableBody');
     
-    let filtered = [...lotesPendientes];
-    
-    if (estadoFilter !== 'todos') {
-        filtered = filtered.filter(l => l.estadoLote === estadoFilter);
-    }
-    
-    if (searchFilter) {
-        filtered = filtered.filter(l => 
-            l.numeroLote.toLowerCase().includes(searchFilter) ||
-            (l.idPedido && l.idPedido.toString().includes(searchFilter))
-        );
-    }
-    
-    actualizarTablaAbastecimientos(filtered);
-    actualizarEstadisticas();
-}
-
-function actualizarTablaAbastecimientos(lotes) {
-    const tbody = document.getElementById('abastecimientosTableBody');
-    
-    if (!lotes || lotes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay abastecimientos pendientes</td></tr>';
+    if (!actasPendientes || actasPendientes.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay actas pendientes</td></tr>';
         return;
     }
     
-    tbody.innerHTML = lotes.map(lote => `
-        <tr>
-            <td>${lote.idPedidoLote}</td>
-            <td><strong>${lote.numeroLote}</strong></td>
-            <td>${formatDate(lote.fechaSoliEnviada)}</td>
-            <td>${lote.idPedido ? `#${lote.idPedido}` : 'Directo'}</td>
-            <td>${lote.abastecedor || 'N/A'}</td>
-            <td>${lote.insumos.length} insumos</td>
-            <td>${getStatusBadge(lote.estadoLote)}</td>
-            <td>
-                <button class="btn btn-outline" onclick="verDetalleLote(${lote.idPedidoLote})" style="padding: 0.3rem 0.75rem;">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-                ${lote.estadoLote === 'ENVIADO' || lote.estadoLote === 'ABASTECIDO' ? `
-                    <button class="btn btn-success" onclick="abrirRecepcion(${lote.idPedidoLote})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;">
-                        <i class="fas fa-check"></i> Recibir
+    tbody.innerHTML = actasPendientes.map(acta => {
+        const insumosPendientes = acta.detallesPendientes ? acta.detallesPendientes.length : 0;
+        return `
+            <tr>
+                <td><strong>${acta.numeroActa || 'N/A'}</strong></td>
+                <td>${formatDate(acta.fechaEntrega)}</td>
+                <td><span class="status-badge status-abastecido">${acta.codigoAbastecimiento || 'N/A'}</span></td>
+                <td>${insumosPendientes}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="abrirCrearLote(${acta.idActa})">
+                        <i class="fas fa-box"></i> Crear Lote
                     </button>
-                ` : ''}
-            </td>
-        </tr>
-    `).join('');
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
-function actualizarEstadisticas() {
-    const pendientes = lotesPendientes.filter(l => l.estadoLote === 'ENVIADO' || l.estadoLote === 'ABASTECIDO').length;
-    const recibidos = lotesPendientes.filter(l => l.estadoLote === 'RECIBIDO').length;
-    const totalInsumos = lotesPendientes.reduce((sum, l) => sum + l.insumos.length, 0);
-    
-    document.getElementById('countPendientes').textContent = pendientes;
-    document.getElementById('countRecibidos').textContent = recibidos;
-    document.getElementById('countInsumos').textContent = totalInsumos;
-}
-
-async function verDetalleLote(idPedidoLote) {
+// =====================================================================
+// CREAR LOTE DESDE ACTA
+// =====================================================================
+async function abrirCrearLote(idActa) {
     try {
-        const response = await fetch(`/api/det-pedido-lote/lote/${idPedidoLote}`);
-        if (!response.ok) throw new Error('Error al cargar detalle');
-        const detalles = await response.json();
+        const response = await fetch(`/api/actas-entrega/${idActa}/detalles-sin-lote`);
+        if (!response.ok) throw new Error('Error al cargar detalles');
+        const data = await response.json();
         
         let html = `
             <div class="detail-card">
-                <h4><i class="fas fa-tag"></i> Lote: ${detalles[0]?.numeroLote || 'N/A'}</h4>
-                <p><strong>📅 Fecha Envío:</strong> ${formatDate(detalles[0]?.fechaSoliEnviada)}</p>
-                <p><strong>👤 Abastecedor:</strong> ${detalles[0]?.abastecedor || 'N/A'}</p>
-                <p><strong>📋 Pedido:</strong> ${detalles[0]?.idPedido ? `#${detalles[0].idPedido}` : 'Directo'}</p>
+                <h4><i class="fas fa-file-signature"></i> ${data.numeroActa || 'N/A'}</h4>
+                <p><strong>📅 Fecha:</strong> ${formatDate(data.fechaEntrega)}</p>
+                <p><strong>📦 Abastecimiento:</strong> ${data.codigoAbastecimiento || 'N/A'}</p>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem;">
+                    <i class="fas fa-info-circle"></i> 
+                    Complete los datos para cada insumo y luego presione "Crear Lote(s)"
+                </p>
             </div>
-            <h4>Insumos:</h4>
+            <h4>Insumos para lote:</h4>
         `;
         
-        detalles.forEach(det => {
+        if (data.detalles && data.detalles.length > 0) {
+            data.detalles.forEach((d, index) => {
+                const fechaDefecto = new Date(Date.now() + 180*24*60*60*1000).toISOString().split('T')[0];
+                const idDetalle = d.idDetalleActa;
+                const cantidadEntregada = d.cantidadEntregada || 0;
+                
+                // Calcular empaques sugeridos (1 empaque por cada cantidad entregada)
+                const empaquesSugeridos = 1;
+                const unidadesSugeridas = cantidadEntregada > 0 ? cantidadEntregada : 1;
+                
+                html += `
+                    <div class="insumo-item" data-id="${idDetalle}">
+                        <div style="flex: 2; min-width: 150px;">
+                            <strong>${d.nombreInsumo}</strong>
+                            <br>
+                            <small class="text-muted">Cantidad entregada: ${cantidadEntregada} ${d.unidadMedida || 'unidades'}</small>
+                            <input type="hidden" id="idDetalle_${idDetalle}" value="${idDetalle}">
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                            <label style="font-size: 0.7rem; font-weight: 600;">N° Lote:</label>
+                            <input type="text" id="numLote_${idDetalle}" 
+                                   value="LOT-${new Date().getFullYear()}-${String(idDetalle).padStart(4, '0')}"
+                                   style="width: 140px; padding: 0.3rem 0.5rem; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 0.8rem;">
+                            
+                            <label style="font-size: 0.7rem; font-weight: 600;">Vence:</label>
+                            <input type="date" id="fecVenc_${idDetalle}" value="${fechaDefecto}"
+                                   style="width: 130px; padding: 0.3rem 0.5rem; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 0.8rem;">
+                            
+                            <label style="font-size: 0.7rem; font-weight: 600;">Empaques:</label>
+                            <input type="number" id="empLote_${idDetalle}" 
+                                   value="${empaquesSugeridos}" min="1" 
+                                   style="width: 60px; padding: 0.3rem 0.5rem; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 0.8rem;">
+                            
+                            <label style="font-size: 0.7rem; font-weight: 600;">Unid./Emp:</label>
+                            <input type="number" id="unidLote_${idDetalle}" 
+                                   value="${unidadesSugeridas}" min="1" 
+                                   style="width: 60px; padding: 0.3rem 0.5rem; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 0.8rem;">
+                        </div>
+                        <div style="width: 100%; font-size: 0.7rem; color: var(--gray-400);">
+                            Total: <span id="totalCalc_${idDetalle}">${empaquesSugeridos * unidadesSugeridas}</span> unidades
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // Script para actualizar el total en tiempo real
             html += `
-                <div class="insumo-item">
-                    <span><strong>${det.nombreInsumo}</strong></span>
-                    <span>Cantidad: ${det.cantidadAbastecida} ${det.unidadMedida || 'unidades'}</span>
-                    <span>Vence: ${formatDate(det.fechaVencimiento)}</span>
-                </div>
+                <script>
+                    document.querySelectorAll('.insumo-item').forEach(el => {
+                        const id = el.dataset.id;
+                        const empInput = document.getElementById('empLote_' + id);
+                        const unidInput = document.getElementById('unidLote_' + id);
+                        const totalSpan = document.getElementById('totalCalc_' + id);
+                        
+                        function updateTotal() {
+                            const emp = parseInt(empInput.value) || 0;
+                            const unid = parseInt(unidInput.value) || 0;
+                            totalSpan.textContent = emp * unid;
+                        }
+                        
+                        empInput.addEventListener('input', updateTotal);
+                        unidInput.addEventListener('input', updateTotal);
+                    });
+                <\/script>
             `;
-        });
+        } else {
+            html += '<p class="text-muted">No hay insumos pendientes para este acta</p>';
+        }
         
-        Swal.fire({
-            title: 'Detalle del Lote',
-            html: html,
-            icon: 'info',
-            confirmButtonText: 'Cerrar',
-            width: '600px'
-        });
+        document.getElementById('crearLoteBody').innerHTML = html;
+        document.getElementById('crearLoteModal').classList.add('active');
+        
     } catch (error) {
-        Swal.fire('Error', 'No se pudo cargar el detalle', 'error');
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo cargar los detalles', 'error');
     }
 }
 
-function abrirRecepcion(idPedidoLote) {
-    loteSeleccionado = lotesPendientes.find(l => l.idPedidoLote === idPedidoLote);
-    if (!loteSeleccionado) return;
+async function confirmarCrearLote() {
+    const lotes = [];
     
-    let insumosHtml = `
-        <div class="detail-card">
-            <h4><i class="fas fa-tag"></i> Lote: ${loteSeleccionado.numeroLote}</h4>
-            <p><strong>📅 Fecha Envío:</strong> ${formatDate(loteSeleccionado.fechaSoliEnviada)}</p>
-            <p><strong>👤 Abastecedor:</strong> ${loteSeleccionado.abastecedor || 'N/A'}</p>
-        </div>
-        <h4>Insumos a recibir:</h4>
-    `;
-    
-    loteSeleccionado.insumos.forEach(insumo => {
-        insumosHtml += `
-            <div class="insumo-item">
-                <span><strong>${insumo.nombreInsumo}</strong></span>
-                <span>Cantidad: ${insumo.cantidadAbastecida} ${insumo.unidadMedida || 'unidades'}</span>
-                <span>Vence: ${formatDate(insumo.fechaVencimiento)}</span>
-            </div>
-        `;
+    document.querySelectorAll('.insumo-item').forEach(el => {
+        const idDetalle = parseInt(el.dataset.id);
+        if (!idDetalle) return;
+        
+        const numLote = document.getElementById(`numLote_${idDetalle}`)?.value?.trim();
+        const fecha = document.getElementById(`fecVenc_${idDetalle}`)?.value;
+        const empaque = parseInt(document.getElementById(`empLote_${idDetalle}`)?.value) || 1;
+        const unidad = parseInt(document.getElementById(`unidLote_${idDetalle}`)?.value) || 1;
+        
+        if (numLote && fecha) {
+            lotes.push({
+                idDetalleActa: idDetalle,
+                numeroLote: numLote,
+                fechaVencimiento: fecha,
+                cantidadEmpaque: empaque,
+                unidadPorEmpaque: unidad,
+                idEncargado: idEncargado  // 🔥 ASIGNAR EL ID DE LA ENCARGADA
+            });
+        }
     });
     
-    document.getElementById('recepcionBody').innerHTML = insumosHtml;
-    document.getElementById('observacion').value = '';
-    document.getElementById('recepcionModal').classList.add('active');
-}
-
-async function confirmarRecepcion() {
-    const observacion = document.getElementById('observacion').value;
+    if (lotes.length === 0) {
+        Swal.fire('Error', 'No hay lotes para crear', 'error');
+        return;
+    }
+    
+    const totalUnidades = lotes.reduce((sum, l) => sum + (l.cantidadEmpaque * l.unidadPorEmpaque), 0);
     
     const result = await Swal.fire({
-        title: 'Confirmar Recepción',
-        text: '¿Está segura de recibir este abastecimiento?',
+        title: 'Confirmar creación',
+        html: `
+            <p>Se crearán <strong>${lotes.length}</strong> lotes</p>
+            <p>Total de unidades: <strong>${totalUnidades}</strong></p>
+            <p class="text-muted" style="font-size: 0.85rem;">¿Desea continuar?</p>
+        `,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#10b981',
-        confirmButtonText: 'Sí, recibir',
+        confirmButtonText: 'Sí, crear',
         cancelButtonText: 'Cancelar'
     });
     
     if (!result.isConfirmed) return;
     
     try {
-        const response = await fetch(`/api/det-pedido-lote/lote/${loteSeleccionado.idPedidoLote}/recibir`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                idEncargado: idEncargado,
-                observacion: observacion
-            })
-        });
+        let creados = 0;
+        let errores = [];
         
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error al recibir');
+        for (const lote of lotes) {
+            try {
+                const response = await fetch('/api/actas-entrega/crear-lote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lote)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    creados++;
+                    console.log('✅ Lote creado:', data);
+                } else {
+                    const error = await response.json();
+                    errores.push(`Lote ${lote.numeroLote}: ${error.error || 'Error desconocido'}`);
+                    console.error('❌ Error al crear lote:', error);
+                }
+            } catch (e) {
+                errores.push(`Lote ${lote.numeroLote}: ${e.message}`);
+            }
         }
         
-        Swal.fire('¡Recibido!', 'El abastecimiento ha sido recibido correctamente y el stock ha sido actualizado', 'success');
-        closeRecepcionModal();
-        cargarAbastecimientos();
+        let mensaje = `✅ Se crearon ${creados} lotes correctamente`;
+        if (errores.length > 0) {
+            mensaje += `\n\n❌ Errores:\n${errores.join('\n')}`;
+        }
+        
+        Swal.fire({
+            title: 'Proceso completado',
+            text: mensaje,
+            icon: creados > 0 ? 'success' : 'error'
+        });
+        
+        closeCrearLoteModal();
+        cargarActasPendientes();
     } catch (error) {
         Swal.fire('Error', error.message, 'error');
     }
 }
 
-function closeRecepcionModal() {
-    document.getElementById('recepcionModal').classList.remove('active');
-    loteSeleccionado = null;
+function closeCrearLoteModal() {
+    document.getElementById('crearLoteModal').classList.remove('active');
+}
+
+// =====================================================================
+// HISTORIAL
+// =====================================================================
+async function cargarTodosLosLotes() {
+    document.getElementById('fechaDesde').value = '';
+    document.getElementById('fechaHasta').value = '';
+    
+    try {
+        const response = await fetch('/api/lotes/todos');
+        if (!response.ok) throw new Error('Error al cargar lotes');
+        const data = await response.json();
+        actualizarTablaHistorial(data);
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo cargar el historial', 'error');
+    }
 }
 
 async function cargarHistorial() {
@@ -816,203 +780,103 @@ async function cargarHistorial() {
     const hasta = document.getElementById('fechaHasta').value;
     
     if (!desde || !hasta) {
-        Swal.fire('Info', 'Seleccione ambas fechas para buscar', 'info');
+        Swal.fire('Info', 'Seleccione ambas fechas o presione "Todos"', 'info');
         return;
     }
     
     try {
-        const response = await fetch(`/api/det-pedido-lote/historial/${idEncargado}?desde=${desde}&hasta=${hasta}`);
+        const response = await fetch(`/api/lotes/historial?desde=${desde}&hasta=${hasta}`);
         if (!response.ok) throw new Error('Error al cargar historial');
-        const historial = await response.json();
-        
-        const tbody = document.getElementById('historialTableBody');
-        if (historial.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay registros en este período</td></tr>';
-            return;
-        }
-        
-        tbody.innerHTML = historial.map(h => `
-            <tr>
-                <td>${formatDate(h.fechaRecepcion)}</td>
-                <td><strong>${h.numeroLote}</strong></td>
-                <td>${h.nombreInsumo}</td>
-                <td>${h.cantidadAbastecida} ${h.unidadMedida}</td>
-                <td>${formatDate(h.fechaVencimiento)}</td>
-                <td>${h.abastecedor || 'N/A'}</td>
-                <td>${h.observacionDetPedido || '-'}</td>
-            </tr>
-        `).join('');
+        const data = await response.json();
+        actualizarTablaHistorial(data);
     } catch (error) {
+        console.error('Error:', error);
         Swal.fire('Error', 'No se pudo cargar el historial', 'error');
     }
 }
 
-// ========== SOLICITAR PEDIDO ==========
-function agregarInsumo() {
-    const idInsumo = document.getElementById('insumoSelect').value;
-    const cantidad = parseInt(document.getElementById('cantidad').value);
-    const idUnidadMedida = document.getElementById('unidadMedida').value;
+function actualizarTablaHistorial(data) {
+    const tbody = document.getElementById('historialTableBody');
     
-    if (!idInsumo) {
-        Swal.fire('Error', 'Seleccione un insumo', 'error');
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay registros</td></tr>';
         return;
     }
     
-    if (!cantidad || cantidad <= 0) {
-        Swal.fire('Error', 'Ingrese una cantidad válida', 'error');
-        return;
-    }
-    
-    if (!idUnidadMedida) {
-        Swal.fire('Error', 'Seleccione una unidad de medida', 'error');
-        return;
-    }
-    
-    const insumo = insumosDisponibles.find(i => i.idInsumo == idInsumo);
-    if (!insumo) return;
-    
-    insumosPedido.push({
-        idInsumo: parseInt(idInsumo),
-        nombreInsumo: insumo.nombreInsumo,
-        unidadMedida: insumo.unidadBase,
-        cantidadPedida: cantidad,
-        idUnidadMedida: parseInt(idUnidadMedida)
-    });
-    
-    actualizarListaInsumos();
-    document.getElementById('insumoSelect').value = '';
-    document.getElementById('cantidad').value = '';
-    document.getElementById('unidadMedida').value = '';
-}
-
-function actualizarListaInsumos() {
-    const container = document.getElementById('listaInsumos');
-    const totalUnidades = insumosPedido.reduce((sum, i) => sum + i.cantidadPedida, 0);
-    
-    if (insumosPedido.length === 0) {
-        container.innerHTML = '<p class="text-center" style="color: var(--gray-500);">No hay insumos agregados</p>';
-        document.querySelector('.total-pedido').innerHTML = 'Total: 0 unidades';
-        return;
-    }
-    
-    container.innerHTML = insumosPedido.map((insumo, index) => `
-        <div class="detail-card" style="margin-bottom: 0.5rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span><strong>${insumo.nombreInsumo}</strong><br><small>Cantidad: ${insumo.cantidadPedida} ${insumo.unidadMedida}</small></span>
-                <button class="btn btn-outline" onclick="eliminarInsumo(${index})" style="padding: 0.3rem 0.75rem; background: var(--danger); color: white;">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        </div>
+    tbody.innerHTML = data.map(lote => `
+        <tr>
+            <td>${formatDate(lote.fechaIngreso)}</td>
+            <td><strong>${lote.numeroLote || 'N/A'}</strong></td>
+            <td>${lote.nombreInsumo || 'N/A'}</td>
+            <td class="text-center">${lote.cantidadEmpaque || 0}</td>
+            <td class="text-center">${lote.unidadPorEmpaque || 0}</td>
+            <td class="text-center font-bold">${(lote.cantidadEmpaque || 0) * (lote.unidadPorEmpaque || 0)}</td>
+            <td>${formatDate(lote.fechaVencimiento)}</td>
+            <td>${getStatusBadge(lote.estadoLote || 'DISPONIBLE')}</td>
+        </tr>
     `).join('');
-    
-    document.querySelector('.total-pedido').innerHTML = `Total: ${totalUnidades} unidades (${insumosPedido.length} tipos de insumos)`;
 }
 
-function eliminarInsumo(index) {
-    insumosPedido.splice(index, 1);
-    actualizarListaInsumos();
-}
-
-function limpiarPedido() {
-    insumosPedido = [];
-    actualizarListaInsumos();
-}
-
-async function enviarSolicitud() {
-    if (insumosPedido.length === 0) {
-        Swal.fire('Error', 'Agregue al menos un insumo', 'error');
-        return;
-    }
-    
-    const result = await Swal.fire({
-        title: 'Confirmar solicitud',
-        text: '¿Está segura de enviar esta solicitud de pedido?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#006D77',
-        confirmButtonText: 'Sí, enviar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch('/api/pedidos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                idEncargado: idEncargado,
-                insumos: insumosPedido
-            })
-        });
-        
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error || 'Error al crear pedido');
-        }
-        
-        Swal.fire('¡Solicitud enviada!', 'El pedido ha sido enviado a la Directora', 'success');
-        limpiarPedido();
-    } catch (error) {
-        Swal.fire('Error', error.message, 'error');
-    }
-}
-
-// ========== UTILIDADES ==========
+// =====================================================================
+// UTILIDADES
+// =====================================================================
 function formatDate(dateString) {
     if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES');
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    } catch {
+        return dateString;
+    }
 }
 
 function getStatusBadge(status) {
-    const statusMap = {
+    const map = {
         'PENDIENTE': { class: 'status-pendiente', icon: 'fa-hourglass-half', text: 'Pendiente' },
         'ABASTECIDO': { class: 'status-abastecido', icon: 'fa-check-circle', text: 'Abastecido' },
-        'ENVIADO': { class: 'status-enviado', icon: 'fa-truck', text: 'Enviado' },
-        'RECIBIDO': { class: 'status-recibido', icon: 'fa-box-open', text: 'Recibido' }
+        'RECIBIDO': { class: 'status-recibido', icon: 'fa-box-open', text: 'Recibido' },
+        'COMPLETADO': { class: 'status-completado', icon: 'fa-check-double', text: 'Completado' },
+        'DISPONIBLE': { class: 'status-disponible', icon: 'fa-check', text: 'Disponible' },
+        'AGOTADO': { class: 'status-pendiente', icon: 'fa-times', text: 'Agotado' }
     };
-    const s = statusMap[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
+    const s = map[status] || { class: 'status-pendiente', icon: 'fa-question-circle', text: status };
     return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i> ${s.text}</span>`;
 }
 
 function mostrarVista(vista) {
-    const vistas = ['abastecimientos', 'historial', 'solicitar'];
-    vistas.forEach(v => {
-        const el = document.getElementById(`vista${v.charAt(0).toUpperCase() + v.slice(1)}`);
-        if (el) el.style.display = v === vista ? 'block' : 'none';
+    document.getElementById('vistaActas').style.display = vista === 'actas' ? 'block' : 'none';
+    document.getElementById('vistaHistorial').style.display = vista === 'historial' ? 'block' : 'none';
+    
+    document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', 
+            (vista === 'actas' && i === 0) ||
+            (vista === 'historial' && i === 1)
+        );
     });
     
-    const botones = document.querySelectorAll('.nav-btn');
-    botones.forEach((btn, i) => {
-        btn.classList.remove('active');
-        if ((vista === 'abastecimientos' && i === 0) ||
-            (vista === 'historial' && i === 1) ||
-            (vista === 'solicitar' && i === 2)) {
-            btn.classList.add('active');
-        }
-    });
-    
-    if (vista === 'abastecimientos') cargarAbastecimientos();
-    if (vista === 'solicitar') {
-        cargarInsumos();
-        cargarUnidadesMedida();
-    }
+    if (vista === 'actas') cargarActasPendientes();
 }
 
-// Event Listeners
-document.getElementById('btnRefresh')?.addEventListener('click', cargarAbastecimientos);
-document.getElementById('filterEstado')?.addEventListener('change', aplicarFiltros);
-document.getElementById('filterSearch')?.addEventListener('input', aplicarFiltros);
+// =====================================================================
+// EVENTOS E INICIALIZACIÓN
+// =====================================================================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeCrearLoteModal();
+    }
+});
 
-// Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
     idEncargado = await obtenerIdEncargado();
     if (idEncargado) {
-        await cargarAbastecimientos();
-        await cargarInsumos();
-        await cargarUnidadesMedida();
+        await cargarActasPendientes();
+        // Cargar historial automáticamente al iniciar
+        await cargarTodosLosLotes();
+        console.log('✅ Gestión de lotes inicializada con ID:', idEncargado);
     }
 });
 </script>

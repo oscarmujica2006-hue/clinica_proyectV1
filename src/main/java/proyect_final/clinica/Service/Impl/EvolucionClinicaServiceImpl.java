@@ -9,11 +9,8 @@ import proyect_final.clinica.Model.Dto.EvolucionClinicaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EvolucionClinicaServiceImpl implements EvolucionClinicaService {
@@ -23,11 +20,6 @@ public class EvolucionClinicaServiceImpl implements EvolucionClinicaService {
     
     @Autowired
     private DiagnosticoRepository diagnosticoRepository;
-
-    @Override
-    public List<EvolucionClinica> obtenerTodos() {
-        return evolucionClinicaRepository.findAll();
-    }
 
     @Override
     public EvolucionClinica obtenerPorId(Long id) {
@@ -58,24 +50,11 @@ public class EvolucionClinicaServiceImpl implements EvolucionClinicaService {
     }
 
     @Override
-    public void eliminar(Long id) {
-        evolucionClinicaRepository.deleteById(id);
-    }
-
-    @Override
-    public void eliminarEvolucion(Long id) {
-        evolucionClinicaRepository.deleteById(id);
-    }
-
-    @Override
     public List<EvolucionClinica> obtenerPorDiagnostico(Long idDiagnostico) {
         return evolucionClinicaRepository.findByDiagnosticoIdDiagnostico(idDiagnostico);
     }
 
-    @Override
-    public List<EvolucionClinica> obtenerPorTipoRegistro(String tipoRegistro) {
-        return evolucionClinicaRepository.findByTipoRegistro(tipoRegistro);
-    }
+
 
     @Override
     public List<EvolucionClinica> obtenerEvolucionesIniciales(Long idDiagnostico) {
@@ -87,8 +66,4 @@ public class EvolucionClinicaServiceImpl implements EvolucionClinicaService {
         return evolucionClinicaRepository.findByEvolucionPadreIdEvolucionClinica(idEvolucion);
     }
 
-    @Override
-    public boolean existeEvolucion(Long id) {
-        return evolucionClinicaRepository.existsById(id);
-    }
 }

@@ -5,4 +5,8 @@ import java.util.List;
 public interface ConsentimientoFotoRepository extends JpaRepository<ConsentimientoFoto, Long> {
     List<ConsentimientoFoto> findByConsentimientoIdConsentimiento(Long IdConsentimiento);
     
+
+    
+    List<ConsentimientoFoto> findByConsentimiento_IdConsentimiento(Long idConsentimiento);
+    
 }

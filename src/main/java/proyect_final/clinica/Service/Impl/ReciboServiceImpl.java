@@ -65,8 +65,37 @@ public class ReciboServiceImpl implements ReciboService {
         reciboRepository.deleteById(id);
     }
 
-    // ==================== GENERAR RECIBO ====================
-    
+    // ==================== ✅ MÉTODO PARA TRIGGERS - Retorna UNO ====================
+    @Override
+    public Recibo findByConsentimientoId(Long idConsentimiento) {
+        try {
+            return reciboRepository.findByConsentimientoId(idConsentimiento);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // ==================== ✅ MÉTODO PARA LISTA - Retorna VARIOS ====================
+    @Override
+    public List<Recibo> findByConsentimientoIdList(Long idConsentimiento) {
+        try {
+            return reciboRepository.findByConsentimiento_IdConsentimiento(idConsentimiento);
+        } catch (Exception e) {
+            return List.of(); // Retorna lista vacía si no encuentra
+        }
+    }
+
+    // ==================== ✅ MÉTODO PARA RECIBOS PENDIENTES ====================
+    @Override
+    public List<Recibo> findRecibosPendientesByConsentimiento(Long idConsentimiento) {
+        try {
+            return reciboRepository.findRecibosPendientesByConsentimiento(idConsentimiento);
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    // ==================== GENERAR RECIBO (OPCIONAL) ====================
     @Override
     public Recibo generarRecibo(
             String tipoItem,
@@ -76,18 +105,17 @@ public class ReciboServiceImpl implements ReciboService {
             Long idEvolucionClinica,
             Long idConsentimiento) {
         
+        // Este método ahora es opcional porque los triggers hacen el trabajo
+        // Pero lo mantenemos para compatibilidad
+        
         // 1. Obtener el consentimiento
         Consentimiento consentimiento = consentimientoService.obtenerPorId(idConsentimiento)
             .orElseThrow(() -> new RuntimeException("Consentimiento no encontrado"));
         
-        // 2. Buscar recibo existente por consentimiento (acumulado)
-        List<Recibo> recibosExistentes = reciboRepository
-            .findByConsentimiento_IdConsentimiento(idConsentimiento);
+        // 2. Buscar recibo existente por consentimiento
+        Recibo recibo = reciboRepository.findByConsentimientoId(idConsentimiento);
         
-        Recibo recibo;
-        if (!recibosExistentes.isEmpty()) {
-            recibo = recibosExistentes.get(0);
-        } else {
+        if (recibo == null) {
             recibo = new Recibo();
             recibo.setConsentimiento(consentimiento);
             recibo.setFechaPago(LocalDateTime.now());
@@ -97,7 +125,23 @@ public class ReciboServiceImpl implements ReciboService {
             recibo = reciboRepository.save(recibo);
         }
         
-        // 3. Crear detalle
+        // 3. Verificar que no exista duplicado
+        boolean existe = false;
+        if ("TRATAMIENTO".equals(tipoItem)) {
+            DetalleRecibo existente = detalleReciboRepository
+                .findByDiagnosticoTratamientoDienteId(idItem);
+            existe = existente != null;
+        } else if ("RADIOGRAFIA".equals(tipoItem)) {
+            DetalleRecibo existente = detalleReciboRepository
+                .findBySolicitudRadiografiaId(idItem);
+            existe = existente != null;
+        }
+        
+        if (existe) {
+            throw new RuntimeException("Este item ya está registrado en el recibo");
+        }
+        
+        // 4. Crear detalle
         DetalleRecibo detalle = new DetalleRecibo();
         detalle.setRecibo(recibo);
         detalle.setTipoItem(tipoItem);
@@ -105,7 +149,7 @@ public class ReciboServiceImpl implements ReciboService {
         detalle.setPrecioUnitario(precioUnitario);
         detalle.setSubtotal(precioUnitario);
         
-        // 4. Asociar el item correspondiente
+        // 5. Asociar el item correspondiente
         if ("TRATAMIENTO".equals(tipoItem)) {
             DiagnosticoTratamientoDiente dientePlan = dientePlanService.obtenerPorId(idItem)
                 .orElseThrow(() -> new RuntimeException("Diente del plan no encontrado"));
@@ -116,10 +160,11 @@ public class ReciboServiceImpl implements ReciboService {
             detalle.setSolicitudRadiografia(solicitud);
         }
         
-        // 5. Guardar detalle
+        // 6. Guardar detalle
         detalleReciboRepository.save(detalle);
+        recibo.getDetalles().add(detalle);
         
-        // 6. Recalcular total
+        // 7. Recalcular total
         recibo.recalcularTotal();
         return reciboRepository.save(recibo);
     }
@@ -152,16 +197,11 @@ public class ReciboServiceImpl implements ReciboService {
 
     @Override
     public List<PagoRecibo> obtenerPagosPorRecibo(Long idRecibo) {
-        return pagoReciboRepository.findByRecibo_IdRecibo(idRecibo);
+        return pagoReciboRepository.findByReciboId(idRecibo);
     }
 
     // ==================== CONSULTAS ====================
     
-    @Override
-    public List<Recibo> findByConsentimientoId(Long idConsentimiento) {
-        return reciboRepository.findByConsentimiento_IdConsentimiento(idConsentimiento);
-    }
-
     @Override
     public List<Recibo> findByEstado(String estado) {
         return reciboRepository.findByEstadoPago(estado);
@@ -173,20 +213,20 @@ public class ReciboServiceImpl implements ReciboService {
     }
 
     @Override
-    public List<Recibo> findRecibosPendientesByConsentimiento(Long idConsentimiento) {
-        return reciboRepository.findRecibosPendientesByConsentimiento(idConsentimiento);
+    public List<Recibo> findRecibosByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return reciboRepository.findRecibosByFechaBetween(fechaInicio, fechaFin);
     }
 
     @Override
-    public List<Recibo> findRecibosByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return reciboRepository.findRecibosByFechaBetween(fechaInicio, fechaFin);
+    public List<Recibo> findByPacienteId(Long idPaciente) {
+        return reciboRepository.findByPacienteId(idPaciente);
     }
 
     // ==================== ESTADÍSTICAS ====================
     
     @Override
     public Double sumPagosByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        Double total = pagoReciboRepository.sumPagosByFechaBetween(fechaInicio, fechaFin);
+        Double total = pagoReciboRepository.sumMontoByFechaBetween(fechaInicio, fechaFin);
         return total != null ? total : 0.0;
     }
 
@@ -197,17 +237,4 @@ public class ReciboServiceImpl implements ReciboService {
         recibo.setEstadoPago(nuevoEstado);
         return reciboRepository.save(recibo);
     }
-
-
-
-
-
-
-
-
-
-    @Override
-    public List<Recibo> findByPacienteId(Long idPaciente) {
-        return reciboRepository.findByPacienteId(idPaciente);
-    }   
 }

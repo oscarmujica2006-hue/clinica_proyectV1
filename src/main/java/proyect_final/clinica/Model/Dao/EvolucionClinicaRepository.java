@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public interface EvolucionClinicaRepository extends JpaRepository<EvolucionClinica, Long> {
  
-    // Solo agrega métodos personalizados:
+   
     List<EvolucionClinica> findByDiagnosticoIdDiagnostico(Long idDiagnostico);
     
     List<EvolucionClinica> findByTipoRegistro(String tipoRegistro);

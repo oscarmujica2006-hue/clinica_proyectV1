@@ -36,7 +36,7 @@ public class DocenteController {
     @Autowired
     private ReciboService reciboService;
 
-    // ==================== ENDPOINTS EXISTENTES ====================
+    // ==================== CRUD BÁSICO ====================
     
     @GetMapping
     public ResponseEntity<List<DocenteDTO>> listarTodos() {
@@ -55,33 +55,6 @@ public class DocenteController {
         return docenteService.obtenerDTOPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/buscar")
-    public ResponseEntity<List<DocenteDTO>> buscar(
-            @RequestParam(required = false) String nombre,
-            @RequestParam(required = false) String especialidad,
-            @RequestParam(required = false) Integer codigo) {
-        
-        List<Docente> docentes;
-        
-        if (codigo != null) {
-            docentes = docenteService.obtenerPorCodigoDocente(codigo)
-                    .map(List::of)
-                    .orElse(List.of());
-        } else if (nombre != null && !nombre.isEmpty()) {
-            docentes = docenteService.buscarPorNombre(nombre);
-        } else if (especialidad != null && !especialidad.isEmpty()) {
-            docentes = docenteService.buscarPorEspecialidad(especialidad);
-        } else {
-            docentes = docenteService.obtenerTodos();
-        }
-        
-        List<DocenteDTO> resultados = docentes.stream()
-                .map(docenteService::convertirADTO)
-                .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(resultados);
     }
 
     @PostMapping
@@ -161,6 +134,8 @@ public class DocenteController {
         }
     }
     
+    // ==================== SELECTORES Y ESTADÍSTICAS ====================
+    
     @GetMapping("/selectores")
     public ResponseEntity<List<Map<String, Object>>> obtenerParaSelectores() {
         List<DocenteDTO> docentes = docenteService.obtenerActivosDTO();
@@ -233,7 +208,7 @@ public class DocenteController {
                         map.put("estado", diente.getEstado());
                         map.put("idPlan", plan.getIdDiagTrat());
                         map.put("tratamientoNombre", plan.getTratamiento().getNombreTratamiento());
-                        map.put("precioTratamiento", plan.getTratamiento().getPrecioTratamiento()); // ✅ AGREGAR PRECIO
+                        map.put("precioTratamiento", plan.getTratamiento().getPrecioTratamiento());
                         
                         // Obtener paciente
                         EvolucionClinica evolucion = plan.getEvolucionClinica();
@@ -291,6 +266,8 @@ public class DocenteController {
         }
     }
 
+    // ==================== APROBAR PROCEDIMIENTO (TRIGGER HACE TODO) ====================
+    
     @PutMapping("/procedimientos/{idDientePlan}/aprobar")
     public ResponseEntity<?> aprobarProcedimiento(
             @PathVariable Long idDientePlan,
@@ -311,7 +288,7 @@ public class DocenteController {
             DiagnosticoTratamiento plan = dientePlan.getDiagnosticoTratamiento();
             Long idTratamiento = plan.getTratamiento().getIdTratamiento();
             
-            // 4. SOLO VALIDAR que hay cupos (NO descontar)
+            // 4. Validar cupos
             Cupo cupo = cupoService.findByTratamientoId(idTratamiento);
             if (cupo == null || cupo.getCuposDisponibles() <= 0) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -319,10 +296,7 @@ public class DocenteController {
                 ));
             }
             
-            // ❌ ELIMINADO: cupo.setCuposDisponibles(cupo.getCuposDisponibles() - 1);
-            // ❌ ELIMINADO: cupoService.guardar(cupo);
-            
-            // 5. Cambiar estado - EL TRIGGER DESCUENTA EL CUPO
+            // 5. Cambiar estado - EL TRIGGER DESCUENTA EL CUPO Y CREA/ACTUALIZA RECIBO
             dientePlan.setEstado("APROBADO");
             dientePlanService.guardar(dientePlan);
             
@@ -350,19 +324,30 @@ public class DocenteController {
             Cupo cupoActualizado = cupoService.findByTratamientoId(idTratamiento);
             int cuposRestantes = cupoActualizado != null ? cupoActualizado.getCuposDisponibles() : 0;
             
+            // 8. OBTENER EL RECIBO GENERADO POR EL TRIGGER
+            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
+            Recibo reciboGenerado = reciboService.findByConsentimientoId(idConsentimiento);
+            
             return ResponseEntity.ok(Map.of(
-                "mensaje", "✅ Procedimiento aprobado - Trigger descontó el cupo",
+                "mensaje", "✅ Procedimiento aprobado - Trigger descontó cupo y actualizó recibo",
+                "idDientePlan", idDientePlan,
                 "cuposRestantes", cuposRestantes,
-                "progreso", aprobados + "/" + total
+                "progreso", aprobados + "/" + total,
+                "idRecibo", reciboGenerado != null ? reciboGenerado.getIdRecibo() : null,
+                "montoTotal", reciboGenerado != null ? reciboGenerado.getMontoTotal() : 0,
+                "estadoRecibo", reciboGenerado != null ? reciboGenerado.getEstadoPago() : "SIN_RECIBO"
             ));
             
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of(
                 "error", "Error: " + e.getMessage()
             ));
         }
     }
+    
     // ==================== RECHAZAR PROCEDIMIENTO ====================
+    
     @PutMapping("/procedimientos/{idDientePlan}/rechazar")
     public ResponseEntity<?> rechazarProcedimiento(
             @PathVariable Long idDientePlan,
@@ -410,7 +395,96 @@ public class DocenteController {
         }
     }
 
-    // ==================== ESTADÍSTICAS ====================
+    // ==================== CONSULTAR RECIBO DESDE DOCENTE ====================
+    
+    @GetMapping("/recibo/{idDiagnosticoTratamiento}")
+    public ResponseEntity<?> obtenerReciboPorDiagnostico(@PathVariable Long idDiagnosticoTratamiento) {
+        try {
+            // Obtener el diagnóstico
+            DiagnosticoTratamiento plan = diagnosticoTratamientoService
+                .obtenerPorId(idDiagnosticoTratamiento)
+                .orElseThrow(() -> new RuntimeException("Diagnóstico no encontrado"));
+            
+            // Obtener el recibo
+            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
+            Recibo recibo = reciboService.findByConsentimientoId(idConsentimiento);
+            
+            if (recibo == null) {
+                return ResponseEntity.ok(Map.of(
+                    "mensaje", "No existe recibo para este diagnóstico",
+                    "idDiagnostico", idDiagnosticoTratamiento
+                ));
+            }
+            
+            // Construir respuesta completa
+            Map<String, Object> response = new HashMap<>();
+            response.put("idRecibo", recibo.getIdRecibo());
+            response.put("estadoPago", recibo.getEstadoPago());
+            response.put("subtotalTratamientos", recibo.getSubtotalTratamientos());
+            response.put("subtotalRadiografias", recibo.getSubtotalRadiografias());
+            response.put("montoTotal", recibo.getMontoTotal());
+            response.put("montoPagado", recibo.getMontoPagado());
+            response.put("saldoPendiente", recibo.getSaldoPendiente());
+            response.put("fechaRegistro", recibo.getFechRegRec());
+            
+            // Detalles
+            List<Map<String, Object>> detalles = new ArrayList<>();
+            if (recibo.getDetalles() != null) {
+                for (DetalleRecibo detalle : recibo.getDetalles()) {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("idDetalle", detalle.getIdDetalleRecibo());
+                    item.put("tipo", detalle.getTipoItem());
+                    item.put("cantidad", detalle.getCantidad());
+                    item.put("precioUnitario", detalle.getPrecioUnitario());
+                    item.put("subtotal", detalle.getSubtotal());
+                    
+                    if ("TRATAMIENTO".equals(detalle.getTipoItem()) && 
+                        detalle.getDiagnosticoTratamientoDiente() != null) {
+                        var diente = detalle.getDiagnosticoTratamientoDiente();
+                        item.put("diente", diente.getDiente());
+                        item.put("tratamiento", diente.getDiagnosticoTratamiento()
+                            .getTratamiento().getNombreTratamiento());
+                        item.put("estado", diente.getEstado());
+                    } else if ("RADIOGRAFIA".equals(detalle.getTipoItem()) && 
+                               detalle.getSolicitudRadiografia() != null) {
+                        var solicitud = detalle.getSolicitudRadiografia();
+                        item.put("nombreRayo", solicitud.getRadiografia().getNombreRayo());
+                        item.put("motivo", solicitud.getMotivo());
+                        item.put("estado", solicitud.getEstado());
+                    }
+                    detalles.add(item);
+                }
+            }
+            response.put("detalles", detalles);
+            
+            // Pagos
+            List<Map<String, Object>> pagos = new ArrayList<>();
+            if (recibo.getPagos() != null) {
+                for (PagoRecibo pago : recibo.getPagos()) {
+                    Map<String, Object> pagoMap = new HashMap<>();
+                    pagoMap.put("idPago", pago.getIdPagoRecibo());
+                    pagoMap.put("monto", pago.getMonto());
+                    pagoMap.put("metodoPago", pago.getMetodoPago());
+                    pagoMap.put("fechaPago", pago.getFechaPago());
+                    pagoMap.put("observaciones", pago.getObservaciones());
+                    pagos.add(pagoMap);
+                }
+            }
+            response.put("pagos", pagos);
+            response.put("totalItems", detalles.size());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of(
+                "error", "Error: " + e.getMessage()
+            ));
+        }
+    }
+
+    // ==================== ESTADÍSTICAS DOCENTE ====================
+    
     @GetMapping("/{docenteId}/estadisticas")
     public ResponseEntity<?> obtenerEstadisticasDocente(@PathVariable Long docenteId) {
         try {

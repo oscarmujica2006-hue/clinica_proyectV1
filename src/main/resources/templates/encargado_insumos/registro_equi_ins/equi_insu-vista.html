@@ -23,6 +23,7 @@
             --gray-800: #1F2937;
             --success: #27ae60;
             --danger: #e74c3c;
+            --warning: #f39c12;
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
             --radius: 1rem;
@@ -103,6 +104,58 @@
             font-size: 0.7rem;
         }
 
+        /* BOTONES GENERALES */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        .btn-sm {
+            padding: 0.3rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
         /* ESTADÍSTICAS */
         .stats {
             display: grid;
@@ -119,6 +172,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             text-align: center;
             transition: all 0.3s;
+            border-left: 4px solid var(--primary);
         }
         .stat-card:hover {
             transform: translateY(-2px);
@@ -132,6 +186,18 @@
         .stat-label {
             font-size: 13px;
             color: var(--gray-500);
+        }
+        .stat-card.critico {
+            border-left-color: var(--danger);
+        }
+        .stat-card.critico .stat-value {
+            color: var(--danger);
+        }
+        .stat-card.bajo {
+            border-left-color: var(--warning);
+        }
+        .stat-card.bajo .stat-value {
+            color: var(--warning);
         }
 
         /* CONTENEDOR DE PANELES */
@@ -229,11 +295,102 @@
             transform: none;
         }
 
+        /* ALERTA BANNER (tradicional, se mantiene como complemento) */
+        .alert-banner {
+            background: #FEF3C7;
+            border-left: 6px solid #F59E0B;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+        }
+        .alert-banner.show {
+            display: flex;
+        }
+        .alert-banner .alert-icon {
+            font-size: 2rem;
+            color: #D97706;
+        }
+        .alert-banner .alert-content {
+            flex: 1;
+        }
+        .alert-banner .alert-content h3 {
+            color: #92400E;
+            font-size: 1.1rem;
+        }
+        .alert-banner .alert-content p {
+            color: #78350F;
+            font-size: 0.9rem;
+        }
+        .alert-banner .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* FILTROS */
+        .filters-card {
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+        .filters-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            transition: 0.2s;
+            background: white;
+        }
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,109,119,0.15);
+        }
+
         /* TABLA */
         .table-container {
             overflow-x: auto;
             border-radius: var(--radius-sm);
             border: 1px solid var(--gray-200);
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .table-header .info {
+            font-size: 0.85rem;
+            color: var(--gray-500);
         }
         table {
             width: 100%;
@@ -279,9 +436,69 @@
             font-weight: 600;
         }
         .badge-success { background: #e8f5e9; color: var(--success); }
-        .badge-warning { background: #fff3e0; color: #f39c12; }
+        .badge-warning { background: #fff3e0; color: var(--warning); }
         .badge-danger { background: #fdeaea; color: var(--danger); }
         .badge-info { background: #e3f2fd; color: #1976d2; }
+        .badge-critico { background: #fdeaea; color: var(--danger); }
+        .badge-bajo { background: #fff3e0; color: var(--warning); }
+        .badge-disponible { background: #e8f5e9; color: var(--success); }
+
+        /* BARRA DE STOCK */
+        .stock-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stock-bar {
+            flex: 1;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            min-width: 60px;
+            overflow: hidden;
+        }
+        .stock-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .stock-bar-fill.critico {
+            background: var(--danger);
+        }
+        .stock-bar-fill.bajo {
+            background: var(--warning);
+        }
+        .stock-bar-fill.normal {
+            background: var(--success);
+        }
+        .stock-number {
+            font-weight: 700;
+            min-width: 35px;
+        }
+        .stock-number.critico {
+            color: var(--danger);
+        }
+        .stock-number.bajo {
+            color: var(--warning);
+        }
+        .stock-number.normal {
+            color: var(--success);
+        }
+
+        /* LOADING */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray-500);
+        }
+        .loading .fa-spinner {
+            animation: spin 1s linear infinite;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         /* BOTONES DE ACCIÓN */
         .btn-accion {
@@ -302,7 +519,6 @@
         .btn-accion.editar { color: var(--primary); }
         .btn-accion.editar:hover { background: var(--primary-light); }
 
-        /* LOADING */
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -312,8 +528,11 @@
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+
+        /* Estilo personalizado para SweetAlert2 */
+        .custom-swal-popup {
+            border-radius: 12px !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
         }
 
         /* RESPONSIVE */
@@ -324,6 +543,10 @@
             .panel { padding: 15px; }
             .form-row .grupo { min-width: 100px; }
             .btn-cambiar-vista { padding: 8px 16px; font-size: 0.85rem; }
+            .filters-grid { flex-direction: column; }
+            .filter-group { min-width: 100%; }
+            .alert-banner { flex-direction: column; text-align: center; }
+            .alert-banner .alert-actions { width: 100%; justify-content: center; }
         }
         @media (max-width: 480px) {
             .stats { grid-template-columns: 1fr; }
@@ -345,7 +568,6 @@
                 Usuario: <span id="usuarioActual">Cargando...</span>
             </div>
         </div>
-        <!-- BOTÓN DE CAMBIO DE VISTA -->
         <button class="btn-cambiar-vista" id="btnCambiarVista">
             <i class="fas fa-exchange-alt"></i>
             <span id="textoBoton">Ver Equipos</span>
@@ -361,23 +583,27 @@
         </div>
         <div class="stat-card">
             <div class="stat-value" id="totalInsumos">0</div>
-            <div class="stat-label"><i class="fas fa-boxes"></i> Insumos Registrados</div>
+            <div class="stat-label"><i class="fas fa-boxes"></i> Total Insumos</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" id="totalInsumosBajoStock">0</div>
-            <div class="stat-label"><i class="fas fa-exclamation-triangle"></i> Insumos con Stock Bajo</div>
+        <div class="stat-card critico">
+            <div class="stat-value" id="countCritico">0</div>
+            <div class="stat-label"><i class="fas fa-times-circle"></i> CRÍTICO (Sin Stock)</div>
+        </div>
+        <div class="stat-card bajo">
+            <div class="stat-value" id="countBajo">0</div>
+            <div class="stat-label"><i class="fas fa-exclamation-circle"></i> BAJO (Menor al mínimo)</div>
         </div>
     </div>
 
     <!-- PANELES -->
     <div class="panels-container">
 
-        <!-- PANEL 1: INSUMOS (ACTIVO POR DEFECTO) -->
+        <!-- ==================== PANEL 1: INSUMOS ==================== -->
         <div class="panel active" id="panelInsumos">
             <div class="panel-header">
                 <h2><i class="fas fa-boxes"></i> Gestión de Insumos</h2>
                 <span style="font-size:0.85rem;color:var(--gray-500);">
-                    <i class="fas fa-info-circle"></i> Administre los insumos disponibles
+                    <i class="fas fa-info-circle"></i> Todos los insumos - Los de stock bajo aparecen primero
                 </span>
             </div>
 
@@ -411,28 +637,92 @@
                 <button id="btnAgregarInsumo"><i class="fas fa-plus"></i> Agregar</button>
             </div>
 
-            <!-- Tabla de insumos -->
+            <!-- ⭐ FILTROS -->
+            <div class="filters-card">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label><i class="fas fa-filter"></i> Mostrar</label>
+                        <select id="filterEstadoInsumos">
+                            <option value="todos">📋 Todos los insumos</option>
+                            <option value="stock-bajo">⚠️ Solo los que se están acabando</option>
+                            <option value="CRÍTICO">🚨 Solo CRÍTICOS (sin stock)</option>
+                            <option value="BAJO">🟡 Solo BAJOS (menor al mínimo)</option>
+                            <option value="DISPONIBLE">✅ Solo DISPONIBLES</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><i class="fas fa-search"></i> Buscar</label>
+                        <input type="text" id="filterSearchInsumos" placeholder="Nombre del insumo...">
+                    </div>
+                    <div class="filter-group" style="flex: 0.5; min-width: 120px;">
+                        <label>&nbsp;</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary" onclick="aplicarFiltrosInsumos()">
+                                <i class="fas fa-filter"></i> Filtrar
+                            </button>
+                            <button class="btn btn-outline" onclick="limpiarFiltrosInsumos()">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⭐ TABLA DE TODOS LOS INSUMOS -->
             <div class="table-container">
+                <div class="table-header">
+                    <div class="info">
+                        <i class="fas fa-list"></i>
+                        <span id="registrosCount">0</span> registros
+                        <span style="font-size:0.75rem;color:var(--gray-400);margin-left:1rem;">
+                            <span style="color:#EF4444;">🔴 CRÍTICO</span> · 
+                            <span style="color:#F59E0B;">🟡 BAJO</span> · 
+                            <span style="color:#10B981;">🟢 DISPONIBLE</span>
+                        </span>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="cargarTodosInsumos()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
                 <table>
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Insumo</th>
-                            <th>Cantidad</th>
                             <th>Unidad</th>
+                            <th>Stock Actual</th>
                             <th>Stock Mínimo</th>
+                            <th>Faltante</th>
                             <th>Estado</th>
                             <th style="width: 80px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyInsumos">
-                        <tr><td colspan="7" class="empty-state"><i class="fas fa-box-open"></i><br>No hay insumos registrados</td></tr>
+                        <tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando insumos...</td></tr>
                     </tbody>
                 </table>
             </div>
+
+            <!-- ===== ALERTA BANNER (tradicional, complemento) ===== -->
+            <div class="alert-banner" id="alertBanner">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="alert-content">
+                    <h3 id="alertTitulo">⚠️ ¡Atención! Stock Bajo</h3>
+                    <p id="alertMensaje">Hay insumos que necesitan reposición</p>
+                </div>
+                <div class="alert-actions">
+                    <button class="btn btn-danger btn-sm" onclick="filtrarCriticos()">
+                        <i class="fas fa-eye"></i> Ver Críticos
+                    </button>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('alertBanner').classList.remove('show')">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+
         </div>
 
-        <!-- PANEL 2: EQUIPOS -->
+        <!-- ==================== PANEL 2: EQUIPOS ==================== -->
         <div class="panel" id="panelEquipos">
             <div class="panel-header">
                 <h2><i class="fas fa-desktop"></i> Gestión de Equipos</h2>
@@ -490,19 +780,29 @@
     (function() {
         'use strict';
 
-        // ========== CONFIGURACIÓN ==========
+        // ============================================================
+        // CONFIGURACIÓN
+        // ============================================================
         const API_URL = 'http://localhost:8080/api/equipos';
+        const STOCK_API_URL = '/api/insumos';
         
-        // ========== VARIABLE GLOBAL ==========
+        // ============================================================
+        // VARIABLES GLOBALES
+        // ============================================================
         let usuarioActual = 'Cargando...';
-        
-        // ========== OBTENER USUARIO DE LA SESIÓN ==========
+        let insumos = [];
+        let equipos = [];
+        let vistaActual = 'insumos';
+        let contadorId = 0;
+
+        // ============================================================
+        // OBTENER USUARIO DE LA SESIÓN
+        // ============================================================
         async function obtenerUsuarioSesion() {
             try {
                 const response = await fetch('/sesion-actual');
                 const data = await response.json();
                 if (data.autenticado) {
-                    // El nombre de usuario viene del backend
                     return data.nombreUsuario || 'Invitado';
                 }
                 return 'Invitado';
@@ -512,21 +812,18 @@
             }
         }
 
-        // ========== INICIALIZAR USUARIO ==========
+        // ============================================================
+        // INICIALIZAR USUARIO
+        // ============================================================
         async function initUsuario() {
             usuarioActual = await obtenerUsuarioSesion();
             document.getElementById('usuarioActual').textContent = usuarioActual;
             console.log('👤 Usuario de sesión:', usuarioActual);
         }
 
-        // ========== ESTADO ==========
-        let insumos = [];
-        let equipos = [];
-        let vistaActual = 'insumos';
-        let contadorId = 0;
-
-        // ========== DOM ELEMENTS ==========
-        // Insumos
+        // ============================================================
+        // DOM ELEMENTS
+        // ============================================================
         const inputNombreInsumo = document.getElementById('inputNombreInsumo');
         const inputCantidadInsumo = document.getElementById('inputCantidadInsumo');
         const selectUnidadInsumo = document.getElementById('selectUnidadInsumo');
@@ -534,7 +831,9 @@
         const btnAgregarInsumo = document.getElementById('btnAgregarInsumo');
         const tbodyInsumos = document.getElementById('tbodyInsumos');
         const totalInsumosSpan = document.getElementById('totalInsumos');
-        const totalInsumosBajoStockSpan = document.getElementById('totalInsumosBajoStock');
+
+        const countCriticoSpan = document.getElementById('countCritico');
+        const countBajoSpan = document.getElementById('countBajo');
 
         // Equipos
         const inputCodigoEquipo = document.getElementById('inputCodigoEquipo');
@@ -551,44 +850,377 @@
         const panelInsumos = document.getElementById('panelInsumos');
         const panelEquipos = document.getElementById('panelEquipos');
 
-        // ========== FUNCIONES DE RENDER ==========
+        // Filtros
+        const filterEstado = document.getElementById('filterEstadoInsumos');
+        const filterSearch = document.getElementById('filterSearchInsumos');
 
-        // Renderizar insumos
-        function renderizarInsumos() {
-            if (!insumos || insumos.length === 0) {
-                tbodyInsumos.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-box-open"></i><br>No hay insumos registrados</td></tr>`;
-            } else {
-                let html = '';
-                insumos.forEach((ins, index) => {
-                    const estado = ins.cantidad <= ins.stockMinimo ? 
-                        '<span class="badge badge-danger"><i class="fas fa-exclamation-circle"></i> Stock Bajo</span>' :
-                        '<span class="badge badge-success"><i class="fas fa-check-circle"></i> Disponible</span>';
-                    
-                    html += `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td><strong>${escapeHtml(ins.nombre)}</strong></td>
-                            <td><span class="badge badge-info">${ins.cantidad}</span></td>
-                            <td>${escapeHtml(ins.unidad)}</td>
-                            <td>${ins.stockMinimo}</td>
-                            <td>${estado}</td>
-                            <td>
-                                <button class="btn-accion eliminar" onclick="eliminarInsumo(${index})" title="Eliminar insumo">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbodyInsumos.innerHTML = html;
-            }
+        // ============================================================
+        // ⭐ MOSTRAR ALERTA CON SWEETALERT2 (TOAST EN EL CENTRO)
+        // ============================================================
+        function mostrarAlertaStock(criticos, bajos) {
+            const total = criticos + bajos;
             
-            totalInsumosSpan.textContent = insumos.length;
-            const bajos = insumos.filter(i => i.cantidad <= i.stockMinimo).length;
-            totalInsumosBajoStockSpan.textContent = bajos;
+            if (total === 0) return; // No mostrar si no hay stock bajo
+            
+            let icon = 'warning';
+            let title = '⚠️ ¡Atención! Stock Bajo';
+            let html = '';
+            
+            if (criticos > 0 && bajos > 0) {
+                html = `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                            <strong>${total}</strong> insumos necesitan atención:
+                        </p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 8px 12px; background: #FEE2E2; border-radius: 6px; margin-bottom: 6px;">
+                                <span style="color: #EF4444; font-weight: 700;">🚨 ${criticos}</span> insumo(s) están <strong>CRÍTICOS</strong> (sin stock)
+                            </li>
+                            <li style="padding: 8px 12px; background: #FEF3C7; border-radius: 6px;">
+                                <span style="color: #D97706; font-weight: 700;">⚠️ ${bajos}</span> insumo(s) están <strong>BAJOS</strong> (menor al mínimo)
+                            </li>
+                        </ul>
+                        <p style="margin-top: 12px; font-size: 0.9rem; color: #6B7280;">
+                            <i class="fas fa-info-circle"></i> Revisa la tabla para más detalles
+                        </p>
+                    </div>
+                `;
+            } else if (criticos > 0) {
+                icon = 'error';
+                title = '🚨 ¡URGENTE! Sin Stock';
+                html = `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                            <strong style="color: #EF4444;">${criticos}</strong> insumo(s) están <strong>SIN STOCK</strong>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #6B7280;">
+                            <i class="fas fa-info-circle"></i> Se necesita reposición URGENTE
+                        </p>
+                    </div>
+                `;
+            } else if (bajos > 0) {
+                icon = 'warning';
+                title = '⚠️ Alerta: Stock Bajo';
+                html = `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">
+                            <strong style="color: #D97706;">${bajos}</strong> insumo(s) están por <strong>debajo del stock mínimo</strong>
+                        </p>
+                        <p style="font-size: 0.9rem; color: #6B7280;">
+                            <i class="fas fa-info-circle"></i> Planificar reposición
+                        </p>
+                    </div>
+                `;
+            }
+
+            // Mostrar como Toast en el centro
+            Swal.fire({
+                icon: icon,
+                title: title,
+                html: html,
+                confirmButtonText: '✅ Entendido',
+                confirmButtonColor: '#006D77',
+                showCloseButton: true,
+                timer: 8000, // Se cierra automáticamente después de 8 segundos
+                timerProgressBar: true,
+                position: 'center', // Puede ser 'top', 'center', 'bottom'
+                backdrop: 'rgba(0,0,0,0.4)',
+                width: '500px',
+                allowOutsideClick: true,
+                customClass: {
+                    popup: 'custom-swal-popup',
+                    confirmButton: 'btn btn-primary'
+                }
+            });
         }
 
-        // Renderizar equipos
+        // ============================================================
+        // ⭐ CARGAR TODOS LOS INSUMOS DESDE LA API
+        // ============================================================
+        async function cargarTodosInsumos() {
+            const tbody = tbodyInsumos;
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="loading">
+                        <div><i class="fas fa-spinner"></i></div>
+                        <p>Cargando insumos...</p>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await fetch(`${STOCK_API_URL}/todos-insumos`);
+                if (!response.ok) throw new Error('Error al cargar datos');
+                const data = await response.json();
+                console.log('📦 Todos los insumos recibidos:', data);
+
+                insumos = data;
+                aplicarFiltrosInsumos();
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                usarDatosLocales();
+            }
+        }
+
+        // ============================================================
+        // ⭐ USAR DATOS LOCALES DE EJEMPLO (FALLBACK)
+        // ============================================================
+        function usarDatosLocales() {
+            insumos = [
+                { idInsumo: 10, nombreInsumo: 'Amoxicilina 250 mg', stockTotal: 5, stockMinimo: 20, faltante: 15, estado: 'BAJO' },
+                { idInsumo: 9, nombreInsumo: 'Ibuprofeno 200 mg', stockTotal: 11, stockMinimo: 20, faltante: 9, estado: 'BAJO' },
+                { idInsumo: 3, nombreInsumo: 'Insulina NPH', stockTotal: 20, stockMinimo: 20, faltante: 0, estado: 'DISPONIBLE' },
+                { idInsumo: 4, nombreInsumo: 'Atorvastatina 40 mg', stockTotal: 20, stockMinimo: 20, faltante: 0, estado: 'DISPONIBLE' },
+                { idInsumo: 5, nombreInsumo: 'Solución salina 0.9%', stockTotal: 20, stockMinimo: 20, faltante: 0, estado: 'DISPONIBLE' },
+                { idInsumo: 1, nombreInsumo: 'Omeprazol 20 mg', stockTotal: 20, stockMinimo: 20, faltante: 0, estado: 'DISPONIBLE' },
+                { idInsumo: 2, nombreInsumo: 'Loratadina 10 mg', stockTotal: 20, stockMinimo: 20, faltante: 0, estado: 'DISPONIBLE' },
+                { idInsumo: 6, nombreInsumo: 'Diazepam 10 mg', stockTotal: 40, stockMinimo: 20, faltante: -20, estado: 'DISPONIBLE' },
+                { idInsumo: 7, nombreInsumo: 'Paracetamol 500 mg', stockTotal: 120, stockMinimo: 20, faltante: -100, estado: 'DISPONIBLE' }
+            ];
+            aplicarFiltrosInsumos();
+        }
+
+        // ============================================================
+        // ⭐ APLICAR FILTROS
+        // ============================================================
+        function aplicarFiltrosInsumos() {
+            const estadoFilter = filterEstado.value;
+            const searchFilter = filterSearch.value.toLowerCase().trim();
+
+            let filtered = [...insumos];
+
+            if (estadoFilter === 'stock-bajo') {
+                filtered = filtered.filter(item => item.estado === 'CRÍTICO' || item.estado === 'BAJO');
+            } else if (estadoFilter !== 'todos') {
+                filtered = filtered.filter(item => item.estado === estadoFilter);
+            }
+
+            if (searchFilter) {
+                filtered = filtered.filter(item =>
+                    item.nombreInsumo && item.nombreInsumo.toLowerCase().includes(searchFilter)
+                );
+            }
+
+            renderizarInsumos(filtered);
+            actualizarStats(insumos);
+        }
+
+        // ============================================================
+        // ⭐ RENDERIZAR INSUMOS
+        // ============================================================
+        function renderizarInsumos(data) {
+            const tbody = tbodyInsumos;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><i class="fas fa-box-open"></i><br>No hay insumos registrados</td></tr>`;
+                document.getElementById('registrosCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('registrosCount').textContent = data.length;
+
+            let html = '';
+            data.forEach((item, index) => {
+                let badgeClass = '';
+                let badgeText = '';
+                let icon = '';
+                let colorClass = 'normal';
+                let barClass = 'normal';
+
+                if (item.estado === 'CRÍTICO') {
+                    badgeClass = 'badge-critico';
+                    badgeText = '🚨 CRÍTICO';
+                    icon = 'fa-times-circle';
+                    colorClass = 'critico';
+                    barClass = 'critico';
+                } else if (item.estado === 'BAJO') {
+                    badgeClass = 'badge-bajo';
+                    badgeText = '⚠️ BAJO';
+                    icon = 'fa-exclamation-circle';
+                    colorClass = 'bajo';
+                    barClass = 'bajo';
+                } else {
+                    badgeClass = 'badge-disponible';
+                    badgeText = '✅ DISPONIBLE';
+                    icon = 'fa-check-circle';
+                    colorClass = 'normal';
+                    barClass = 'normal';
+                }
+
+                const porcentaje = item.stockMinimo > 0 ? Math.min(100, (item.stockTotal / item.stockMinimo) * 100) : 0;
+
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${escapeHtml(item.nombreInsumo)}</strong></td>
+                        <td>${escapeHtml(item.unidad || 'unidad')}</td>
+                        <td>
+                            <div class="stock-bar-container">
+                                <span class="stock-number ${colorClass}">
+                                    ${item.stockTotal || 0}
+                                </span>
+                                <div class="stock-bar">
+                                    <div class="stock-bar-fill ${barClass}" style="width: ${Math.min(100, porcentaje)}%;"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${item.stockMinimo || 0}</td>
+                        <td>
+                            <span style="color: ${item.faltante > 0 ? '#EF4444' : '#10B981'}; font-weight: 600;">
+                                ${item.faltante > 0 ? item.faltante : 0}
+                            </span>
+                        </td>
+                        <td><span class="badge ${badgeClass}"><i class="fas ${icon}"></i> ${badgeText}</span></td>
+                        <td>
+                            <button class="btn-accion eliminar" onclick="eliminarInsumo(${index})" title="Eliminar insumo">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ============================================================
+        // ⭐ ACTUALIZAR ESTADÍSTICAS Y MOSTRAR ALERTA
+        // ============================================================
+        function actualizarStats(data) {
+            const criticos = data.filter(item => item.estado === 'CRÍTICO').length;
+            const bajos = data.filter(item => item.estado === 'BAJO').length;
+            
+            countCriticoSpan.textContent = criticos;
+            countBajoSpan.textContent = bajos;
+            totalInsumosSpan.textContent = data.length;
+
+            // ⭐ Mostrar alerta con SweetAlert2 (si hay stock bajo)
+            mostrarAlertaStock(criticos, bajos);
+
+            // Mostrar banner tradicional también (opcional)
+            const totalBajos = criticos + bajos;
+            if (totalBajos > 0) {
+                document.getElementById('alertTitulo').textContent = `⚠️ ¡Atención! ${totalBajos} insumos con stock bajo`;
+                document.getElementById('alertMensaje').textContent = `${criticos} insumo(s) están CRÍTICOS y ${bajos} están BAJOS`;
+                document.getElementById('alertBanner').classList.add('show');
+            } else {
+                document.getElementById('alertBanner').classList.remove('show');
+            }
+        }
+
+        // ============================================================
+        // ⭐ FILTROS RÁPIDOS
+        // ============================================================
+        function filtrarCriticos() {
+            filterEstado.value = 'CRÍTICO';
+            aplicarFiltrosInsumos();
+            document.getElementById('alertBanner').classList.remove('show');
+        }
+
+        function limpiarFiltrosInsumos() {
+            filterEstado.value = 'todos';
+            filterSearch.value = '';
+            aplicarFiltrosInsumos();
+        }
+
+        // ============================================================
+        // CRUD INSUMOS
+        // ============================================================
+        function agregarInsumo() {
+            const nombre = inputNombreInsumo.value.trim();
+            const cantidad = parseInt(inputCantidadInsumo.value) || 0;
+            const unidad = selectUnidadInsumo.value;
+            const stockMinimo = parseInt(inputStockMinimo.value) || 5;
+
+            if (!nombre) {
+                Swal.fire('Error', 'Ingrese el nombre del insumo', 'error');
+                return;
+            }
+
+            const nuevoInsumo = {
+                idInsumo: ++contadorId,
+                nombreInsumo: nombre,
+                stockTotal: cantidad,
+                unidad: unidad,
+                stockMinimo: stockMinimo,
+                faltante: stockMinimo - cantidad,
+                estado: cantidad <= 0 ? 'CRÍTICO' : (cantidad < stockMinimo ? 'BAJO' : 'DISPONIBLE')
+            };
+
+            insumos.push(nuevoInsumo);
+
+            inputNombreInsumo.value = '';
+            inputCantidadInsumo.value = '1';
+            aplicarFiltrosInsumos();
+
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Insumo agregado',
+                text: `${nombre} - ${cantidad} ${unidad}`,
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        window.eliminarInsumo = function(index) {
+            const insumo = insumos[index];
+            if (!insumo) return;
+            
+            Swal.fire({
+                title: '¿Eliminar insumo?',
+                text: `"${insumo.nombreInsumo}" será eliminado`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    insumos.splice(index, 1);
+                    aplicarFiltrosInsumos();
+                    Swal.fire('Eliminado', 'Insumo eliminado correctamente', 'success');
+                }
+            });
+        };
+
+        // ============================================================
+        // CRUD EQUIPOS
+        // ============================================================
+        async function agregarEquipo() {
+            const codigo = inputCodigoEquipo.value.trim().toUpperCase();
+            const nombre = inputNombreEquipo.value.trim();
+            const estado = selectEstadoEquipo.value;
+
+            if (!codigo || !nombre) {
+                Swal.fire('Error', 'Complete todos los campos', 'error');
+                return;
+            }
+
+            equipos.push({
+                id: equipos.length + 1,
+                codigo,
+                nombre,
+                estado,
+                usuario: usuarioActual
+            });
+
+            inputCodigoEquipo.value = '';
+            inputNombreEquipo.value = '';
+            renderizarEquipos();
+
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Equipo agregado',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        window.eliminarEquipo = function(index) {
+            equipos.splice(index, 1);
+            renderizarEquipos();
+        };
+
         function renderizarEquipos() {
             if (!equipos || equipos.length === 0) {
                 tbodyEquipos.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas fa-desktop"></i><br>No hay equipos registrados</td></tr>`;
@@ -619,219 +1251,9 @@
             totalEquiposSpan.textContent = equipos.length;
         }
 
-        // ========== CRUD INSUMOS ==========
-        function agregarInsumo() {
-            const nombre = inputNombreInsumo.value.trim();
-            const cantidad = parseInt(inputCantidadInsumo.value) || 0;
-            const unidad = selectUnidadInsumo.value;
-            const stockMinimo = parseInt(inputStockMinimo.value) || 5;
-
-            if (!nombre) {
-                Swal.fire('Error', 'Ingrese el nombre del insumo', 'error');
-                return;
-            }
-            if (cantidad < 0) {
-                Swal.fire('Error', 'La cantidad no puede ser negativa', 'error');
-                return;
-            }
-
-            if (insumos.some(i => i.nombre.toLowerCase() === nombre.toLowerCase())) {
-                Swal.fire('Error', `El insumo "${nombre}" ya existe`, 'error');
-                return;
-            }
-
-            insumos.push({
-                id: ++contadorId,
-                nombre,
-                cantidad,
-                unidad,
-                stockMinimo
-            });
-
-            inputNombreInsumo.value = '';
-            inputCantidadInsumo.value = '1';
-            renderizarInsumos();
-            Swal.fire({
-                icon: 'success',
-                title: '✅ Insumo agregado',
-                text: `${nombre} - ${cantidad} ${unidad}`,
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
-
-        window.eliminarInsumo = function(index) {
-            if (!insumos || index >= insumos.length) return;
-            
-            Swal.fire({
-                title: '¿Eliminar insumo?',
-                text: `"${insumos[index].nombre}" será eliminado`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then(result => {
-                if (result.isConfirmed) {
-                    insumos.splice(index, 1);
-                    renderizarInsumos();
-                    Swal.fire('Eliminado', 'Insumo eliminado correctamente', 'success');
-                }
-            });
-        };
-
-        // ========== CRUD EQUIPOS ==========
-        async function agregarEquipo() {
-            const codigo = inputCodigoEquipo.value.trim().toUpperCase();
-            const nombre = inputNombreEquipo.value.trim();
-            const estado = selectEstadoEquipo.value;
-
-            if (!codigo) {
-                Swal.fire('Error', 'Ingrese el código del equipo', 'error');
-                return;
-            }
-            if (!nombre) {
-                Swal.fire('Error', 'Ingrese el nombre del equipo', 'error');
-                return;
-            }
-
-            if (equipos.some(e => e.codigo === codigo)) {
-                Swal.fire('Error', `El equipo con código "${codigo}" ya existe`, 'error');
-                return;
-            }
-
-            btnAgregarEquipo.disabled = true;
-            btnAgregarEquipo.innerHTML = '<span class="loading-spinner"></span>';
-
-            try {
-                // ✅ YA NO enviamos el usuario, el backend lo obtiene de la sesión
-                const response = await fetch(`${API_URL}/crear`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        codigo: codigo,
-                        nombre: nombre,
-                        estado: estado
-                        // ⚠️ ELIMINADO: usuario: usuarioActual
-                    })
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.exito !== false) {
-                    equipos.push({
-                        id: result.id_equipo || Date.now(),
-                        codigo,
-                        nombre,
-                        estado,
-                        usuario: usuarioActual
-                    });
-
-                    inputCodigoEquipo.value = '';
-                    inputNombreEquipo.value = '';
-                    renderizarEquipos();
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: '✅ Equipo creado',
-                        text: `${nombre} (${codigo}) - ${estado}`,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: '❌ Error',
-                        text: result.mensaje || 'Error al crear el equipo'
-                    });
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                equipos.push({
-                    id: Date.now(),
-                    codigo,
-                    nombre,
-                    estado,
-                    usuario: usuarioActual
-                });
-                inputCodigoEquipo.value = '';
-                inputNombreEquipo.value = '';
-                renderizarEquipos();
-                Swal.fire({
-                    icon: 'warning',
-                    title: '⚠️ Guardado local',
-                    text: 'El equipo se guardó localmente. Verifica la conexión con el servidor.'
-                });
-            } finally {
-                btnAgregarEquipo.disabled = false;
-                btnAgregarEquipo.innerHTML = '<i class="fas fa-plus"></i> Agregar';
-            }
-        }
-
-        window.eliminarEquipo = function(index) {
-            if (!equipos || index >= equipos.length) return;
-            
-            Swal.fire({
-                title: '¿Eliminar equipo?',
-                text: `"${equipos[index].nombre}" será eliminado`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const equipo = equipos[index];
-                    if (equipo.id && typeof equipo.id === 'number') {
-                        try {
-                            await fetch(`${API_URL}/${equipo.id}`, { method: 'DELETE' });
-                        } catch (e) {
-                            console.error('Error al eliminar en backend:', e);
-                        }
-                    }
-                    equipos.splice(index, 1);
-                    renderizarEquipos();
-                    Swal.fire('Eliminado', 'Equipo eliminado correctamente', 'success');
-                }
-            });
-        };
-
-        // ========== CARGAR EQUIPOS DESDE BACKEND ==========
-        async function cargarEquiposBackend() {
-            try {
-                const response = await fetch(API_URL);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (Array.isArray(data)) {
-                        equipos = data.map(e => ({
-                            id: e.idEquipo || e.id,
-                            codigo: e.codigoEquipo || e.codigo,
-                            nombre: e.nombreEquipo || e.nombre,
-                            estado: e.estadoEquipo || e.estado || 'ACTIVO',
-                            usuario: e.usuRegEqu || e.usuario || 'admin'
-                        }));
-                        renderizarEquipos();
-                        return;
-                    }
-                }
-                // Si falla, usar datos de ejemplo
-                equipos = [
-                    { id: 1, codigo: 'EQ-001', nombre: 'Impresora HP LaserJet', estado: 'ACTIVO', usuario: usuarioActual },
-                    { id: 2, codigo: 'EQ-002', nombre: 'Monitor Samsung 24"', estado: 'ACTIVO', usuario: usuarioActual },
-                    { id: 3, codigo: 'EQ-003', nombre: 'Laptop Dell Latitude', estado: 'MANTENIMIENTO', usuario: usuarioActual }
-                ];
-                renderizarEquipos();
-            } catch (error) {
-                console.error('Error al cargar equipos:', error);
-                equipos = [
-                    { id: 1, codigo: 'EQ-001', nombre: 'Impresora HP LaserJet', estado: 'ACTIVO', usuario: usuarioActual },
-                    { id: 2, codigo: 'EQ-002', nombre: 'Monitor Samsung 24"', estado: 'ACTIVO', usuario: usuarioActual }
-                ];
-                renderizarEquipos();
-            }
-        }
-
-        // ========== CAMBIAR VISTA ==========
+        // ============================================================
+        // CAMBIAR VISTA
+        // ============================================================
         function cambiarVista() {
             if (vistaActual === 'insumos') {
                 vistaActual = 'equipos';
@@ -849,10 +1271,13 @@
                 badgeVista.textContent = 'Insumos';
                 btnCambiarVista.style.background = 'white';
                 btnCambiarVista.style.color = 'var(--primary)';
+                cargarTodosInsumos();
             }
         }
 
-        // ========== UTILIDADES ==========
+        // ============================================================
+        // UTILIDADES
+        // ============================================================
         function escapeHtml(str) {
             if (!str) return '';
             const div = document.createElement('div');
@@ -860,7 +1285,9 @@
             return div.innerHTML;
         }
 
-        // ========== EVENTOS ==========
+        // ============================================================
+        // EVENTOS
+        // ============================================================
         btnAgregarInsumo.addEventListener('click', agregarInsumo);
         inputNombreInsumo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarInsumo(); });
         inputCantidadInsumo.addEventListener('keypress', (e) => { if (e.key === 'Enter') agregarInsumo(); });
@@ -871,24 +1298,23 @@
 
         btnCambiarVista.addEventListener('click', cambiarVista);
 
-        // ========== INICIALIZACIÓN ==========
+        filterEstado.addEventListener('change', aplicarFiltrosInsumos);
+        filterSearch.addEventListener('input', aplicarFiltrosInsumos);
+
+        // ============================================================
+        // INICIALIZACIÓN
+        // ============================================================
         async function init() {
-            // ✅ Primero obtener el usuario de la sesión
             await initUsuario();
             
-            // ✅ Luego cargar equipos del backend
-            await cargarEquiposBackend();
-
-            // Insumos de ejemplo
-            insumos = [
-                { id: 1, nombre: 'Tóner Negro', cantidad: 12, unidad: 'cartucho', stockMinimo: 5 },
-                { id: 2, nombre: 'Resma A4', cantidad: 25, unidad: 'resma', stockMinimo: 10 },
-                { id: 3, nombre: 'Cable USB-C', cantidad: 8, unidad: 'unidad', stockMinimo: 3 },
-                { id: 4, nombre: 'Mouse Óptico', cantidad: 2, unidad: 'unidad', stockMinimo: 5 },
-                { id: 5, nombre: 'Guantes Quirúrgicos', cantidad: 50, unidad: 'par', stockMinimo: 20 }
+            equipos = [
+                { id: 1, codigo: 'EQ-001', nombre: 'Impresora HP LaserJet', estado: 'ACTIVO', usuario: usuarioActual },
+                { id: 2, codigo: 'EQ-002', nombre: 'Monitor Samsung 24"', estado: 'ACTIVO', usuario: usuarioActual },
+                { id: 3, codigo: 'EQ-003', nombre: 'Laptop Dell Latitude', estado: 'MANTENIMIENTO', usuario: usuarioActual }
             ];
-            renderizarInsumos();
-            contadorId = insumos.length;
+            renderizarEquipos();
+
+            await cargarTodosInsumos();
 
             vistaActual = 'insumos';
             panelInsumos.classList.add('active');
@@ -900,16 +1326,18 @@
 
             console.log('✅ Gestión de insumos y equipos inicializada');
             console.log(`👤 Usuario: ${usuarioActual}`);
-            console.log(`📦 Insumos: ${insumos.length}, 🖥️ Equipos: ${equipos.length}`);
         }
 
-        // Exponer funciones globales para los onclick
+        // Exponer funciones globales
         window.eliminarInsumo = eliminarInsumo;
         window.eliminarEquipo = eliminarEquipo;
         window.agregarInsumo = agregarInsumo;
         window.agregarEquipo = agregarEquipo;
+        window.cargarTodosInsumos = cargarTodosInsumos;
+        window.aplicarFiltrosInsumos = aplicarFiltrosInsumos;
+        window.limpiarFiltrosInsumos = limpiarFiltrosInsumos;
+        window.filtrarCriticos = filtrarCriticos;
 
-        // Iniciar
         init();
 
     })();

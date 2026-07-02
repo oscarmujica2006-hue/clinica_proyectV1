@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Registro · Docentes · Backend Spring Boot</title>
+    <title>Sistema de Registro · Docentes y Encargados</title>
     <style>
         /* ===== TODOS LOS ESTILOS ORIGINALES SE CONSERVAN ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -19,12 +19,10 @@
         .content { padding: 30px; }
         .card { background: white; border-radius: 15px; margin-bottom: 30px;
                 border: 2px solid #e9ecef; overflow: hidden; }
-        .card-header { background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-                       padding: 15px 20px; border-bottom: 2px solid #e9ecef;
+        .card-header { padding: 15px 20px; border-bottom: 2px solid #e9ecef;
                        display: flex; align-items: center; gap: 10px; }
         .card-header h2 { color: #495057; font-size: 20px; margin: 0; }
         .card-body { padding: 25px; }
-        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .form-group { margin-bottom: 15px; }
         .form-group.full-width { grid-column: span 2; }
         .form-group label { display: block; margin-bottom: 8px; color: #495057;
@@ -57,12 +55,19 @@
         .btn-info:hover { background: #138496; transform: translateY(-2px); }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; transform: translateY(-2px); }
-        .vista-previa { background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
-                       border-radius: 15px; padding: 20px; margin: 30px 0;
-                       border: 2px dashed #667eea; }
-        .vista-previa-content { background: white; padding: 20px; border-radius: 10px;
-                               font-family: 'Courier New', monospace; 
-                               border: 1px solid #dee2e6; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+        .btn-insumo { background: #17a2b8; color: white; }
+        .btn-insumo:hover { background: #138496; transform: translateY(-2px); }
+        .btn-radiografia { background: #ffc107; color: #212529; }
+        .btn-radiografia:hover { background: #e0a800; transform: translateY(-2px); }
+        .btn-recepcion { background: #28a745; color: white; }
+        .btn-recepcion:hover { background: #218838; transform: translateY(-2px); }
+        .btn-docente { background: linear-gradient(135deg, #FF8C00 0%, #FF6B6B 100%);
+                       color: white; }
+        .btn-docente:hover { transform: translateY(-2px);
+                            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3); }
+        .btn-sm { padding: 8px 15px; font-size: 14px; }
         .table-responsive { overflow-x: auto; margin-top: 40px; }
         table { width: 100%; border-collapse: collapse; border-radius: 15px;
                 overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
@@ -74,6 +79,11 @@
         .badge-success { background: #d4edda; color: #155724; }
         .badge-warning { background: #fff3cd; color: #856404; }
         .badge-info { background: #d1ecf1; color: #0c5460; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-insumo { background: #d1ecf1; color: #0c5460; }
+        .badge-radiografia { background: #fff3cd; color: #856404; }
+        .badge-recepcion { background: #d4edda; color: #155724; }
+        .badge-docente { background: #f8d7da; color: #721c24; }
         .button-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 30px; }
         .alert { padding: 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 500;
                  position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;
@@ -91,52 +101,157 @@
         @media (max-width: 768px) { .form-grid, .button-group { grid-template-columns: 1fr; }
                                     .form-group.full-width { grid-column: span 1; } }
         
-        /* Estilos adicionales para clínicas */
         .clinica-card { background: #f8f9fa; border-radius: 10px; padding: 15px; 
                        margin-bottom: 10px; display: flex; justify-content: space-between;
                        align-items: center; }
         .clinica-nombre { font-weight: 600; color: #495057; }
         .clinica-direccion { color: #6c757d; font-size: 13px; }
         .clinica-selector { margin-top: 10px; }
+
+        /* ===== ESTILOS PARA MODALES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9998;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: #495057;
+        }
+        .modal-header .badge-rol {
+            font-size: 14px;
+            padding: 5px 15px;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #6c757d;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0 10px;
+        }
+        .modal-close:hover {
+            color: #dc3545;
+            transform: rotate(90deg);
+        }
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+        .quick-actions .btn {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .docente-fields {
+            background: #fff8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 2px dashed #FF8C00;
+        }
+        .docente-fields h4 {
+            color: #FF8C00;
+            margin-bottom: 15px;
+        }
+
+        /* Estilo para validaciones en tiempo real */
+        .validacion-ok { color: #155724 !important; }
+        .validacion-error { color: #721c24 !important; }
+        .validacion-pendiente { color: #6c757d !important; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏥 SISTEMA DE REGISTRO DE DOCENTES</h1>
+            <h1>🏥 SISTEMA DE REGISTRO</h1>
+            <p style="opacity: 0.9; margin-top: 5px;">Docentes · Encargados de Insumos · Radiografía · Recepción</p>
         </div>
 
         <div class="content">
-            <!-- CARD PRINCIPAL - REGISTRO COMPLETO -->
+            <!-- ============================================================ -->
+            <!-- CARD PRINCIPAL - REGISTRO DE USUARIO + PERSONA (BASE)         -->
+            <!-- ============================================================ -->
             <div class="card">
-                <div class="card-header" style="background: linear-gradient(135deg, #FF8C00 0%, #FF6B6B 100%);">
-                    <h2 style="color: white;">👨‍🏫 REGISTRO COMPLETO DE DOCENTE</h2>
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h2 style="color: white;">👤 DATOS BASE (PERSONA + USUARIO)</h2>
                 </div>
                 <div class="card-body">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <!-- COLUMNA IZQUIERDA: DATOS PERSONA Y USUARIO -->
+                        <!-- COLUMNA IZQUIERDA: DATOS PERSONA -->
                         <div>
-                            <h3 style="color: #495057; margin-bottom: 20px; border-bottom: 2px solid #FF8C00; padding-bottom: 10px;">
+                            <h3 style="color: #495057; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px;">
                                 👤 DATOS DE LA PERSONA
                             </h3>
                             
                             <div class="form-group full-width">
                                 <label>Nombres Completos:</label>
                                 <input type="text" class="form-control" id="nombres" 
-                                       placeholder="Ej: Carlos Alberto" autocomplete="off" oninput="actualizarVistaPrevia()">
+                                       placeholder="Ej: Carlos Alberto" autocomplete="off">
                             </div>
                             
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>Apellido Paterno:</label>
                                     <input type="text" class="form-control" id="apellidoPaterno" 
-                                           placeholder="Ej: Rodríguez" autocomplete="off" oninput="actualizarVistaPrevia()">
+                                           placeholder="Ej: Rodríguez" autocomplete="off">
                                 </div>
-                                
                                 <div class="form-group">
                                     <label>Apellido Materno:</label>
                                     <input type="text" class="form-control" id="apellidoMaterno" 
-                                           placeholder="Ej: López" autocomplete="off" oninput="actualizarVistaPrevia()">
+                                           placeholder="Ej: López" autocomplete="off">
                                 </div>
                             </div>
                             
@@ -144,23 +259,25 @@
                                 <div class="form-group">
                                     <label>Edad:</label>
                                     <input type="number" class="form-control" id="edad" 
-                                           placeholder="Ej: 35" min="18" max="100" oninput="actualizarVistaPrevia()">
+                                           placeholder="Ej: 35" min="18" max="100">
                                 </div>
-                                
                                 <div class="form-group">
                                     <label>Sexo:</label>
                                     <div class="radio-group-sexo">
                                         <label class="radio-sexo">
-                                            <input type="radio" name="sexo" value="M" checked onchange="actualizarVistaPrevia()"> Masculino
+                                            <input type="radio" name="sexo" value="M" checked> Masculino
                                         </label>
                                         <label class="radio-sexo">
-                                            <input type="radio" name="sexo" value="F" onchange="actualizarVistaPrevia()"> Femenino
+                                            <input type="radio" name="sexo" value="F"> Femenino
                                         </label>
                                     </div>
                                 </div>
                             </div>
-
-                            <h3 style="color: #495057; margin: 30px 0 20px 0; border-bottom: 2px solid #17a2b8; padding-bottom: 10px;">
+                        </div>
+                        
+                        <!-- COLUMNA DERECHA: DATOS USUARIO -->
+                        <div>
+                            <h3 style="color: #495057; margin-bottom: 20px; border-bottom: 2px solid #17a2b8; padding-bottom: 10px;">
                                 🔐 DATOS DEL USUARIO
                             </h3>
                             
@@ -175,25 +292,22 @@
                                 <small id="disponibilidadUsuario" style="display: block; margin-top: 5px;"></small>
                             </div>
 
-                            <!-- ⭐ CAMPO EMAIL AGREGADO -->
                             <div class="form-group full-width">
                                 <label>Email:</label>
                                 <input type="email" class="form-control" id="email" 
                                        placeholder="Ej: carlos.rodriguez@universidad.edu" autocomplete="off">
-                                <small style="display: block; margin-top: 5px; color: #6c757d;">El correo electrónico del docente</small>
                             </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>Contraseña:</label>
                                     <input type="password" class="form-control" id="password" 
-                                           placeholder="Mínimo 8 caracteres" oninput="validarContraseñas(); actualizarVistaPrevia()">
+                                           placeholder="Mínimo 8 caracteres" oninput="validarContraseñas()">
                                 </div>
-                                
                                 <div class="form-group">
                                     <label>Confirmar:</label>
                                     <input type="password" class="form-control" id="confirmPassword" 
-                                           placeholder="Confirme contraseña" oninput="validarContraseñas(); actualizarVistaPrevia()">
+                                           placeholder="Confirme contraseña" oninput="validarContraseñas()">
                                 </div>
                             </div>
                             <small id="mensajeContraseña" style="display: block; margin-top: 5px;"></small>
@@ -202,77 +316,70 @@
                                 <label>Estado del Usuario:</label>
                                 <div class="estado-group">
                                     <label class="estado-option">
-                                        <input type="radio" name="estadoUsuario" value="true" checked onchange="actualizarVistaPrevia()"> 🟢 Activo
+                                        <input type="radio" name="estadoUsuario" value="true" checked> 🟢 Activo
                                     </label>
                                     <label class="estado-option">
-                                        <input type="radio" name="estadoUsuario" value="false" onchange="actualizarVistaPrevia()"> 🔴 Inactivo
+                                        <input type="radio" name="estadoUsuario" value="false"> 🔴 Inactivo
                                     </label>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- COLUMNA DERECHA: DATOS DEL DOCENTE -->
-                        <div>
-                            <h3 style="color: #495057; margin-bottom: 20px; border-bottom: 2px solid #FF8C00; padding-bottom: 10px;">
-                                👨‍🏫 DATOS DEL DOCENTE
-                            </h3>
-                            
-                            <div class="form-group full-width">
-                                <label>Código de Docente:</label>
-                                <div style="display: flex; gap: 10px;">
-                                    <input type="number" class="form-control" id="codigoDocente" 
-                                           placeholder="Ej: 1001" style="flex: 1;" autocomplete="off" 
-                                           oninput="verificarCodigoDocente()">
-                                    <span id="codigoLoading" class="hidden" style="align-self: center;">⏳</span>
+
+                            <!-- ===== CAMPOS ESPECÍFICOS DE DOCENTE ===== -->
+                            <div class="docente-fields" id="docenteFields">
+                                <h4>👨‍🏫 DATOS DEL DOCENTE</h4>
+                                
+                                <div class="form-group full-width">
+                                    <label>Código de Docente:</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="number" class="form-control" id="codigoDocente" 
+                                               placeholder="Ej: 1001" min="1" style="flex: 1;" 
+                                               oninput="verificarCodigoDocente()" />
+                                        <span id="codigoLoading" class="hidden" style="align-self: center;">⏳</span>
+                                    </div>
+                                    <small id="disponibilidadCodigo" style="display: block; margin-top: 5px;"></small>
                                 </div>
-                                <small id="disponibilidadCodigo" style="display: block; margin-top: 5px;"></small>
-                            </div>
-                            
-                            <div class="form-group full-width">
-                                <label>Especialidad:</label>
-                                <input type="text" class="form-control" id="especialidad" 
-                                       placeholder="Ej: Ortodoncia, Endodoncia, Cirugía..." 
-                                       oninput="actualizarVistaPrevia()">
-                            </div>
-                            
-                            <div class="form-group full-width">
-                                <label>Tipo de Contrato:</label>
-                                <select class="form-select" id="contrato" onchange="actualizarVistaPrevia()">
-                                    <option value="">-- Seleccione tipo de contrato --</option>
-                                    <option value="Tiempo completo">📅 Tiempo completo</option>
-                                    <option value="Medio tiempo">⏰ Medio tiempo</option>
-                                    <option value="Horas cátedra">📚 Horas cátedra</option>
-                                    <option value="Contrato temporal">📄 Contrato temporal</option>
-                                    <option value="Honorarios">💰 Honorarios</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group full-width">
-                                <label>Estado del Docente:</label>
-                                <div class="estado-group">
-                                    <label class="estado-option">
-                                        <input type="radio" name="estadoDocente" value="true" checked onchange="actualizarVistaPrevia()"> 🟢 Activo
-                                    </label>
-                                    <label class="estado-option">
-                                        <input type="radio" name="estadoDocente" value="false" onchange="actualizarVistaPrevia()"> 🔴 Inactivo
-                                    </label>
+                                
+                                <div class="form-group full-width">
+                                    <label>Especialidad:</label>
+                                    <input type="text" class="form-control" id="especialidad" 
+                                           placeholder="Ej: Ortodoncia, Endodoncia, Cirugía..." />
                                 </div>
-                            </div>
-                            
-                            <!-- SELECCIÓN DE CLÍNICA (DESDE BD) -->
-                            <div class="form-group full-width">
-                                <label>🏥 Asignar a Clínica:</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
-                                    <select class="form-select" id="idClinica" onchange="actualizarVistaPrevia()">
-                                        <option value="">-- Sin asignar --</option>
-                                        <!-- Las clínicas se cargarán dinámicamente -->
+                                
+                                <div class="form-group full-width">
+                                    <label>Tipo de Contrato:</label>
+                                    <select class="form-select" id="contrato">
+                                        <option value="">-- Seleccione tipo de contrato --</option>
+                                        <option value="Tiempo completo">📅 Tiempo completo</option>
+                                        <option value="Medio tiempo">⏰ Medio tiempo</option>
+                                        <option value="Horas cátedra">📚 Horas cátedra</option>
+                                        <option value="Contrato temporal">📄 Contrato temporal</option>
+                                        <option value="Honorarios">💰 Honorarios</option>
                                     </select>
-                                    <span id="clinicaLoading" class="hidden" style="align-self: center;">⏳</span>
                                 </div>
-                                <small id="infoClinicas"></small>
+                                
+                                <div class="form-group full-width">
+                                    <label>Estado del Docente:</label>
+                                    <div class="estado-group">
+                                        <label class="estado-option">
+                                            <input type="radio" name="estadoDocente" value="true" checked> 🟢 Activo
+                                        </label>
+                                        <label class="estado-option">
+                                            <input type="radio" name="estadoDocente" value="false"> 🔴 Inactivo
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- SELECCIÓN DE CLÍNICA -->
+                                <div class="form-group full-width">
+                                    <label>🏥 Asignar a Clínica:</label>
+                                    <select class="form-select" id="idClinica">
+                                        <option value="">-- Sin asignar --</option>
+                                    </select>
+                                    <small id="infoClinicas"></small>
+                                </div>
                             </div>
-                            
-                            <!-- VERIFICACIONES RÁPIDAS -->
+
+                            <!-- ===== VERIFICACIONES RÁPIDAS ===== -->
                             <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin-top: 30px;">
                                 <h4 style="color: #495057; margin-bottom: 15px;">✅ VALIDACIONES EN TIEMPO REAL</h4>
                                 <div id="verificaciones">
@@ -285,56 +392,80 @@
                         </div>
                     </div>
                     
-                    <!-- BOTÓN DE REGISTRO TODO EN UNO -->
-                    <div style="margin-top: 40px; border-top: 2px solid #e9ecef; padding-top: 30px;">
-                        <button class="btn btn-primary" onclick="registrarDocente()" 
-                                style="width: 100%; font-size: 20px; padding: 20px; background: linear-gradient(135deg, #FF8C00 0%, #FF6B6B 100%);" 
-                                id="btnRegistrar">
-                            🚀 REGISTRAR DOCENTE COMPLETO
-                        </button>
+                    <!-- ===== BOTONES PARA REGISTRAR ===== -->
+                    <div style="margin-top: 30px; border-top: 2px solid #e9ecef; padding-top: 25px;">
+                        <p style="font-weight: 600; color: #495057; margin-bottom: 15px;">🎯 SELECCIONE EL TIPO DE REGISTRO:</p>
+                        <div class="quick-actions">
+                            <button class="btn btn-docente" onclick="registrarDocente()" style="font-size: 18px; padding: 18px;" id="btnRegistrarDocente">
+                                👨‍🏫 Registrar Docente
+                            </button>
+                            <button class="btn btn-insumo" onclick="abrirModal('insumo')" style="font-size: 18px; padding: 18px;">
+                                📦 Encargado Insumos
+                            </button>
+                            <button class="btn btn-radiografia" onclick="abrirModal('radiografia')" style="font-size: 18px; padding: 18px;">
+                                📷 Encargado Radiografía
+                            </button>
+                            <button class="btn btn-recepcion" onclick="abrirModal('recepcion')" style="font-size: 18px; padding: 18px;">
+                                📋 Recepción
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- BOTONES DE ACCIÓN -->
+            <!-- ============================================================ -->
+            <!-- BOTONES DE ACCIÓN                                             -->
+            <!-- ============================================================ -->
             <div class="button-group">
                 <button class="btn btn-secondary" onclick="limpiarFormulario()">
                     🔄 LIMPIAR TODO
                 </button>
-                <button class="btn btn-success" onclick="cargarDocentes()">
-                    📋 LISTAR DOCENTES
+                <button class="btn btn-success" onclick="cargarTodos()">
+                    📋 LISTAR TODOS
                 </button>
                 <button class="btn btn-info" onclick="generarUsuarioSugerido()">
                     💡 GENERAR USUARIO
                 </button>
             </div>
             
-            <!-- LISTADO DE DOCENTES (DESDE LA API) -->
+            <!-- ============================================================ -->
+            <!-- LISTADO DE TODOS LOS REGISTROS                               -->
+            <!-- ============================================================ -->
             <div class="table-responsive">
-                <h3 style="margin-bottom: 20px; color: #495057;">📋 DOCENTES REGISTRADOS</h3>
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                    <button class="btn btn-sm btn-info" onclick="cargarDocentes()" style="padding: 8px 15px;">
-                        🔄 REFRESCAR LISTA
+                <h3 style="margin-bottom: 20px; color: #495057;">📋 REGISTROS</h3>
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 10px; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-sm btn-info" onclick="cargarTodos()" style="padding: 8px 15px;">
+                        🔄 Todos
+                    </button>
+                    <button class="btn btn-sm btn-docente" onclick="cargarPorTipo('DOCENTE')" style="padding: 8px 15px;">
+                        👨‍🏫 Docentes
+                    </button>
+                    <button class="btn btn-sm btn-insumo" onclick="cargarPorTipo('INSUMO')" style="padding: 8px 15px;">
+                        📦 Insumos
+                    </button>
+                    <button class="btn btn-sm btn-radiografia" onclick="cargarPorTipo('RADIOGRAFIA')" style="padding: 8px 15px;">
+                        📷 Radiografía
+                    </button>
+                    <button class="btn btn-sm btn-recepcion" onclick="cargarPorTipo('RECEPCION')" style="padding: 8px 15px;">
+                        📋 Recepción
                     </button>
                 </div>
-                <table id="tablaDocentes">
+                <table id="tablaRegistros">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>CÓDIGO</th>
+                            <th>TIPO</th>
                             <th>NOMBRE COMPLETO</th>
                             <th>USUARIO</th>
                             <th>EMAIL</th>
-                            <th>ESPECIALIDAD</th>
-                            <th>CONTRATO</th>
+                            <th>DATOS ESPECÍFICOS</th>
                             <th>ESTADO</th>
-                            <th>CLÍNICA</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaDocentesBody">
+                    <tbody id="tablaRegistrosBody">
                         <tr id="filaSinDatos">
-                            <td colspan="9" style="text-align: center; color: #6c757d; padding: 30px;">
-                                Cargando docentes...
+                            <td colspan="7" style="text-align: center; color: #6c757d; padding: 30px;">
+                                Cargando registros...
                             </td>
                         </tr>
                     </tbody>
@@ -343,448 +474,774 @@
         </div>
     </div>
 
-<script>
-    // ------------------------------------------------------------
-    // CONFIGURACIÓN DE LA API
-    // ------------------------------------------------------------
-    const API_BASE_URL = 'http://localhost:8080/api';
-    
-    // ------------------------------------------------------------
-    // VARIABLES GLOBALES
-    // ------------------------------------------------------------
-    let timeoutIdUsuario = null;
-    let timeoutIdCodigo = null;
-    let listaClinicas = [];
+    <!-- ============================================================ -->
+    <!-- MODAL 1: ENCARGADO DE INSUMOS                                  -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="modalInsumo">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>📦 Encargado de Insumos</h2>
+                    <span class="badge badge-insumo" style="font-size: 14px; padding: 5px 15px; margin-top: 5px; display: inline-block;">Rol: INSUMO</span>
+                </div>
+                <button class="modal-close" onclick="cerrarModal('modalInsumo')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group full-width">
+                    <label>Área de Responsabilidad:</label>
+                    <input type="text" class="form-control" id="modalAreaResponsabilidad" 
+                           placeholder="Ej: Almacén Central, Farmacia, Bodega" />
+                    <small>Área donde el encargado gestiona los insumos</small>
+                </div>
+                <div class="form-group full-width">
+                    <label>Código de Almacén:</label>
+                    <input type="text" class="form-control" id="modalCodigoAlmacen" 
+                           placeholder="Ej: ALM-001, FAR-002" />
+                    <small>Código único del almacén asignado</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalInsumo')">Cancelar</button>
+                <button class="btn btn-insumo" onclick="registrarEncargado('INSUMO')">✅ Registrar</button>
+            </div>
+        </div>
+    </div>
 
-    // ------------------------------------------------------------
-    // FUNCIONES DE UTILERÍA
-    // ------------------------------------------------------------
-    function mostrarAlerta(mensaje, tipo = 'success') {
-        const alerta = document.createElement('div');
-        alerta.className = `alert alert-${tipo}`;
-        alerta.textContent = mensaje;
-        document.body.appendChild(alerta);
-        setTimeout(() => alerta.remove(), 4000);
-    }
+    <!-- ============================================================ -->
+    <!-- MODAL 2: ENCARGADO DE RADIOGRAFÍA                              -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="modalRadiografia">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>📷 Encargado de Radiografía</h2>
+                    <span class="badge badge-radiografia" style="font-size: 14px; padding: 5px 15px; margin-top: 5px; display: inline-block;">Rol: RADIOGRAFIA</span>
+                </div>
+                <button class="modal-close" onclick="cerrarModal('modalRadiografia')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group full-width">
+                    <label>Código de Encargado de Radiografía:</label>
+                    <input type="number" class="form-control" id="modalCodigoRadiografia" 
+                           placeholder="Ej: 1001" min="1" />
+                    <small>Código único para el encargado de radiografía</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalRadiografia')">Cancelar</button>
+                <button class="btn btn-radiografia" onclick="registrarEncargado('RADIOGRAFIA')">✅ Registrar</button>
+            </div>
+        </div>
+    </div>
 
-    // Limpiar formulario
-    function limpiarFormulario() {
-        document.querySelectorAll('input[type=text], input[type=number], input[type=password], input[type=email], select').forEach(e => e.value = '');
-        document.querySelector('input[name="sexo"][value="M"]').checked = true;
-        document.querySelector('input[name="estadoUsuario"][value="true"]').checked = true;
-        document.querySelector('input[name="estadoDocente"][value="true"]').checked = true;
-        document.getElementById('disponibilidadUsuario').innerHTML = '';
-        document.getElementById('mensajeContraseña').innerHTML = '';
-        document.getElementById('disponibilidadCodigo').innerHTML = '';
-        document.getElementById('contrato').value = '';
-        mostrarAlerta('Formulario limpiado', 'info');
-    }
+    <!-- ============================================================ -->
+    <!-- MODAL 3: RECEPCIÓN                                            -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="modalRecepcion">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>📋 Recepción</h2>
+                    <span class="badge badge-recepcion" style="font-size: 14px; padding: 5px 15px; margin-top: 5px; display: inline-block;">Rol: RECEPCION</span>
+                </div>
+                <button class="modal-close" onclick="cerrarModal('modalRecepcion')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group full-width">
+                    <label>Código de Recepción:</label>
+                    <input type="number" class="form-control" id="modalCodigoRecepcion" 
+                           placeholder="Ej: 2001" min="1" />
+                    <small>Código único para el recepcionista</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalRecepcion')">Cancelar</button>
+                <button class="btn btn-recepcion" onclick="registrarEncargado('RECEPCION')">✅ Registrar</button>
+            </div>
+        </div>
+    </div>
 
-    function validarContraseñas() {
-        const pass = document.getElementById('password').value;
-        const confirm = document.getElementById('confirmPassword').value;
-        const msg = document.getElementById('mensajeContraseña');
-        const validacionEl = document.getElementById('validacionContraseña');
+    <script>
+        // ------------------------------------------------------------
+        // CONFIGURACIÓN DE LA API
+        // ------------------------------------------------------------
+        const API_BASE_URL = 'http://localhost:8080/api';
         
-        if (!pass && !confirm) { 
-            msg.innerHTML = ''; 
-            validacionEl.innerHTML = '🔒 Contraseña: ⏳ pendiente';
-            validacionEl.style.color = '#6c757d';
-            return false; 
-        }
-        if (pass.length < 8) { 
-            msg.innerHTML = '⚠️ Mínimo 8 caracteres'; 
-            msg.style.color = '#856404';
-            validacionEl.innerHTML = '🔒 Contraseña: ❌ muy corta (mínimo 8)';
-            validacionEl.style.color = '#856404';
-            return false; 
-        }
-        if (pass !== confirm) { 
-            msg.innerHTML = '❌ Las contraseñas no coinciden'; 
-            msg.style.color = '#721c24';
-            validacionEl.innerHTML = '🔒 Contraseña: ❌ no coinciden';
-            validacionEl.style.color = '#721c24';
-            return false; 
-        }
-        else { 
-            msg.innerHTML = '✅ Contraseña válida'; 
-            msg.style.color = '#155724';
-            validacionEl.innerHTML = '🔒 Contraseña: ✅ válida';
-            validacionEl.style.color = '#155724';
-            return true; 
-        }
-    }
+        // ------------------------------------------------------------
+        // VARIABLES GLOBALES
+        // ------------------------------------------------------------
+        let timeoutIdUsuario = null;
+        let timeoutIdCodigo = null;
+        let listaClinicas = [];
+        let rolSeleccionado = null;
 
-    // ------------------------------------------------------------
-    // CARGAR CLÍNICAS DESDE LA BASE DE DATOS
-    // ------------------------------------------------------------
-    async function cargarClinicas() {
-        const selectClinica = document.getElementById('idClinica');
-        const loadingEl = document.getElementById('clinicaLoading');
-        const infoEl = document.getElementById('infoClinicas');
-        
-        if (loadingEl) loadingEl.classList.remove('hidden');
-        selectClinica.innerHTML = '<option value="">-- Cargando clínicas... --</option>';
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/registro-docente/clinicas`);
+        // ------------------------------------------------------------
+        // FUNCIONES DE UTILERÍA
+        // ------------------------------------------------------------
+        function mostrarAlerta(mensaje, tipo = 'success') {
+            const alerta = document.createElement('div');
+            alerta.className = `alert alert-${tipo}`;
+            alerta.textContent = mensaje;
+            document.body.appendChild(alerta);
+            setTimeout(() => alerta.remove(), 4000);
+        }
+
+        function limpiarFormulario() {
+            document.querySelectorAll('#nombres, #apellidoPaterno, #apellidoMaterno, #edad, #nombreUsuario, #email, #password, #confirmPassword, #codigoDocente, #especialidad').forEach(e => e.value = '');
+            document.getElementById('contrato').value = '';
+            document.getElementById('idClinica').value = '';
+            document.querySelector('input[name="sexo"][value="M"]').checked = true;
+            document.querySelector('input[name="estadoUsuario"][value="true"]').checked = true;
+            document.querySelector('input[name="estadoDocente"][value="true"]').checked = true;
+            document.getElementById('mensajeContraseña').innerHTML = '';
+            document.getElementById('disponibilidadUsuario').innerHTML = '';
+            document.getElementById('disponibilidadCodigo').innerHTML = '';
+            // Resetear validaciones
+            document.getElementById('validacionContraseña').innerHTML = '🔒 Contraseña: pendiente';
+            document.getElementById('validacionContraseña').style.color = '#6c757d';
+            document.getElementById('validacionUsuario').innerHTML = '👤 Usuario: pendiente';
+            document.getElementById('validacionUsuario').style.color = '#6c757d';
+            document.getElementById('validacionCodigo').innerHTML = '👨‍🏫 Código docente: pendiente';
+            document.getElementById('validacionCodigo').style.color = '#6c757d';
+            mostrarAlerta('Formulario limpiado', 'info');
+        }
+
+        function generarUsuarioSugerido() {
+            const nombres = document.getElementById('nombres').value.trim().split(' ')[0] || '';
+            const apPat = document.getElementById('apellidoPaterno').value.trim() || '';
             
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+            if (!nombres || !apPat) {
+                mostrarAlerta('Ingrese nombre y apellido paterno para generar usuario', 'warning');
+                return;
             }
             
-            const clinicas = await response.json();
-            listaClinicas = clinicas;
+            let base = nombres.toLowerCase() + '.' + apPat.toLowerCase();
+            let sugerido = base.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z.]/g, '');
             
-            selectClinica.innerHTML = '<option value="">-- Sin asignar --</option>';
+            document.getElementById('nombreUsuario').value = sugerido;
+            verificarNombreUsuario();
+            mostrarAlerta(`Usuario sugerido: ${sugerido}`, 'success');
+        }
+
+        // ------------------------------------------------------------
+        // VALIDACIÓN DE CONTRASEÑA
+        // ------------------------------------------------------------
+        function validarContraseñas() {
+            const pass = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const msg = document.getElementById('mensajeContraseña');
+            const validacionEl = document.getElementById('validacionContraseña');
             
-            if (clinicas && clinicas.length > 0) {
-                clinicas.forEach(clinica => {
-                    const option = document.createElement('option');
-                    option.value = clinica.idClinica;
-                    option.textContent = clinica.nombreClinica;
-                    selectClinica.appendChild(option);
+            if (!pass && !confirm) { 
+                msg.innerHTML = ''; 
+                if (validacionEl) { validacionEl.innerHTML = '🔒 Contraseña: ⏳ pendiente'; validacionEl.style.color = '#6c757d'; }
+                return false; 
+            }
+            if (pass.length < 8) { 
+                msg.innerHTML = '⚠️ Mínimo 8 caracteres'; 
+                msg.style.color = '#856404';
+                if (validacionEl) { validacionEl.innerHTML = '🔒 Contraseña: ❌ muy corta (mínimo 8)'; validacionEl.style.color = '#856404'; }
+                return false; 
+            }
+            if (pass !== confirm) { 
+                msg.innerHTML = '❌ Las contraseñas no coinciden'; 
+                msg.style.color = '#721c24';
+                if (validacionEl) { validacionEl.innerHTML = '🔒 Contraseña: ❌ no coinciden'; validacionEl.style.color = '#721c24'; }
+                return false; 
+            }
+            else { 
+                msg.innerHTML = '✅ Contraseña válida'; 
+                msg.style.color = '#155724';
+                if (validacionEl) { validacionEl.innerHTML = '🔒 Contraseña: ✅ válida'; validacionEl.style.color = '#155724'; }
+                return true; 
+            }
+        }
+
+        // ------------------------------------------------------------
+        // VERIFICAR USUARIO EN TIEMPO REAL
+        // ------------------------------------------------------------
+        async function verificarNombreUsuario() {
+            const username = document.getElementById('nombreUsuario').value.trim();
+            const msg = document.getElementById('disponibilidadUsuario');
+            const validacionEl = document.getElementById('validacionUsuario');
+            const loadingEl = document.getElementById('usuarioLoading');
+            
+            if (!username) { 
+                if (msg) msg.innerHTML = ''; 
+                if (validacionEl) { validacionEl.innerHTML = '👤 Usuario: ⏳ pendiente'; validacionEl.style.color = '#6c757d'; }
+                return; 
+            }
+
+            if (loadingEl) loadingEl.classList.remove('hidden');
+            if (msg) { msg.innerHTML = '⏳ Verificando disponibilidad...'; msg.style.color = '#6c757d'; }
+
+            clearTimeout(timeoutIdUsuario);
+            
+            timeoutIdUsuario = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/registro-docente/verificar-usuario/${encodeURIComponent(username)}`);
+                    const data = await response.json();
+                    
+                    if (data.disponible) {
+                        if (msg) { msg.innerHTML = '✅ Nombre de usuario disponible'; msg.style.color = '#155724'; }
+                        if (validacionEl) { validacionEl.innerHTML = '👤 Usuario: ✅ disponible'; validacionEl.style.color = '#155724'; }
+                    } else {
+                        if (msg) { msg.innerHTML = '❌ Nombre de usuario no disponible'; msg.style.color = '#721c24'; }
+                        if (validacionEl) { validacionEl.innerHTML = '👤 Usuario: ❌ ya existe'; validacionEl.style.color = '#721c24'; }
+                    }
+                } catch (error) {
+                    if (msg) { msg.innerHTML = '⚠️ Error al verificar usuario'; msg.style.color = '#856404'; }
+                    if (validacionEl) { validacionEl.innerHTML = '👤 Usuario: ⚠️ error de conexión'; validacionEl.style.color = '#856404'; }
+                    console.error('Error:', error);
+                } finally {
+                    if (loadingEl) loadingEl.classList.add('hidden');
+                }
+            }, 500);
+        }
+
+        // ------------------------------------------------------------
+        // VERIFICAR CÓDIGO DE DOCENTE EN TIEMPO REAL
+        // ------------------------------------------------------------
+        async function verificarCodigoDocente() {
+            const codigo = document.getElementById('codigoDocente').value.trim();
+            const msg = document.getElementById('disponibilidadCodigo');
+            const validacionEl = document.getElementById('validacionCodigo');
+            const loadingEl = document.getElementById('codigoLoading');
+            
+            if (!codigo) { 
+                if (msg) msg.innerHTML = ''; 
+                if (validacionEl) { validacionEl.innerHTML = '👨‍🏫 Código docente: ⏳ pendiente'; validacionEl.style.color = '#6c757d'; }
+                return; 
+            }
+
+            const codigoNum = parseInt(codigo, 10);
+            if (isNaN(codigoNum)) {
+                if (msg) { msg.innerHTML = '❌ Código inválido'; msg.style.color = '#721c24'; }
+                return;
+            }
+
+            if (loadingEl) loadingEl.classList.remove('hidden');
+            if (msg) { msg.innerHTML = '⏳ Verificando código...'; msg.style.color = '#6c757d'; }
+
+            clearTimeout(timeoutIdCodigo);
+            
+            timeoutIdCodigo = setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/registro-docente/verificar-codigo/${codigoNum}`);
+                    const data = await response.json();
+                    
+                    if (data.disponible) {
+                        if (msg) { msg.innerHTML = '✅ Código de docente disponible'; msg.style.color = '#155724'; }
+                        if (validacionEl) { validacionEl.innerHTML = '👨‍🏫 Código docente: ✅ disponible'; validacionEl.style.color = '#155724'; }
+                    } else {
+                        if (msg) { msg.innerHTML = '❌ Código de docente ya registrado'; msg.style.color = '#721c24'; }
+                        if (validacionEl) { validacionEl.innerHTML = '👨‍🏫 Código docente: ❌ ya existe'; validacionEl.style.color = '#721c24'; }
+                    }
+                } catch (error) {
+                    if (msg) { msg.innerHTML = '⚠️ Error al verificar código'; msg.style.color = '#856404'; }
+                    if (validacionEl) { validacionEl.innerHTML = '👨‍🏫 Código docente: ⚠️ error de conexión'; validacionEl.style.color = '#856404'; }
+                    console.error('Error:', error);
+                } finally {
+                    if (loadingEl) loadingEl.classList.add('hidden');
+                }
+            }, 500);
+        }
+
+        // ------------------------------------------------------------
+        // CARGAR CLÍNICAS
+        // ------------------------------------------------------------
+        async function cargarClinicas() {
+            const selectClinica = document.getElementById('idClinica');
+            const infoEl = document.getElementById('infoClinicas');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-docente/clinicas`);
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                
+                const clinicas = await response.json();
+                listaClinicas = clinicas;
+                
+                selectClinica.innerHTML = '<option value="">-- Sin asignar --</option>';
+                
+                if (clinicas && clinicas.length > 0) {
+                    clinicas.forEach(clinica => {
+                        const option = document.createElement('option');
+                        option.value = clinica.idClinica;
+                        option.textContent = clinica.nombreClinica;
+                        selectClinica.appendChild(option);
+                    });
+                    infoEl.innerHTML = `✅ ${clinicas.length} clínicas cargadas`;
+                    infoEl.style.color = '#155724';
+                } else {
+                    infoEl.innerHTML = '⚠️ No hay clínicas registradas';
+                    infoEl.style.color = '#856404';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                selectClinica.innerHTML = '<option value="">-- Error al cargar clínicas --</option>';
+                infoEl.innerHTML = `❌ Error: ${error.message}`;
+                infoEl.style.color = '#721c24';
+            }
+        }
+
+        // ------------------------------------------------------------
+        // FUNCIONES DE MODALES
+        // ------------------------------------------------------------
+        function abrirModal(tipo) {
+            rolSeleccionado = tipo;
+            
+            if (tipo === 'insumo') {
+                document.getElementById('modalAreaResponsabilidad').value = '';
+                document.getElementById('modalCodigoAlmacen').value = '';
+                document.getElementById('modalInsumo').classList.add('active');
+            } else if (tipo === 'radiografia') {
+                document.getElementById('modalCodigoRadiografia').value = '';
+                document.getElementById('modalRadiografia').classList.add('active');
+            } else if (tipo === 'recepcion') {
+                document.getElementById('modalCodigoRecepcion').value = '';
+                document.getElementById('modalRecepcion').classList.add('active');
+            }
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove('active');
+            rolSeleccionado = null;
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
                 });
-                infoEl.innerHTML = `✅ ${clinicas.length} clínicas cargadas`;
-                infoEl.style.color = '#155724';
-            } else {
-                infoEl.innerHTML = '⚠️ No hay clínicas registradas';
-                infoEl.style.color = '#856404';
+                rolSeleccionado = null;
             }
+        });
+
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    rolSeleccionado = null;
+                }
+            });
+        });
+
+        // ------------------------------------------------------------
+        // REGISTRAR DOCENTE
+        // ------------------------------------------------------------
+        async function registrarDocente() {
+            const nombre = document.getElementById('nombres').value.trim();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const edad = document.getElementById('edad').value;
+            const nombreUsuario = document.getElementById('nombreUsuario').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!nombre || !apellidoPaterno || !apellidoMaterno || !edad || !nombreUsuario || !email || !password) {
+                mostrarAlerta('Complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                mostrarAlerta('Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                mostrarAlerta('La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+
+            // Validar campos de docente
+            const codigoDocenteVal = document.getElementById('codigoDocente').value;
+            const especialidad = document.getElementById('especialidad').value.trim();
+            const contrato = document.getElementById('contrato').value;
+            const idClinica = document.getElementById('idClinica').value;
+
+            if (!codigoDocenteVal || parseInt(codigoDocenteVal) <= 0) {
+                mostrarAlerta('Ingrese un código de docente válido', 'error');
+                return;
+            }
+
+            if (!especialidad) {
+                mostrarAlerta('Ingrese la especialidad del docente', 'error');
+                return;
+            }
+
+            if (!contrato) {
+                mostrarAlerta('Seleccione el tipo de contrato', 'error');
+                return;
+            }
+
+            // Verificar código en el backend
+            try {
+                const checkResponse = await fetch(`${API_BASE_URL}/registro-docente/verificar-codigo/${parseInt(codigoDocenteVal)}`);
+                const checkData = await checkResponse.json();
+                if (!checkData.disponible) {
+                    mostrarAlerta('El código de docente ya está registrado', 'error');
+                    return;
+                }
+            } catch (error) {
+                mostrarAlerta('Error al verificar el código', 'error');
+                return;
+            }
+
+            const sexo = document.querySelector('input[name="sexo"]:checked')?.value || 'M';
+            const estadoUsuario = document.querySelector('input[name="estadoUsuario"]:checked')?.value === 'true';
+            const estadoDocente = document.querySelector('input[name="estadoDocente"]:checked')?.value === 'true';
+
+            const payload = {
+                nombre: nombre,
+                apellidoPaterno: apellidoPaterno,
+                apellidoMaterno: apellidoMaterno,
+                edad: parseInt(edad),
+                sexo: sexo,
+                nombreUsuario: nombreUsuario,
+                contraseña: password,
+                email: email,
+                estadoUsuario: estadoUsuario,
+                codigoDocente: parseInt(codigoDocenteVal),
+                especialidad: especialidad,
+                contrato: contrato,
+                estadoDocente: estadoDocente,
+                idClinica: idClinica ? parseInt(idClinica) : null
+            };
+
+            const btn = document.getElementById('btnRegistrarDocente');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Registrando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-docente/registrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarAlerta(`✅ ${data.mensaje || 'Docente registrado exitosamente'}`, 'success');
+                    limpiarFormulario();
+                    cargarTodos();
+                } else {
+                    mostrarAlerta(`❌ Error: ${data.error || 'Error en el registro'}`, 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('❌ Error de conexión con el servidor', 'error');
+                console.error('Error:', error);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // ------------------------------------------------------------
+        // ⭐ REGISTRAR ENCARGADO (DESDE MODAL) - PAYLOAD CORREGIDO
+        // ------------------------------------------------------------
+        async function registrarEncargado(rol) {
+            // Capturar TODOS los campos
+            const nombre = document.getElementById('nombres').value.trim();
+            const apellidoPaterno = document.getElementById('apellidoPaterno').value.trim();
+            const apellidoMaterno = document.getElementById('apellidoMaterno').value.trim();
+            const edad = document.getElementById('edad').value;
+            const nombreUsuario = document.getElementById('nombreUsuario').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const sexo = document.querySelector('input[name="sexo"]:checked')?.value || 'M';
+            const estadoUsuario = document.querySelector('input[name="estadoUsuario"]:checked')?.value === 'true';
+
+            // Validar campos obligatorios
+            if (!nombre || !apellidoPaterno || !apellidoMaterno || !edad || !nombreUsuario || !email || !password) {
+                mostrarAlerta('Complete todos los campos obligatorios del usuario', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                mostrarAlerta('Las contraseñas no coinciden', 'error');
+                return;
+            }
+
+            if (password.length < 8) {
+                mostrarAlerta('La contraseña debe tener al menos 8 caracteres', 'error');
+                return;
+            }
+
+            // Construir payload plano según el DTO
+            const payload = {
+                nombre: nombre,
+                apellidoPaterno: apellidoPaterno,
+                apellidoMaterno: apellidoMaterno,
+                edad: parseInt(edad),
+                sexo: sexo,
+                nombreUsuario: nombreUsuario,
+                contraseña: password,
+                email: email,
+                estadoUsuario: estadoUsuario,
+                rol: rol
+            };
+
+            // Agregar campos específicos del rol
+            if (rol === 'INSUMO') {
+                const area = document.getElementById('modalAreaResponsabilidad').value.trim();
+                const codigoAlmacen = document.getElementById('modalCodigoAlmacen').value.trim();
+                if (!area || !codigoAlmacen) {
+                    mostrarAlerta('Complete los campos de Encargado de Insumos', 'error');
+                    return;
+                }
+                payload.areaResponsabilidad = area;
+                payload.codigoAlmacen = codigoAlmacen;
+            } else if (rol === 'RADIOGRAFIA') {
+                const codigo = document.getElementById('modalCodigoRadiografia').value;
+                if (!codigo || parseInt(codigo) <= 0) {
+                    mostrarAlerta('Ingrese un código válido para Radiografía', 'error');
+                    return;
+                }
+                payload.codigoRadiografia = parseInt(codigo);
+            } else if (rol === 'RECEPCION') {
+                const codigo = document.getElementById('modalCodigoRecepcion').value;
+                if (!codigo || parseInt(codigo) <= 0) {
+                    mostrarAlerta('Ingrese un código válido para Recepción', 'error');
+                    return;
+                }
+                payload.codigoRecepcion = parseInt(codigo);
+            }
+
+            console.log('📤 Enviando payload:', JSON.stringify(payload, null, 2));
+
+            const modalId = `modal${rol.charAt(0).toUpperCase() + rol.slice(1).toLowerCase()}`;
+            const btn = document.querySelector(`#${modalId} .modal-footer .btn-insumo, #${modalId} .modal-footer .btn-radiografia, #${modalId} .modal-footer .btn-recepcion`);
+            const originalText = btn ? btn.innerHTML : 'Registrar';
+            if (btn) {
+                btn.innerHTML = '⏳ Registrando...';
+                btn.disabled = true;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-encargado/registrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarAlerta(`✅ ${data.mensaje || 'Registrado exitosamente'}`, 'success');
+                    cerrarModal(modalId);
+                    limpiarFormulario();
+                    cargarTodos();
+                } else {
+                    mostrarAlerta(`❌ Error: ${data.error || 'Error en el registro'}`, 'error');
+                }
+            } catch (error) {
+                mostrarAlerta('❌ Error de conexión con el servidor', 'error');
+                console.error('Error:', error);
+            } finally {
+                if (btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        // ------------------------------------------------------------
+        // CARGAR TODOS LOS REGISTROS
+        // ------------------------------------------------------------
+        async function cargarTodos() {
+            const tbody = document.getElementById('tablaRegistrosBody');
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">⏳ Cargando registros...</td></tr>';
+
+            try {
+                const resDocentes = await fetch(`${API_BASE_URL}/registro-docente/listar`);
+                const docentes = resDocentes.ok ? await resDocentes.json() : [];
+                
+                const resEncargados = await fetch(`${API_BASE_URL}/registro-encargado/listar`);
+                const encargados = resEncargados.ok ? await resEncargados.json() : [];
+
+                const todos = [...docentes.map(d => ({ ...d, tipo: 'DOCENTE' })), ...encargados];
+
+                if (todos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #6c757d; padding: 30px;">📋 No hay registros</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                todos.forEach(reg => {
+                    const fila = document.createElement('tr');
+                    
+                    const badgeTipo = {
+                        'DOCENTE': 'badge-docente',
+                        'INSUMO': 'badge-insumo',
+                        'RADIOGRAFIA': 'badge-radiografia',
+                        'RECEPCION': 'badge-recepcion'
+                    }[reg.tipo] || 'badge-info';
+
+                    let datosEspecificos = '';
+                    if (reg.tipo === 'DOCENTE') {
+                        datosEspecificos = `👨‍🏫 ${reg.especialidad || 'N/A'} | ${reg.contrato || 'N/A'} | ${reg.nombreClinica || 'Sin clínica'}`;
+                    } else if (reg.tipo === 'INSUMO') {
+                        datosEspecificos = `📦 ${reg.areaResponsabilidad || 'N/A'} | Cód: ${reg.codigoAlmacen || 'N/A'}`;
+                    } else if (reg.tipo === 'RADIOGRAFIA') {
+                        datosEspecificos = `📷 Cód: ${reg.codigoRadiografia || 'N/A'}`;
+                    } else if (reg.tipo === 'RECEPCION') {
+                        datosEspecificos = `📋 Cód: ${reg.codigoRecepcion || 'N/A'}`;
+                    }
+
+                    const estado = reg.estado !== undefined ? reg.estado : false;
+                    const estadoTexto = estado ? '🟢 Activo' : '🔴 Inactivo';
+                    const estadoClase = estado ? 'badge-success' : 'badge-danger';
+
+                    fila.innerHTML = `
+                        <td><span class="badge badge-info">${reg.idEncargado || reg.idDocente || 'N/A'}</span></td>
+                        <td><span class="badge ${badgeTipo}">${reg.tipo || 'N/A'}</span></td>
+                        <td>${reg.nombreCompleto || 'N/A'}</td>
+                        <td>${reg.nombreUsuario || 'N/A'}</td>
+                        <td>${reg.email || 'N/A'}</td>
+                        <td style="font-size: 13px;">${datosEspecificos}</td>
+                        <td><span class="badge ${estadoClase}">${estadoTexto}</span></td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #721c24; padding: 30px;">
+                    ❌ Error al cargar registros: ${error.message}
+                </td></tr>`;
+            }
+        }
+
+        // ------------------------------------------------------------
+        // CARGAR POR TIPO
+        // ------------------------------------------------------------
+        async function cargarPorTipo(tipo) {
+            if (tipo === 'DOCENTE') {
+                mostrarAlerta('📋 Mostrando solo docentes', 'info');
+                await cargarTodos();
+                const rows = document.querySelectorAll('#tablaRegistrosBody tr');
+                rows.forEach(row => {
+                    const tipoCell = row.querySelector('td:nth-child(2)');
+                    if (tipoCell) {
+                        const text = tipoCell.textContent.trim();
+                        row.style.display = text.includes('DOCENTE') ? '' : 'none';
+                    }
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/registro-encargado/listar-por-rol/${tipo}`);
+                const data = await response.json();
+                
+                const tbody = document.getElementById('tablaRegistrosBody');
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #6c757d; padding: 30px;">
+                        📋 No hay registros con rol ${tipo}
+                    </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach(reg => {
+                    const fila = document.createElement('tr');
+                    
+                    const badgeTipo = {
+                        'INSUMO': 'badge-insumo',
+                        'RADIOGRAFIA': 'badge-radiografia',
+                        'RECEPCION': 'badge-recepcion'
+                    }[reg.rol] || 'badge-info';
+
+                    let datosEspecificos = '';
+                    if (reg.rol === 'INSUMO') {
+                        datosEspecificos = `📦 ${reg.areaResponsabilidad || 'N/A'} | Cód: ${reg.codigoAlmacen || 'N/A'}`;
+                    } else if (reg.rol === 'RADIOGRAFIA') {
+                        datosEspecificos = `📷 Cód: ${reg.codigoRadiografia || 'N/A'}`;
+                    } else if (reg.rol === 'RECEPCION') {
+                        datosEspecificos = `📋 Cód: ${reg.codigoRecepcion || 'N/A'}`;
+                    }
+
+                    const estado = reg.estado !== undefined ? reg.estado : false;
+                    const estadoTexto = estado ? '🟢 Activo' : '🔴 Inactivo';
+                    const estadoClase = estado ? 'badge-success' : 'badge-danger';
+
+                    fila.innerHTML = `
+                        <td><span class="badge badge-info">${reg.idEncargado || 'N/A'}</span></td>
+                        <td><span class="badge ${badgeTipo}">${reg.rol || 'N/A'}</span></td>
+                        <td>${reg.nombreCompleto || 'N/A'}</td>
+                        <td>${reg.nombreUsuario || 'N/A'}</td>
+                        <td>${reg.email || 'N/A'}</td>
+                        <td style="font-size: 13px;">${datosEspecificos}</td>
+                        <td><span class="badge ${estadoClase}">${estadoTexto}</span></td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarAlerta('Error al cargar por tipo', 'error');
+            }
+        }
+
+        // ------------------------------------------------------------
+        // INICIALIZACIÓN
+        // ------------------------------------------------------------
+        window.onload = function() {
+            cargarClinicas();
+            cargarTodos();
             
-        } catch (error) {
-            console.error('Error:', error);
-            selectClinica.innerHTML = '<option value="">-- Error al cargar clínicas --</option>';
-            infoEl.innerHTML = `❌ Error: ${error.message}`;
-            infoEl.style.color = '#721c24';
-            mostrarAlerta(`Error al cargar clínicas: ${error.message}`, 'error');
-        } finally {
-            if (loadingEl) loadingEl.classList.add('hidden');
-        }
-    }
-
-    // ------------------------------------------------------------
-    // VERIFICACIONES EN TIEMPO REAL
-    // ------------------------------------------------------------
-    async function verificarNombreUsuario() {
-        const username = document.getElementById('nombreUsuario').value.trim();
-        const msg = document.getElementById('disponibilidadUsuario');
-        const validacionEl = document.getElementById('validacionUsuario');
-        const loadingEl = document.getElementById('usuarioLoading');
-        
-        if (!username) { 
-            msg.innerHTML = ''; 
-            validacionEl.innerHTML = '👤 Usuario: ⏳ pendiente';
-            validacionEl.style.color = '#6c757d';
-            return; 
-        }
-
-        if (loadingEl) loadingEl.classList.remove('hidden');
-        msg.innerHTML = '⏳ Verificando disponibilidad...';
-        msg.style.color = '#6c757d';
-
-        clearTimeout(timeoutIdUsuario);
-        
-        timeoutIdUsuario = setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/registro-docente/verificar-usuario/${encodeURIComponent(username)}`);
-                const data = await response.json();
-                
-                if (data.disponible) {
-                    msg.innerHTML = '✅ Nombre de usuario disponible';
-                    msg.style.color = '#155724';
-                    validacionEl.innerHTML = '👤 Usuario: ✅ disponible';
-                    validacionEl.style.color = '#155724';
-                } else {
-                    msg.innerHTML = '❌ Nombre de usuario no disponible';
-                    msg.style.color = '#721c24';
-                    validacionEl.innerHTML = '👤 Usuario: ❌ ya existe';
-                    validacionEl.style.color = '#721c24';
-                }
-            } catch (error) {
-                msg.innerHTML = '⚠️ Error al verificar usuario';
-                msg.style.color = '#856404';
-                validacionEl.innerHTML = '👤 Usuario: ⚠️ error de conexión';
-                validacionEl.style.color = '#856404';
-                console.error('Error:', error);
-            } finally {
-                if (loadingEl) loadingEl.classList.add('hidden');
-            }
-        }, 500);
-    }
-
-    async function verificarCodigoDocente() {
-        const codigo = document.getElementById('codigoDocente').value.trim();
-        const msg = document.getElementById('disponibilidadCodigo');
-        const validacionEl = document.getElementById('validacionCodigo');
-        const loadingEl = document.getElementById('codigoLoading');
-        
-        if (!codigo) { 
-            msg.innerHTML = ''; 
-            validacionEl.innerHTML = '👨‍🏫 Código docente: ⏳ pendiente';
-            validacionEl.style.color = '#6c757d';
-            return; 
-        }
-
-        const codigoNum = parseInt(codigo, 10);
-        if (isNaN(codigoNum)) {
-            msg.innerHTML = '❌ Código inválido';
-            msg.style.color = '#721c24';
-            return;
-        }
-
-        if (loadingEl) loadingEl.classList.remove('hidden');
-        msg.innerHTML = '⏳ Verificando código...';
-        msg.style.color = '#6c757d';
-
-        clearTimeout(timeoutIdCodigo);
-        
-        timeoutIdCodigo = setTimeout(async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/registro-docente/verificar-codigo/${codigoNum}`);
-                const data = await response.json();
-                
-                if (data.disponible) {
-                    msg.innerHTML = '✅ Código de docente disponible';
-                    msg.style.color = '#155724';
-                    validacionEl.innerHTML = '👨‍🏫 Código docente: ✅ disponible';
-                    validacionEl.style.color = '#155724';
-                } else {
-                    msg.innerHTML = '❌ Código de docente ya registrado';
-                    msg.style.color = '#721c24';
-                    validacionEl.innerHTML = '👨‍🏫 Código docente: ❌ ya existe';
-                    validacionEl.style.color = '#721c24';
-                }
-            } catch (error) {
-                msg.innerHTML = '⚠️ Error al verificar código';
-                msg.style.color = '#856404';
-                validacionEl.innerHTML = '👨‍🏫 Código docente: ⚠️ error de conexión';
-                validacionEl.style.color = '#856404';
-                console.error('Error:', error);
-            } finally {
-                if (loadingEl) loadingEl.classList.add('hidden');
-            }
-        }, 500);
-    }
-
-    // ------------------------------------------------------------
-    // GENERAR USUARIO SUGERIDO
-    // ------------------------------------------------------------
-    function generarUsuarioSugerido() {
-        const nombres = document.getElementById('nombres').value.trim().split(' ')[0] || '';
-        const apPat = document.getElementById('apellidoPaterno').value.trim() || '';
-        
-        if (!nombres || !apPat) {
-            mostrarAlerta('Ingrese nombre y apellido paterno para generar usuario', 'warning');
-            return;
-        }
-        
-        let base = nombres.toLowerCase() + '.' + apPat.toLowerCase();
-        let sugerido = base.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z.]/g, '');
-        
-        document.getElementById('nombreUsuario').value = sugerido;
-        verificarNombreUsuario();
-        mostrarAlerta(`Usuario sugerido: ${sugerido}`, 'success');
-    }
-
-    // ------------------------------------------------------------
-    // ACTUALIZAR VISTA PREVIA
-    // ------------------------------------------------------------
-    function actualizarVistaPrevia() {
-        console.log('Formulario actualizado');
-    }
-
-    // ------------------------------------------------------------
-    // REGISTRO PRINCIPAL - ENVÍO A LA API
-    // ------------------------------------------------------------
-    async function registrarDocente() {
-        // Validar campos obligatorios
-        const dto = {
-            nombre: document.getElementById('nombres').value.trim(),
-            apellidoPaterno: document.getElementById('apellidoPaterno').value.trim(),
-            apellidoMaterno: document.getElementById('apellidoMaterno').value.trim(),
-            edad: document.getElementById('edad').value ? parseInt(document.getElementById('edad').value) : null,
-            sexo: document.querySelector('input[name="sexo"]:checked')?.value,
-            nombreUsuario: document.getElementById('nombreUsuario').value.trim(),
-            contraseña: document.getElementById('password').value,
-            email: document.getElementById('email').value.trim(),  // ⭐ CAMPO EMAIL AGREGADO
-            estadoUsuario: document.querySelector('input[name="estadoUsuario"]:checked')?.value === 'true',
-            codigoDocente: document.getElementById('codigoDocente').value ? parseInt(document.getElementById('codigoDocente').value) : null,
-            especialidad: document.getElementById('especialidad').value.trim(),
-            contrato: document.getElementById('contrato').value,
-            estadoDocente: document.querySelector('input[name="estadoDocente"]:checked')?.value === 'true',
-            idClinica: document.getElementById('idClinica').value ? parseInt(document.getElementById('idClinica').value) : null
+            // Actualizar validación de campos al escribir
+            document.getElementById('nombres').addEventListener('input', actualizarValidacionCampos);
+            document.getElementById('apellidoPaterno').addEventListener('input', actualizarValidacionCampos);
+            document.getElementById('apellidoMaterno').addEventListener('input', actualizarValidacionCampos);
+            document.getElementById('edad').addEventListener('input', actualizarValidacionCampos);
+            document.getElementById('email').addEventListener('input', actualizarValidacionCampos);
         };
 
-        // Validar campos obligatorios
-        const camposObligatorios = ['nombre', 'apellidoPaterno', 'apellidoMaterno', 'edad', 'nombreUsuario', 'contraseña', 'codigoDocente'];
-        for (const campo of camposObligatorios) {
-            if (!dto[campo] && dto[campo] !== 0) {
-                mostrarAlerta(`El campo ${campo} es obligatorio`, 'error');
-                return;
-            }
-        }
-
-        // Validar edad
-        if (dto.edad < 18 || dto.edad > 100) {
-            mostrarAlerta('La edad debe ser entre 18 y 100 años', 'error');
-            return;
-        }
-
-        // Validar contraseña
-        if (!validarContraseñas()) {
-            mostrarAlerta('Revise la contraseña', 'error');
-            return;
-        }
-
-        // Validar código positivo
-        if (dto.codigoDocente <= 0) {
-            mostrarAlerta('El código debe ser un número positivo', 'error');
-            return;
-        }
-
-        // Deshabilitar botón y mostrar loading
-        const btn = document.getElementById('btnRegistrar');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ REGISTRANDO DOCENTE...';
-        btn.disabled = true;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/registro-docente/registrar`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dto)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                mostrarAlerta(`✅ ${data.mensaje || 'Docente registrado exitosamente'}`, 'success');
-                limpiarFormulario();
-                cargarDocentes();
-            } else {
-                mostrarAlerta(`❌ Error: ${data.error || 'Error en el registro'}`, 'error');
-            }
-        } catch (error) {
-            mostrarAlerta('❌ Error de conexión con el servidor', 'error');
-            console.error('Error:', error);
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    }
-
-    // ------------------------------------------------------------
-    // CARGAR DOCENTES DESDE LA API
-    // ------------------------------------------------------------
-    async function cargarDocentes() {
-        const tbody = document.getElementById('tablaDocentesBody');
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 30px;">⏳ Cargando docentes...</td></tr>';
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/registro-docente/listar`);
+        // ------------------------------------------------------------
+        // VALIDACIÓN DE CAMPOS COMPLETOS
+        // ------------------------------------------------------------
+        function actualizarValidacionCampos() {
+            const validacionEl = document.getElementById('validacionCampos');
+            const campos = ['nombres', 'apellidoPaterno', 'apellidoMaterno', 'edad', 'nombreUsuario', 'email', 'password', 'codigoDocente'];
+            let completos = true;
             
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+            for (const campo of campos) {
+                const el = document.getElementById(campo);
+                if (!el || !el.value.trim()) {
+                    completos = false;
+                    break;
+                }
             }
             
-            const docentes = await response.json();
-
-            if (!docentes || docentes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #6c757d; padding: 30px;">📋 No hay docentes registrados</td></tr>';
-                return;
+            if (validacionEl) {
+                if (completos) {
+                    validacionEl.innerHTML = '📋 Campos completos: ✅ todos llenos';
+                    validacionEl.style.color = '#155724';
+                } else {
+                    validacionEl.innerHTML = '📋 Campos completos: ⏳ faltan campos';
+                    validacionEl.style.color = '#6c757d';
+                }
             }
-
-            tbody.innerHTML = '';
-            docentes.forEach(doc => {
-                const fila = document.createElement('tr');
-                
-                const idDocente = doc.idDocente || 'N/A';
-                const codigoDocente = doc.codigoDocente || 'N/A';
-                const nombreCompleto = doc.nombreCompleto || 'N/A';
-                const nombreUsuario = doc.nombreUsuario || 'N/A';
-                const email = doc.email || '—';  // ⭐ MOSTRAR EMAIL
-                const especialidad = doc.especialidad || '—';
-                const contrato = doc.contrato || '—';
-                const estado = doc.estado !== undefined ? doc.estado : false;
-                const estadoTexto = estado ? '🟢 Activo' : '🔴 Inactivo';
-                const estadoClase = estado ? 'badge-success' : 'badge-warning';
-                const clinicaNombre = doc.nombreClinica || '🏥 Sin asignar';
-                
-                fila.innerHTML = `
-                    <td><span class="badge badge-info">${idDocente}</span></td>
-                    <td><span class="badge badge-info">${codigoDocente}</span></td>
-                    <td>${nombreCompleto}</td>
-                    <td>${nombreUsuario}</td>
-                    <td>${email}</td>
-                    <td>${especialidad}</td>
-                    <td>${contrato}</td>
-                    <td><span class="badge ${estadoClase}">${estadoTexto}</span></td>
-                    <td>${clinicaNombre}</td>
-                `;
-                tbody.appendChild(fila);
-            });
-            
-        } catch (error) {
-            console.error('Error detallado:', error);
-            tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: #721c24; padding: 30px;">
-                ❌ Error al cargar docentes: ${error.message}<br>
-                <small>Verifique que el backend esté corriendo en ${API_BASE_URL}</small>
-            </td></tr>`;
         }
-    }
 
-    // ------------------------------------------------------------
-    // DIAGNÓSTICO DE CONEXIÓN
-    // ------------------------------------------------------------
-    async function diagnosticarConexion() {
-        console.log('=== DIAGNÓSTICO DE CONEXIÓN ===');
-        console.log('URL Base:', API_BASE_URL);
-        
-        try {
-            const resClinicas = await fetch(`${API_BASE_URL}/registro-docente/clinicas`);
-            console.log('Endpoint clínicas - Status:', resClinicas.status);
-            if (resClinicas.ok) {
-                const data = await resClinicas.json();
-                console.log('Clínicas encontradas:', data.length);
-            }
-        } catch(e) {
-            console.error('Error en clínicas:', e.message);
-        }
-        
-        try {
-            const resDocentes = await fetch(`${API_BASE_URL}/registro-docente/listar`);
-            console.log('Endpoint docentes - Status:', resDocentes.status);
-            if (resDocentes.ok) {
-                const data = await resDocentes.json();
-                console.log('Docentes encontrados:', data.length);
-            }
-        } catch(e) {
-            console.error('Error en docentes:', e.message);
-        }
-    }
-
-    // ------------------------------------------------------------
-    // INICIALIZACIÓN
-    // ------------------------------------------------------------
-    window.onload = function() {
-        diagnosticarConexion();
-        cargarClinicas();
-        cargarDocentes();
-    };
-
-    // Exponer funciones globalmente
-    window.verificarNombreUsuario = verificarNombreUsuario;
-    window.verificarCodigoDocente = verificarCodigoDocente;
-    window.registrarDocente = registrarDocente;
-    window.limpiarFormulario = limpiarFormulario;
-    window.cargarDocentes = cargarDocentes;
-    window.generarUsuarioSugerido = generarUsuarioSugerido;
-    window.validarContraseñas = validarContraseñas;
-    window.cargarClinicas = cargarClinicas;
-    window.actualizarVistaPrevia = actualizarVistaPrevia;
-</script>
+        // Exponer funciones globalmente
+        window.registrarDocente = registrarDocente;
+        window.registrarEncargado = registrarEncargado;
+        window.limpiarFormulario = limpiarFormulario;
+        window.cargarTodos = cargarTodos;
+        window.cargarPorTipo = cargarPorTipo;
+        window.generarUsuarioSugerido = generarUsuarioSugerido;
+        window.abrirModal = abrirModal;
+        window.cerrarModal = cerrarModal;
+        window.validarContraseñas = validarContraseñas;
+        window.verificarNombreUsuario = verificarNombreUsuario;
+        window.verificarCodigoDocente = verificarCodigoDocente;
+    </script>
 </body>
 </html>

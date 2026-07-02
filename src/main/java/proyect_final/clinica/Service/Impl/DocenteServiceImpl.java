@@ -72,10 +72,7 @@ public class DocenteServiceImpl implements DocenteService {
         return docenteRepository.findByCodigoDocente(codigoDocente);
     }
 
-    @Override
-    public Optional<Docente> obtenerPorIdUsuario(Long idUsuario) {
-        return docenteRepository.findByUsuarioIdUsuario(idUsuario);
-    }
+
 
     @Override
     public List<Docente> obtenerPorClinica(Long idClinica) {
@@ -87,20 +84,13 @@ public class DocenteServiceImpl implements DocenteService {
         return docenteRepository.findByClinicaIdClinicaAndEstadoTrue(idClinica);
     }
 
-    @Override
-    public List<Docente> buscarPorEspecialidad(String especialidad) {
-        return docenteRepository.findByEspecialidadContainingIgnoreCase(especialidad);
-    }
+
 
     @Override
     public List<Docente> buscarPorNombre(String nombre) {
         return docenteRepository.buscarPorNombreCompleto(nombre);
     }
 
-    @Override
-    public List<Docente> buscarPorNombreUsuario(String username) {
-        return docenteRepository.buscarPorNombreUsuario(username);
-    }
 
     @Override
     public List<DocenteDTO> obtenerTodosDTO() {

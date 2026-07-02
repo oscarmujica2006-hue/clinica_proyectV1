@@ -20,9 +20,7 @@ public interface DetalleEvolucionClinicaRepository extends JpaRepository<Detalle
     // Buscar por evolución y estado (usar estDetEvoClin en lugar de estado)
     List<DetalleEvolucionClinica> findByEvolucionClinica_IdEvolucionClinicaAndEstDetEvoClin(Long idEvolucionClinica, String estDetEvoClin);
     
-    // ✅ CORREGIDO: Usar estDetEvoClin en lugar de estado
-    List<DetalleEvolucionClinica> findByDiagnosticoTratamientoDiente_DienteAndEstDetEvoClin(Integer diente, String estDetEvoClin);
-    
+
     // Contar cuántos dientes se han trabajado en una evolución
     long countByEvolucionClinica_IdEvolucionClinica(Long idEvolucionClinica);
     

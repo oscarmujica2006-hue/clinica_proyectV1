@@ -17,6 +17,21 @@ public class EncargadoInsumoServiceImpl implements EncargadoInsumoService {
     @Autowired
     private EncargadoInsumoRepository encargadoInsumoRepository;
 
+   
+   
+   
+    @Override
+    public EncargadoInsumo guardar(EncargadoInsumo encargadoInsumo) {
+        return encargadoInsumoRepository.save(encargadoInsumo);
+    }
+    
+    @Override
+    public List<EncargadoInsumo> obtenerTodos() {
+        return encargadoInsumoRepository.findAll();
+    }
+   
+   
+   
     @Override
     public List<EncargadoInsumo> findAll() {
         return encargadoInsumoRepository.findAll();
@@ -56,4 +71,7 @@ public class EncargadoInsumoServiceImpl implements EncargadoInsumoService {
     public long count() {
         return encargadoInsumoRepository.count();
     }
+
+
+
 }

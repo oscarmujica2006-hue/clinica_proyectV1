@@ -36,25 +36,8 @@ public class ArchivoServiceImpl implements ArchivoService {
         archivoRepository.deleteById(id);
     }
 
-    @Override
-    public Optional<Archivo> findArchivoByPacienteCiOrNombre(Integer ci, String nombre) {
-        if ((ci == null || ci == 0) && (nombre == null || nombre.trim().isEmpty())) {
-            throw new IllegalArgumentException("Debe proporcionar CI o nombre del paciente");
-        }
-        
-        String nombreBusqueda = nombre != null ? nombre.trim() : null;
-        return archivoRepository.buscarArchivoPorCiONombre(ci, nombreBusqueda);
-    }
-    
-    @Override
-    public Optional<Long> findIdArchivoByPacienteCiOrNombre(Integer ci, String nombre) {
-        if ((ci == null || ci == 0) && (nombre == null || nombre.trim().isEmpty())) {
-            throw new IllegalArgumentException("Debe proporcionar CI o nombre del paciente");
-        }
-        
-        String nombreBusqueda = nombre != null ? nombre.trim() : null;
-        return archivoRepository.findIdArchivoByPacienteCiOrNombre(ci, nombreBusqueda);
-    }
+
+
     
     @Override
     public boolean pacienteTieneArchivo(Long idPaciente) {
@@ -64,12 +47,7 @@ public class ArchivoServiceImpl implements ArchivoService {
         return archivoRepository.existsByPacienteId(idPaciente);
     }
     
-    @Override
-    public Optional<Archivo> findArchivoByPacienteId(Long idPaciente) {
-        return archivoRepository.findByPacienteIdPaciente(idPaciente)
-                                .stream()
-                                .findFirst();
-    }
+
 
     // ⭐ NUEVO MÉTODO IMPLEMENTADO: Llama directamente a la función de PostgreSQL
     @Override

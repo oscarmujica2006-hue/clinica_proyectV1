@@ -46,4 +46,7 @@ public interface CupoService {
     
     /** Obtener total de cupos disponibles sumando todos */
     int obtenerTotalCuposDisponibles();
+
+
+
 }

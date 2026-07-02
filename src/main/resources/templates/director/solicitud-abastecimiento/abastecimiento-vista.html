@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    /* ... estilos ... */
     * {
       margin: 0;
       padding: 0;
@@ -97,6 +96,9 @@
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .nav-btn.active {
@@ -107,6 +109,20 @@
     .nav-btn:hover {
       transform: translateY(-2px);
       box-shadow: var(--shadow-md);
+    }
+
+    .nav-btn .badge {
+      background: var(--danger);
+      color: white;
+      border-radius: 50%;
+      padding: 0.1rem 0.5rem;
+      font-size: 0.75rem;
+      margin-left: 0.25rem;
+    }
+
+    .nav-btn.active .badge {
+      background: white;
+      color: var(--primary);
     }
 
     .stats-grid {
@@ -200,6 +216,9 @@
       font-size: 0.875rem;
       color: var(--gray-600);
       border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     td {
@@ -228,6 +247,7 @@
     .status-completado { background: var(--success-light); color: var(--success); }
     .status-cancelado { background: var(--danger-light); color: var(--danger); }
     .status-en-proceso { background: var(--info-light); color: var(--info); }
+    .status-recibido { background: var(--success-light); color: var(--success); }
 
     .btn {
       display: inline-flex;
@@ -273,6 +293,12 @@
     }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 
+    .btn-info {
+      background: var(--info);
+      color: white;
+    }
+    .btn-info:hover { background: #2563EB; }
+
     .modal {
       display: none;
       position: fixed;
@@ -291,7 +317,7 @@
     .modal-content {
       background: white;
       border-radius: var(--radius);
-      max-width: 900px;
+      max-width: 1000px;
       width: 95%;
       max-height: 85vh;
       overflow-y: auto;
@@ -342,7 +368,7 @@
 
     .insumo-item-aprobar {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      grid-template-columns: 1.5fr 0.8fr 1.2fr 1fr auto;
       gap: 0.5rem;
       align-items: center;
       padding: 0.75rem;
@@ -357,6 +383,11 @@
       border-radius: var(--radius-sm);
       font-size: 0.875rem;
       width: 100%;
+    }
+
+    .insumo-item-aprobar .info-empaque {
+      font-size: 0.75rem;
+      color: var(--gray-500);
     }
 
     .info-directora {
@@ -375,8 +406,6 @@
       padding: 1rem;
       border-radius: 8px;
       margin-top: 1rem;
-      text-align: right;
-      font-weight: bold;
     }
 
     .detail-card {
@@ -401,6 +430,156 @@
       transition: width 0.3s ease;
     }
 
+    .codigo-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .insumo-detalle-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .insumo-detalle-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Estilos para selección de insumos en acta */
+    .insumo-seleccionable {
+      display: grid;
+      grid-template-columns: auto 1.5fr 1fr 1fr 1fr 1fr auto;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.75rem;
+      background: var(--gray-50);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .insumo-seleccionable.seleccionado {
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+    }
+
+    .insumo-seleccionable input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .insumo-seleccionable input[type="number"] {
+      padding: 0.3rem 0.5rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      width: 100%;
+    }
+
+    .insumo-seleccionable .info-insumo {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+
+    .insumo-seleccionable .pendiente {
+      font-weight: 600;
+      color: var(--warning);
+    }
+
+    .grupo-abastecimiento {
+      background: white;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .grupo-abastecimiento .header-grupo {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .grupo-abastecimiento .header-grupo .codigo {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .grupo-abastecimiento .header-grupo .estado {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .grupo-abastecimiento .header-grupo .estado .status-badge {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    .grupo-abastecimiento .header-grupo .totales {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .grupo-abastecimiento .header-grupo .totales span {
+      background: rgba(255,255,255,0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-left: 0.25rem;
+    }
+
+    .grupo-abastecimiento .tabla-insumos {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .grupo-abastecimiento .tabla-insumos th {
+      background: var(--gray-50);
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .grupo-abastecimiento .tabla-insumos td {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.8rem;
+    }
+
+    .grupo-abastecimiento .tabla-insumos .fila-total {
+      background: var(--primary-light);
+      font-weight: 700;
+    }
+
+    .grupo-abastecimiento .tabla-insumos .fila-total td {
+      border-top: 2px solid var(--primary);
+      padding: 0.8rem 1rem;
+    }
+
+    .text-success { color: var(--success); }
+    .text-warning { color: var(--warning); }
+    .text-danger { color: var(--danger); }
+    .fw-bold { font-weight: 700; }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -415,8 +594,21 @@
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .filters-grid { flex-direction: column; }
       .filter-group { width: 100%; }
-      .insumo-item-aprobar { grid-template-columns: 1fr; }
-      .insumo-item-aprobar input { width: 100%; }
+      .insumo-seleccionable { 
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+      .nav-btn { padding: 0.5rem 1rem; font-size: 0.8rem; }
+      .grupo-abastecimiento .header-grupo {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .grupo-abastecimiento .header-grupo .totales {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
     }
   </style>
 </head>
@@ -438,10 +630,13 @@
     </button>
     <button class="nav-btn" onclick="mostrarVista('pendientes')">
       <i class="fas fa-clock"></i> Pendientes de Aprobar
-      <span class="status-badge status-pendiente" id="pendientesCount" style="margin-left: 0.5rem;">0</span>
+      <span class="badge" id="pendientesCount">0</span>
     </button>
     <button class="nav-btn" onclick="mostrarVista('actas')">
       <i class="fas fa-file-signature"></i> Actas de Entrega
+    </button>
+    <button class="nav-btn" onclick="mostrarVista('resumen')" style="background: var(--success); color: white;">
+      <i class="fas fa-chart-pie"></i> Resumen General
     </button>
   </div>
 
@@ -547,35 +742,56 @@
   <div id="vistaActas" style="display: none;">
     <div class="filters-card">
       <h3 style="margin-bottom: 1rem;"><i class="fas fa-file-signature"></i> Actas de Entrega</h3>
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-end;">
-        <div class="filter-group" style="flex: 2;">
-          <label>Buscar por código de abastecimiento</label>
-          <input type="text" id="searchActa" placeholder="Ingrese código de abastecimiento...">
+      <p style="color: var(--gray-500); margin-bottom: 1rem;">Registre entregas parciales seleccionando los insumos que llegaron</p>
+    </div>
+
+    <!-- LISTA DE ABASTECIMIENTOS PARA REGISTRAR ACTAS -->
+    <div id="actasPendientesContainer"></div>
+  </div>
+
+  <!-- Vista de Resumen General (MODIFICADA) -->
+  <div id="vistaResumen" style="display: none;">
+    <div class="filters-card">
+      <h3 style="margin-bottom: 1rem;"><i class="fas fa-chart-pie"></i> Resumen General de Abastecimientos</h3>
+      <p style="color: var(--gray-500); margin-bottom: 1rem;">
+        <i class="fas fa-info-circle"></i> 
+        Resumen de insumos: comprometido, entregado y pendiente (en empaques)
+      </p>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Filtrar por abastecimiento</label>
+          <select id="filterResumenAbast" onchange="cargarResumenGeneral()">
+            <option value="todos">Todos los abastecimientos</option>
+          </select>
         </div>
         <div class="filter-group" style="flex: 0;">
-          <button class="btn btn-primary" onclick="buscarActas()"><i class="fas fa-search"></i> Buscar</button>
+          <label>&nbsp;</label>
+          <button class="btn btn-primary" onclick="cargarResumenGeneral()"><i class="fas fa-sync-alt"></i> Actualizar</button>
         </div>
       </div>
     </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>N° Acta</th>
-            <th>Abastecimiento</th>
-            <th>Fecha Entrega</th>
-            <th>Insumos</th>
-            <th>Total Entregado</th>
-            <th>Estado Lote</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="actasTableBody">
-          <tr><td colspan="7" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando actas...</td></tr>
-        </tbody>
-      </table>
+    <div class="stats-grid" id="resumenStats">
+      <div class="stat-card">
+        <div class="number" id="resumenTotalInsumos">0</div>
+        <div class="label">Total Insumos</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="resumenTotalComprometido">0</div>
+        <div class="label">Total Comprometido</div>
+      </div>
+      <div class="stat-card" style="border-color: var(--success);">
+        <div class="number" style="color: var(--success);" id="resumenTotalEntregado">0</div>
+        <div class="label">Total Entregado</div>
+      </div>
+      <div class="stat-card" style="border-color: var(--warning);">
+        <div class="number" style="color: var(--warning);" id="resumenTotalPendiente">0</div>
+        <div class="label">Total Pendiente</div>
+      </div>
     </div>
+
+    <!-- Contenedor para los grupos de abastecimiento -->
+    <div id="resumenContainer"></div>
   </div>
 </div>
 
@@ -607,20 +823,14 @@
   </div>
 </div>
 
-<!-- Modal de Registro de Acta de Entrega -->
-<div id="actaModal" class="modal">
+<!-- Modal de Detalle de Acta -->
+<div id="verActaModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3><i class="fas fa-file-signature"></i> Registrar Acta de Entrega</h3>
-      <button class="close-modal" onclick="closeActaModal()">&times;</button>
+      <h3><i class="fas fa-file-signature"></i> Detalle del Acta de Entrega</h3>
+      <button class="close-modal" onclick="closeVerActaModal()">&times;</button>
     </div>
-    <div id="actaModalBody"></div>
-    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: flex-end;">
-      <button class="btn btn-outline" onclick="closeActaModal()">Cancelar</button>
-      <button class="btn btn-success" onclick="confirmarActa()">
-        <i class="fas fa-save"></i> Registrar Acta
-      </button>
-    </div>
+    <div id="verActaModalBody"></div>
   </div>
 </div>
 
@@ -631,7 +841,7 @@ let pedidosPendientes = [];
 let actasEntrega = [];
 let abastecimientoActual = null;
 let insumosAprobacion = [];
-let actaActual = null;
+let resumenData = [];
 
 // ========== INICIALIZACIÓN ==========
 async function obtenerIdDirector() {
@@ -691,18 +901,432 @@ async function cargarPedidosPendientes() {
 }
 
 async function cargarActasEntrega() {
-    const tbody = document.getElementById('actasTableBody');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+    const container = document.getElementById('actasPendientesContainer');
+    container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
     
     try {
         const response = await fetch('/api/pedidos/actas-entrega');
         if (!response.ok) throw new Error('Error al cargar actas');
         actasEntrega = await response.json();
-        actualizarTablaActas();
+        cargarAbastecimientosPendientesActa();
     } catch (error) {
         console.error('Error:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error al cargar actas</td></tr>';
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: red;">Error al cargar actas</div>';
     }
+}
+
+// ========== CARGAR ABASTECIMIENTOS PARA ACTAS ==========
+async function cargarAbastecimientosPendientesActa() {
+    const container = document.getElementById('actasPendientesContainer');
+    
+    try {
+        const response = await fetch(`/api/pedidos/abastecimientos/director/${idDirector}`);
+        if (!response.ok) throw new Error('Error al cargar abastecimientos');
+        const abastList = await response.json();
+        
+        // Filtrar solo los que están en proceso o parcial
+        const pendientes = abastList.filter(a => 
+            a.estadoAbastecimiento === 'EN_PROCESO' || 
+            a.estadoAbastecimiento === 'PARCIAL'
+        );
+        
+        if (pendientes.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--gray-500);">No hay abastecimientos pendientes de entrega</div>';
+            return;
+        }
+        
+        let html = '';
+        for (const abast of pendientes) {
+            // Obtener detalles del abastecimiento
+            const detailResponse = await fetch(`/api/pedidos/abastecimientos/${abast.idAbastecimiento}/detalle`);
+            let detalles = [];
+            if (detailResponse.ok) {
+                const detailData = await detailResponse.json();
+                detalles = detailData.detalles || [];
+            }
+            
+            // Filtrar solo los que tienen cantidad restante > 0
+            const pendientesDetalles = detalles.filter(d => (d.cantidadRestante || 0) > 0);
+            
+            if (pendientesDetalles.length === 0) continue;
+            
+            html += `
+                <div class="grupo-abastecimiento" style="margin-bottom: 1.5rem;">
+                    <div class="header-grupo">
+                        <div>
+                            <span class="codigo">📦 ${abast.codigoAbastecimiento || 'N/A'}</span>
+                            <span style="font-size: 0.8rem; opacity: 0.8; margin-left: 1rem;">
+                                <i class="fas fa-calendar"></i> ${formatDate(abast.fechaAbastecimiento)}
+                            </span>
+                            <span style="font-size: 0.8rem; opacity: 0.8; margin-left: 1rem;">
+                                <i class="fas fa-shopping-cart"></i> Pedido #${abast.idPedido}
+                            </span>
+                        </div>
+                        <div class="estado">
+                            ${getStatusBadge(abast.estadoAbastecimiento)}
+                        </div>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <p style="margin-bottom: 1rem; color: var(--gray-500); font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> 
+                            Seleccione los insumos que están llegando en esta entrega
+                        </p>
+                        <form id="formActa_${abast.idAbastecimiento}">
+                            ${pendientesDetalles.map((d, index) => {
+                                const unidadesPorEmpaque = d.unidadesPorEmpaque || 1;
+                                const pendienteEmpaques = Math.floor((d.cantidadRestante || 0) / unidadesPorEmpaque);
+                                const totalUnidades = (d.cantidadRecibida || 0) * unidadesPorEmpaque;
+                                
+                                return `
+                                    <div class="insumo-seleccionable" id="insumo_${abast.idAbastecimiento}_${d.idDetalleAbastecimiento}">
+                                        <input type="checkbox" 
+                                               id="check_${abast.idAbastecimiento}_${d.idDetalleAbastecimiento}"
+                                               onchange="toggleInsumoActa(${abast.idAbastecimiento}, ${d.idDetalleAbastecimiento})">
+                                        <div>
+                                            <strong>${d.nombreInsumo}</strong>
+                                            <div class="info-insumo">
+                                                ${d.unidadMedida || 'unidades'}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <span class="pendiente">Pendiente: ${pendienteEmpaques} empaques</span>
+                                            <span style="display: block; font-size: 0.7rem; color: var(--gray-400);">
+                                                (${d.cantidadRestante || 0} unidades)
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.7rem; color: var(--gray-500);">Empaques a entregar:</label>
+                                            <input type="number" 
+                                                   id="cantidad_${abast.idAbastecimiento}_${d.idDetalleAbastecimiento}"
+                                                   value="${pendienteEmpaques}" 
+                                                   min="0" max="${pendienteEmpaques}"
+                                                   disabled>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.7rem; color: var(--gray-500);">Unds/empaque:</label>
+                                            <input type="number" 
+                                                   id="unidades_${abast.idAbastecimiento}_${d.idDetalleAbastecimiento}"
+                                                   value="${unidadesPorEmpaque}" 
+                                                   min="1"
+                                                   disabled>
+                                        </div>
+                                        <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">
+                                            Total: <span id="total_${abast.idAbastecimiento}_${d.idDetalleAbastecimiento}">${pendienteEmpaques * unidadesPorEmpaque}</span> unds
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                            <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                                <button type="button" class="btn btn-success" onclick="registrarActaSeleccionada(${abast.idAbastecimiento})">
+                                    <i class="fas fa-file-signature"></i> Registrar Acta de Entrega
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: red;">Error al cargar abastecimientos</div>';
+    }
+}
+
+// ========== FUNCIONES PARA ACTAS SELECCIONABLES ==========
+function toggleInsumoActa(idAbastecimiento, idDetalle) {
+    const check = document.getElementById(`check_${idAbastecimiento}_${idDetalle}`);
+    const cantidad = document.getElementById(`cantidad_${idAbastecimiento}_${idDetalle}`);
+    const unidades = document.getElementById(`unidades_${idAbastecimiento}_${idDetalle}`);
+    const container = document.getElementById(`insumo_${idAbastecimiento}_${idDetalle}`);
+    
+    if (check.checked) {
+        cantidad.disabled = false;
+        unidades.disabled = false;
+        container.classList.add('seleccionado');
+        // Actualizar total al habilitar
+        actualizarTotalActa(idAbastecimiento, idDetalle);
+    } else {
+        cantidad.disabled = true;
+        unidades.disabled = true;
+        container.classList.remove('seleccionado');
+    }
+}
+
+function actualizarTotalActa(idAbastecimiento, idDetalle) {
+    const cantidad = document.getElementById(`cantidad_${idAbastecimiento}_${idDetalle}`);
+    const unidades = document.getElementById(`unidades_${idAbastecimiento}_${idDetalle}`);
+    const totalSpan = document.getElementById(`total_${idAbastecimiento}_${idDetalle}`);
+    
+    const cant = parseInt(cantidad.value) || 0;
+    const unds = parseInt(unidades.value) || 1;
+    totalSpan.textContent = cant * unds;
+}
+
+// Agregar event listeners para actualizar totales
+document.addEventListener('change', function(e) {
+    if (e.target.id && e.target.id.startsWith('cantidad_')) {
+        const parts = e.target.id.split('_');
+        const idAbast = parseInt(parts[1]);
+        const idDetalle = parseInt(parts[2]);
+        actualizarTotalActa(idAbast, idDetalle);
+    }
+    if (e.target.id && e.target.id.startsWith('unidades_')) {
+        const parts = e.target.id.split('_');
+        const idAbast = parseInt(parts[1]);
+        const idDetalle = parseInt(parts[2]);
+        actualizarTotalActa(idAbast, idDetalle);
+    }
+});
+
+// ========== REGISTRAR ACTA CON INSUMOS SELECCIONADOS ==========
+async function registrarActaSeleccionada(idAbastecimiento) {
+    const detalles = [];
+    const container = document.getElementById(`formActa_${idAbastecimiento}`);
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    
+    let seleccionados = 0;
+    
+    checkboxes.forEach(check => {
+        if (check.checked) {
+            const parts = check.id.split('_');
+            const idDetalle = parseInt(parts[2]);
+            
+            const cantidadInput = document.getElementById(`cantidad_${idAbastecimiento}_${idDetalle}`);
+            const unidadesInput = document.getElementById(`unidades_${idAbastecimiento}_${idDetalle}`);
+            
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            
+            if (cantidad > 0) {
+                seleccionados++;
+                detalles.push({
+                    idDetalleAbastecimiento: idDetalle,
+                    cantidadEntregada: cantidad,
+                    unidadesPorEmpaque: parseInt(unidadesInput.value) || 1
+                });
+            }
+        }
+    });
+    
+    if (seleccionados === 0) {
+        Swal.fire('Error', 'Seleccione al menos un insumo con cantidad mayor a 0', 'error');
+        return;
+    }
+    
+    const result = await Swal.fire({
+        title: 'Confirmar acta de entrega',
+        html: `<p>¿Está seguro de registrar esta entrega?</p>
+               <p><strong>Insumos a entregar:</strong> ${seleccionados}</p>
+               <p class="text-muted" style="font-size: 0.85rem;">Los insumos no seleccionados quedarán pendientes</p>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10B981',
+        confirmButtonText: 'Sí, registrar',
+        cancelButtonText: 'Cancelar'
+    });
+    
+    if (!result.isConfirmed) return;
+    
+    const payload = {
+        idAbastecimiento: idAbastecimiento,
+        idDirector: idDirector,
+        detalles: detalles
+    };
+    
+    try {
+        const response = await fetch('/api/pedidos/actas-entrega', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) throw new Error('Error al registrar acta');
+        
+        Swal.fire('¡Acta registrada!', `Se registró la entrega de ${seleccionados} insumos`, 'success');
+        cargarActasEntrega();
+        cargarAbastecimientos();
+    } catch (error) {
+        console.error('Error:', error);
+        Swal.fire('Error', 'No se pudo registrar el acta', 'error');
+    }
+}
+
+// ========== RESUMEN GENERAL (MODIFICADO) ==========
+async function cargarResumenGeneral() {
+    const container = document.getElementById('resumenContainer');
+    container.innerHTML = '<div style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Cargando resumen...</div>';
+    
+    try {
+        const response = await fetch(`/api/pedidos/abastecimientos/director/${idDirector}`);
+        if (!response.ok) throw new Error('Error al cargar abastecimientos');
+        const abastList = await response.json();
+        
+        let allDetails = [];
+        for (const abast of abastList) {
+            try {
+                const detailResponse = await fetch(`/api/pedidos/abastecimientos/${abast.idAbastecimiento}/detalle`);
+                if (detailResponse.ok) {
+                    const detailData = await detailResponse.json();
+                    if (detailData.detalles) {
+                        detailData.detalles.forEach(d => {
+                            allDetails.push({
+                                ...d,
+                                codigoAbastecimiento: abast.codigoAbastecimiento,
+                                idAbastecimiento: abast.idAbastecimiento,
+                                estadoAbastecimiento: abast.estadoAbastecimiento,
+                                fechaAbastecimiento: abast.fechaAbastecimiento,
+                                idPedido: abast.idPedido
+                            });
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Error cargando detalle:', e);
+            }
+        }
+        
+        resumenData = allDetails;
+        
+        const select = document.getElementById('filterResumenAbast');
+        const currentValue = select.value;
+        select.innerHTML = '<option value="todos">Todos los abastecimientos</option>';
+        const uniqueCodes = [...new Set(allDetails.map(d => d.codigoAbastecimiento).filter(Boolean))];
+        uniqueCodes.forEach(code => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = code;
+            select.appendChild(option);
+        });
+        select.value = currentValue || 'todos';
+        
+        actualizarResumen(allDetails);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: red;">Error al cargar resumen</div>';
+    }
+}
+
+function actualizarResumen(detalles) {
+    const filter = document.getElementById('filterResumenAbast').value;
+    let filtered = detalles;
+    if (filter !== 'todos') {
+        filtered = detalles.filter(d => d.codigoAbastecimiento === filter);
+    }
+    
+    // Calcular estadísticas (todo en empaques)
+    const totalInsumos = filtered.length;
+    const totalComprometido = filtered.reduce((sum, d) => sum + (d.cantidadComprometida || 0), 0);
+    const totalEntregado = filtered.reduce((sum, d) => sum + (d.cantidadRecibida || 0), 0);
+    const totalPendiente = filtered.reduce((sum, d) => sum + (d.cantidadRestante || 0), 0);
+    
+    document.getElementById('resumenTotalInsumos').textContent = totalInsumos;
+    document.getElementById('resumenTotalComprometido').textContent = totalComprometido;
+    document.getElementById('resumenTotalEntregado').textContent = totalEntregado;
+    document.getElementById('resumenTotalPendiente').textContent = totalPendiente;
+    
+    // Agrupar por abastecimiento
+    const grupos = {};
+    filtered.forEach(d => {
+        const key = d.codigoAbastecimiento || 'Sin código';
+        if (!grupos[key]) {
+            grupos[key] = {
+                codigo: key,
+                idAbastecimiento: d.idAbastecimiento,
+                estado: d.estadoAbastecimiento,
+                fecha: d.fechaAbastecimiento,
+                idPedido: d.idPedido,
+                insumos: []
+            };
+        }
+        grupos[key].insumos.push(d);
+    });
+    
+    const sortedKeys = Object.keys(grupos).sort();
+    const container = document.getElementById('resumenContainer');
+    
+    if (sortedKeys.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--gray-500);">No hay datos para mostrar</div>';
+        return;
+    }
+    
+    let html = '';
+    
+    sortedKeys.forEach(key => {
+        const grupo = grupos[key];
+        const insumos = grupo.insumos;
+        
+        const grupoComprometido = insumos.reduce((sum, d) => sum + (d.cantidadComprometida || 0), 0);
+        const grupoEntregado = insumos.reduce((sum, d) => sum + (d.cantidadRecibida || 0), 0);
+        const grupoPendiente = insumos.reduce((sum, d) => sum + (d.cantidadRestante || 0), 0);
+        const progreso = grupoComprometido > 0 ? Math.round((grupoEntregado / grupoComprometido) * 100) : 0;
+        
+        html += `
+            <div class="grupo-abastecimiento">
+                <div class="header-grupo" onclick="verDetalleAbastecimiento(${grupo.idAbastecimiento})">
+                    <div>
+                        <span class="codigo">📦 ${grupo.codigo}</span>
+                        <span style="font-size: 0.8rem; opacity: 0.8; margin-left: 1rem;">
+                            <i class="fas fa-calendar"></i> ${formatDate(grupo.fecha)}
+                        </span>
+                        <span style="font-size: 0.8rem; opacity: 0.8; margin-left: 1rem;">
+                            <i class="fas fa-shopping-cart"></i> Pedido #${grupo.idPedido}
+                        </span>
+                    </div>
+                    <div class="estado">
+                        ${getStatusBadge(grupo.estado)}
+                        <span class="totales">
+                            <span><i class="fas fa-box"></i> ${insumos.length}</span>
+                            <span><i class="fas fa-check-circle"></i> ${grupoEntregado}</span>
+                            <span><i class="fas fa-clock"></i> ${grupoPendiente}</span>
+                            <span><i class="fas fa-percent"></i> ${progreso}%</span>
+                        </span>
+                    </div>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="tabla-insumos">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th style="text-align: center;">Comprometido</th>
+                                <th style="text-align: center;">Entregado</th>
+                                <th style="text-align: center;">Pendiente</th>
+                                <th style="text-align: center;">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${insumos.map(d => {
+                                const comprometido = d.cantidadComprometida || 0;
+                                const entregado = d.cantidadRecibida || 0;
+                                const pendiente = d.cantidadRestante || 0;
+                                
+                                return `
+                                    <tr>
+                                        <td><strong>${d.nombreInsumo || 'N/A'}</strong></td>
+                                        <td class="text-center">${comprometido}</td>
+                                        <td class="text-center text-success fw-bold">${entregado}</td>
+                                        <td class="text-center ${pendiente > 0 ? 'text-warning' : 'text-success'} fw-bold">${pendiente}</td>
+                                        <td class="text-center">${getStatusBadge(d.estadoDetalle || d.estadoAbastecimiento)}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                            <tr class="fila-total">
+                                <td><strong>TOTAL</strong></td>
+                                <td class="text-center"><strong>${grupoComprometido}</strong></td>
+                                <td class="text-center text-success"><strong>${grupoEntregado}</strong></td>
+                                <td class="text-center ${grupoPendiente > 0 ? 'text-warning' : 'text-success'}"><strong>${grupoPendiente}</strong></td>
+                                <td class="text-center">Progreso: ${progreso}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
 // ========== FILTROS Y TABLAS ==========
@@ -765,11 +1389,6 @@ function actualizarTablaAbastecimientos(abastFiltrados) {
                     <button class="btn btn-outline" onclick="verDetalleAbastecimiento(${a.idAbastecimiento})" style="padding: 0.3rem 0.75rem;" title="Ver detalle">
                         <i class="fas fa-eye"></i>
                     </button>
-                    ${a.estadoAbastecimiento === 'EN_PROCESO' || a.estadoAbastecimiento === 'PARCIAL' ? `
-                        <button class="btn btn-success" onclick="registrarActa(${a.idAbastecimiento})" style="padding: 0.3rem 0.75rem; margin-left: 0.5rem;" title="Registrar Acta">
-                            <i class="fas fa-file-signature"></i>
-                        </button>
-                    ` : ''}
                 </td>
             </tr>
         `;
@@ -798,37 +1417,6 @@ function actualizarTablaPendientes() {
             </td>
         </tr>
     `).join('');
-}
-
-function actualizarTablaActas() {
-    const tbody = document.getElementById('actasTableBody');
-    
-    if (actasEntrega.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No hay actas de entrega</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = actasEntrega.map(a => {
-        const tieneLote = a.tieneLote || false;
-        return `
-            <tr>
-                <td><strong>${a.numeroActa || 'N/A'}</strong></td>
-                <td><span class="codigo-badge">${a.codigoAbastecimiento || 'N/A'}</span></td>
-                <td>${formatDate(a.fechaEntrega)}</td>
-                <td>${a.cantidadInsumos || 0}</td>
-                <td>${a.totalEntregado || 0}</td>
-                <td>${tieneLote ? 
-                    '<span class="status-badge status-completado"><i class="fas fa-check"></i> Completado</span>' : 
-                    '<span class="status-badge status-pendiente"><i class="fas fa-clock"></i> Pendiente Lote</span>'
-                }</td>
-                <td>
-                    <button class="btn btn-outline" onclick="verDetalleActa(${a.idActaEntrega})" style="padding: 0.3rem 0.75rem;">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
 }
 
 function actualizarEstadisticasAbast() {
@@ -860,7 +1448,6 @@ async function iniciarAprobacion(idPedido) {
             detalles: pedido.insumos || []
         };
         
-        // Generar código de abastecimiento sugerido
         const codigoAbast = 'ABAST-' + new Date().getFullYear() + '-' + String(idPedido).padStart(4, '0');
         
         insumosAprobacion = abastecimientoActual.detalles.map(d => ({
@@ -870,7 +1457,9 @@ async function iniciarAprobacion(idPedido) {
             idUnidadMedida: d.idUnidadMedida || 1,
             nombreUnidad: d.nombreUnidad || 'unidades',
             cantidadSolicitada: d.cantidadPedida,
-            cantidadComprometida: d.cantidadPedida,
+            cantidadEmpaques: 0,
+            unidadesPorEmpaque: d.unidadesPorEmpaque || 1,
+            cantidadComprometida: 0,
             costoUnitario: 0
         }));
         
@@ -884,36 +1473,49 @@ async function iniciarAprobacion(idPedido) {
 function mostrarModalAprobacion(codigoAbast) {
     const body = document.getElementById('aprobarModalBody');
     
-    let insumosHtml = insumosAprobacion.map((item, index) => `
+    let insumosHtml = insumosAprobacion.map((item, index) => {
+        const totalUnidades = (item.cantidadEmpaques || 0) * (item.unidadesPorEmpaque || 1);
+        return `
         <div class="insumo-item-aprobar">
-            <span><strong>${item.nombreInsumo}</strong></span>
-            <span style="color: var(--gray-500); font-size: 0.875rem;">Solicitado: ${item.cantidadSolicitada}</span>
             <div>
-                <label style="font-size: 0.75rem; color: var(--gray-500);">Comprometer:</label>
+                <strong>${item.nombreInsumo}</strong>
+                <div class="info-empaque">
+                    <i class="fas fa-box"></i> ${item.unidadesPorEmpaque} unds/empaque
+                    <span style="margin-left: 0.5rem; color: var(--gray-400);">|</span>
+                    <span style="color: var(--gray-500);">Solicitado: ${item.cantidadSolicitada}</span>
+                </div>
+            </div>
+            <div>
+                <label style="font-size: 0.75rem; color: var(--gray-500);">Empaques:</label>
                 <input type="number" id="compromiso_${index}" 
-                       value="${item.cantidadComprometida}" 
-                       min="0" max="${item.cantidadSolicitada}"
+                       value="${item.cantidadEmpaques}" 
+                       min="0" 
+                       placeholder="Cant. empaques"
                        onchange="actualizarCompromiso(${index}, this.value)">
             </div>
             <div>
-                <label style="font-size: 0.75rem; color: var(--gray-500);">Costo Unitario (Bs):</label>
+                <label style="font-size: 0.75rem; color: var(--gray-500);">Costo Unit. (Bs):</label>
                 <input type="number" id="costo_${index}" 
                        value="${item.costoUnitario || 0}" 
                        min="0" step="0.01"
                        onchange="actualizarCosto(${index}, this.value)">
             </div>
+            <div style="text-align: center;">
+                <span style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">
+                    <span id="total_${index}">${totalUnidades}</span> unds
+                </span>
+            </div>
             <span style="font-size: 0.875rem; color: var(--gray-600);">
                 ${item.nombreUnidad}
             </span>
         </div>
-    `).join('');
+    `}).join('');
     
     body.innerHTML = `
         <div class="detail-card">
             <p><strong>📋 Pedido #${abastecimientoActual.idPedido}</strong></p>
             <p><strong>📅 Fecha:</strong> ${formatDate(new Date().toISOString())}</p>
             
-            <!-- ✅ CAMPO PARA INGRESAR CÓDIGO DE ABASTECIMIENTO -->
             <div class="form-group" style="margin-top: 0.5rem;">
                 <label><i class="fas fa-tag"></i> Código de Abastecimiento <span style="color: red;">*</span></label>
                 <input type="text" id="codigoAbastecimiento" 
@@ -922,21 +1524,23 @@ function mostrarModalAprobacion(codigoAbast) {
                 <small style="color: var(--gray-500);">Ingrese un código único para este abastecimiento</small>
             </div>
             
-            <p style="color: var(--gray-500); font-size: 0.875rem; margin-top: 0.5rem;">
-                <i class="fas fa-info-circle"></i> 
-                Puede ajustar las cantidades comprometidas y los costos unitarios antes de aprobar
-            </p>
-            <p style="color: var(--warning); font-size: 0.875rem;">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Si pone 0 en un insumo, no se creará el detalle de abastecimiento
-            </p>
+            <div style="background: var(--info-light); padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
+                <p style="color: var(--info); font-size: 0.875rem; margin: 0;">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Instrucción:</strong> Ingrese la cantidad de <strong>empaques</strong> que va a enviar. 
+                    El total de unidades se calculará automáticamente.
+                </p>
+            </div>
         </div>
         <h4>Insumos del pedido:</h4>
         ${insumosHtml}
-        <div class="total-abastecimiento" id="totalAprobacion">
-            Total comprometido: <span id="totalComprometido">${calcularTotalComprometido()}</span> unidades
+        <div class="total-abastecimiento">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <span><i class="fas fa-boxes"></i> Total empaques: <strong id="totalEmpaques">${calcularTotalEmpaques()}</strong></span>
+                <span><i class="fas fa-cubes"></i> Total unidades: <strong id="totalUnidades">${calcularTotalComprometido()}</strong></span>
+            </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-top: 1rem;">
             <label>Observaciones (opcional)</label>
             <textarea id="observacionAbastecimiento" placeholder="Agregue alguna observación sobre este abastecimiento..."></textarea>
         </div>
@@ -946,19 +1550,24 @@ function mostrarModalAprobacion(codigoAbast) {
 }
 
 function actualizarCompromiso(index, value) {
-    const cantidad = parseInt(value) || 0;
-    const max = insumosAprobacion[index].cantidadSolicitada;
-    if (cantidad > max) {
-        document.getElementById(`compromiso_${index}`).value = max;
-        insumosAprobacion[index].cantidadComprometida = max;
-    } else {
-        insumosAprobacion[index].cantidadComprometida = cantidad;
-    }
-    document.getElementById('totalComprometido').textContent = calcularTotalComprometido();
+    const cantidadEmpaques = parseInt(value) || 0;
+    const unidadesPorEmpaque = insumosAprobacion[index].unidadesPorEmpaque || 1;
+    
+    insumosAprobacion[index].cantidadEmpaques = cantidadEmpaques;
+    const totalUnidades = cantidadEmpaques * unidadesPorEmpaque;
+    insumosAprobacion[index].cantidadComprometida = totalUnidades;
+    
+    document.getElementById(`total_${index}`).textContent = totalUnidades;
+    document.getElementById('totalEmpaques').textContent = calcularTotalEmpaques();
+    document.getElementById('totalUnidades').textContent = calcularTotalComprometido();
 }
 
 function actualizarCosto(index, value) {
     insumosAprobacion[index].costoUnitario = parseFloat(value) || 0;
+}
+
+function calcularTotalEmpaques() {
+    return insumosAprobacion.reduce((sum, item) => sum + (item.cantidadEmpaques || 0), 0);
 }
 
 function calcularTotalComprometido() {
@@ -972,7 +1581,7 @@ async function confirmarAprobacion() {
         return;
     }
     
-    const tieneCompromiso = insumosAprobacion.some(item => (item.cantidadComprometida || 0) > 0);
+    const tieneCompromiso = insumosAprobacion.some(item => (item.cantidadEmpaques || 0) > 0);
     if (!tieneCompromiso) {
         Swal.fire('Error', 'Debe comprometer al menos un insumo', 'error');
         return;
@@ -980,11 +1589,12 @@ async function confirmarAprobacion() {
     
     const observacion = document.getElementById('observacionAbastecimiento').value;
     
-    // Filtrar solo los insumos con cantidad > 0
     const insumosData = insumosAprobacion
-        .filter(item => (item.cantidadComprometida || 0) > 0)
+        .filter(item => (item.cantidadEmpaques || 0) > 0)
         .map(item => ({
             idInsumo: item.idInsumo,
+            cantidadEmpaques: item.cantidadEmpaques || 0,
+            unidadesPorEmpaque: item.unidadesPorEmpaque || 1,
             cantidadAbastecida: item.cantidadComprometida || 0,
             costoUnitario: item.costoUnitario || 0
         }));
@@ -1000,8 +1610,8 @@ async function confirmarAprobacion() {
         title: 'Confirmar aprobación',
         html: `<p>¿Está seguro de aprobar este abastecimiento?</p>
                <p><strong>Código:</strong> ${codigoAbastecimiento}</p>
-               <p><strong>Total comprometido:</strong> ${calcularTotalComprometido()} unidades</p>
-               <p><strong>Insumos:</strong> ${insumosData.length} tipos</p>`,
+               <p><strong>Total empaques:</strong> ${calcularTotalEmpaques()}</p>
+               <p><strong>Total unidades:</strong> ${calcularTotalComprometido()}</p>`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#7C3AED',
@@ -1059,12 +1669,15 @@ async function verDetalleAbastecimiento(idAbastecimiento) {
                     </thead>
                     <tbody>
                         ${data.detalles.map(d => {
+                            const comprometido = d.cantidadComprometida || 0;
+                            const recibido = d.cantidadRecibida || 0;
+                            const restante = d.cantidadRestante || 0;
                             return `
                                 <tr>
-                                    <td style="padding: 0.5rem;">${d.nombreInsumo}</td>
-                                    <td style="padding: 0.5rem; text-align: center;">${d.cantidadComprometida || 0}</td>
-                                    <td style="padding: 0.5rem; text-align: center;">${d.cantidadRecibida || 0}</td>
-                                    <td style="padding: 0.5rem; text-align: center; font-weight: bold; color: ${(d.cantidadRestante || 0) > 0 ? 'var(--warning)' : 'var(--success)'};">${d.cantidadRestante || 0}</td>
+                                    <td style="padding: 0.5rem;"><strong>${d.nombreInsumo}</strong></td>
+                                    <td style="padding: 0.5rem; text-align: center;">${comprometido}</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--success); font-weight: 600;">${recibido}</td>
+                                    <td style="padding: 0.5rem; text-align: center; font-weight: bold; color: ${restante > 0 ? 'var(--warning)' : 'var(--success)'};">${restante}</td>
                                     <td style="padding: 0.5rem; text-align: right;">Bs ${(d.costoUnitario || 0).toFixed(2)}</td>
                                     <td style="padding: 0.5rem; text-align: center;">${getStatusBadge(d.estadoDetalle)}</td>
                                 </tr>
@@ -1082,19 +1695,10 @@ async function verDetalleAbastecimiento(idAbastecimiento) {
                 <p><strong>📋 Código:</strong> <span class="codigo-badge">${data.codigoAbastecimiento || 'N/A'}</span></p>
                 <p><strong>📅 Fecha:</strong> ${formatDate(data.fechaAbastecimiento)}</p>
                 <p><strong>📊 Estado:</strong> ${getStatusBadge(data.estadoAbastecimiento)}</p>
-                <p><strong>👤 Director:</strong> ${data.directorNombre || 'N/A'}</p>
                 <p><strong>📝 Observación:</strong> ${data.observacion || 'Sin observaciones'}</p>
-                <p><strong>📦 Pedido asociado:</strong> #${data.idPedido}</p>
             </div>
-            <h4>Detalle de insumos:</h4>
+            <h4>Detalle de insumos (en empaques):</h4>
             ${detallesHtml}
-            ${data.estadoAbastecimiento === 'EN_PROCESO' || data.estadoAbastecimiento === 'PARCIAL' ? `
-                <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
-                    <button class="btn btn-success" onclick="registrarActa(${idAbastecimiento})">
-                        <i class="fas fa-file-signature"></i> Registrar Acta de Entrega
-                    </button>
-                </div>
-            ` : ''}
         `;
         
         document.getElementById('detalleAbastModal').classList.add('active');
@@ -1104,164 +1708,17 @@ async function verDetalleAbastecimiento(idAbastecimiento) {
     }
 }
 
-// ========== REGISTRAR ACTA DE ENTREGA ==========
-async function registrarActa(idAbastecimiento) {
-    try {
-        const response = await fetch(`/api/pedidos/abastecimientos/${idAbastecimiento}/detalle`);
-        if (!response.ok) throw new Error('Error al cargar detalles');
-        const data = await response.json();
-        
-        const detallesPendientes = data.detalles.filter(d => 
-            (d.cantidadRestante || 0) > 0
-        );
-        
-        if (detallesPendientes.length === 0) {
-            Swal.fire('Completado', 'Ya no hay insumos pendientes por recibir', 'info');
-            return;
-        }
-        
-        actaActual = {
-            idAbastecimiento: idAbastecimiento,
-            codigoAbastecimiento: data.codigoAbastecimiento,
-            detalles: detallesPendientes.map(d => ({
-                idDetalleAbastecimiento: d.idDetalleAbastecimiento,
-                idInsumo: d.idInsumo,
-                nombreInsumo: d.nombreInsumo,
-                cantidadPendiente: d.cantidadRestante,
-                cantidadEntregar: d.cantidadRestante
-            }))
-        };
-        
-        mostrarModalActa();
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo cargar los detalles pendientes', 'error');
-    }
-}
-
-function mostrarModalActa() {
-    const body = document.getElementById('actaModalBody');
-    
-    let detallesHtml = actaActual.detalles.map((item, index) => `
-        <div class="insumo-item-aprobar">
-            <span><strong>${item.nombreInsumo}</strong></span>
-            <span style="color: var(--gray-500); font-size: 0.875rem;">Pendiente: ${item.cantidadPendiente}</span>
-            <div>
-                <label style="font-size: 0.75rem; color: var(--gray-500);">Entregar:</label>
-                <input type="number" id="entrega_${index}" 
-                       value="${item.cantidadEntregar}" 
-                       min="0" max="${item.cantidadPendiente}"
-                       onchange="actualizarEntrega(${index}, this.value)">
-            </div>
-            <span style="font-size: 0.875rem; color: var(--gray-600);">
-                ${item.nombreInsumo}
-            </span>
-        </div>
-    `).join('');
-    
-    body.innerHTML = `
-        <div class="detail-card">
-            <p><strong>📋 Registro de Acta de Entrega</strong></p>
-            <p><strong>📦 Abastecimiento:</strong> <span class="codigo-badge">${actaActual.codigoAbastecimiento || 'N/A'}</span></p>
-            <p><strong>📅 Fecha:</strong> ${formatDate(new Date().toISOString())}</p>
-            <p style="color: var(--gray-500); font-size: 0.875rem;">
-                <i class="fas fa-info-circle"></i> 
-                Indique las cantidades que se están entregando en esta acta
-            </p>
-            <p style="color: var(--warning); font-size: 0.875rem;">
-                <i class="fas fa-exclamation-triangle"></i> 
-                Puede entregar cantidades parciales. La fecha de vencimiento se registrará al crear el lote.
-            </p>
-        </div>
-        <h4>Insumos a entregar:</h4>
-        ${detallesHtml}
-        <div class="total-abastecimiento">
-            Total a entregar: <span id="totalEntrega">${calcularTotalEntrega()}</span> unidades
-        </div>
-        <div class="form-group">
-            <label>Observaciones del acta</label>
-            <textarea id="observacionActa" placeholder="Agregue alguna observación sobre esta entrega..."></textarea>
-        </div>
-    `;
-    
-    document.getElementById('actaModal').classList.add('active');
-}
-
-function actualizarEntrega(index, value) {
-    const cantidad = parseInt(value) || 0;
-    const max = actaActual.detalles[index].cantidadPendiente;
-    if (cantidad > max) {
-        document.getElementById(`entrega_${index}`).value = max;
-        actaActual.detalles[index].cantidadEntregar = max;
-    } else {
-        actaActual.detalles[index].cantidadEntregar = cantidad;
-    }
-    document.getElementById('totalEntrega').textContent = calcularTotalEntrega();
-}
-
-function calcularTotalEntrega() {
-    return actaActual.detalles.reduce((sum, item) => sum + (item.cantidadEntregar || 0), 0);
-}
-
-async function confirmarActa() {
-    const tieneEntrega = actaActual.detalles.some(item => (item.cantidadEntregar || 0) > 0);
-    if (!tieneEntrega) {
-        Swal.fire('Error', 'Debe entregar al menos un insumo', 'error');
-        return;
-    }
-    
-    const payload = {
-        idAbastecimiento: actaActual.idAbastecimiento,
-        observacion: document.getElementById('observacionActa').value,
-        detalles: actaActual.detalles.map(item => ({
-            idDetalleAbastecimiento: item.idDetalleAbastecimiento,
-            cantidadEntregada: item.cantidadEntregar || 0
-        }))
-    };
-    
-    const result = await Swal.fire({
-        title: 'Confirmar acta de entrega',
-        html: `<p>¿Está seguro de registrar esta entrega?</p>
-               <p><strong>Total entregado:</strong> ${calcularTotalEntrega()} unidades</p>
-               <p><strong>Insumos:</strong> ${actaActual.detalles.filter(i => i.cantidadEntregar > 0).length} tipos</p>`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#10B981',
-        confirmButtonText: 'Sí, registrar',
-        cancelButtonText: 'Cancelar'
-    });
-    
-    if (!result.isConfirmed) return;
-    
-    try {
-        const response = await fetch('/api/pedidos/actas-entrega', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        
-        if (!response.ok) throw new Error('Error al registrar acta');
-        
-        Swal.fire('¡Acta registrada!', 'El acta de entrega ha sido registrada exitosamente', 'success');
-        closeActaModal();
-        cargarAbastecimientos();
-        cargarActasEntrega();
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo registrar el acta', 'error');
-    }
-}
-
 // ========== FUNCIONES DE NAVEGACIÓN ==========
 function mostrarVista(vista) {
     const vistas = {
         'abastecimientos': document.getElementById('vistaAbastecimientos'),
         'pendientes': document.getElementById('vistaPendientes'),
-        'actas': document.getElementById('vistaActas')
+        'actas': document.getElementById('vistaActas'),
+        'resumen': document.getElementById('vistaResumen')
     };
     
     const botones = document.querySelectorAll('.nav-btn');
-    const indices = { 'abastecimientos': 0, 'pendientes': 1, 'actas': 2 };
+    const indices = { 'abastecimientos': 0, 'pendientes': 1, 'actas': 2, 'resumen': 3 };
     
     Object.keys(vistas).forEach(key => {
         vistas[key].style.display = key === vista ? 'block' : 'none';
@@ -1274,95 +1731,8 @@ function mostrarVista(vista) {
     if (vista === 'abastecimientos') cargarAbastecimientos();
     else if (vista === 'pendientes') cargarPedidosPendientes();
     else if (vista === 'actas') cargarActasEntrega();
-}
-
-function buscarActas() {
-    const searchTerm = document.getElementById('searchActa').value.toLowerCase();
-    if (searchTerm) {
-        const filtered = actasEntrega.filter(a => 
-            a.codigoAbastecimiento?.toLowerCase().includes(searchTerm)
-        );
-        actualizarTablaActasFiltradas(filtered);
-    } else {
-        actualizarTablaActas();
-    }
-}
-
-function actualizarTablaActasFiltradas(actas) {
-    const tbody = document.getElementById('actasTableBody');
-    
-    if (actas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No se encontraron actas</td></tr>';
-        return;
-    }
-    
-    tbody.innerHTML = actas.map(a => {
-        const tieneLote = a.tieneLote || false;
-        return `
-            <tr>
-                <td><strong>${a.numeroActa || 'N/A'}</strong></td>
-                <td><span class="codigo-badge">${a.codigoAbastecimiento || 'N/A'}</span></td>
-                <td>${formatDate(a.fechaEntrega)}</td>
-                <td>${a.cantidadInsumos || 0}</td>
-                <td>${a.totalEntregado || 0}</td>
-                <td>${tieneLote ? 
-                    '<span class="status-badge status-completado"><i class="fas fa-check"></i> Completado</span>' : 
-                    '<span class="status-badge status-pendiente"><i class="fas fa-clock"></i> Pendiente Lote</span>'
-                }</td>
-                <td>
-                    <button class="btn btn-outline" onclick="verDetalleActa(${a.idActaEntrega})" style="padding: 0.3rem 0.75rem;">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-async function verDetalleActa(idActa) {
-    try {
-        const response = await fetch(`/api/pedidos/actas-entrega/${idActa}`);
-        if (!response.ok) throw new Error('Error al cargar acta');
-        const data = await response.json();
-        
-        const body = document.getElementById('verActaModalBody');
-        
-        let detallesHtml = '';
-        if (data.detalles && data.detalles.length > 0) {
-            detallesHtml = data.detalles.map(d => `
-                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-200);">
-                    <div>
-                        <strong>${d.nombreInsumo}</strong>
-                        <span style="color: var(--gray-500); font-size: 0.875rem; margin-left: 0.5rem;">${d.unidadMedida || 'unidades'}</span>
-                    </div>
-                    <div>
-                        <span style="font-weight: bold;">${d.cantidadEntregada}</span>
-                        ${d.tieneLote ? 
-                            `<span class="status-badge status-completado" style="margin-left: 0.5rem;"><i class="fas fa-check"></i> Lote: ${d.numeroLote || 'N/A'}</span>` : 
-                            `<span class="status-badge status-pendiente" style="margin-left: 0.5rem;"><i class="fas fa-clock"></i> Sin Lote</span>`
-                        }
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            detallesHtml = '<p>No hay detalles</p>';
-        }
-        
-        body.innerHTML = `
-            <div class="detail-card">
-                <p><strong>📋 Número de Acta:</strong> ${data.numeroActa || 'N/A'}</p>
-                <p><strong>📅 Fecha de Entrega:</strong> ${formatDate(data.fechaEntrega)}</p>
-                <p><strong>📦 Abastecimiento:</strong> <span class="codigo-badge">${data.codigoAbastecimiento || 'N/A'}</span></p>
-                <p><strong>📝 Observación:</strong> ${data.observacion || 'Sin observaciones'}</p>
-            </div>
-            <h4>Insumos entregados:</h4>
-            ${detallesHtml}
-        `;
-        
-        document.getElementById('verActaModal').classList.add('active');
-    } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error', 'No se pudo cargar el detalle del acta', 'error');
+    else if (vista === 'resumen') {
+        cargarResumenGeneral();
     }
 }
 
@@ -1373,10 +1743,6 @@ function closeAprobarModal() {
 
 function closeDetalleAbastModal() {
     document.getElementById('detalleAbastModal').classList.remove('active');
-}
-
-function closeActaModal() {
-    document.getElementById('actaModal').classList.remove('active');
 }
 
 function closeVerActaModal() {
@@ -1418,7 +1784,6 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeAprobarModal();
         closeDetalleAbastModal();
-        closeActaModal();
         closeVerActaModal();
     }
 });

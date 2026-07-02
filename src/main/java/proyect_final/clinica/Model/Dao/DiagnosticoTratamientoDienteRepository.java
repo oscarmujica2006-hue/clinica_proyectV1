@@ -13,6 +13,10 @@ import java.util.Optional;
 @Repository
 public interface DiagnosticoTratamientoDienteRepository extends JpaRepository<DiagnosticoTratamientoDiente, Long> {
     
+    // ================================================================
+    // ============ MÉTODOS EXISTENTES ============
+    // ================================================================
+    
     // Buscar por ID de DiagnosticoTratamiento
     List<DiagnosticoTratamientoDiente> findByDiagnosticoTratamiento_IdDiagTrat(Long idDiagTrat);
     
@@ -46,4 +50,98 @@ public interface DiagnosticoTratamientoDienteRepository extends JpaRepository<Di
     // Buscar dientes por estado
     List<DiagnosticoTratamientoDiente> findByEstado(String estado);
 
+    // ================================================================
+    // ============ NUEVOS MÉTODOS PARA EL DOCENTE ============
+    // ================================================================
+
+    /**
+     * Buscar dientes PENDIENTES de un docente (con consentimiento APROBADO)
+     */
+    @Query("SELECT dtd FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'PENDIENTE' " +
+           "ORDER BY dtd.fechRegDiaTraDie ASC")
+    List<DiagnosticoTratamientoDiente> findPendientesByDocenteId(@Param("idDocente") Long idDocente);
+    
+    /**
+     * Buscar dientes COMPLETADOS de un docente
+     */
+    @Query("SELECT dtd FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'COMPLETADO' " +
+           "ORDER BY dtd.fechModDiaTraDie DESC")
+    List<DiagnosticoTratamientoDiente> findCompletadosByDocenteId(@Param("idDocente") Long idDocente);
+    
+    /**
+     * Buscar dientes RECHAZADOS de un docente
+     */
+    @Query("SELECT dtd FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'RECHAZADO' " +
+           "ORDER BY dtd.fechModDiaTraDie DESC")
+    List<DiagnosticoTratamientoDiente> findRechazadosByDocenteId(@Param("idDocente") Long idDocente);
+    
+    /**
+     * Contar dientes por estado y docente
+     */
+    @Query("SELECT COUNT(dtd) FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = :estado")
+    Long countByEstadoAndDocenteId(@Param("estado") String estado, @Param("idDocente") Long idDocente);
+    
+    // ================================================================
+    // ============ MÉTODOS ADICIONALES ÚTILES ============
+    // ================================================================
+
+    /**
+     * Buscar dientes PENDIENTES de un docente con todos los datos cargados (evita Lazy Loading)
+     */
+    @Query("SELECT dtd FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN FETCH dtd.diagnosticoTratamiento dt " +
+           "JOIN FETCH dt.tratamiento t " +
+           "JOIN FETCH dt.evolucionClinica ec " +
+           "JOIN FETCH ec.diagnostico d " +
+           "JOIN FETCH d.revision r " +
+           "JOIN FETCH r.consulta con " +
+           "JOIN FETCH con.paciente p " +
+           "JOIN FETCH p.persona per " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'PENDIENTE'")
+    List<DiagnosticoTratamientoDiente> findPendientesByDocenteIdWithData(@Param("idDocente") Long idDocente);
+    
+    /**
+     * Contar dientes pendientes de un docente
+     */
+    @Query("SELECT COUNT(dtd) FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'PENDIENTE'")
+    Long countPendientesByDocenteId(@Param("idDocente") Long idDocente);
+    
+    /**
+     * Contar dientes completados de un docente
+     */
+    @Query("SELECT COUNT(dtd) FROM DiagnosticoTratamientoDiente dtd " +
+           "JOIN dtd.diagnosticoTratamiento dt " +
+           "JOIN dt.consentimiento c " +
+           "WHERE c.docente.idDocente = :idDocente " +
+           "AND c.estado = 'APROBADO' " +
+           "AND dtd.estado = 'COMPLETADO'")
+    Long countCompletadosByDocenteId(@Param("idDocente") Long idDocente);
 }

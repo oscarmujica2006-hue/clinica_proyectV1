@@ -10,16 +10,9 @@ public interface ArchivoService {
     Archivo saveArchivo(Archivo archivo);
     void deleteArchivo(Long id);
 
-    // ✅ Método principal para buscar archivo por CI O nombre
-    Optional<Archivo> findArchivoByPacienteCiOrNombre(Integer ci, String nombre);
-    
-    // ✅ Método para obtener solo el ID
-    Optional<Long> findIdArchivoByPacienteCiOrNombre(Integer ci, String nombre);
     
     // ✅ Verificar si paciente tiene archivo
     boolean pacienteTieneArchivo(Long idPaciente);
-
-    Optional<Archivo> findArchivoByPacienteId(Long idPaciente);
 
     // ⭐ NUEVO MÉTODO: Buscar usando la función de PostgreSQL
     Optional<Archivo> buscarArchivoPorCiONombre(Integer ci, String nombre);

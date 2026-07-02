@@ -1,12 +1,16 @@
 package proyect_final.clinica.Service.Impl;
 
 import proyect_final.clinica.Model.Entity.Consentimiento;
+import proyect_final.clinica.Model.Entity.ConsentimientoFoto;
 import proyect_final.clinica.Model.Dao.ConsentimientoRepository;
+import proyect_final.clinica.Model.Dao.ConsentimientoFotoRepository;
 import proyect_final.clinica.Service.ConsentimientoService;
-import org.springframework.web.multipart.MultipartFile;
 import proyect_final.clinica.Service.ConsentimientoFotoService;
+
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.Transactional;
 import java.io.IOException; 
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -19,7 +23,14 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
     private ConsentimientoRepository consentimientoRepository;
     
     @Autowired
+    private ConsentimientoFotoRepository consentimientoFotoRepository;
+    
+    @Autowired
     private ConsentimientoFotoService consentimientoFotoService;
+    
+    // ================================================================
+    // ============ MÉTODOS EXISTENTES ============
+    // ================================================================
     
     @Override
     public List<Consentimiento> obtenerTodos() {
@@ -31,17 +42,19 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
         return consentimientoRepository.findById(id);
     }
 
-    // ===== NUEVO: Buscar por DiagnosticoTratamiento =====
-    @Override
-    public Optional<Consentimiento> obtenerPorDiagnosticoTratamiento(Long idDiagTrat) {
-        return consentimientoRepository.findByDiagnosticoTratamiento_IdDiagTrat(idDiagTrat);
-    }
-
     @Override
     public Consentimiento guardar(Consentimiento consentimiento) {
         if (consentimiento.getEstado() == null) {
             consentimiento.setEstado("PENDIENTE");
         }
+        if (consentimiento.getIdConsentimiento() == null && consentimiento.getFecha() == null) {
+            consentimiento.setFecha(LocalDateTime.now());
+        }
+        if (consentimiento.getFechRegCon() == null) {
+            consentimiento.setFechRegCon(LocalDateTime.now());
+        }
+        consentimiento.setFechModCon(LocalDateTime.now());
+        
         return consentimientoRepository.save(consentimiento);
     }
 
@@ -51,25 +64,82 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
         if (consentimiento.isPresent()) {
             Consentimiento cons = consentimiento.get();
             cons.setEstado("ANULADO");
+            cons.setFechModCon(LocalDateTime.now());
             consentimientoRepository.save(cons);
         }
     }
 
-    // ===== NUEVO: Verificar si existe =====
-    @Override
-    public boolean existePorDiagnosticoTratamiento(Long idDiagTrat) {
-        return consentimientoRepository.existsByDiagnosticoTratamiento_IdDiagTrat(idDiagTrat);
-    }
-    
     @Override
     @Transactional
     public Consentimiento guardarConFotos(Consentimiento consentimiento, MultipartFile[] fotos) throws IOException {
-        Consentimiento saved = consentimientoRepository.save(consentimiento);
+        Consentimiento saved = guardar(consentimiento);
         
         if (fotos != null && fotos.length > 0) {
             consentimientoFotoService.guardarMultiplesFotos(saved.getIdConsentimiento(), fotos);
         }
         
         return saved;
+    }
+
+    // ================================================================
+    // ============ NUEVOS MÉTODOS ============
+    // ================================================================
+    
+    @Override
+    public List<Consentimiento> findByDocenteId(Long idDocente) {
+        return consentimientoRepository.findByDocente_IdDocente(idDocente);
+    }
+
+    @Override
+    public Optional<Consentimiento> findByDiagnosticoTratamientoId(Long idDiagTrat) {
+        return consentimientoRepository.findByDiagnosticoTratamiento_IdDiagTrat(idDiagTrat);
+    }
+
+    @Override
+    public List<ConsentimientoFoto> findFotosByConsentimientoId(Long idConsentimiento) {
+        // ✅ CORREGIDO: usar el método correcto del repository
+        return consentimientoFotoRepository.findByConsentimiento_IdConsentimiento(idConsentimiento);
+    }
+
+    @Override
+    @Transactional
+    public Consentimiento cambiarEstado(Long idConsentimiento, String estado) {
+        Optional<Consentimiento> optional = consentimientoRepository.findById(idConsentimiento);
+        if (optional.isEmpty()) {
+            throw new RuntimeException("Consentimiento no encontrado con ID: " + idConsentimiento);
+        }
+        
+        Consentimiento consentimiento = optional.get();
+        
+        if (!estado.equals("APROBADO") && !estado.equals("RECHAZADO") && !estado.equals("PENDIENTE")) {
+            throw new IllegalArgumentException("Estado inválido: " + estado);
+        }
+        
+        if (consentimiento.getEstado().equals("APROBADO") || consentimiento.getEstado().equals("RECHAZADO")) {
+            if (estado.equals("PENDIENTE")) {
+                throw new IllegalStateException("No se puede cambiar un consentimiento " + 
+                    consentimiento.getEstado().toLowerCase() + " a pendiente");
+            }
+        }
+        
+        consentimiento.setEstado(estado);
+        consentimiento.setFechModCon(LocalDateTime.now());
+        
+        return consentimientoRepository.save(consentimiento);
+    }
+
+    @Override
+    public List<Consentimiento> findByEstudianteId(Long idEstudiante) {
+        return consentimientoRepository.findByEstudiante_IdEstudiante(idEstudiante);
+    }
+
+    @Override
+    public List<Consentimiento> findByEstado(String estado) {
+        return consentimientoRepository.findByEstado(estado);
+    }
+
+    @Override
+    public List<Consentimiento> findByDocenteIdAndEstado(Long idDocente, String estado) {
+        return consentimientoRepository.findByDocente_IdDocenteAndEstado(idDocente, estado);
     }
 }

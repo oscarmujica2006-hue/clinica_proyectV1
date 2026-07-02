@@ -29,6 +29,11 @@ public class Insumo {
     @Column(name="stock_total",nullable=false)
     private Integer stockTotal;
 
+
+
+    @Column(name="stock_minimo",nullable = false)
+    private Integer stockMinimo;
+
     @Column(name="ultima_actualizacion",nullable=false)
     private LocalDate ultimaActualizacion;
 

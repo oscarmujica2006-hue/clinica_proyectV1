@@ -7,6 +7,11 @@ import java.util.Optional;
 
 public interface EncargadoInsumoService {
     
+
+    EncargadoInsumo guardar(EncargadoInsumo encargadoInsumo);
+  
+    List<EncargadoInsumo> obtenerTodos();
+
     List<EncargadoInsumo> findAll();
     
     Optional<EncargadoInsumo> findById(Long id);

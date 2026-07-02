@@ -29,7 +29,7 @@ public class Director {
     private LocalDate fechaInicio;
 
 
-    @Column(name = "fecha_fin", nullable = false )
+    @Column(name = "fecha_fin" )
     private LocalDate fechaFin;
     @Column(name = "usu_reg_usuCli")
     private Integer usuRegUsuCli;

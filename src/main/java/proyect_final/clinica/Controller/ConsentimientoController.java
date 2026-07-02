@@ -52,6 +52,419 @@ public class ConsentimientoController {
     @Autowired
     private EvolucionClinicaService evolucionService;
 
+    // ================================================================
+    // ============ NUEVOS ENDPOINTS PARA EL FRONTEND ============
+    // ================================================================
+
+    /**
+     * OBTENER CONSENTIMIENTOS DE UN DOCENTE
+     * GET /api/consentimientos/docente/{idDocente}
+     */
+    @GetMapping("/api/consentimientos/docente/{idDocente}")
+    @ResponseBody
+    public ResponseEntity<?> getConsentimientosByDocente(@PathVariable Long idDocente) {
+        try {
+            List<Consentimiento> consentimientos = consentimientoService.findByDocenteId(idDocente);
+            
+            List<Map<String, Object>> resultado = new ArrayList<>();
+            
+            for (Consentimiento c : consentimientos) {
+                Map<String, Object> item = new HashMap<>();
+                item.put("idConsentimiento", c.getIdConsentimiento());
+                item.put("estado", c.getEstado());
+                item.put("decision", c.getDecision());
+                item.put("fecha", c.getFecha());
+                
+                DiagnosticoTratamiento diagTrat = c.getDiagnosticoTratamiento();
+                if (diagTrat != null) {
+                    item.put("idDiagnosticoTratamiento", diagTrat.getIdDiagTrat());
+                    
+                    Tratamiento tratamiento = diagTrat.getTratamiento();
+                    if (tratamiento != null) {
+                        item.put("tratamientoNombre", tratamiento.getNombreTratamiento());
+                        item.put("idTratamiento", tratamiento.getIdTratamiento());
+                    }
+                    
+                    EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
+                    if (evolucion != null) {
+                        Diagnostico diagnostico = evolucion.getDiagnostico();
+                        if (diagnostico != null && diagnostico.getRevision() != null) {
+                            var revision = diagnostico.getRevision();
+                            if (revision.getConsulta() != null) {
+                                var consulta = revision.getConsulta();
+                                if (consulta.getPaciente() != null) {
+                                    Paciente paciente = consulta.getPaciente();
+                                    item.put("idPaciente", paciente.getIdPaciente());
+                                    item.put("ciPaciente", paciente.getCi());
+                                    
+                                    Persona persona = paciente.getPersona();
+                                    if (persona != null) {
+                                        String nombreCompleto = persona.getNombre() + " " + 
+                                            persona.getApellidoPaterno() + " " + 
+                                            (persona.getApellidoMaterno() != null ? persona.getApellidoMaterno() : "");
+                                        item.put("pacienteNombre", nombreCompleto.trim());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                Estudiante estudiante = c.getEstudiante();
+                if (estudiante != null) {
+                    item.put("idEstudiante", estudiante.getIdEstudiante());
+                    if (estudiante.getUsuario() != null && estudiante.getUsuario().getPersona() != null) {
+                        Persona personaEst = estudiante.getUsuario().getPersona();
+                        String nombreEst = personaEst.getNombre() + " " + personaEst.getApellidoPaterno();
+                        item.put("estudianteNombre", nombreEst);
+                    }
+                }
+                
+                resultado.add(item);
+            }
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al obtener consentimientos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * CAMBIAR ESTADO DE CONSENTIMIENTO
+     * PUT /api/consentimientos/{id}/estado?estado=APROBADO
+     */
+    @PutMapping("/api/consentimientos/{id}/estado")
+    @ResponseBody
+    public ResponseEntity<?> cambiarEstadoConsentimiento(
+            @PathVariable Long id,
+            @RequestParam String estado) {
+        try {
+            if (!estado.equals("APROBADO") && !estado.equals("RECHAZADO")) {
+                return ResponseEntity.badRequest().body("Estado inválido. Debe ser APROBADO o RECHAZADO");
+            }
+            
+            Optional<Consentimiento> optional = consentimientoService.obtenerPorId(id);
+            if (optional.isEmpty()) {
+                return ResponseEntity.badRequest().body("Consentimiento no encontrado");
+            }
+            
+            Consentimiento consentimiento = optional.get();
+            consentimiento.setEstado(estado);
+            consentimiento.setFechModCon(LocalDateTime.now());
+            
+            if (estado.equals("APROBADO")) {
+                DiagnosticoTratamiento diagTrat = consentimiento.getDiagnosticoTratamiento();
+                if (diagTrat != null) {
+                    generarSolicitud(diagTrat, consentimiento.getDocente());
+                }
+            }
+            
+            consentimientoService.guardar(consentimiento);
+            
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Consentimiento " + estado.toLowerCase() + " correctamente",
+                "idConsentimiento", id,
+                "estado", estado
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al cambiar estado: " + e.getMessage());
+        }
+    }
+
+    /**
+     * OBTENER FOTOS DE UN CONSENTIMIENTO
+     * GET /api/consentimiento-fotos/consentimiento/{idConsentimiento}
+     */
+    @GetMapping("/api/consentimiento-fotos/consentimiento/{idConsentimiento}")
+    @ResponseBody
+    public ResponseEntity<?> getFotosByConsentimiento(@PathVariable Long idConsentimiento) {
+        try {
+            List<ConsentimientoFoto> fotos = consentimientoService.findFotosByConsentimientoId(idConsentimiento);
+            
+            List<Map<String, Object>> resultado = fotos.stream()
+                .map(f -> {
+                    Map<String, Object> item = new HashMap<>();
+                    item.put("idConsentimientoFoto", f.getId_consentimientoFoto());
+                    item.put("rutaArchivoConsentimiento", f.getRutaArchivoConsentimiento());
+                    item.put("nombreConsentimientoOriginal", f.getNombreConsentimientoOriginal());
+                    item.put("tipoContenidoConsentimiento", f.getTipoContenidoConsentimiento());
+                    item.put("tamanoConsentimiento", f.getTamanoConsentimiento());
+                    return item;
+                })
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al obtener fotos: " + e.getMessage());
+        }
+    }
+
+    // ================================================================
+    // ============ ENDPOINTS PARA PROCEDIMIENTOS ============
+    // ================================================================
+
+    /**
+     * OBTENER PROCEDIMIENTOS PENDIENTES DEL DOCENTE
+     * GET /api/docentes/{docenteId}/procedimientos-pendientes
+     */
+    @GetMapping("/api/docentes/{docenteId}/procedimientos-pendientes")
+    @ResponseBody
+    public ResponseEntity<?> getProcedimientosPendientes(@PathVariable Long docenteId) {
+        try {
+            // ✅ Usa el método del service que agregamos
+            List<DiagnosticoTratamientoDiente> dientesPendientes = diagnosticoTratamientoDienteService
+                .findPendientesByDocenteId(docenteId);
+            
+            List<Map<String, Object>> procedimientos = new ArrayList<>();
+            int totalPendientes = 0;
+            int cuposRestantes = 0;
+            
+            for (DiagnosticoTratamientoDiente diente : dientesPendientes) {
+                DiagnosticoTratamiento diagTrat = diente.getDiagnosticoTratamiento();
+                
+                Consentimiento consentimiento = diagTrat.getConsentimiento();
+                if (consentimiento == null || !consentimiento.getEstado().equals("APROBADO")) {
+                    continue;
+                }
+                
+                Map<String, Object> item = new HashMap<>();
+                // ✅ CORREGIDO: usar el ID correcto de tu entidad
+                item.put("idDientePlan", diente.getIdDiagnosticoTratamientoDiente());
+                item.put("idDiagnosticoTratamiento", diagTrat.getIdDiagTrat());
+                item.put("diente", diente.getDiente());
+                item.put("estado", diente.getEstado());
+                item.put("observaciones", diente.getObservaciones());
+                // ✅ CORREGIDO: usar el getter correcto
+                item.put("fechaRegistro", diente.getFechRegDiaTraDie());
+                
+                Tratamiento tratamiento = diagTrat.getTratamiento();
+                if (tratamiento != null) {
+                    item.put("tratamientoNombre", tratamiento.getNombreTratamiento());
+                    item.put("idTratamiento", tratamiento.getIdTratamiento());
+                    item.put("procedimientoRealizado", tratamiento.getNombreTratamiento());
+                }
+                
+                Integer cupos = diagTrat.getCantidadPendiente();
+                item.put("cuposDisponibles", cupos != null ? cupos : 0);
+                cuposRestantes += (cupos != null ? cupos : 0);
+                
+                EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
+                if (evolucion != null) {
+                    Diagnostico diagnostico = evolucion.getDiagnostico();
+                    if (diagnostico != null && diagnostico.getRevision() != null) {
+                        var revision = diagnostico.getRevision();
+                        if (revision.getConsulta() != null && revision.getConsulta().getPaciente() != null) {
+                            Paciente paciente = revision.getConsulta().getPaciente();
+                            item.put("pacienteCi", paciente.getCi());
+                            
+                            Persona persona = paciente.getPersona();
+                            if (persona != null) {
+                                String nombre = persona.getNombre() + " " + persona.getApellidoPaterno();
+                                item.put("pacienteNombre", nombre);
+                            }
+                        }
+                    }
+                }
+                
+                totalPendientes++;
+                procedimientos.add(item);
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("procedimientos", procedimientos);
+            response.put("totalPendientes", totalPendientes);
+            response.put("totalAprobados", 0);
+            response.put("totalRechazados", 0);
+            response.put("cuposRestantes", cuposRestantes);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al obtener procedimientos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * APROBAR PROCEDIMIENTO (descontar cupo)
+     * PUT /api/procedimientos/{idDientePlan}/aprobar
+     */
+    @PutMapping("/api/procedimientos/{idDientePlan}/aprobar")
+    @ResponseBody
+    public ResponseEntity<?> aprobarProcedimiento(
+            @PathVariable Long idDientePlan,
+            @RequestBody Map<String, Object> request) {
+        try {
+            Long docenteId = ((Number) request.get("docenteId")).longValue();
+            
+            // ✅ CORREGIDO: usar obtenerPorId
+            Optional<DiagnosticoTratamientoDiente> optional = diagnosticoTratamientoDienteService
+                .obtenerPorId(idDientePlan);
+            if (optional.isEmpty()) {
+                return ResponseEntity.badRequest().body("Diente plan no encontrado");
+            }
+            
+            DiagnosticoTratamientoDiente dientePlan = optional.get();
+            
+            if (!dientePlan.getEstado().equals("PENDIENTE")) {
+                return ResponseEntity.badRequest().body("Este procedimiento ya fue procesado");
+            }
+            
+            DiagnosticoTratamiento diagTrat = dientePlan.getDiagnosticoTratamiento();
+            if (diagTrat == null) {
+                return ResponseEntity.badRequest().body("Diagnóstico de tratamiento no encontrado");
+            }
+            
+            Integer cantidadPendiente = diagTrat.getCantidadPendiente();
+            if (cantidadPendiente == null || cantidadPendiente <= 0) {
+                return ResponseEntity.badRequest().body("No hay cupos disponibles para este tratamiento");
+            }
+            
+            // Descontar cupo
+            diagTrat.setCantidadPendiente(cantidadPendiente - 1);
+            
+            // Incrementar cantidad realizada
+            Integer cantidadRealizada = diagTrat.getCantidadRealizada();
+            diagTrat.setCantidadRealizada((cantidadRealizada != null ? cantidadRealizada : 0) + 1);
+            
+            // Marcar el diente como completado
+            dientePlan.setEstado("COMPLETADO");
+            // ✅ CORREGIDO: usar setFechModDiaTraDie
+            dientePlan.setFechModDiaTraDie(LocalDateTime.now());
+            
+            if (docenteId != null) {
+                // ✅ CORREGIDO: usar setUsuModDiaTraDie
+                dientePlan.setUsuModDiaTraDie(docenteId.intValue());
+                diagTrat.setUsuModDiaTra(docenteId.intValue());
+            }
+            
+            diagnosticoTratamientoDienteService.guardar(dientePlan);
+            diagnosticoTratamientoService.guardar(diagTrat);
+            
+            if (diagTrat.getCantidadPendiente() <= 0) {
+                diagTrat.setEstado("COMPLETADO");
+                diagnosticoTratamientoService.guardar(diagTrat);
+            }
+            
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Procedimiento aprobado correctamente",
+                "idDientePlan", idDientePlan,
+                "cuposRestantes", diagTrat.getCantidadPendiente()
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al aprobar procedimiento: " + e.getMessage());
+        }
+    }
+
+    /**
+     * RECHAZAR PROCEDIMIENTO
+     * PUT /api/procedimientos/{idDientePlan}/rechazar
+     */
+    @PutMapping("/api/procedimientos/{idDientePlan}/rechazar")
+    @ResponseBody
+    public ResponseEntity<?> rechazarProcedimiento(
+            @PathVariable Long idDientePlan,
+            @RequestBody Map<String, Object> request) {
+        try {
+            String motivo = (String) request.get("motivo");
+            Long docenteId = ((Number) request.get("docenteId")).longValue();
+            
+            if (motivo == null || motivo.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Debe proporcionar un motivo de rechazo");
+            }
+            
+            // ✅ CORREGIDO: usar obtenerPorId
+            Optional<DiagnosticoTratamientoDiente> optional = diagnosticoTratamientoDienteService
+                .obtenerPorId(idDientePlan);
+            if (optional.isEmpty()) {
+                return ResponseEntity.badRequest().body("Diente plan no encontrado");
+            }
+            
+            DiagnosticoTratamientoDiente dientePlan = optional.get();
+            
+            if (!dientePlan.getEstado().equals("PENDIENTE")) {
+                return ResponseEntity.badRequest().body("Este procedimiento ya fue procesado");
+            }
+            
+            dientePlan.setEstado("RECHAZADO");
+            dientePlan.setObservaciones(motivo);
+            // ✅ CORREGIDO: usar setFechModDiaTraDie
+            dientePlan.setFechModDiaTraDie(LocalDateTime.now());
+            
+            if (docenteId != null) {
+                // ✅ CORREGIDO: usar setUsuModDiaTraDie
+                dientePlan.setUsuModDiaTraDie(docenteId.intValue());
+            }
+            
+            diagnosticoTratamientoDienteService.guardar(dientePlan);
+            
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Procedimiento rechazado correctamente",
+                "idDientePlan", idDientePlan,
+                "motivo", motivo
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body("Error al rechazar procedimiento: " + e.getMessage());
+        }
+    }
+
+    // ================================================================
+    // ============ MÉTODO GENERAR SOLICITUD ============
+    // ================================================================
+
+    private void generarSolicitud(DiagnosticoTratamiento diagnosticoTratamiento, Docente docente) {
+        try {
+            Tratamiento tratamiento = diagnosticoTratamiento.getTratamiento();
+            if (tratamiento == null) return;
+            
+            List<TratamientoInsumo> tratamientoInsumos = tratamientoInsumoService
+                .findByTratamientoId(tratamiento.getIdTratamiento());
+            
+            if (tratamientoInsumos.isEmpty()) return;
+            
+            SolicitudInsumo solicitud = new SolicitudInsumo();
+            solicitud.setDiagnosticoTratamiento(diagnosticoTratamiento);
+            solicitud.setFechaSolicitud(LocalDate.now());
+            solicitud.setEstadoSolicitud("PENDIENTE_DOCENTE");
+            
+            SolicitudInsumo solicitudGuardada = solicitudInsumoService.guardar(solicitud);
+            
+            for (TratamientoInsumo ti : tratamientoInsumos) {
+                SolicitudDetInsumo detalle = new SolicitudDetInsumo();
+                detalle.setSolicitudInsumo(solicitudGuardada);
+                detalle.setInsumo(ti.getInsumo());
+                detalle.setCantidadSolicitada(ti.getCantidadRequerida());
+                detalle.setCantidadEntregada(0);
+                detalle.setEstadoSoliDetalle("PENDIENTE_DOCENTE");
+                detalle.setDocente(docente);
+                solicitudInsumoService.guardarDetalle(detalle);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ================================================================
+    // ============ MÉTODOS EXISTENTES ============
+    // ================================================================
+
     @GetMapping("/buscar-diagnostico")
     @ResponseBody
     public ResponseEntity<?> buscarDiagnostico(@RequestParam String criterio) {
@@ -115,7 +528,6 @@ public class ConsentimientoController {
                 resultado.put("historialClinico", paciente.getHistorialClinico());
             }
             
-            // ✅ CORREGIDO: Usar findByEvolucionClinicaId en lugar de findByDiagnosticoId
             List<DiagnosticoTratamiento> diagTrats = diagnosticoTratamientoService
                 .findByEvolucionClinicaId(evolucion.getIdEvolucionClinica());
             
@@ -208,7 +620,6 @@ public class ConsentimientoController {
             Long idEvolucionClinica = Long.valueOf(datos.get("idEvolucionClinica").toString());
             Long idTratamiento = Long.valueOf(datos.get("idTratamiento").toString());
             
-            // Obtener la evolución clínica
             EvolucionClinica evolucion = evolucionService.obtenerPorId(idEvolucionClinica);
             if (evolucion == null) {
                 return ResponseEntity.badRequest().body(Map.of(
@@ -219,7 +630,6 @@ public class ConsentimientoController {
             Tratamiento tratamiento = tratamientoService.obtenerPorId(idTratamiento)
                 .orElseThrow(() -> new RuntimeException("Tratamiento no encontrado"));
             
-            // ✅ Obtener los dientes del request
             List<Integer> dientesList = new ArrayList<>();
             if (datos.containsKey("dientes") && datos.get("dientes") != null) {
                 Object dientesObj = datos.get("dientes");
@@ -248,7 +658,6 @@ public class ConsentimientoController {
                 }
             }
             
-            // ✅ Si no hay dientes, usar el campo dienteAfectado
             if (dientesList.isEmpty() && datos.containsKey("dienteAfectado")) {
                 String dienteAfectado = datos.get("dienteAfectado").toString();
                 if (!dienteAfectado.trim().isEmpty()) {
@@ -261,10 +670,8 @@ public class ConsentimientoController {
                 }
             }
             
-            // ✅ Calcular cantidad planeada según los dientes
             int cantidadPlaneada = dientesList.size();
             
-            // ✅ Crear el DiagnosticoTratamiento
             DiagnosticoTratamiento diagTrat = new DiagnosticoTratamiento();
             diagTrat.setEvolucionClinica(evolucion);
             diagTrat.setTratamiento(tratamiento);
@@ -274,12 +681,10 @@ public class ConsentimientoController {
             diagTrat.setEstado("PENDIENTE");
             diagTrat.setCantidadPlaneada(cantidadPlaneada);
             diagTrat.setCantidadRealizada(0);
-            diagTrat.setCantidadPendiente(cantidadPlaneada); // Inicialmente todos pendientes
+            diagTrat.setCantidadPendiente(cantidadPlaneada);
             
-            // ✅ Guardar primero el DiagnosticoTratamiento
             DiagnosticoTratamiento guardado = diagnosticoTratamientoService.guardar(diagTrat);
             
-            // ✅ Crear y guardar los dientes asociados
             if (!dientesList.isEmpty()) {
                 List<DiagnosticoTratamientoDiente> dientesGuardados = new ArrayList<>();
                 for (Integer numeroDiente : dientesList) {
@@ -290,8 +695,6 @@ public class ConsentimientoController {
                     diente.setObservaciones("Diente programado para tratamiento");
                     dientesGuardados.add(diente);
                 }
-                
-                // Guardar todos los dientes
                 diagnosticoTratamientoDienteService.guardarTodos(dientesGuardados);
             }
             
@@ -370,30 +773,6 @@ public class ConsentimientoController {
         }
     }
 
-    @GetMapping("/por-diag-trat/{idDiagTrat}")
-    @ResponseBody
-    public ResponseEntity<?> obtenerPorDiagnosticoTratamiento(@PathVariable Long idDiagTrat) {
-        try {
-            Optional<Consentimiento> consentimiento = consentimientoService
-                .obtenerPorDiagnosticoTratamiento(idDiagTrat);
-            
-            if (consentimiento.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            Consentimiento c = consentimiento.get();
-            Map<String, Object> response = new HashMap<>();
-            response.put("idConsentimiento", c.getIdConsentimiento());
-            response.put("decision", c.getDecision());
-            response.put("estado", c.getEstado());
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
-        }
-    }
-
     @GetMapping("/obtener-docentes")
     @ResponseBody
     public ResponseEntity<?> obtenerDocentes() {
@@ -416,32 +795,6 @@ public class ConsentimientoController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                 .body("Error: " + e.getMessage());
-        }
-    }
-
-    private void generarSolicitud(DiagnosticoTratamiento diagnosticoTratamiento, Docente docente) {
-        Tratamiento tratamiento = diagnosticoTratamiento.getTratamiento();
-        List<TratamientoInsumo> tratamientoInsumos = tratamientoInsumoService
-            .findByTratamientoId(tratamiento.getIdTratamiento());
-        
-        if (tratamientoInsumos.isEmpty()) return;
-        
-        SolicitudInsumo solicitud = new SolicitudInsumo();
-        solicitud.setDiagnosticoTratamiento(diagnosticoTratamiento);
-        solicitud.setFechaSolicitud(LocalDate.now());
-        solicitud.setEstadoSolicitud("PENDIENTE_DOCENTE");
-        
-        SolicitudInsumo solicitudGuardada = solicitudInsumoService.guardar(solicitud);
-        
-        for (TratamientoInsumo ti : tratamientoInsumos) {
-            SolicitudDetInsumo detalle = new SolicitudDetInsumo();
-            detalle.setSolicitudInsumo(solicitudGuardada);
-            detalle.setInsumo(ti.getInsumo());
-            detalle.setCantidadSolicitada(ti.getCantidadRequerida());
-            detalle.setCantidadEntregada(0);
-            detalle.setEstadoSoliDetalle("PENDIENTE_DOCENTE");
-            detalle.setDocente(docente);
-            solicitudInsumoService.guardarDetalle(detalle);
         }
     }
 }

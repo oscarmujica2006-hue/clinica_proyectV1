@@ -58,72 +58,6 @@ public class ArchivoController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/buscar-por-paciente")
-    public ResponseEntity<?> buscarArchivoPorPaciente(
-            @RequestParam(required = false) Integer ci,
-            @RequestParam(required = false) String nombre) {
-
-        try {
-
-            if ((ci == null || ci == 0) &&
-                (nombre == null || nombre.trim().isEmpty())) {
-
-                return ResponseEntity.badRequest()
-                        .body(createErrorResponse(
-                                "Debe proporcionar CI o nombre del paciente"));
-            }
-
-            Optional<Archivo> archivoOpt =
-                    archivoService.findArchivoByPacienteCiOrNombre(ci, nombre);
-
-            if (archivoOpt.isPresent()) {
-
-                Archivo archivo = archivoOpt.get();
-                Paciente paciente = archivo.getPaciente();
-
-                Map<String, Object> response =
-                        createSuccessResponse("Archivo encontrado");
-
-                // Datos del archivo
-                Map<String, Object> archivoData = new HashMap<>();
-                archivoData.put("idArchivo", archivo.getIdArchivo());
-                archivoData.put("codigoArchivo", archivo.getCodigoArchivo());
-                archivoData.put("ubicacionFisica", archivo.getUbicacionFisica());
-                response.put("archivo", archivoData);
-
-                // Datos completos del paciente
-                Map<String, Object> pacienteData = new HashMap<>();
-                pacienteData.put("id", paciente.getIdPaciente());
-                pacienteData.put("ci", paciente.getCi());
-                pacienteData.put("nombreCompleto", getNombreCompleto(paciente.getPersona()));
-                pacienteData.put("historialClinico", paciente.getHistorialClinico());
-                pacienteData.put("telefono", paciente.getTelefono());
-                pacienteData.put("direccion", paciente.getDireccion());
-                
-                response.put("paciente", pacienteData);
-
-                return ResponseEntity.ok(response);
-
-            } else {
-
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(createErrorResponse(
-                                "No se encontró archivo para el paciente",
-                                false));
-
-            }
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(createErrorResponse(
-                            "Error: " + e.getMessage()));
-        }
-    }
-
 @GetMapping("/id-por-paciente")
 public ResponseEntity<?> getIdArchivoPorPaciente(
         @RequestParam(required = false) String ci,
@@ -229,10 +163,5 @@ public ResponseEntity<?> getIdArchivoPorPaciente(
         return response;
     }
 
-    @GetMapping("/paciente/{idPaciente}")
-    public ResponseEntity<Archivo> getArchivoByPacienteId(@PathVariable Long idPaciente) {
-        Optional<Archivo> archivo = archivoService.findArchivoByPacienteId(idPaciente);
-        return archivo.map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-    }
+
 }

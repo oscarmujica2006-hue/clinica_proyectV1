@@ -30,7 +30,6 @@
         .header h1 { font-size: 28px; display: flex; align-items: center; gap: 10px; }
         .header p { opacity: 0.9; margin-top: 5px; }
         
-        /* Navegación entre pestañas */
         .tabs {
             display: flex;
             gap: 10px;
@@ -173,7 +172,6 @@
         .cupo-bajo { background: #fff3e0; color: var(--warning); }
         .cupo-critico { background: #fdeaea; color: var(--danger); }
 
-        /* Filtros */
         .search-container { margin-bottom: 20px; }
         .filter-card {
             background: white;
@@ -207,7 +205,24 @@
             outline: none;
         }
 
-        /* Modal */
+        /* Indicador de filtro activo */
+        .filter-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .filter-badge i {
+            margin-right: 4px;
+        }
+
+        /* ================================================================
+           MODALES
+           ================================================================ */
         .modal {
             display: none;
             position: fixed;
@@ -247,44 +262,116 @@
         .close:hover { opacity: 0.7; }
         .modal-body { padding: 25px; max-height: 60vh; overflow-y: auto; }
         
-        .info-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--secondary);
+        /* ================================================================
+           MODAL DE ZOOM DE IMAGEN
+           ================================================================ */
+        #modalZoom {
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
         }
-        .info-box p { margin: 6px 0; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--primary); }
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 15px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 80px;
+        #modalZoom .modal-content {
+            background: transparent;
+            box-shadow: none;
+            max-width: 95%;
+            margin: 2% auto;
+            animation: zoomIn 0.3s ease;
         }
-        .form-group textarea:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
         }
-        .form-actions {
+        #modalZoom .modal-body {
+            padding: 0;
+            max-height: 90vh;
             display: flex;
-            gap: 12px;
-            margin-top: 25px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            background: transparent;
         }
-        .form-actions .btn { padding: 12px 25px; font-size: 15px; }
+        #modalZoom .modal-body img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            cursor: zoom-out;
+        }
+        #modalZoom .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background: none;
+            border: none;
+        }
+        #modalZoom .close-zoom:hover {
+            opacity: 0.7;
+        }
+        #modalZoom .zoom-info {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 20px;
+            border-radius: 20px;
+            pointer-events: none;
+        }
         
-        .image-preview { max-width: 100%; max-height: 400px; border-radius: 8px; }
-        .image-info { margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 8px; }
-        .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 600px) { .image-grid { grid-template-columns: 1fr; } }
+        /* Estilos para las imágenes en el grid */
+        .image-grid .image-item {
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .image-grid .image-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .image-grid .image-item img {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+        }
+        .image-grid .image-item .image-info {
+            margin-top: 10px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .image-preview { 
+            max-width: 100%; 
+            max-height: 400px; 
+            border-radius: 8px; 
+        }
+        .image-info { 
+            margin-top: 10px; 
+            background: #f8f9fa; 
+            padding: 12px; 
+            border-radius: 8px; 
+        }
+        .image-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+        @media (max-width: 600px) { 
+            .image-grid { 
+                grid-template-columns: 1fr; 
+            } 
+        }
 
         @media (max-width: 768px) {
             th, td { padding: 10px 8px; font-size: 12px; }
@@ -309,7 +396,6 @@
             <p>Gestión de consentimientos y validación de procedimientos</p>
         </div>
 
-        <!-- Pestañas de navegación -->
         <div class="tabs">
             <button class="tab-btn active" data-tab="consentimientos">
                 <i class="fas fa-file-signature"></i> Consentimientos
@@ -321,7 +407,6 @@
 
         <!-- ==================== TAB 1: CONSENTIMIENTOS ==================== -->
         <div id="tab-consentimientos" class="tab-content active">
-            <!-- Estadísticas de Consentimientos -->
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-value text-warning" id="totalPendientes">0</div>
@@ -337,13 +422,12 @@
                 </div>
             </div>
 
-            <!-- Filtros -->
             <div class="search-container">
                 <div class="filter-card">
                     <div class="filter-row">
                         <div class="filter-group">
                             <label><i class="fas fa-id-card"></i> CI del Paciente</label>
-                            <input type="text" id="filtroCi" placeholder="Buscar por CI...">
+                            <input type="text" id="filtroCi" placeholder="Ej: 12345678 o parte del CI...">
                         </div>
                         <div class="filter-group">
                             <label><i class="fas fa-filter"></i> Estado</label>
@@ -363,10 +447,18 @@
                             </button>
                         </div>
                     </div>
+                    <!-- Indicador de filtros activos -->
+                    <div id="filtrosActivos" style="margin-top: 12px; display: none;">
+                        <span style="font-size: 13px; color: var(--gray);">
+                            <i class="fas fa-filter"></i> Filtros activos:
+                            <span id="filtroCiTexto" class="filter-badge"><i class="fas fa-id-card"></i> CI: <span id="ciValor">-</span></span>
+                            <span id="filtroEstadoTexto" class="filter-badge"><i class="fas fa-tag"></i> Estado: <span id="estadoValor">-</span></span>
+                            <span style="font-size: 12px; color: var(--gray); margin-left: 10px;">(Mostrando <span id="totalFiltrados">0</span> resultados)</span>
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tabla de Consentimientos -->
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-file-signature"></i> Mis Consentimientos Asignados</h2>
@@ -399,7 +491,6 @@
 
         <!-- ==================== TAB 2: PROCEDIMIENTOS ==================== -->
         <div id="tab-procedimientos" class="tab-content">
-            <!-- Estadísticas de Procedimientos -->
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-value text-warning" id="totalProcPendientes">0</div>
@@ -419,7 +510,6 @@
                 </div>
             </div>
 
-            <!-- Tabla de Procedimientos -->
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-list"></i> Procedimientos Pendientes de Aprobación</h2>
@@ -503,9 +593,28 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL PARA ZOOM DE IMAGEN ==================== -->
+    <div id="modalZoom" class="modal">
+        <button class="close-zoom" onclick="cerrarZoom()">&times;</button>
+        <div class="modal-content">
+            <div class="modal-body" id="modalZoomBody">
+                <img id="zoomImage" src="" alt="Imagen ampliada">
+            </div>
+        </div>
+        <div class="zoom-info">🖱️ Haz clic en la imagen o presiona ESC para cerrar</div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script>
+        // ================================================================
+        // ============ CONFIGURACIÓN DE URLS ============
+        // ================================================================
+        const API_BASE = '/consentimientos';
+
+        // ================================================================
+        // ============ VARIABLES GLOBALES ============
+        // ================================================================
         let docenteId = null;
         let currentDientePlanId = null;
         let currentPaciente = null;
@@ -513,12 +622,46 @@
         let currentDiente = null;
         let currentProcedimiento = null;
         let currentCupos = 0;
+        let currentIdDiagnosticoTratamiento = null;
 
-        // Filtros de consentimientos
         let filtroCiActual = '';
         let filtroEstadoActual = 'todos';
+        let todosLosConsentimientos = [];
 
-        // ========== OBTENER DOCENTE ID ==========
+        // ================================================================
+        // ============ ZOOM DE IMAGEN ============
+        // ================================================================
+        function abrirZoom(src) {
+            const modal = document.getElementById('modalZoom');
+            const img = document.getElementById('zoomImage');
+            img.src = src;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarZoom() {
+            const modal = document.getElementById('modalZoom');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                cerrarZoom();
+            }
+        });
+
+        document.getElementById('zoomImage').addEventListener('click', cerrarZoom);
+
+        document.getElementById('modalZoom').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarZoom();
+            }
+        });
+
+        // ================================================================
+        // ============ OBTENER DOCENTE ID ============
+        // ================================================================
         async function obtenerDocenteId() {
             try {
                 const response = await fetch('/sesion-actual');
@@ -540,7 +683,9 @@
             }
         }
 
-        // ========== PESTAÑAS ==========
+        // ================================================================
+        // ============ PESTAÑAS ============
+        // ================================================================
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -549,7 +694,6 @@
                 document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
                 document.getElementById('tab-' + this.dataset.tab).classList.add('active');
                 
-                // Cargar datos según la pestaña
                 if (this.dataset.tab === 'consentimientos') {
                     cargarConsentimientos();
                 } else if (this.dataset.tab === 'procedimientos') {
@@ -558,7 +702,9 @@
             });
         });
 
-        // ========== CONSENTIMIENTOS ==========
+        // ================================================================
+        // ============ CONSENTIMIENTOS ============
+        // ================================================================
         async function cargarConsentimientos() {
             if (!docenteId) await obtenerDocenteId();
             
@@ -566,30 +712,18 @@
             tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando consentimientos...</td></tr>';
             
             try {
-                const url = `/consentimientos/todos-json?idDocente=${docenteId}`;
+                const url = `${API_BASE}/api/consentimientos/docente/${docenteId}`;
+                console.log('📡 Cargando consentimientos desde:', url);
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Error al cargar consentimientos');
                 
-                let consentimientos = await response.json();
-                
-                // Aplicar filtros
-                if (filtroCiActual && filtroCiActual.trim() !== '') {
-                    consentimientos = consentimientos.filter(c => 
-                        c.ciPaciente && c.ciPaciente.toLowerCase().includes(filtroCiActual.toLowerCase())
-                    );
-                }
-                if (filtroEstadoActual !== 'todos') {
-                    consentimientos = consentimientos.filter(c => c.estado === filtroEstadoActual);
-                }
-                
-                renderizarTablaConsentimientos(consentimientos);
+                todosLosConsentimientos = await response.json();
+                aplicarFiltrosYRenderizar();
                 
                 // Actualizar estadísticas
-                const allResponse = await fetch(`/consentimientos/todos-json?idDocente=${docenteId}`);
-                const all = await allResponse.json();
-                document.getElementById('totalPendientes').textContent = all.filter(c => c.estado === 'PENDIENTE').length;
-                document.getElementById('totalAprobadosCons').textContent = all.filter(c => c.estado === 'APROBADO').length;
-                document.getElementById('totalRechazadosCons').textContent = all.filter(c => c.estado === 'RECHAZADO').length;
+                document.getElementById('totalPendientes').textContent = todosLosConsentimientos.filter(c => c.estado === 'PENDIENTE').length;
+                document.getElementById('totalAprobadosCons').textContent = todosLosConsentimientos.filter(c => c.estado === 'APROBADO').length;
+                document.getElementById('totalRechazadosCons').textContent = todosLosConsentimientos.filter(c => c.estado === 'RECHAZADO').length;
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -597,11 +731,62 @@
             }
         }
 
+        function aplicarFiltrosYRenderizar() {
+            let filtrados = [...todosLosConsentimientos];
+            
+            // ✅ FILTRO POR CI - MEJORADO
+            if (filtroCiActual && filtroCiActual.trim() !== '') {
+                const ciBusqueda = filtroCiActual.trim().toLowerCase();
+                filtrados = filtrados.filter(c => {
+                    const ciPaciente = (c.ciPaciente || '').toString().toLowerCase();
+                    // Buscar coincidencia exacta o parcial
+                    return ciPaciente.includes(ciBusqueda);
+                });
+            }
+            
+            // Filtro por estado
+            if (filtroEstadoActual !== 'todos') {
+                filtrados = filtrados.filter(c => c.estado === filtroEstadoActual);
+            }
+            
+            renderizarTablaConsentimientos(filtrados);
+            
+            // Actualizar indicador de filtros
+            actualizarIndicadorFiltros(filtrados.length);
+        }
+
+        function actualizarIndicadorFiltros(totalFiltrados) {
+            const contenedor = document.getElementById('filtrosActivos');
+            const tieneFiltroCi = filtroCiActual && filtroCiActual.trim() !== '';
+            const tieneFiltroEstado = filtroEstadoActual !== 'todos';
+            
+            if (tieneFiltroCi || tieneFiltroEstado) {
+                contenedor.style.display = 'block';
+                document.getElementById('ciValor').textContent = filtroCiActual || 'Todos';
+                
+                let estadoTexto = filtroEstadoActual;
+                switch(filtroEstadoActual) {
+                    case 'PENDIENTE': estadoTexto = '⏳ Pendientes'; break;
+                    case 'APROBADO': estadoTexto = '✅ Aprobados'; break;
+                    case 'RECHAZADO': estadoTexto = '❌ Rechazados'; break;
+                    default: estadoTexto = 'Todos';
+                }
+                document.getElementById('estadoValor').textContent = estadoTexto;
+                document.getElementById('totalFiltrados').textContent = totalFiltrados;
+            } else {
+                contenedor.style.display = 'none';
+            }
+        }
+
         function renderizarTablaConsentimientos(consentimientos) {
             const tbody = document.getElementById('tbodyConsentimientos');
             
             if (consentimientos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i> No hay consentimientos que coincidan con los filtros</td></tr>';
+                let mensaje = 'No hay consentimientos que coincidan con los filtros';
+                if (filtroCiActual && filtroCiActual.trim() !== '') {
+                    mensaje = `No se encontraron consentimientos para el CI: "${filtroCiActual}"`;
+                }
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state"><i class="fas fa-search"></i> ${mensaje}</td></tr>`;
                 return;
             }
             
@@ -627,11 +812,11 @@
                 html += `
                     <tr>
                         <td>
-                            <strong>${escapeHtml(c.pacienteNombre)}</strong><br>
+                            <strong>${escapeHtml(c.pacienteNombre || 'N/A')}</strong><br>
                             <small style="color: #666;">CI: ${escapeHtml(c.ciPaciente || 'N/A')}</small>
                         </td>
-                        <td>${escapeHtml(c.tratamientoNombre)}</td>
-                        <td>${escapeHtml(c.estudianteNombre)}</td>
+                        <td>${escapeHtml(c.tratamientoNombre || 'N/A')}</td>
+                        <td>${escapeHtml(c.estudianteNombre || 'N/A')}</td>
                         <td>${c.fecha ? new Date(c.fecha).toLocaleDateString() : '-'}</td>
                         <td><span class="badge ${badgeClass}">${estadoTexto}</span></td>
                         <td class="text-center">
@@ -654,7 +839,9 @@
             modal.style.display = 'block';
             
             try {
-                const response = await fetch(`/api/consentimiento-fotos/consentimiento/${idConsentimiento}`);
+                const url = `${API_BASE}/api/consentimiento-fotos/consentimiento/${idConsentimiento}`;
+                console.log('📡 Cargando fotos desde:', url);
+                const response = await fetch(url);
                 if (!response.ok) throw new Error('Error al cargar las imágenes');
                 
                 const fotos = await response.json();
@@ -664,13 +851,22 @@
                 } else {
                     let html = '<div class="image-grid">';
                     for (const foto of fotos) {
-                        const ruta = foto.rutaArchivo || foto.rutaArchivoConsentimiento;
+                        const ruta = foto.rutaArchivoConsentimiento || foto.rutaArchivo;
+                        const nombre = escapeHtml(foto.nombreConsentimientoOriginal || foto.nombreOriginal || 'Sin nombre');
+                        const tamano = formatearTamanio(foto.tamanoConsentimiento || foto.tamano);
+                        
                         html += `
-                            <div style="margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; padding: 15px;">
-                                <img src="${ruta}" class="image-preview" onerror="this.src='https://via.placeholder.com/600x400?text=Error+al+cargar+imagen'">
+                            <div class="image-item" onclick="abrirZoom('${ruta}')">
+                                <img src="${ruta}" class="image-preview" 
+                                     onerror="this.src='https://via.placeholder.com/600x400?text=Error+al+cargar+imagen'"
+                                     alt="${nombre}"
+                                     title="🖱️ Haz clic para ampliar">
                                 <div class="image-info">
-                                    <p><strong><i class="fas fa-file"></i> Archivo:</strong> ${escapeHtml(foto.nombreOriginal || foto.nombreConsentimientoOriginal || 'Sin nombre')}</p>
-                                    <p><strong><i class="fas fa-weight-hanging"></i> Tamaño:</strong> ${formatearTamanio(foto.tamano || foto.tamanoConsentimiento)}</p>
+                                    <p><strong><i class="fas fa-file"></i> Archivo:</strong> ${nombre}</p>
+                                    <p><strong><i class="fas fa-weight-hanging"></i> Tamaño:</strong> ${tamano}</p>
+                                    <p style="color: var(--secondary); font-size: 12px;">
+                                        <i class="fas fa-search-plus"></i> Click para ampliar
+                                    </p>
                                 </div>
                             </div>
                         `;
@@ -688,7 +884,12 @@
             if (!confirm('¿Está seguro de APROBAR este consentimiento?')) return;
             
             try {
-                const response = await fetch(`/consentimientos/${id}/estado?estado=APROBADO`, { method: 'PUT' });
+                const url = `${API_BASE}/api/consentimientos/${id}/estado?estado=APROBADO`;
+                console.log('📡 Aprobando consentimiento:', url);
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 if (response.ok) {
                     Swal.fire({ icon: 'success', title: '✅ Aprobado', text: 'Consentimiento aprobado correctamente' });
                     cargarConsentimientos();
@@ -705,7 +906,12 @@
             if (!confirm('¿Está seguro de RECHAZAR este consentimiento?')) return;
             
             try {
-                const response = await fetch(`/consentimientos/${id}/estado?estado=RECHAZADO`, { method: 'PUT' });
+                const url = `${API_BASE}/api/consentimientos/${id}/estado?estado=RECHAZADO`;
+                console.log('📡 Rechazando consentimiento:', url);
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 if (response.ok) {
                     Swal.fire({ icon: 'info', title: '❌ Rechazado', text: 'Consentimiento rechazado correctamente' });
                     cargarConsentimientos();
@@ -721,7 +927,7 @@
         function aplicarFiltrosConsentimientos() {
             filtroCiActual = document.getElementById('filtroCi').value.trim();
             filtroEstadoActual = document.getElementById('filtroEstado').value;
-            cargarConsentimientos();
+            aplicarFiltrosYRenderizar();
         }
 
         function limpiarFiltrosConsentimientos() {
@@ -729,10 +935,12 @@
             document.getElementById('filtroEstado').value = 'todos';
             filtroCiActual = '';
             filtroEstadoActual = 'todos';
-            cargarConsentimientos();
+            aplicarFiltrosYRenderizar();
         }
 
-        // ========== PROCEDIMIENTOS ==========
+        // ================================================================
+        // ============ PROCEDIMIENTOS ============
+        // ================================================================
         async function cargarProcedimientos() {
             if (!docenteId) await obtenerDocenteId();
             
@@ -740,7 +948,9 @@
             tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-spin"></i> Cargando procedimientos...</td></tr>';
             
             try {
-                const response = await fetch(`/api/docentes/procedimientos-pendientes?docenteId=${docenteId}`);
+                const url = `${API_BASE}/api/docentes/${docenteId}/procedimientos-pendientes`;
+                console.log('📡 Cargando procedimientos desde:', url);
+                const response = await fetch(url);
                 if (!response.ok) {
                     const error = await response.text();
                     throw new Error(error);
@@ -780,26 +990,33 @@
                     else if (cupos <= 3) cuposClass = 'cupo-bajo';
                 }
                 
+                const pacienteNombre = escapeHtml(p.pacienteNombre || 'N/A');
+                const pacienteCi = escapeHtml(p.pacienteCi || 'N/A');
+                const tratamientoNombre = escapeHtml(p.tratamientoNombre || 'N/A');
+                const procedimientoRealizado = escapeHtml(p.procedimientoRealizado || 'N/A');
+                const observaciones = escapeHtml(p.observaciones || '');
+                
                 html += `
                     <tr>
                         <td>
-                            <strong>${escapeHtml(p.pacienteNombre || 'N/A')}</strong>
-                            <br><small style="color: #666;">CI: ${escapeHtml(p.pacienteCi || 'N/A')}</small>
+                            <strong>${pacienteNombre}</strong>
+                            <br><small style="color: #666;">CI: ${pacienteCi}</small>
                         </td>
-                        <td><strong>${escapeHtml(p.tratamientoNombre || 'N/A')}</strong></td>
+                        <td><strong>${tratamientoNombre}</strong></td>
                         <td><span class="badge badge-purple">🦷 ${p.diente}</span></td>
-                        <td>${escapeHtml(p.procedimientoRealizado || 'N/A')}</td>
+                        <td>${procedimientoRealizado}</td>
                         <td>${fecha}</td>
                         <td><span class="${cuposClass}">${cupos}</span></td>
                         <td>
                             <button class="btn btn-success btn-sm" onclick="abrirModalAprobar(
                                 ${p.idDientePlan}, 
-                                '${escapeHtml(p.pacienteNombre)}', 
-                                '${escapeHtml(p.tratamientoNombre)}', 
+                                '${pacienteNombre.replace(/'/g, "\\'")}', 
+                                '${tratamientoNombre.replace(/'/g, "\\'")}', 
                                 ${p.diente}, 
-                                '${escapeHtml(p.procedimientoRealizado)}', 
-                                '${escapeHtml(p.observaciones)}',
-                                ${cupos}
+                                '${procedimientoRealizado.replace(/'/g, "\\'")}', 
+                                '${observaciones.replace(/'/g, "\\'")}',
+                                ${cupos},
+                                ${p.idDiagnosticoTratamiento || 'null'}
                             )">
                                 <i class="fas fa-check"></i> Validar
                             </button>
@@ -810,13 +1027,14 @@
             tbody.innerHTML = html;
         }
 
-        function abrirModalAprobar(idDientePlan, paciente, tratamiento, diente, procedimiento, observaciones, cupos) {
+        function abrirModalAprobar(idDientePlan, paciente, tratamiento, diente, procedimiento, observaciones, cupos, idDiagnosticoTratamiento) {
             currentDientePlanId = idDientePlan;
             currentPaciente = paciente;
             currentTratamiento = tratamiento;
             currentDiente = diente;
             currentProcedimiento = procedimiento;
             currentCupos = cupos;
+            currentIdDiagnosticoTratamiento = idDiagnosticoTratamiento;
             
             document.getElementById('modalPaciente').textContent = paciente || 'N/A';
             document.getElementById('modalTratamiento').textContent = tratamiento || 'N/A';
@@ -829,6 +1047,9 @@
             document.getElementById('modalAccion').style.display = 'block';
         }
 
+        // ================================================================
+        // ============ BOTONES DEL MODAL ============
+        // ================================================================
         document.getElementById('btnAprobar').addEventListener('click', async function() {
             if (!currentDientePlanId) return;
             
@@ -838,8 +1059,15 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`/api/docentes/procedimientos/${currentDientePlanId}/aprobar?docenteId=${docenteId}`, {
-                    method: 'PUT'
+                const url = `${API_BASE}/api/procedimientos/${currentDientePlanId}/aprobar`;
+                console.log('📡 Aprobando procedimiento:', url);
+                const response = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        docenteId: docenteId,
+                        idDiagnosticoTratamiento: currentIdDiagnosticoTratamiento 
+                    })
                 });
                 
                 if (!response.ok) {
@@ -885,10 +1113,16 @@
             btn.disabled = true;
             
             try {
-                const response = await fetch(`/api/docentes/procedimientos/${currentDientePlanId}/rechazar`, {
+                const url = `${API_BASE}/api/procedimientos/${currentDientePlanId}/rechazar`;
+                console.log('📡 Rechazando procedimiento:', url);
+                const response = await fetch(url, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ motivo: motivo })
+                    body: JSON.stringify({ 
+                        motivo: motivo,
+                        docenteId: docenteId,
+                        idDiagnosticoTratamiento: currentIdDiagnosticoTratamiento 
+                    })
                 });
                 
                 if (!response.ok) {
@@ -915,10 +1149,13 @@
             }
         });
 
-        // ========== FUNCIONES UTILIDAD ==========
+        // ================================================================
+        // ============ FUNCIONES DE UTILIDAD ============
+        // ================================================================
         function cerrarModalAccion() {
             document.getElementById('modalAccion').style.display = 'none';
             currentDientePlanId = null;
+            currentIdDiagnosticoTratamiento = null;
         }
 
         function formatearTamanio(bytes) {
@@ -930,16 +1167,17 @@
 
         function escapeHtml(str) {
             if (!str) return '';
-            return String(str).replace(/[&<>"]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                if (m === '"') return '&quot;';
-                return m;
-            });
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
-        // ========== EVENTOS MODALES ==========
+        // ================================================================
+        // ============ EVENTOS MODALES ============
+        // ================================================================
         document.querySelector('.close-imagen')?.addEventListener('click', () => {
             document.getElementById('modalImagen').style.display = 'none';
         });
@@ -955,18 +1193,18 @@
             }
         };
 
-        // Enter en filtro CI
         document.getElementById('filtroCi')?.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') aplicarFiltrosConsentimientos();
         });
 
-        // ========== INICIALIZAR ==========
+        // ================================================================
+        // ============ INICIALIZAR ============
+        // ================================================================
         (async function() {
             await obtenerDocenteId();
             await cargarConsentimientos();
             await cargarProcedimientos();
             
-            // Auto-refresh cada 30 segundos
             setInterval(() => {
                 if (document.getElementById('tab-consentimientos').classList.contains('active')) {
                     cargarConsentimientos();

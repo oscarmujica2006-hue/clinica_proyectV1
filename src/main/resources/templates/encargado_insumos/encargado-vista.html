@@ -6,6 +6,114 @@
     <title>Cubic Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/CSS/panel.css}">
+    <style>
+        /* ===== ESTILOS PARA EL CONTADOR DE STOCK ===== */
+        
+        /* Badge en el menú */
+        .badge-stock {
+            background: #EF4444;
+            color: white;
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: auto;
+            min-width: 20px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .badge-stock.warning {
+            background: #F59E0B;
+        }
+
+        .badge-stock.success {
+            background: #10B981;
+        }
+
+        .menu li .badge-stock {
+            margin-left: auto;
+            margin-right: 0.5rem;
+        }
+
+        /* Contador en el header */
+        .stock-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-left: 1rem;
+            cursor: default;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stock-counter:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .stock-counter .count {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .stock-counter .count.danger {
+            color: #FCA5A5;
+        }
+
+        .stock-counter .count.warning {
+            color: #FCD34D;
+        }
+
+        .stock-counter .count.success {
+            color: #6EE7B7;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Contenido del iframe */
+        .content-area iframe {
+            width: 100%;
+            height: calc(100vh - 180px);
+            border: none;
+            border-radius: 0;
+            background: white;
+        }
+
+        .content-area {
+            display: none;
+            padding: 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-area.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stock-counter {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.6rem;
+                margin-left: 0.5rem;
+            }
+            
+            .header-title-group h2 {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>          
     <!-- Sidebar -->    
@@ -35,13 +143,17 @@
                 <i class="fas fa-truck"></i>
                 <span class="menu-text">Solicitud Abastecimiento</span>
             </li>
+
             <li onclick="loadPage('/encargado_insumo/consumido_insumo/consumido-vista', 'Total de insumos consumidos por clinica', 'consumidoFrame', this)">
-                <i class="fas fa-truck"></i>
+                <i class="fas fa-chart-bar"></i>
                 <span class="menu-text">Insumos Consumidos</span>
             </li>
+
+            <!-- ⭐ ESTE ES EL MENÚ DE INSUMOS - Aquí se mostrará el contador -->
             <li onclick="loadPage('/encargado_insumo/registro_equi_ins/equi_insu-vista', 'Equipos y Insumos', 'equipoInsumoFrame', this)">
-                <i class="fas fa-truck"></i>
+                <i class="fas fa-box"></i>
                 <span class="menu-text">Insumos</span>
+                <span class="badge-stock" id="badgeStockBajo">0</span>
             </li>
         </ul>
         
@@ -56,7 +168,15 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h2 id="pageTitle">Solicitud Estudiante</h2>
+            <div class="header-title-group">
+                <h2 id="pageTitle">Solicitud Estudiante</h2>
+                <!-- CONTADOR DE STOCK EN EL HEADER -->
+                <div class="stock-counter" title="Insumos con stock bajo">
+                    <i class="fas fa-exclamation-triangle" style="color: #F59E0B;"></i>
+                    <span>Stock Bajo:</span>
+                    <span class="count danger" id="headerStockCount">0</span>
+                </div>
+            </div>
             <div class="user-menu">
                 <i class="fas fa-bell"></i>
                 <i class="fas fa-cog"></i>
@@ -83,17 +203,22 @@
             <iframe id="consumidoFrame" src="about:blank"></iframe>
         </div>
         
+        <!-- ⭐ ESTE ES EL IFRAME DE INSUMOS -->
         <div id="equipoInsumoContent" class="content-area">
             <iframe id="equipoInsumoFrame" src="about:blank"></iframe>
         </div>
     </div>
 
     <script>
-        // ✅ Guardar el usuario en una variable global
+        // ============================================================
+        // VARIABLES GLOBALES
+        // ============================================================
         window.usuarioGlobal = document.getElementById('nombreUsuario').textContent;
         console.log('👤 Usuario global:', window.usuarioGlobal);
 
-        // Toggle sidebar
+        // ============================================================
+        // TOGGLE SIDEBAR
+        // ============================================================
         const toggleBtn = document.getElementById('toggleBtn');
         const sidebar = document.getElementById('sidebar');
         
@@ -101,6 +226,9 @@
             sidebar.classList.toggle('collapsed');
         });
 
+        // ============================================================
+        // CARGAR PÁGINA EN IFRAME
+        // ============================================================
         function loadPage(pageUrl, pageTitle, frameId, menuItem) {
             // Ocultar todo el contenido
             document.querySelectorAll('.content-area').forEach(content => {
@@ -113,16 +241,17 @@
             });
             
             // Mostrar el contenido correspondiente según el frameId
-            if (frameId === 'abastecimientoFrame') {
-                document.getElementById('abastecimientoContent').classList.add('active');
-            } else if (frameId === 'solicitudPedidoFrame') {
-                document.getElementById('solicitudPedidoContent').classList.add('active');
-            } else if (frameId === 'SoliEstudianteFrame') {
-                document.getElementById('SoliEstudianteContent').classList.add('active');
-            } else if (frameId === 'consumidoFrame') {
-                document.getElementById('consumidoContent').classList.add('active');
-            } else if (frameId === 'equipoInsumoFrame') {
-                document.getElementById('equipoInsumoContent').classList.add('active');
+            const contentMap = {
+                'abastecimientoFrame': 'abastecimientoContent',
+                'solicitudPedidoFrame': 'solicitudPedidoContent',
+                'SoliEstudianteFrame': 'SoliEstudianteContent',
+                'consumidoFrame': 'consumidoContent',
+                'equipoInsumoFrame': 'equipoInsumoContent'
+            };
+            
+            const contentId = contentMap[frameId];
+            if (contentId) {
+                document.getElementById(contentId).classList.add('active');
             }
             
             // Activar el item del menú clickeado
@@ -133,23 +262,82 @@
             // Actualizar el título de la página
             document.getElementById('pageTitle').textContent = pageTitle;
             
-            // ✅ Cargar la página en el iframe con el usuario como parámetro
+            // Cargar la página en el iframe con el usuario como parámetro
             const frame = document.getElementById(frameId);
             if (frame) {
-                // Agregar el usuario como parámetro en la URL
                 const urlConUsuario = pageUrl + '?usuario=' + encodeURIComponent(window.usuarioGlobal);
                 frame.src = urlConUsuario;
                 console.log('📄 Cargando:', urlConUsuario);
             }
         }
 
-        // Cargar la primera página por defecto al iniciar
+        // ============================================================
+        // ACTUALIZAR CONTADOR DE STOCK BAJO (desde el iframe)
+        // ============================================================
+        function actualizarContadorStock(total, criticos) {
+            // Si no se pasan parámetros, usar valores por defecto
+            const totalCount = total || 0;
+            const criticosCount = criticos || 0;
+            
+            // Actualizar badge en el menú
+            const badge = document.getElementById('badgeStockBajo');
+            if (badge) {
+                badge.textContent = totalCount;
+                
+                if (totalCount === 0) {
+                    badge.className = 'badge-stock success';
+                } else if (criticosCount > 0) {
+                    badge.className = 'badge-stock';
+                } else {
+                    badge.className = 'badge-stock warning';
+                }
+            }
+            
+            // Actualizar contador en el header
+            const headerCount = document.getElementById('headerStockCount');
+            if (headerCount) {
+                headerCount.textContent = totalCount;
+                
+                if (totalCount === 0) {
+                    headerCount.className = 'count success';
+                } else if (criticosCount > 0) {
+                    headerCount.className = 'count danger';
+                } else {
+                    headerCount.className = 'count warning';
+                }
+            }
+            
+            console.log(`📊 Stock bajo: ${totalCount} insumos (${criticosCount} críticos)`);
+        }
+
+        // ============================================================
+        // ESCUCHAR MENSAJES DESDE EL IFRAME
+        // ============================================================
+        window.addEventListener('message', function(event) {
+            // Verificar que el mensaje venga del iframe y tenga el tipo correcto
+            if (event.data && event.data.type === 'actualizarStock') {
+                const total = event.data.total || 0;
+                const criticos = event.data.criticos || 0;
+                actualizarContadorStock(total, criticos);
+            }
+        });
+
+        // ============================================================
+        // INICIALIZACIÓN
+        // ============================================================
         window.onload = function() {
-            // Cargar la primera opción del menú
+            // Cargar la primera opción del menú (Solicitud Estudiante)
             const firstMenuItem = document.querySelector('.menu li');
             if (firstMenuItem) {
                 firstMenuItem.click();
             }
+            
+            // Inicializar contador en 0
+            actualizarContadorStock(0, 0);
+            
+            console.log('✅ Panel inicializado');
+            console.log('👤 Usuario:', window.usuarioGlobal);
+            console.log('📡 Esperando mensajes desde el iframe de Insumos...');
         };
     </script>
 </body>

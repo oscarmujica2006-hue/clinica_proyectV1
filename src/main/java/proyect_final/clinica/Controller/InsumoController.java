@@ -1,6 +1,7 @@
 package proyect_final.clinica.Controller;
 
 import proyect_final.clinica.Model.Dto.InsumoConsumidoDTO;
+import proyect_final.clinica.Model.Dto.StockBajoDTO;
 import proyect_final.clinica.Service.InsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@RestController  // ← Usa @RestController, no @Controller
-@RequestMapping("/api/insumos")  // ← Prefijo /api/ para tus endpoints REST
+@RestController  
+@RequestMapping("/api/insumos")  
 public class InsumoController {
 
     @Autowired
@@ -36,4 +37,28 @@ public class InsumoController {
         
         return ResponseEntity.ok(insumos);
     }
+  
+
+    @GetMapping("/stock-bajo/bajos")
+    public ResponseEntity<List<StockBajoDTO>> obtenerBajos() {
+        List<StockBajoDTO> todos = insumoService.obtenerStockBajo();
+        List<StockBajoDTO> bajos = todos.stream()
+            .filter(item -> "BAJO".equals(item.getEstado()))
+            .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(bajos);
     }
+
+    @GetMapping("/todos-insumos")
+    public ResponseEntity<List<StockBajoDTO>> obtenerTodosInsumos() {
+        List<StockBajoDTO> todos = insumoService.obtenerStockBajo();
+        return ResponseEntity.ok(todos);
+    }
+
+}
+
+
+
+
+
+
+

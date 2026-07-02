@@ -12,34 +12,51 @@ import java.util.List;
 @Repository
 public interface ReciboRepository extends JpaRepository<Recibo, Long> {
     
-    // Buscar recibos por consentimiento
-    List<Recibo> findByConsentimiento_IdConsentimiento(Long idConsentimiento);
+    // =============================================
+    // ✅ MÉTODO PRINCIPAL - Buscar por Consentimiento (retorna UNO)
+    // =============================================
+    @Query("SELECT r FROM Recibo r WHERE r.consentimiento.idConsentimiento = :idConsentimiento")
+    Recibo findByConsentimientoId(@Param("idConsentimiento") Long idConsentimiento);
     
-    // Buscar recibos por estado de pago
-    List<Recibo> findByEstadoPago(String estadoPago);
+    // =============================================
+    // ✅ MÉTODO PARA LISTA - Buscar por Consentimiento (retorna VARIOS)
+    // =============================================
+    @Query("SELECT r FROM Recibo r WHERE r.consentimiento.idConsentimiento = :idConsentimiento")
+    List<Recibo> findByConsentimiento_IdConsentimiento(@Param("idConsentimiento") Long idConsentimiento);
     
-    // Buscar recibos con saldo pendiente (monto_total > monto_pagado)
-    @Query("SELECT r FROM Recibo r WHERE r.montoTotal > r.montoPagado")
-    List<Recibo> findRecibosConSaldoPendiente();
-    
-    // Buscar recibos pendientes de un consentimiento
+    // =============================================
+    // ✅ MÉTODO PARA RECIBOS PENDIENTES POR CONSENTIMIENTO
+    // =============================================
     @Query("SELECT r FROM Recibo r WHERE r.consentimiento.idConsentimiento = :idConsentimiento AND r.estadoPago != 'PAGADO'")
     List<Recibo> findRecibosPendientesByConsentimiento(@Param("idConsentimiento") Long idConsentimiento);
     
-    // Buscar recibos por rango de fechas
-    @Query("SELECT r FROM Recibo r WHERE r.fechaPago BETWEEN :fechaInicio AND :fechaFin")
-    List<Recibo> findRecibosByFechaBetween(@Param("fechaInicio") LocalDateTime fechaInicio, 
-                                           @Param("fechaFin") LocalDateTime fechaFin);
-
-
-@Query("SELECT r FROM Recibo r " +
-       "JOIN r.consentimiento c " +
-       "JOIN c.diagnosticoTratamiento dt " +
-       "JOIN dt.evolucionClinica ec " +
-       "JOIN ec.diagnostico d " +
-       "JOIN d.revision rev " +
-       "JOIN rev.consulta con " +
-       "WHERE con.paciente.idPaciente = :idPaciente")
-List<Recibo> findByPacienteId(@Param("idPaciente") Long idPaciente);
-
+    // =============================================
+    // ✅ MÉTODOS EXISTENTES
+    // =============================================
+    List<Recibo> findByEstadoPago(String estadoPago);
+    
+    @Query("SELECT r FROM Recibo r WHERE r.estadoPago IN ('PENDIENTE', 'PARCIAL') AND r.saldoPendiente > 0")
+    List<Recibo> findRecibosConSaldoPendiente();
+    
+    @Query("SELECT r FROM Recibo r WHERE r.fechRegRec BETWEEN :inicio AND :fin")
+    List<Recibo> findRecibosByFechaBetween(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
+    
+    @Query("SELECT COALESCE(SUM(p.monto), 0) FROM PagoRecibo p WHERE p.fechRegPago BETWEEN :inicio AND :fin")
+    Double sumPagosByFechaBetween(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
+    
+    @Query("SELECT COUNT(r) FROM Recibo r WHERE r.estadoPago = :estado")
+    Long countByEstadoPago(@Param("estado") String estado);
+    
+    @Query("SELECT COALESCE(SUM(r.montoPagado), 0) FROM Recibo r WHERE r.fechRegRec BETWEEN :inicio AND :fin")
+    Double sumMontoPagadoByFechaBetween(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
+    
+    @Query("SELECT r FROM Recibo r " +
+           "JOIN r.consentimiento c " +
+           "JOIN c.diagnosticoTratamiento dt " +
+           "JOIN dt.evolucionClinica ec " +
+           "JOIN ec.diagnostico d " +
+           "JOIN d.revision rev " +
+           "JOIN rev.consulta con " +
+           "WHERE con.paciente.idPaciente = :idPaciente")
+    List<Recibo> findByPacienteId(@Param("idPaciente") Long idPaciente);
 }

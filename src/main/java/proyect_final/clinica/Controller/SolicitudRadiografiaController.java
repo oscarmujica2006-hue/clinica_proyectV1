@@ -4,13 +4,15 @@ import proyect_final.clinica.Model.Entity.SolicitudRadiografia;
 import proyect_final.clinica.Model.Dto.SolicitudRadiografiaDTO;
 import proyect_final.clinica.Model.Entity.DetalleSolicitudRadiografia;
 import proyect_final.clinica.Model.Entity.Radiografia;
+import proyect_final.clinica.Model.Entity.Recibo;
 import proyect_final.clinica.Service.SolicitudRadiografiaService;
 import proyect_final.clinica.Service.RadiografiaService;
-import proyect_final.clinica.Service.ReciboService;  // ✅ AGREGAR IMPORT
+import proyect_final.clinica.Service.ReciboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,6 @@ public class SolicitudRadiografiaController {
     @Autowired
     private RadiografiaService radiografiaService;
 
-    // ✅ INYECTAR ReciboService
     @Autowired
     private ReciboService reciboService;
 
@@ -56,6 +57,7 @@ public class SolicitudRadiografiaController {
         }
     }
 
+    // ==================== CREAR SOLICITUD ====================
     @PostMapping("/crear")
     public ResponseEntity<?> crearSolicitud(@RequestBody SolicitudRadiografiaDTO dto) {
         try {
@@ -63,7 +65,8 @@ public class SolicitudRadiografiaController {
                 dto.getIdDiagnosticoTratamiento(),
                 dto.getIdRadiografia(),
                 dto.getMotivo(),
-                dto.getIdsDientesPlan()
+                dto.getIdsDientesPlan(),
+                dto.getIdEstudiante()  // ✅ AGREGAR ID DE ESTUDIANTE
             );
             
             return ResponseEntity.ok(Map.of(
@@ -89,6 +92,57 @@ public class SolicitudRadiografiaController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
                 "error", "Error: " + e.getMessage()
+            ));
+        }
+    }
+
+    // ==================== ✅ NUEVO: OBTENER SOLICITUDES PENDIENTES PARA ENCARGADA ====================
+    @GetMapping("/pendientes/encargada")
+    public ResponseEntity<?> obtenerPendientesParaEncargada() {
+        try {
+            List<SolicitudRadiografia> solicitudes = solicitudRadiografiaService.findPendientes();
+            
+            // Enriquecer con datos adicionales
+            List<Map<String, Object>> response = solicitudes.stream()
+                .map(s -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("idSolicitudRadiografia", s.getIdSolicitudRadiografia());
+                    map.put("estado", s.getEstado());
+                    map.put("motivo", s.getMotivo());
+                    map.put("fechaSolicitud", s.getFechaSolicitud());
+                    
+                    // Datos de radiografía
+                    if (s.getRadiografia() != null) {
+                        map.put("radiografia", Map.of(
+                            "idRadiografia", s.getRadiografia().getIdRadiografia(),
+                            "nombreRayo", s.getRadiografia().getNombreRayo(),
+                            "precioRayo", s.getRadiografia().getPrecioRayo()
+                        ));
+                    }
+                    
+                    // Datos del diagnóstico
+                    if (s.getDiagnosticoTratamiento() != null) {
+                        map.put("idDiagnosticoTratamiento", s.getDiagnosticoTratamiento().getIdDiagTrat());
+                    }
+                    
+                    // Obtener detalles (dientes)
+                    List<DetalleSolicitudRadiografia> detalles = solicitudRadiografiaService
+                        .findDetallesBySolicitudId(s.getIdSolicitudRadiografia());
+                    List<Integer> dientes = detalles.stream()
+                        .map(d -> d.getDiagTratDiente().getDiente())
+                        .collect(Collectors.toList());
+                    map.put("dientes", dientes);
+                    
+                    return map;
+                })
+                .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of(
+                "error", "Error al obtener solicitudes pendientes: " + e.getMessage()
             ));
         }
     }
@@ -132,6 +186,7 @@ public class SolicitudRadiografiaController {
                     map.put("idDetalle", d.getIdDetSoliRadiografia());
                     if (d.getDiagTratDiente() != null) {
                         map.put("diente", d.getDiagTratDiente().getDiente());
+                        map.put("dienteNumero", d.getDiagTratDiente().getDiente());
                         map.put("idDientePlan", d.getDiagTratDiente().getIdDiagnosticoTratamientoDiente());
                     }
                     return map;
@@ -147,37 +202,25 @@ public class SolicitudRadiografiaController {
         }
     }
 
-    // ==================== ✅ APROBAR SOLICITUD (CON RECIBO) ====================
+    // ==================== APROBAR SOLICITUD ====================
     @PutMapping("/{id}/aprobar")
     public ResponseEntity<?> aprobarSolicitud(@PathVariable Long id) {
         try {
-            // 1. Aprobar la solicitud
             SolicitudRadiografia solicitud = solicitudRadiografiaService.aprobarSolicitud(id);
             
-            // ✅ 2. GENERAR RECIBO POR RADIOGRAFÍA
-            Double precioRadiografia = solicitud.getRadiografia().getPrecioRayo();
-            
-            Long idEvolucionClinica = solicitud.getDiagnosticoTratamiento()
-                .getEvolucionClinica().getIdEvolucionClinica();
+            // Obtener el recibo generado por el trigger
             Long idConsentimiento = solicitud.getDiagnosticoTratamiento()
                 .getConsentimiento().getIdConsentimiento();
             
-            String concepto = "Radiografía: " + solicitud.getRadiografia().getNombreRayo();
-            
-            reciboService.generarRecibo(
-                "RADIOGRAFIA",
-                solicitud.getIdSolicitudRadiografia(),
-                concepto,
-                precioRadiografia != null ? precioRadiografia : 0.0,
-                idEvolucionClinica,
-                idConsentimiento
-            );
+            Recibo reciboGenerado = reciboService.findByConsentimientoId(idConsentimiento);
             
             return ResponseEntity.ok(Map.of(
-                "mensaje", "✅ Solicitud aprobada correctamente y registrada en el recibo",
+                "mensaje", "✅ Solicitud aprobada - Trigger agregó al recibo",
                 "idSolicitud", solicitud.getIdSolicitudRadiografia(),
                 "estado", solicitud.getEstado(),
-                "precio", precioRadiografia != null ? precioRadiografia : 0.0
+                "precio", solicitud.getRadiografia().getPrecioRayo(),
+                "idRecibo", reciboGenerado != null ? reciboGenerado.getIdRecibo() : null,
+                "montoTotal", reciboGenerado != null ? reciboGenerado.getMontoTotal() : 0
             ));
             
         } catch (Exception e) {
@@ -218,8 +261,8 @@ public class SolicitudRadiografiaController {
         try {
             List<Map<String, Object>> dientes = solicitudRadiografiaService.obtenerDiagnosticoTratamientoConDientes(id);
             
-            if (dientes == null) {
-                return ResponseEntity.notFound().build();
+            if (dientes == null || dientes.isEmpty()) {
+                return ResponseEntity.ok(List.of());
             }
             
             return ResponseEntity.ok(dientes);
@@ -228,6 +271,23 @@ public class SolicitudRadiografiaController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body(Map.of(
                 "error", "Error al obtener dientes: " + e.getMessage()
+            ));
+        }
+    }
+
+    // ==================== ✅ NUEVO: MARCAR COMO REALIZADO ====================
+    @PutMapping("/{id}/realizado")
+    public ResponseEntity<?> marcarRealizado(@PathVariable Long id) {
+        try {
+            SolicitudRadiografia solicitud = solicitudRadiografiaService.marcarRealizado(id);
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Radiografía marcada como realizada",
+                "idSolicitud", solicitud.getIdSolicitudRadiografia(),
+                "estado", solicitud.getEstado()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "error", "Error: " + e.getMessage()
             ));
         }
     }

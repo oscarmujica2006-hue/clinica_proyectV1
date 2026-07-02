@@ -3,6 +3,7 @@ package proyect_final.clinica.Service.Impl;
 import proyect_final.clinica.Model.Entity.Insumo;
 import proyect_final.clinica.Model.Dao.InsumoRepository;
 import proyect_final.clinica.Model.Dto.InsumoConsumidoDTO;
+import proyect_final.clinica.Model.Dto.StockBajoDTO;
 import proyect_final.clinica.Service.InsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -108,4 +109,52 @@ public class InsumoServiceImpl implements InsumoService {
         
         return dtoList;
     }
+
+
+    @Override
+    public List<StockBajoDTO> obtenerStockBajo() {
+        List<Object[]> resultados = insumoRepository.findStockBajo();
+        return mapearStockBajo(resultados);
+    }
+
+
+
+
+
+
+    // ===== ⭐ NUEVO MÉTODO PARA MAPEAR STOCK BAJO =====
+    private List<StockBajoDTO> mapearStockBajo(List<Object[]> resultados) {
+        List<StockBajoDTO> dtoList = new ArrayList<>();
+        
+        if (resultados == null || resultados.isEmpty()) {
+            return dtoList;
+        }
+        
+        for (Object[] row : resultados) {
+            try {
+                StockBajoDTO dto = new StockBajoDTO();
+
+                
+                dto.setIdInsumo(row[0] != null ? ((Number) row[0]).longValue() : 0L);
+                dto.setNombreInsumo(row[1] != null ? row[1].toString() : "N/A");
+                dto.setStockTotal(row[2] != null ? ((Number) row[2]).intValue() : 0);
+                dto.setStockMinimo(row[3] != null ? ((Number) row[3]).intValue() : 0);
+                dto.setFaltante(row[4] != null ? ((Number) row[4]).intValue() : 0);
+                dto.setEstado(row[5] != null ? row[5].toString() : "BAJO");
+                
+                dtoList.add(dto);
+                
+            } catch (Exception e) {
+                System.err.println("❌ Error al mapear stock bajo: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        
+        return dtoList;
+    }
+
+
+
+
+
 }

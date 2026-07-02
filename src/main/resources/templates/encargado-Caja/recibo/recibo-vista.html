@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle de Recibos - Clínica Odontológica</title>
+    <title>Recibos del Estudiante</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        /* Mantén los mismos estilos que ya tienes */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -28,7 +23,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             padding: 25px;
         }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -37,120 +31,24 @@
             gap: 15px;
             margin-bottom: 15px;
         }
-
-        h1 {
-            color: #0D47A1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.8rem;
-        }
-
-        .subtitle {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-
-        .filters-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            background: #f8f9fa;
-            padding: 15px;
+        h1 { color: #0D47A1; display: flex; align-items: center; gap: 10px; font-size: 1.8rem; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+        
+        .info-estudiante {
+            background: #e3f2fd;
+            padding: 15px 20px;
             border-radius: 8px;
-            align-items: flex-end;
-        }
-
-        .filter-group {
+            margin-bottom: 20px;
             display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .filter-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .filter-group input,
-        .filter-group select {
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: #2196F3;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 4px solid #0D47A1;
         }
-
-        .btn-primary {
-            background: #2196F3;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #0D47A1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
-        }
-
-        .btn-success {
-            background: #4CAF50;
-            color: white;
-        }
-        .btn-success:hover {
-            background: #388E3C;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
-        }
-
-        .btn-secondary {
-            background: #999;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: #777;
-            transform: translateY(-2px);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #2196F3;
-            color: #2196F3;
-        }
-        .btn-outline:hover {
-            background: #2196F3;
-            color: white;
-        }
-
+        .info-estudiante .label { font-weight: 600; color: #0D47A1; }
+        .info-estudiante .value { font-weight: 500; }
+        
         .resumen {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -160,66 +58,20 @@
             background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
             border-radius: 8px;
         }
-
-        .resumen-item {
-            text-align: center;
-        }
-
-        .resumen-item .numero {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .resumen-item .label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .resumen-item .numero.total {
-            color: #0D47A1;
-        }
-        .resumen-item .numero.pendiente {
-            color: #e65100;
-        }
-        .resumen-item .numero.pagado {
-            color: #2e7d32;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-
-        .recibos-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        .recibos-table th,
-        .recibos-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        .recibos-table th {
-            background-color: #f8f9fa;
-            color: #0D47A1;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .recibos-table tr:hover {
-            background-color: #f5f9ff;
-        }
-
-        .recibos-table .estado-badge {
+        .resumen-item { text-align: center; }
+        .resumen-item .numero { font-size: 24px; font-weight: 700; }
+        .resumen-item .label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        .resumen-item .numero.total { color: #0D47A1; }
+        .resumen-item .numero.pendiente { color: #e65100; }
+        .resumen-item .numero.pagado { color: #2e7d32; }
+        
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid #eee; }
+        .recibos-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .recibos-table th, .recibos-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .recibos-table th { background-color: #f8f9fa; color: #0D47A1; font-weight: 600; position: sticky; top: 0; z-index: 10; }
+        .recibos-table tr:hover { background-color: #f5f9ff; }
+        
+        .estado-badge {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
@@ -227,202 +79,28 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .estado-pendiente {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .estado-parcial {
-            background: #e3f2fd;
-            color: #0D47A1;
-        }
-
-        .estado-pagado {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .text-monto {
-            font-weight: 600;
-        }
-        .text-verde {
-            color: #2e7d32;
-        }
-        .text-rojo {
-            color: #c62828;
-        }
-        .text-azul {
-            color: #0D47A1;
-        }
-
-        .acciones {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        /* Modal Detalle */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 800px;
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .modal-header h2 {
-            color: #0D47A1;
-            margin: 0;
-        }
-
-        .modal-close {
-            background: none;
+        .estado-pendiente { background: #fff3e0; color: #e65100; }
+        .estado-parcial { background: #e3f2fd; color: #0D47A1; }
+        .estado-pagado { background: #e8f5e9; color: #2e7d32; }
+        
+        .btn {
+            padding: 8px 16px;
             border: none;
-            font-size: 28px;
+            border-radius: 6px;
+            font-weight: 600;
             cursor: pointer;
-            color: #999;
-        }
-
-        .modal-close:hover {
-            color: #333;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .info-grid .item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-grid .item .label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-grid .item .value {
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .detalle-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .detalle-item:last-child {
-            border-bottom: none;
-        }
-
-        .detalle-item .concepto {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .detalle-item .concepto .nombre {
-            font-weight: 500;
-        }
-
-        .detalle-item .concepto .diente {
-            font-size: 12px;
-            color: #666;
-        }
-
-        .detalle-item .monto {
-            font-weight: 600;
-        }
-
-        .total-recibo {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-top: 2px solid #ddd;
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .total-recibo .total-label {
-            color: #0D47A1;
-        }
-
-        .total-recibo .total-monto {
-            color: #0D47A1;
-        }
-
-        .pagos-historial {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .pagos-historial h4 {
-            color: #0D47A1;
-            margin-bottom: 10px;
-        }
-
-        .pago-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 6px 0;
-            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             font-size: 13px;
         }
-
-        .pago-item:last-child {
-            border-bottom: none;
-        }
-
-        .pago-item .pago-monto {
-            color: #2e7d32;
-            font-weight: 600;
-        }
-
+        .btn-primary { background: #2196F3; color: white; }
+        .btn-primary:hover { background: #0D47A1; transform: translateY(-2px); }
+        .btn-success { background: #4CAF50; color: white; }
+        .btn-success:hover { background: #388E3C; transform: translateY(-2px); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        
         .loading-spinner {
             display: inline-block;
             width: 30px;
@@ -432,63 +110,20 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #999;
-            font-style: italic;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .no-data { text-align: center; padding: 40px; color: #999; font-style: italic; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .filters-section {
-                flex-direction: column;
-            }
-            .filter-group {
-                min-width: 100%;
-            }
-            .resumen {
-                grid-template-columns: 1fr 1fr;
-            }
-            .recibos-table {
-                font-size: 12px;
-            }
-            .recibos-table th,
-            .recibos-table td {
-                padding: 8px 10px;
-            }
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            .modal-content {
-                padding: 20px;
-            }
+            .container { padding: 15px; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .resumen { grid-template-columns: 1fr 1fr; }
+            .recibos-table { font-size: 12px; }
+            .recibos-table th, .recibos-table td { padding: 8px 10px; }
         }
-
         @media (max-width: 480px) {
-            .resumen {
-                grid-template-columns: 1fr;
-            }
-            h1 {
-                font-size: 1.4rem;
-            }
+            .resumen { grid-template-columns: 1fr; }
+            h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
@@ -496,48 +131,27 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1>
-                    <i class="fas fa-file-invoice"></i>
-                    Recibos - Clínica Odontológica
-                </h1>
-                <p class="subtitle"><i class="fas fa-info-circle"></i> Visualice todos los recibos con sus detalles completos</p>
+                <h1><i class="fas fa-file-invoice"></i> Mis Recibos</h1>
+                <p class="subtitle"><i class="fas fa-info-circle"></i> Visualice todos los recibos generados para sus pacientes</p>
             </div>
-            <div>
-                <button class="btn btn-success" onclick="cargarRecibos()">
-                    <i class="fas fa-sync-alt"></i> Recargar
-                </button>
-            </div>
+            <button class="btn btn-success" onclick="cargarRecibosEstudiante()">
+                <i class="fas fa-sync-alt"></i> Recargar
+            </button>
         </div>
 
-        <!-- Filtros -->
-        <div class="filters-section">
-            <div class="filter-group">
-                <label for="estadoFiltro"><i class="fas fa-filter"></i> Estado</label>
-                <select id="estadoFiltro">
-                    <option value="todos">Todos</option>
-                    <option value="PENDIENTE">Pendientes</option>
-                    <option value="PARCIAL">Parciales</option>
-                    <option value="PAGADO">Pagados</option>
-                    <option value="CANCELADO">Cancelados</option>
-                </select>
+        <!-- Información del Estudiante -->
+        <div class="info-estudiante">
+            <div>
+                <span class="label"><i class="fas fa-user-graduate"></i> Estudiante:</span>
+                <span class="value" id="nombreEstudiante">Cargando...</span>
             </div>
-            <div class="filter-group">
-                <label for="fechaInicio"><i class="fas fa-calendar-alt"></i> Desde</label>
-                <input type="date" id="fechaInicio">
+            <div>
+                <span class="label"><i class="fas fa-id-card"></i> Código:</span>
+                <span class="value" id="codigoEstudiante">-</span>
             </div>
-            <div class="filter-group">
-                <label for="fechaFin"><i class="fas fa-calendar-alt"></i> Hasta</label>
-                <input type="date" id="fechaFin">
-            </div>
-            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
-                <button class="btn btn-primary" id="btnBuscar" style="height: 42px;">
-                    <i class="fas fa-search"></i> Filtrar
-                </button>
-            </div>
-            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
-                <button class="btn btn-secondary" id="btnLimpiar" style="height: 42px;">
-                    <i class="fas fa-undo"></i> Limpiar
-                </button>
+            <div>
+                <span class="label"><i class="fas fa-clinic-medical"></i> Clínica:</span>
+                <span class="value" id="clinicaEstudiante">-</span>
             </div>
         </div>
 
@@ -571,7 +185,6 @@
                 <thead>
                     <tr>
                         <th>#ID</th>
-                        <th>Estudiante</th>
                         <th>Paciente</th>
                         <th>Tratamiento</th>
                         <th>Dientes</th>
@@ -582,7 +195,7 @@
                 </thead>
                 <tbody id="recibosBody">
                     <tr>
-                        <td colspan="8" class="loading">
+                        <td colspan="7" class="loading">
                             <div class="loading-spinner"></div>
                             <p style="margin-top: 10px;">Cargando recibos...</p>
                         </td>
@@ -593,11 +206,11 @@
     </div>
 
     <!-- Modal Detalle -->
-    <div class="modal-overlay" id="modalDetalle">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-file-invoice"></i> Detalle del Recibo</h2>
-                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+    <div class="modal-overlay" id="modalDetalle" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div class="modal-content" style="background:white; border-radius:12px; max-width:800px; width:95%; max-height:90vh; overflow-y:auto; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #f0f0f0;">
+                <h2 style="color:#0D47A1; margin:0;"><i class="fas fa-file-invoice"></i> Detalle del Recibo</h2>
+                <button class="modal-close" onclick="cerrarModal()" style="background:none; border:none; font-size:28px; cursor:pointer; color:#999;">&times;</button>
             </div>
             <div id="detalleContenido">
                 <div class="loading"><div class="loading-spinner"></div> Cargando detalle...</div>
@@ -606,18 +219,59 @@
     </div>
 
     <script>
+        // ============ VARIABLES GLOBALES ============
         const API_BASE = '';
+        let idEstudiante = null;
+        let codigoEstudiante = null;
 
-        // ============ ELEMENTOS ============
-        const btnBuscar = document.getElementById('btnBuscar');
-        const btnLimpiar = document.getElementById('btnLimpiar');
-        const estadoFiltro = document.getElementById('estadoFiltro');
-        const fechaInicio = document.getElementById('fechaInicio');
-        const fechaFin = document.getElementById('fechaFin');
-        const recibosBody = document.getElementById('recibosBody');
+        // ============ OBTENER DATOS DEL ESTUDIANTE ============
+        async function obtenerDatosEstudiante() {
+            try {
+                // Intentar obtener desde sessionStorage
+                idEstudiante = sessionStorage.getItem('idEstudiante');
+                codigoEstudiante = sessionStorage.getItem('codigoEstudiante');
+                const nombreEstudiante = sessionStorage.getItem('nombreEstudiante');
+                const clinicaEstudiante = sessionStorage.getItem('clinicaEstudiante');
 
-        // ============ FUNCIONES ============
+                if (idEstudiante) {
+                    document.getElementById('nombreEstudiante').textContent = nombreEstudiante || 'Estudiante';
+                    document.getElementById('codigoEstudiante').textContent = codigoEstudiante || 'N/A';
+                    document.getElementById('clinicaEstudiante').textContent = clinicaEstudiante || 'N/A';
+                    return true;
+                }
 
+                // Si no está en session, intentar obtener desde el backend
+                try {
+                    const response = await fetch('/api/usuario/actual', { credentials: 'include' });
+                    if (response.ok) {
+                        const usuario = await response.json();
+                        if (usuario && usuario.idUsuario) {
+                            idEstudiante = usuario.idUsuario;
+                            sessionStorage.setItem('idEstudiante', usuario.idUsuario);
+                            sessionStorage.setItem('nombreEstudiante', usuario.nombreCompleto || 'Estudiante');
+                            document.getElementById('nombreEstudiante').textContent = usuario.nombreCompleto || 'Estudiante';
+                            return true;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('No se pudo obtener usuario:', e);
+                }
+
+                // Fallback: usar datos de ejemplo
+                idEstudiante = 1;
+                codigoEstudiante = '2024006';
+                document.getElementById('nombreEstudiante').textContent = 'Estudiante Demo';
+                document.getElementById('codigoEstudiante').textContent = '2024006';
+                document.getElementById('clinicaEstudiante').textContent = 'Clínica 1';
+                return true;
+
+            } catch (error) {
+                console.error('Error al obtener datos del estudiante:', error);
+                return false;
+            }
+        }
+
+        // ============ FUNCIONES AUXILIARES ============
         function getEstadoBadge(estado) {
             const clases = {
                 'PENDIENTE': 'estado-pendiente',
@@ -633,7 +287,7 @@
         }
 
         function formatearMoneda(monto) {
-            return monto ? `$${monto.toFixed(2)}` : '$0.00';
+            return monto ? `$${Number(monto).toFixed(2)}` : '$0.00';
         }
 
         function formatearFecha(fecha) {
@@ -647,51 +301,61 @@
             });
         }
 
-        // ============ CARGAR RECIBOS ============
-        async function cargarRecibos() {
-            const estado = estadoFiltro.value;
-            const desde = fechaInicio.value;
-            const hasta = fechaFin.value;
+        // ============ CARGAR RECIBOS DEL ESTUDIANTE ============
+        async function cargarRecibosEstudiante() {
+            if (!idEstudiante) {
+                const ok = await obtenerDatosEstudiante();
+                if (!ok) {
+                    document.getElementById('recibosBody').innerHTML = `
+                        <tr><td colspan="7" style="padding:20px; text-align:center; color:#c62828;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:24px; display:block; margin-bottom:10px;"></i>
+                            No se pudo identificar al estudiante
+                        </td></tr>
+                    `;
+                    return;
+                }
+            }
 
-            recibosBody.innerHTML = `
+            const tbody = document.getElementById('recibosBody');
+            tbody.innerHTML = `
                 <tr>
-                    <td colspan="8" class="loading">
+                    <td colspan="7" class="loading">
                         <div class="loading-spinner"></div>
-                        <p>Cargando todos los recibos...</p>
+                        <p>Cargando recibos del estudiante...</p>
                     </td>
                 </tr>
             `;
 
             try {
-                let response = await fetch(`${API_BASE}/api/recibos/todos`);
+                // ✅ USAR EL ENDPOINT CORRECTO: Obtener recibos por estudiante
+                // Primero intentamos con el endpoint específico
+                let response = await fetch(`${API_BASE}/api/recibos/estudiante/${idEstudiante}`);
+                
+                // Si no existe, intentar con todos y filtrar
                 if (!response.ok) {
-                    response = await fetch(`${API_BASE}/api/recibos`);
-                    if (!response.ok) throw new Error('Error al cargar recibos');
+                    response = await fetch(`${API_BASE}/api/recibos/todos`);
+                    if (!response.ok) {
+                        throw new Error('Error al cargar recibos');
+                    }
                 }
 
                 let recibos = await response.json();
+                console.log('📦 Recibos recibidos:', recibos);
 
-                // Aplicar filtros
-                if (estado !== 'todos') {
-                    recibos = recibos.filter(r => r.estadoPago === estado);
-                }
-                if (desde) {
-                    const fechaDesde = new Date(desde);
-                    fechaDesde.setHours(0, 0, 0);
-                    recibos = recibos.filter(r => r.fechaPago && new Date(r.fechaPago) >= fechaDesde);
-                }
-                if (hasta) {
-                    const fechaHasta = new Date(hasta);
-                    fechaHasta.setHours(23, 59, 59);
-                    recibos = recibos.filter(r => r.fechaPago && new Date(r.fechaPago) <= fechaHasta);
+                // Si es el endpoint de todos, filtrar por estudiante
+                if (recibos.length > 0 && recibos[0].estudianteId === undefined) {
+                    // Filtrar manualmente si es necesario
+                    // recibos = recibos.filter(r => r.estudianteId == idEstudiante);
                 }
 
                 if (!recibos || recibos.length === 0) {
-                    recibosBody.innerHTML = `
-                        <tr><td colspan="8" class="no-data">
-                            <i class="fas fa-inbox" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
-                            No hay recibos registrados
-                        </td></tr>
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="no-data">
+                                <i class="fas fa-inbox" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                No hay recibos para este estudiante
+                            </td>
+                        </tr>
                     `;
                     actualizarResumen([]);
                     return;
@@ -704,30 +368,28 @@
                     const estado = recibo.estadoPago || 'PENDIENTE';
                     const montoTotal = recibo.montoTotal || 0;
 
-                    // Obtener datos del estudiante y tratamiento desde los detalles
-                    let estudianteNombre = 'N/A';
+                    // Obtener datos del recibo
+                    let pacienteNombre = recibo.pacienteNombre || 'N/A';
                     let tratamientoNombre = 'N/A';
                     let dientes = [];
 
                     if (recibo.detalles && recibo.detalles.length > 0) {
-                        // Buscar estudiante desde el primer detalle
-                        if (recibo.detalles[0].estudianteNombre) {
-                            estudianteNombre = recibo.detalles[0].estudianteNombre;
-                        }
-                        
-                        // Obtener nombres de tratamientos y dientes
                         const tratamientosSet = new Set();
                         const dientesSet = new Set();
                         
                         recibo.detalles.forEach(d => {
+                            if (d.tratamientoNombre) {
+                                tratamientosSet.add(d.tratamientoNombre);
+                            }
+                            if (d.diente) {
+                                dientesSet.add(d.diente);
+                            }
+                            // También buscar en concepto
                             if (d.concepto) {
-                                // Extraer nombre del tratamiento del concepto
                                 const match = d.concepto.match(/Tratamiento:\s*([^-]+)/);
                                 if (match) tratamientosSet.add(match[1].trim());
-                                
-                                // Extraer diente del concepto
                                 const dienteMatch = d.concepto.match(/Diente\s*(\d+)/);
-                                if (dienteMatch) dientesSet.add(dienteMatch[1]);
+                                if (dienteMatch) dientesSet.add(parseInt(dienteMatch[1]));
                             }
                         });
                         
@@ -738,19 +400,18 @@
                     html += `
                         <tr>
                             <td><strong>#${recibo.idRecibo}</strong></td>
-                            <td>${estudianteNombre}</td>
-                            <td>${recibo.pacienteNombre || 'N/A'}</td>
+                            <td>${pacienteNombre}</td>
                             <td>${tratamientoNombre}</td>
                             <td>${dientes.length > 0 ? dientes.join(', ') : '-'}</td>
                             <td style="text-align: right; font-weight: 600;">${formatearMoneda(montoTotal)}</td>
                             <td style="text-align: center;">${getEstadoBadge(estado)}</td>
                             <td style="text-align: center;">
-                                <button class="btn btn-primary btn-sm" onclick="verDetalle(${recibo.idRecibo})">
+                                <button class="btn btn-primary btn-sm" onclick="verDetalleRecibo(${recibo.idRecibo})">
                                     <i class="fas fa-eye"></i> Ver
                                 </button>
                                 ${estado === 'PENDIENTE' || estado === 'PARCIAL' ? `
                                     <button class="btn btn-success btn-sm" onclick="pagarRecibo(${recibo.idRecibo}, ${recibo.saldoPendiente || 0})">
-                                        <i class="fas fa-money-bill-wave"></i>
+                                        <i class="fas fa-money-bill-wave"></i> Pagar
                                     </button>
                                 ` : ''}
                             </td>
@@ -758,16 +419,18 @@
                     `;
                 }
 
-                recibosBody.innerHTML = html;
+                tbody.innerHTML = html;
 
             } catch (error) {
                 console.error('Error:', error);
-                recibosBody.innerHTML = `
-                    <tr><td colspan="8" style="padding: 20px; text-align: center; color: #c62828;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                        Error: ${error.message}
-                        <br><button class="btn btn-primary" onclick="cargarRecibos()" style="margin-top: 10px;">Reintentar</button>
-                    </td></tr>
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 20px; text-align: center; color: #c62828;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                            Error: ${error.message}
+                            <br><button class="btn btn-primary" onclick="cargarRecibosEstudiante()" style="margin-top: 10px;">Reintentar</button>
+                        </td>
+                    </tr>
                 `;
             }
         }
@@ -793,10 +456,10 @@
         }
 
         // ============ VER DETALLE ============
-        async function verDetalle(idRecibo) {
+        async function verDetalleRecibo(idRecibo) {
             const modal = document.getElementById('modalDetalle');
             const contenido = document.getElementById('detalleContenido');
-            modal.classList.add('active');
+            modal.style.display = 'flex';
             contenido.innerHTML = '<div class="loading"><div class="loading-spinner"></div> Cargando detalle...</div>';
 
             try {
@@ -806,16 +469,11 @@
                 const data = await response.json();
 
                 let detallesHtml = '';
-                let estudianteNombre = 'N/A';
-                let pacienteNombre = 'N/A';
                 let totalTratamientos = 0;
                 let totalRadiografias = 0;
 
                 if (data.detalles && data.detalles.length > 0) {
                     data.detalles.forEach(d => {
-                        // Intentar obtener estudiante del detalle
-                        if (d.estudianteNombre) estudianteNombre = d.estudianteNombre;
-                        
                         const esRadiografia = d.tipoItem === 'RADIOGRAFIA';
                         if (esRadiografia) {
                             totalRadiografias += d.subtotal || 0;
@@ -823,92 +481,69 @@
                             totalTratamientos += d.subtotal || 0;
                         }
                         
-                        // Extraer diente del concepto
                         let dienteHtml = '';
                         const dienteMatch = d.concepto ? d.concepto.match(/Diente\s*(\d+)/) : null;
                         if (dienteMatch) {
-                            dienteHtml = `<span class="diente">🦷 Diente ${dienteMatch[1]}</span>`;
+                            dienteHtml = `<span class="diente" style="font-size:12px; color:#666;">🦷 Diente ${dienteMatch[1]}</span>`;
                         }
                         
                         detallesHtml += `
-                            <div class="detalle-item">
-                                <div class="concepto">
-                                    <span class="nombre">${d.concepto || 'Sin concepto'}</span>
+                            <div class="detalle-item" style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
+                                <div class="concepto" style="display:flex; flex-direction:column;">
+                                    <span class="nombre" style="font-weight:500;">${d.concepto || 'Sin concepto'}</span>
                                     ${dienteHtml}
-                                    ${esRadiografia ? '<span style="font-size: 11px; color: #666;">📷 Radiografía</span>' : ''}
+                                    ${esRadiografia ? '<span style="font-size:11px; color:#666;">📷 Radiografía</span>' : ''}
                                 </div>
-                                <span class="monto">${formatearMoneda(d.subtotal)}</span>
+                                <span class="monto" style="font-weight:600;">${formatearMoneda(d.subtotal)}</span>
                             </div>
                         `;
                     });
                 }
 
-                // Obtener paciente
-                if (data.pacienteNombre) pacienteNombre = data.pacienteNombre;
-
                 contenido.innerHTML = `
-                    <div class="info-grid">
-                        <div class="item">
-                            <span class="label">Recibo #</span>
-                            <span class="value">${data.idRecibo}</span>
-                        </div>
-                        <div class="item">
-                            <span class="label">Estado</span>
-                            <span class="value">${getEstadoBadge(data.estadoPago)}</span>
-                        </div>
-                        <div class="item">
-                            <span class="label">Fecha</span>
-                            <span class="value">${formatearFecha(data.fechaPago)}</span>
-                        </div>
-                        <div class="item">
-                            <span class="label">Estudiante</span>
-                            <span class="value">${estudianteNombre}</span>
-                        </div>
-                        <div class="item">
-                            <span class="label">Paciente</span>
-                            <span class="value">${pacienteNombre}</span>
-                        </div>
-                        <div class="item">
-                            <span class="label">Monto Total</span>
-                            <span class="value" style="color: #0D47A1;">${formatearMoneda(data.montoTotal)}</span>
-                        </div>
+                    <div class="info-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:8px;">
+                        <div class="item"><span class="label" style="font-size:11px; font-weight:600; color:#666; text-transform:uppercase;">Recibo #</span><span class="value" style="font-size:15px; font-weight:600;">${data.idRecibo}</span></div>
+                        <div class="item"><span class="label">Estado</span><span class="value">${getEstadoBadge(data.estadoPago)}</span></div>
+                        <div class="item"><span class="label">Fecha</span><span class="value">${formatearFecha(data.fechaPago)}</span></div>
+                        <div class="item"><span class="label">Paciente</span><span class="value">${data.pacienteNombre || 'N/A'}</span></div>
+                        <div class="item"><span class="label">Monto Total</span><span class="value" style="color:#0D47A1;">${formatearMoneda(data.montoTotal)}</span></div>
                     </div>
 
-                    <h4 style="margin: 15px 0 10px; color: #0D47A1;"><i class="fas fa-list"></i> Detalle de Servicios</h4>
-                    ${detallesHtml || '<p style="color: #999;">No hay detalles</p>'}
+                    <h4 style="margin:15px 0 10px; color:#0D47A1;"><i class="fas fa-list"></i> Detalle de Servicios</h4>
+                    ${detallesHtml || '<p style="color:#999;">No hay detalles</p>'}
 
-                    <div class="total-recibo">
-                        <span class="total-label">TOTAL</span>
-                        <span class="total-monto">${formatearMoneda(data.montoTotal)}</span>
+                    <div class="total-recibo" style="display:flex; justify-content:space-between; padding:15px 0; border-top:2px solid #ddd; margin-top:10px; font-size:18px; font-weight:700;">
+                        <span class="total-label" style="color:#0D47A1;">TOTAL</span>
+                        <span class="total-monto" style="color:#0D47A1;">${formatearMoneda(data.montoTotal)}</span>
                     </div>
 
-                    <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; border-top: 1px solid #eee; margin-top: 5px;">
+                    <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:14px; border-top:1px solid #eee; margin-top:5px;">
                         <span>Subtotal Tratamientos</span>
-                        <span style="font-weight: 600;">${formatearMoneda(totalTratamientos)}</span>
+                        <span style="font-weight:600;">${formatearMoneda(totalTratamientos)}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px;">
+                    <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:14px;">
                         <span>Subtotal Radiografías</span>
-                        <span style="font-weight: 600;">${formatearMoneda(totalRadiografias)}</span>
+                        <span style="font-weight:600;">${formatearMoneda(totalRadiografias)}</span>
                     </div>
 
-                    <div class="pagos-historial">
-                        <h4><i class="fas fa-money-bill-wave"></i> Historial de Pagos</h4>
+                    <div class="pagos-historial" style="margin-top:20px; padding:15px; background:#f8f9fa; border-radius:8px;">
+                        <h4 style="color:#0D47A1; margin-bottom:10px;"><i class="fas fa-money-bill-wave"></i> Historial de Pagos</h4>
                         ${data.pagos && data.pagos.length > 0 ? 
                             data.pagos.map(p => `
-                                <div class="pago-item">
+                                <div class="pago-item" style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
                                     <span>${formatearFecha(p.fechaPago)} - ${p.metodoPago || 'N/A'} ${p.observaciones ? `(${p.observaciones})` : ''}</span>
-                                    <span class="pago-monto">${formatearMoneda(p.monto)}</span>
+                                    <span class="pago-monto" style="color:#2e7d32; font-weight:600;">${formatearMoneda(p.monto)}</span>
                                 </div>
                             `).join('') : 
-                            '<p style="color: #999;">No hay pagos registrados</p>'
+                            '<p style="color:#999;">No hay pagos registrados</p>'
                         }
-                        <div style="display: flex; justify-content: space-between; padding: 10px 0; border-top: 2px solid #ddd; margin-top: 10px; font-weight: 600;">
+                        <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:2px solid #ddd; margin-top:10px; font-weight:600;">
                             <span>Total Pagado</span>
-                            <span style="color: #2e7d32;">${formatearMoneda(data.montoPagado)}</span>
+                            <span style="color:#2e7d32;">${formatearMoneda(data.montoPagado)}</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 5px 0; font-weight: 600; font-size: 16px;">
+                        <div style="display:flex; justify-content:space-between; padding:5px 0; font-weight:600; font-size:16px;">
                             <span>Saldo Pendiente</span>
-                            <span style="color: ${data.saldoPendiente > 0 ? '#c62828' : '#2e7d32'};">${formatearMoneda(data.saldoPendiente)}</span>
+                            <span style="color:${data.saldoPendiente > 0 ? '#c62828' : '#2e7d32'};">${formatearMoneda(data.saldoPendiente)}</span>
                         </div>
                     </div>
                 `;
@@ -916,8 +551,8 @@
             } catch (error) {
                 console.error('Error:', error);
                 contenido.innerHTML = `
-                    <div style="text-align: center; padding: 30px; color: #c62828;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 40px; display: block; margin-bottom: 15px;"></i>
+                    <div style="text-align:center; padding:30px; color:#c62828;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:40px; display:block; margin-bottom:15px;"></i>
                         Error al cargar detalle: ${error.message}
                     </div>
                 `;
@@ -925,7 +560,7 @@
         }
 
         function cerrarModal() {
-            document.getElementById('modalDetalle').classList.remove('active');
+            document.getElementById('modalDetalle').style.display = 'none';
         }
 
         // ============ PAGAR RECIBO ============
@@ -935,13 +570,13 @@
                 html: `
                     <p>Recibo #${idRecibo}</p>
                     <p><strong>Saldo pendiente: $${saldo.toFixed(2)}</strong></p>
-                    <div style="margin-top: 15px;">
-                        <label style="display: block; text-align: left; font-weight: 600; margin-bottom: 5px;">Monto a pagar</label>
-                        <input id="swal-monto" type="number" step="0.01" min="0.01" max="${saldo}" value="${saldo}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <div style="margin-top:15px;">
+                        <label style="display:block; text-align:left; font-weight:600; margin-bottom:5px;">Monto a pagar</label>
+                        <input id="swal-monto" type="number" step="0.01" min="0.01" max="${saldo}" value="${saldo}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
                     </div>
-                    <div style="margin-top: 10px;">
-                        <label style="display: block; text-align: left; font-weight: 600; margin-bottom: 5px;">Método de pago</label>
-                        <select id="swal-metodo" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <div style="margin-top:10px;">
+                        <label style="display:block; text-align:left; font-weight:600; margin-bottom:5px;">Método de pago</label>
+                        <select id="swal-metodo" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
                             <option value="EFECTIVO">Efectivo</option>
                             <option value="TARJETA">Tarjeta</option>
                             <option value="TRANSFERENCIA">Transferencia</option>
@@ -1000,7 +635,7 @@
                     confirmButtonColor: '#4CAF50'
                 });
 
-                cargarRecibos();
+                cargarRecibosEstudiante();
 
             } catch (error) {
                 console.error('Error:', error);
@@ -1013,35 +648,10 @@
             }
         }
 
-        // ============ EVENTOS ============
-        btnBuscar.addEventListener('click', cargarRecibos);
-        btnLimpiar.addEventListener('click', () => {
-            estadoFiltro.value = 'todos';
-            fechaInicio.value = '';
-            fechaFin.value = '';
-            cargarRecibos();
-        });
-
-        estadoFiltro.addEventListener('change', cargarRecibos);
-        fechaInicio.addEventListener('change', cargarRecibos);
-        fechaFin.addEventListener('change', cargarRecibos);
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') cerrarModal();
-        });
-
-        document.getElementById('modalDetalle').addEventListener('click', function(e) {
-            if (e.target === this) cerrarModal();
-        });
-
         // ============ INICIALIZAR ============
-        window.addEventListener('load', () => {
-            const hoy = new Date();
-            const hace30Dias = new Date();
-            hace30Dias.setDate(hoy.getDate() - 30);
-            fechaInicio.value = hace30Dias.toISOString().split('T')[0];
-            fechaFin.value = hoy.toISOString().split('T')[0];
-            cargarRecibos();
+        window.addEventListener('load', async () => {
+            await obtenerDatosEstudiante();
+            cargarRecibosEstudiante();
         });
     </script>
 </body>

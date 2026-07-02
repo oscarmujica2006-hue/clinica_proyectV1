@@ -18,12 +18,9 @@ public interface DocenteService {
     
     // Métodos de búsqueda específicos
     Optional<Docente> obtenerPorCodigoDocente(Integer codigoDocente);
-    Optional<Docente> obtenerPorIdUsuario(Long idUsuario);
     List<Docente> obtenerPorClinica(Long idClinica);
     List<Docente> obtenerActivosPorClinica(Long idClinica);
-    List<Docente> buscarPorEspecialidad(String especialidad);
     List<Docente> buscarPorNombre(String nombre);
-    List<Docente> buscarPorNombreUsuario(String username);
     
     // Métodos para DTOs
     List<DocenteDTO> obtenerTodosDTO();

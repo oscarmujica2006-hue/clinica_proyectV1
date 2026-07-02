@@ -30,11 +30,6 @@ public class CuposController {
     @Autowired
     private TratamientoService tratamientoService;
 
-    @GetMapping("/tratamientos-por-materia/{idMateria}")
-    public ResponseEntity<List<TratamientoCupoDTO>> getTratamientosByMateria(@PathVariable Long idMateria) {
-        List<TratamientoCupoDTO> list = cupoService.obtenerTratamientosConCuposPorMateria(idMateria);
-        return ResponseEntity.ok(list);
-    }
 
     @GetMapping
     public ResponseEntity<List<Cupo>> listarTodosLosCupos() {
@@ -185,10 +180,17 @@ public class CuposController {
     }
 
 
-
-
-
-
+    @GetMapping("/tratamientos-por-materia/{idMateria}")
+    public ResponseEntity<List<TratamientoCupoDTO>> getTratamientosByMateria(@PathVariable Long idMateria) {
+        List<TratamientoCupoDTO> list = cupoService.obtenerTratamientosConCuposPorMateria(idMateria);
+        return ResponseEntity.ok(list);
+    }
 
 
 }
+
+
+
+
+
+
