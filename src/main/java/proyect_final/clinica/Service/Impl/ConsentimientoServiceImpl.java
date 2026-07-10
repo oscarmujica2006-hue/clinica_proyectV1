@@ -6,6 +6,7 @@ import proyect_final.clinica.Model.Dao.ConsentimientoRepository;
 import proyect_final.clinica.Model.Dao.ConsentimientoFotoRepository;
 import proyect_final.clinica.Service.ConsentimientoService;
 import proyect_final.clinica.Service.ConsentimientoFotoService;
+import proyect_final.clinica.Service.ImageConversionService; // ✅ Importar
 
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,9 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
     @Autowired
     private ConsentimientoFotoService consentimientoFotoService;
     
+    @Autowired
+    private ImageConversionService imageConversionService; // ✅ Inyectar
+
     // ================================================================
     // ============ MÉTODOS EXISTENTES ============
     // ================================================================
@@ -75,7 +79,12 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
         Consentimiento saved = guardar(consentimiento);
         
         if (fotos != null && fotos.length > 0) {
-            consentimientoFotoService.guardarMultiplesFotos(saved.getIdConsentimiento(), fotos);
+            // ✅ CORREGIDO: pasar los 3 argumentos
+            consentimientoFotoService.guardarMultiplesFotos(
+                saved.getIdConsentimiento(), 
+                fotos,
+                imageConversionService  // ✅ Pasar el servicio de conversión
+            );
         }
         
         return saved;
@@ -97,7 +106,6 @@ public class ConsentimientoServiceImpl implements ConsentimientoService {
 
     @Override
     public List<ConsentimientoFoto> findFotosByConsentimientoId(Long idConsentimiento) {
-        // ✅ CORREGIDO: usar el método correcto del repository
         return consentimientoFotoRepository.findByConsentimiento_IdConsentimiento(idConsentimiento);
     }
 

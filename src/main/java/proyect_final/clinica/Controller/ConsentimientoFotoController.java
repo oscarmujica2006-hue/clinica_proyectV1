@@ -3,6 +3,7 @@ package proyect_final.clinica.Controller;
 import proyect_final.clinica.Model.Entity.ConsentimientoFoto;
 import proyect_final.clinica.Model.Dto.ConsentimientoFotoDTO;
 import proyect_final.clinica.Service.ConsentimientoFotoService;
+import proyect_final.clinica.Service.ImageConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,9 @@ public class ConsentimientoFotoController {
     @Autowired
     private ConsentimientoFotoService consentimientoFotoService;
 
-    // ✅ CORREGIDO - Usando DTO para evitar serialización circular
+    @Autowired
+    private ImageConversionService imageConversionService;
+
     @GetMapping("/consentimiento/{idConsentimiento}")
     public ResponseEntity<?> getFotosByConsentimiento(@PathVariable Long idConsentimiento) {
         try {
@@ -50,12 +53,23 @@ public class ConsentimientoFotoController {
             @PathVariable Long idConsentimiento,
             @RequestParam("archivos") MultipartFile[] archivos) {
         try {
-            List<ConsentimientoFoto> fotos = consentimientoFotoService.guardarMultiplesFotos(idConsentimiento, archivos);
+            List<ConsentimientoFoto> fotos = consentimientoFotoService.guardarMultiplesFotos(
+                idConsentimiento, 
+                archivos,
+                imageConversionService // Pasamos el servicio de conversión
+            );
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Fotos subidas correctamente");
             response.put("total", fotos.size());
+            
+            // Mostrar información de conversión
+            fotos.forEach(foto -> {
+                if (foto.getTipoContenidoConsentimiento().equals("image/webp")) {
+                    response.put("convertidas_a_webp", true);
+                }
+            });
             
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {

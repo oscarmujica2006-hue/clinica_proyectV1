@@ -1,0 +1,90 @@
+#section-2{
+    margin-left: 15px;
+    margin-right: 15px;
+    margin-bottom: 0px;
+}
+
+.container-gen-3{
+    display: grid;
+    grid-template-columns:repeat(4,1fr);
+    border: 1.3px solid black;
+    height: 110px;
+    width: 100%;
+}
+
+.cont-fr{
+    display: grid;
+    grid-template-rows: repeat(3,1fr);
+    height: 100%;
+}
+
+.fr-ins{
+    display: grid;
+    grid-template-rows: repeat(2,1fr);
+}
+
+.div{
+    display: flex;
+    text-align: center;
+    justify-content:center;
+    align-items: center;
+    justify-items: end;
+}
+
+.inf-ext{
+    display: grid;
+    grid-template-rows: 1fr 3fr;
+    height: 50px;
+}
+
+.inf-pers{
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    height: 80%;
+}
+
+.inf-cont{
+    display: grid;
+    grid-template-columns:repeat(5,1fr) !important;
+}
+
+.dat-inf{
+    width: 100%;
+    text-align: center;
+    display: grid;
+    height: 100%;
+}
+
+.ins-con2{
+    border-bottom: 1.3px solid black;
+    height: 70%;
+    width: 50%;   
+}
+
+.sub-dat{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+}
+
+#body-two{
+    margin: 0;
+    border: 0;
+    padding: 0px;
+}
+
+
+/* tamaño y detalles de los datos por introducir */
+
+.cont-dat2{
+    height: 90%;
+    width: 85%;
+    border-bottom: 1.3px dashed black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+    padding: 0px;
+}
+

@@ -95,4 +95,21 @@ public interface ConsentimientoRepository extends JpaRepository<Consentimiento, 
         @Param("fechaInicio") java.time.LocalDateTime fechaInicio,
         @Param("fechaFin") java.time.LocalDateTime fechaFin
     );
+
+
+
+
+
+
+    @Query("SELECT c FROM Consentimiento c " +
+           "LEFT JOIN FETCH c.docente d " +
+           "LEFT JOIN FETCH d.clinica cl " +
+           "LEFT JOIN FETCH cl.turno t " +
+           "WHERE c.estudiante.idEstudiante = :idEstudiante")
+    List<Consentimiento> findByEstudianteIdEstudianteWithDetails(@Param("idEstudiante") Long idEstudiante);
+
+
+
+
+
 }

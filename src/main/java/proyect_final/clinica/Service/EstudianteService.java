@@ -1,6 +1,7 @@
 package proyect_final.clinica.Service;
 
 import proyect_final.clinica.Model.Dto.ProgresoMateriaDTO;
+import proyect_final.clinica.Model.Entity.Consentimiento;
 // import proyect_final.clinica.Model.Dto.ProgresoMateriaDTO;
 import proyect_final.clinica.Model.Entity.Estudiante;
 import java.util.List;
@@ -30,4 +31,6 @@ public interface EstudianteService {
     List<ProgresoMateriaDTO> obtenerProgresoPorEstudiante(Long idEstudiante);
     
     
+    List<Consentimiento> obtenerConsentimientosPorEstudiante(Long idEstudiante);
+
 }

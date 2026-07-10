@@ -6,7 +6,7 @@
     <title>Historial Clínico - U.A.P.</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* ESTILOS GENERALES RENOVADOS */
+        /* ===== ESTILOS ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,17 +15,17 @@
         }
 
         :root {
-            --primary: #1E40AF;      /* Azul médico profesional */
-            --secondary: #059669;    /* Verde salud */
-            --accent: #DC2626;       /* Rojo para acentos */
-            --light-bg: #F8FAFC;     /* Fondo claro */
-            --card-bg: #FFFFFF;      /* Fondo tarjetas */
-            --text-dark: #1E293B;    /* Texto oscuro */
-            --text-light: #64748B;   /* Texto claro */
-            --border: #E2E8F0;       /* Bordes */
-            --success: #10B981;      /* Verde éxito */
-            --warning: #F59E0B;      /* Amarillo advertencia */
-            --danger: #EF4444;       /* Rojo peligro */
+            --primary: #1E40AF;
+            --secondary: #059669;
+            --accent: #DC2626;
+            --light-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
         }
 
         body {
@@ -44,7 +44,6 @@
             overflow: hidden;
         }
 
-        /* ENCABEZADO MEJORADO */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, #3730A3 100%);
             color: white;
@@ -79,7 +78,6 @@
             position: relative;
         }
 
-        /* SECCIÓN DE BÚSQUEDA MODERNIZADA */
         .search-section {
             padding: 40px;
             background: var(--light-bg);
@@ -114,7 +112,7 @@
             font-size: 0.9rem;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             padding: 12px 15px;
             border: 2px solid var(--border);
             border-radius: 10px;
@@ -123,7 +121,7 @@
             background: white;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
@@ -160,7 +158,6 @@
             margin-bottom: 20px;
         }
 
-        /* RESULTADOS DE BÚSQUEDA */
         .search-results {
             display: none;
             background: white;
@@ -206,7 +203,6 @@
             color: var(--primary);
         }
 
-        /* SECCIÓN DE HISTORIAL CLÍNICO */
         .form-section {
             padding: 40px;
             display: none;
@@ -272,7 +268,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* CONTENEDOR DE HISTORIAL */
         .historial-container {
             background: white;
             border: 2px solid var(--border);
@@ -356,7 +351,7 @@
             font-size: 0.85rem;
         }
 
-        /* MODAL MODERNIZADO */
+        /* ===== MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -375,7 +370,7 @@
             padding: 30px;
             border-radius: 20px;
             width: 90%;
-            max-width: 900px;
+            max-width: 1100px;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -417,7 +412,6 @@
             font-size: 1.1rem;
         }
 
-        /* ESTADOS DE CARGA Y MENSAJES */
         .loading {
             text-align: center;
             padding: 40px;
@@ -451,39 +445,44 @@
             opacity: 0.5;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .search-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .consulta-detalles {
-                grid-template-columns: 1fr;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .container {
-                margin: 10px;
-                border-radius: 15px;
-            }
+        .error {
+            color: var(--danger);
+            padding: 20px;
+            text-align: center;
         }
 
-        /* ESTILOS PARA IMPRESIÓN */
+        #contenedor-fotos-odontograma {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #contenedor-fotos-odontograma img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #contenedor-fotos-odontograma img:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .search-form { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .consulta-detalles { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2rem; }
+            .container { margin: 10px; border-radius: 15px; }
+        }
+
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .modal-content,
-            .modal-content * {
-                visibility: visible;
-            }
+            body * { visibility: hidden; }
+            .modal-content, .modal-content * { visibility: visible; }
             .modal {
                 position: absolute;
                 left: 0;
@@ -500,55 +499,39 @@
                 width: 100%;
                 max-width: none;
             }
-            .no-print {
-                display: none !important;
-            }
+            .no-print { display: none !important; }
         }
 
-        /* ANIMACIONES ADICIONALES */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        /* BADGE PARA TRATAMIENTOS */
-        .badge-tratamiento {
-            background: var(--accent);
-        }
-
-        /* SCROLLBAR PERSONALIZADO */
-        .historial-content::-webkit-scrollbar {
+        .historial-content::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar {
             width: 8px;
         }
 
-        .historial-content::-webkit-scrollbar-track {
+        .historial-content::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 4px;
         }
 
-        .historial-content::-webkit-scrollbar-thumb {
+        .historial-content::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
             background: var(--primary);
             border-radius: 4px;
         }
 
-        .historial-content::-webkit-scrollbar-thumb:hover {
+        .historial-content::-webkit-scrollbar-thumb:hover,
+        .modal-content::-webkit-scrollbar-thumb:hover {
             background: #3730A3;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ENCABEZADO MEJORADO -->
         <div class="header">
             <h1><i class="fas fa-tooth"></i> HISTORIAL CLÍNICO ODONTOLÓGICO U.A.P.</h1>
             <p>Universidad Amazónica de Pando - Sistema de Gestión Dental</p>
         </div>
         
-        <!-- SECCIÓN DE BÚSQUEDA MODERNIZADA -->
         <div class="search-section">
             <h1><i class="fas fa-search"></i> BUSCAR PACIENTE</h1>
             <div class="search-form">
@@ -571,22 +554,17 @@
                 <i class="fas fa-info-circle"></i> Puede buscar por nombre completo o por CI. Al menos uno de los campos debe estar completo.
             </div>
             
-            <!-- Resultados de búsqueda -->
             <div class="search-results" id="resultadosBusqueda">
                 <div class="results-header">
                     <i class="fas fa-list"></i> Resultados de la búsqueda
                 </div>
-                <div class="results-list" id="listaResultados">
-                    <!-- Los resultados se cargarán aquí dinámicamente -->
-                </div>
+                <div class="results-list" id="listaResultados"></div>
             </div>
         </div>
         
-        <!-- SECCIÓN DE VISUALIZACIÓN DE HISTORIAL CLÍNICO -->
         <div class="form-section" id="historialSection">
             <h2 class="section-title"><i class="fas fa-file-medical"></i> HISTORIAL CLÍNICO DEL PACIENTE</h2>
             
-            <!-- Información del paciente -->
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-file-medical-alt"></i> N.º de Historia Clínica</label>
@@ -597,7 +575,7 @@
                     <input type="text" id="ciPaciente" readonly class="form-control">
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-folder"></i> N.º de Expediente Clínico</label>
+                    <label><i class="fas fa-folder"></i> N.º de Expediente</label>
                     <input type="text" id="numExpediente" readonly class="form-control">
                 </div>
             </div>
@@ -613,7 +591,6 @@
                 </div>
             </div>
 
-            <!-- Selector de tipo de historial -->
             <div class="form-row">
                 <div class="form-group">
                     <label><i class="fas fa-filter"></i> Tipo de Historial:</label>
@@ -633,22 +610,18 @@
                 </div>
             </div>
 
-            <!-- Contenedor del historial -->
             <div class="historial-container" id="contenedorHistorial">
                 <div class="loading" id="loadingHistorial" style="display: none;">
                     <i class="fas fa-spinner fa-spin"></i> Cargando historial...
                 </div>
-                <div class="historial-content" id="contenidoHistorial">
-                    <!-- El historial se cargará aquí -->
-                </div>
+                <div class="historial-content" id="contenidoHistorial"></div>
             </div>
         </div>
 
-        <!-- Modal para detalles de consulta -->
         <div id="modalDetalleConsulta" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h3><i class="fas fa-clipboard-list"></i> Detalles de la Consulta</h3>
+                <h3><i class="fas fa-clipboard-list"></i> DETALLE COMPLETO DE LA CONSULTA</h3>
                 <div id="detalleConsultaContent"></div>
                 <button class="btn btn-primary no-print" onclick="imprimirDetalleConsulta()" style="margin-top: 20px;">
                     <i class="fas fa-print"></i> Imprimir
@@ -658,45 +631,129 @@
     </div>
 
     <script>
-        // URL base de tu API Spring Boot - AJUSTA SEGÚN TU CONFIGURACIÓN
+        // ============================================================
+        // CONFIGURACIÓN
+        // ============================================================
         const API_BASE_URL = 'http://localhost:8080/api/pacientes/public';
 
-        // Elementos de búsqueda
+        // ============================================================
+        // ELEMENTOS DEL DOM
+        // ============================================================
         const nombreBusqueda = document.getElementById('nombreBusqueda');
         const ciBusqueda = document.getElementById('ciBusqueda');
         const btnBuscar = document.getElementById('btnBuscar');
         const resultadosBusqueda = document.getElementById('resultadosBusqueda');
         const listaResultados = document.getElementById('listaResultados');
         
-        // Elementos del formulario para llenar con datos del paciente
         const numHistoriaClinica = document.getElementById('numHistoriaClinica');
         const ciPaciente = document.getElementById('ciPaciente');
         const numExpediente = document.getElementById('numExpediente');
         const personaInformacion = document.getElementById('personaInformacion');
         const edadPaciente = document.getElementById('edadPaciente');
         
-        // Sección de historial
         const historialSection = document.getElementById('historialSection');
         const btnCargarHistorial = document.getElementById('btnCargarHistorial');
         const btnDescargarHistorial = document.getElementById('btnDescargarHistorial');
         const tipoHistorial = document.getElementById('tipoHistorial');
-        const contenedorHistorial = document.getElementById('contenedorHistorial');
         const contenidoHistorial = document.getElementById('contenidoHistorial');
         const loadingHistorial = document.getElementById('loadingHistorial');
 
-        let pacienteActual = null;
-
-        // Modal
         const modalDetalleConsulta = document.getElementById('modalDetalleConsulta');
         const detalleConsultaContent = document.getElementById('detalleConsultaContent');
         const closeModal = document.querySelector('.close');
 
-        // Función para buscar pacientes en el backend
+        let pacienteActual = null;
+
+        // ============================================================
+        // FUNCIONES AUXILIARES
+        // ============================================================
+        const getValor = (valor, defecto = 'No especificado') => {
+            return (valor === null || valor === undefined || valor === '') ? defecto : valor;
+        };
+
+        const getBooleano = (valor) => {
+            if (valor === null || valor === undefined) return 'No especificado';
+            return valor ? 'Sí' : 'No';
+        };
+
+        function formatearFecha(fechaString) {
+            if (!fechaString) return 'No especificada';
+            try {
+                const fecha = new Date(fechaString);
+                return fecha.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fechaString;
+            }
+        }
+
+        // ============================================================
+        // FUNCIONES PARA EL ODONTOGRAMA
+        // ============================================================
+        function restaurarOdontogramaEnTemplate(tempDiv, odontogramaData) {
+            if (!odontogramaData || typeof odontogramaData !== 'object') {
+                console.warn('⚠️ No hay datos de odontograma para restaurar');
+                return;
+            }
+
+            console.log('🦷 Restaurando odontograma con datos:', odontogramaData);
+
+            // Recorrer cada diente en los datos
+            Object.keys(odontogramaData).forEach(toothId => {
+                const toothData = odontogramaData[toothId];
+                // Buscar el elemento del diente en el template
+                const tooth = tempDiv.querySelector(`[data-tooth="${toothId}"]`);
+                if (!tooth) {
+                    console.warn(`⚠️ Diente ${toothId} no encontrado en el template`);
+                    return;
+                }
+
+                // Recorrer cada cara del diente
+                Object.keys(toothData).forEach(area => {
+                    const state = toothData[area];
+                    const areaElement = tooth.querySelector(`[data-area="${area}"]`);
+                    if (areaElement) {
+                        // Quitar clases anteriores
+                        areaElement.classList.remove('sano', 'cariado', 'obturado', 'obturado_cariado', 
+                            'extraccion', 'extraido', 'perdido_otra', 'endodoncia', 'corona');
+                        // Agregar la clase del estado
+                        if (state) {
+                            areaElement.classList.add(state);
+                            console.log(`✅ Diente ${toothId} - ${area}: ${state}`);
+                        }
+                    } else {
+                        console.warn(`⚠️ Área ${area} no encontrada en diente ${toothId}`);
+                    }
+                });
+            });
+        }
+
+        // ============================================================
+        // FUNCIÓN PARA OBTENER DATOS COMPLETOS DE LA CONSULTA
+        // ============================================================
+        async function obtenerConsultaCompleta(idConsulta) {
+            try {
+                const response = await fetch(`/api/consultas/${idConsulta}/completo`);
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('❌ Error al obtener consulta completa:', error);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // BÚSQUEDA DE PACIENTES
+        // ============================================================
         async function buscarPacientes() {
             const nombre = nombreBusqueda.value.trim();
             const ci = ciBusqueda.value.trim();
 
-            // Validar que al menos un campo tenga datos
             if (!nombre && !ci) {
                 alert('Por favor, ingrese un nombre o CI para buscar.');
                 return;
@@ -709,17 +766,13 @@
 
             try {
                 let url;
-                
-                // ✅ BÚSQUEDA SEPARADA: Si hay CI, buscar solo por CI
                 if (ci) {
                     url = `${API_BASE_URL}/buscar-por-ci?ci=${encodeURIComponent(ci)}`;
                 } else {
-                    // Si solo hay nombre, buscar por nombre
                     url = `${API_BASE_URL}/buscar?term=${encodeURIComponent(nombre)}`;
                 }
 
                 console.log('Buscando pacientes con URL:', url);
-
                 const response = await fetch(url);
 
                 if (!response.ok) {
@@ -738,23 +791,32 @@
                 btnBuscar.textContent = 'BUSCAR';
             }
         }
-        
-        // Función para mostrar resultados de búsqueda
+
+        // ============================================================
+        // MOSTRAR RESULTADOS DE BÚSQUEDA
+        // ============================================================
         function mostrarResultados(pacientes) {
             listaResultados.innerHTML = '';
             
-            if (!pacientes || pacientes.length === 0) {
-                listaResultados.innerHTML = '<div class="no-results">No se encontraron pacientes con los criterios de búsqueda.</div>';
+            let pacientesArray = pacientes;
+            if (!Array.isArray(pacientes)) {
+                if (pacientes && typeof pacientes === 'object' && pacientes !== null) {
+                    pacientesArray = [pacientes];
+                } else {
+                    pacientesArray = [];
+                }
+            }
+            
+            if (pacientesArray.length === 0) {
+                listaResultados.innerHTML = '<div class="no-results">No se encontraron pacientes.</div>';
             } else {
-                pacientes.forEach(paciente => {
+                pacientesArray.forEach(paciente => {
                     const item = document.createElement('div');
                     item.className = 'result-item';
 
-                    // Formatear nombre completo usando los campos reales
-                    const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
-
-                    // CI está en la entidad Paciente (campo ci)
-                    const ciMostrado = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : (paciente.persona?.ci || 'N/A');
+                    const nombreCompleto = `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 
+                                          paciente.nombreCompleto || 'Sin nombre';
+                    const ciMostrado = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : 'N/A';
 
                     item.innerHTML = `
                         <strong>${nombreCompleto}</strong> - CI: ${ciMostrado} - Historial: ${paciente.historialClinico || 'N/A'}
@@ -766,119 +828,109 @@
             
             resultadosBusqueda.style.display = 'block';
         }
-        
-        // Función para seleccionar un paciente y llenar el formulario
+
+        // ============================================================
+        // SELECCIONAR PACIENTE
+        // ============================================================
         function seleccionarPaciente(paciente) {
-            // Llenar campos del formulario con datos del paciente
             numHistoriaClinica.value = paciente.historialClinico || '';
             ciPaciente.value = paciente.ci !== null && paciente.ci !== undefined ? paciente.ci : '';
             numExpediente.value = paciente.idPaciente || paciente.id || '';
-            const nombreCompleto = `${paciente.persona?.nombre || ''} ${paciente.persona?.apellidoPaterno || ''} ${paciente.persona?.apellidoMaterno || ''}`.trim();
+            
+            const nombreCompleto = `${paciente.nombre || ''} ${paciente.apellidoPaterno || ''} ${paciente.apellidoMaterno || ''}`.trim() || 
+                                  paciente.nombreCompleto || 'Sin nombre';
+            
             personaInformacion.value = nombreCompleto;
-            edadPaciente.value = paciente.persona?.edad || '';
-
+            edadPaciente.value = paciente.edad || '';
 
             pacienteActual = paciente;
 
-            // Mostrar sección de historial
             historialSection.style.display = 'block';
-
-            // Ocultar resultados
             resultadosBusqueda.style.display = 'none';
-
-            // Limpiar campos de búsqueda
             nombreBusqueda.value = '';
             ciBusqueda.value = '';
-
-            // Desplazar a la sección de historial
             historialSection.scrollIntoView({ behavior: 'smooth' });
         }
 
-            // Cargar historial del paciente
-            async function cargarHistorial() {
-                try {
-                    // Obtener el ID del paciente del campo de formulario
-                    const idPacienteInput = document.getElementById('numExpediente');
-                    const idPaciente = idPacienteInput ? idPacienteInput.value.trim() : '';
-                    const tipo = tipoHistorial.value;
-                    
-                    console.log('🔍 ID Paciente obtenido:', idPaciente); // DEBUG
-                    console.log('🔍 Tipo de historial:', tipo); // DEBUG
-                    
-                    // Validaciones más robustas
-                    if (!idPaciente) {
-                        alert('❌ Debe seleccionar un paciente primero');
-                        return;
-                    }
-
-                    // Validar que sea un número válido
-                    if (isNaN(idPaciente) || idPaciente <= 0) {
-                        alert('❌ ID de paciente inválido');
-                        return;
-                    }
-
-                    loadingHistorial.style.display = 'block';
-                    contenidoHistorial.innerHTML = '';
-
-                    let url;
-                    switch(tipo) {
-                        case 'consultas':
-                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
-                            break;
-                        case 'tratamientos':
-                            url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
-                            break;
-                        case 'completo':
-                            url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
-                            break;
-                        default:
-                            url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
-                    }
-
-                    console.log('🌐 URL de consulta:', url); // DEBUG
-                    
-                    const response = await fetch(url);
-                    
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            throw new Error('No se encontraron consultas para este paciente');
-                        } else if (response.status === 500) {
-                            throw new Error('Error interno del servidor');
-                        } else {
-                            throw new Error(`Error ${response.status}: ${response.statusText}`);
-                        }
-                    }
-
-                    const historial = await response.json();
-                    console.log('📊 Historial recibido:', historial);
-                    
-                    if (!historial || historial.length === 0) {
-                        contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
-                        return;
-                    }
-                    
-                    mostrarHistorial(historial, tipo);
-
-                } catch (error) {
-                    console.error('❌ Error:', error);
-                    contenidoHistorial.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>Error al cargar el historial: ${error.message}</p>
-                            <p>Verifique que el paciente tenga consultas registradas.</p>
-                        </div>
-                    `;
-                } finally {
-                    loadingHistorial.style.display = 'none';
+        // ============================================================
+        // CARGA DE HISTORIAL
+        // ============================================================
+        async function cargarHistorial() {
+            try {
+                const idPaciente = document.getElementById('numExpediente').value.trim();
+                const tipo = tipoHistorial.value;
+                
+                if (!idPaciente) {
+                    alert('❌ Debe seleccionar un paciente primero');
+                    return;
                 }
-            }
 
-        // Mostrar historial en la interfaz
+                if (isNaN(idPaciente) || idPaciente <= 0) {
+                    alert('❌ ID de paciente inválido');
+                    return;
+                }
+
+                loadingHistorial.style.display = 'block';
+                contenidoHistorial.innerHTML = '';
+
+                let url;
+                switch(tipo) {
+                    case 'consultas':
+                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                        break;
+                    case 'tratamientos':
+                        url = `http://localhost:8080/api/tratamientos/paciente/${idPaciente}`;
+                        break;
+                    case 'completo':
+                        url = `http://localhost:8080/api/historial/completo/${idPaciente}`;
+                        break;
+                    default:
+                        url = `http://localhost:8080/api/consultas/paciente/${idPaciente}/completo`;
+                }
+
+                console.log('🌐 URL de consulta:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('No se encontraron consultas para este paciente');
+                    } else {
+                        throw new Error(`Error ${response.status}: ${response.statusText}`);
+                    }
+                }
+
+                const historial = await response.json();
+                console.log('📊 Historial recibido:', historial);
+                
+                if (!historial || historial.length === 0) {
+                    contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                    return;
+                }
+                
+                mostrarHistorial(historial, tipo);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                contenidoHistorial.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error al cargar el historial: ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                loadingHistorial.style.display = 'none';
+            }
+        }
+
+        // ============================================================
+        // MOSTRAR HISTORIAL
+        // ============================================================
         function mostrarHistorial(historial, tipo) {
             contenidoHistorial.innerHTML = '';
 
             if (!historial || historial.length === 0) {
-                contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros en el historial</div>';
+                contenidoHistorial.innerHTML = '<div class="no-results">No se encontraron registros</div>';
                 return;
             }
 
@@ -892,8 +944,6 @@
         }
 
         function mostrarConsultas(consultas) {
-            console.log('Consultas DTO recibidas:', consultas);
-            
             consultas.forEach((consulta, index) => {
                 const consultaItem = document.createElement('div');
                 consultaItem.className = 'consulta-item';
@@ -928,7 +978,6 @@
             });
         }
 
-        // Mostrar tratamientos
         function mostrarTratamientos(tratamientos) {
             tratamientos.forEach((tratamiento, index) => {
                 const tratamientoItem = document.createElement('div');
@@ -963,9 +1012,7 @@
             });
         }
 
-        // Mostrar historial completo
         function mostrarHistorialCompleto(historial) {
-            // Agrupar por fecha o tipo
             historial.forEach((item, index) => {
                 const itemElement = document.createElement('div');
                 itemElement.className = 'consulta-item';
@@ -1014,221 +1061,329 @@
             });
         }
 
-async function mostrarDetalleConsulta(consulta) {
-    try {
-        console.log('Consulta DTO completa recibida:', consulta);
-
-        const response = await fetch('/Doctor_static/Historial-static/hoja-consulta/detalle-consulta-completo.html');
-        if (!response.ok) throw new Error(`Error al cargar el template: ${response.status}`);
-        const htmlString = await response.text();
-
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = htmlString;
-
-        // Funciones auxiliares
-        const getValor = (valor, defecto = 'No especificado') => {
-            return (valor === null || valor === undefined || valor === '') ? defecto : valor;
-        };
-        const getBooleano = (valor) => {
-            if (valor === null || valor === undefined) return 'No especificado';
-            return valor ? 'Sí' : 'No';
-        };
-        const getNumero = (valor, defecto = 'No especificado') => {
-            return (valor === null || valor === undefined) ? defecto : valor.toString();
-        };
-
-    
-        // Función auxiliar para asignar texto de forma segura
-        const setText = (selector, valor) => {
-            const el = tempDiv.querySelector(selector);
-            if (el) el.textContent = (valor !== null && valor !== undefined && valor !== '') ? valor : 'No especificado';
-        };
-
-        // Rellenar datos del paciente usando pacienteActual
-        if (pacienteActual) {
-            const persona = pacienteActual.persona || {};
-
-            setText('#detalle-expediente', pacienteActual.idPaciente || '');
-            setText('#detalle-historia', pacienteActual.historialClinico || '');
-            setText('#detalle-ci', pacienteActual.ci || persona.ci || '');
-
-            const nombreCompleto = [persona.nombre, persona.apellidoPaterno, persona.apellidoMaterno].filter(Boolean).join(' ') || 'No especificado';
-            setText('#detalle-nombre-paciente', nombreCompleto);
-            setText('#detalle-apellido-paterno', persona.apellidoPaterno || 'No especificado');
-            setText('#detalle-apellido-materno', persona.apellidoMaterno || 'No especificado');
-
-            setText('#detalle-edad-sexo', `${persona.edad || '?'} años / ${persona.sexo || 'No especificado'}`);
-            setText('#detalle-lugar-fecha-nacimiento', `${pacienteActual.lugarNacimiento || 'No especificado'}, ${pacienteActual.fechaNacimiento || '?'}`);
-            setText('#detalle-direccion', pacienteActual.direccion || 'No especificada');
-            setText('#detalle-telefono-celular', pacienteActual.telefono || 'No especificado');
-            setText('#detalle-grado-instruccion', pacienteActual.gradoInstruccion || 'No especificado');
-            setText('#detalle-ocupacion', pacienteActual.ocupacion || 'No especificada');
-            setText('#detalle-estado-civil', pacienteActual.estadoCivil || 'No especificado');
-            setText('#detalle-naciones-originarias', pacienteActual.nacionesOriginarias || 'No especificado');
-            setText('#detalle-idioma', persona.idioma || pacienteActual.idioma || 'No especificado');
-        } else {
-            setText('#detalle-nombre-paciente', 'No seleccionado');
-        }
-        setText('#detalle-fecha', formatearFecha(consulta.fecha));
-
-        // Patologías
-        setText('#detalle-anemia', getBooleano(consulta.anemia));
-        setText('#detalle-asma', getBooleano(consulta.asma));
-        setText('#detalle-cardiopatias', getBooleano(consulta.cardiopatias));
-        setText('#detalle-diabetes', getBooleano(consulta.diabetesMel));      
-        setText('#detalle-gastricas', getBooleano(consulta.enfGastricos));   
-        setText('#detalle-epilepsia', getBooleano(consulta.epilepsia));
-        setText('#detalle-hepatitis', getBooleano(consulta.hepatitis));
-        setText('#detalle-hipertension', getBooleano(consulta.hipertension));
-        setText('#detalle-tuberculosis', getBooleano(consulta.tuberculosis));
-        setText('#detalle-vih', getBooleano(consulta.vih));                 
-        setText('#detalle-otros', getValor(consulta.otros));
-        setText('#detalle-ninguno', getBooleano(consulta.ninguno));
-
-
-
-
-        setText('#detalle-observaciones', getValor(consulta.observaciones, 'Sin observaciones'));
-        setText('#detalle-fecha-revision', formatearFecha(consulta.fechaRevision));
-        setText('#detalle-patologia', getValor(consulta.nombrePatologia, 'Ninguna'));
-
-        setText('#detalle-alergias', getBooleano(consulta.alergias));
-        setText('#detalle-alergia-detalle', consulta.especifiqueAlergia ? `- ${getValor(consulta.especifiqueAlergia)}` : '');
-
-        setText('#detalle-embarazo', getBooleano(consulta.embarazo));
-        setText('#detalle-semana-embarazo', consulta.semanaEmbarazo ? `- ${getNumero(consulta.semanaEmbarazo)} semanas` : '');
-
-        setText('#detalle-tratamiento-medico', getBooleano(consulta.tratamientoMedico));
-        setText('#detalle-tratamiento-detalle', consulta.tratamientoMedicoDetalle ? `- ${getValor(consulta.tratamientoMedicoDetalle)}` : '');
-
-        setText('#detalle-medicamentos', getBooleano(consulta.recibeAlgunMedicamento));
-        setText('#detalle-medicamento-actual', consulta.medicamentoActual ? `- ${getValor(consulta.medicamentoActual)}` : '');
-
-        setText('#detalle-hemorragia', getBooleano(consulta.tuvoHemorragiaDental));
-        setText('#detalle-hemorragia-detalle', consulta.especifiqueHemorragia ? `- ${getValor(consulta.especifiqueHemorragia)}` : '');
-
-        setText('#detalle-atm', getValor(consulta.atm));
-        setText('#detalle-ganglios', getValor(consulta.gangliosLinfaticos));
-        setText('#detalle-respirador', getValor(consulta.respirador));
-        setText('#detalle-otros-respiratorio', getValor(consulta.otrosRespiratorio));
-
-        setText('#detalle-labios', getValor(consulta.labios));
-        setText('#detalle-lengua', getValor(consulta.lengua));
-        setText('#detalle-paladar', getValor(consulta.paladar));
-        setText('#detalle-piso-boca', getValor(consulta.pisoDeLaBoca));
-        setText('#detalle-mucosa-yugal', getValor(consulta.mucosaYugal));
-        setText('#detalle-encias', getValor(consulta.encias));
-
-        setText('#detalle-usa-protesis', getBooleano(consulta.utilizaProtesisDental));
-        if (consulta.utilizaProtesisDental) {
-            setText('#detalle-protesis-tipo', `Tipo: ${getValor(consulta.tipoProtesis)}`);
-            setText('#detalle-protesis-tiempo', `Tiempo de uso: ${getValor(consulta.tiempoProtesis)}`);
-        } else {
-            // Opcional: ocultar los elementos si no aplica
-            const tipo = tempDiv.querySelector('#detalle-protesis-tipo');
-            const tiempo = tempDiv.querySelector('#detalle-protesis-tiempo');
-            if (tipo) tipo.style.display = 'none';
-            if (tiempo) tiempo.style.display = 'none';
-        }
-
-        setText('#detalle-fuma', getBooleano(consulta.habitoFuma));
-        setText('#detalle-bebe', getBooleano(consulta.habitoBebe));
-        setText('#detalle-otros-habitos', getValor(consulta.otrosHabitos));
-
-        setText('#detalle-cepillo', getBooleano(consulta.utilizaCepilloDental));
-        setText('#detalle-hilo', getBooleano(consulta.utilizaHiloDental));
-        setText('#detalle-enjuague', getBooleano(consulta.utilizaEnjuagueBucal));
-        setText('#detalle-frecuencia-cepillo', getValor(consulta.frecuenciaCepillo));
-        setText('#detalle-sangrado', getBooleano(consulta.sangradoEncias));
-        setText('#detalle-higiene-bucal', getValor(consulta.higieneBucal));
-        setText('#detalle-obs-higiene', getValor(consulta.observacionesHigiene, 'Sin observaciones'));
-
-        setText('#detalle-informante-nombres', getValor(consulta.informanteNombres));
-        setText('#detalle-informante-apellido-paterno', getValor(consulta.informanteApellidoPaterno));
-        setText('#detalle-informante-apellido-materno', getValor(consulta.informanteApellidoMaterno));
-        setText('#detalle-informante-direccion', getValor(consulta.informanteDireccion));
-        setText('#detalle-informante-telefono', getValor(consulta.informanteTelefono));
-
-        const consultaId = consulta.idConsulta ?? consulta.id ?? consulta.id_consulta;
-        const contenedorFotos = tempDiv.querySelector('#contenedor-fotos-odontograma');
-        if (contenedorFotos) {
-            contenedorFotos.innerHTML = ''; // Limpiar
-
-            if (!consultaId) {
-                console.warn('ID de consulta no definido para cargar fotos:', consulta);
-                contenedorFotos.innerHTML = '<p>No se pudo determinar el ID de la consulta para cargar las fotos.</p>';
-            } else {
-                const fotosResponse = await fetch(`/api/odontograma-fotos/consulta/${consultaId}`);
-                if (fotosResponse.ok) {
-                    const fotos = await fotosResponse.json();
-                    if (!Array.isArray(fotos) || fotos.length === 0) {
-                        contenedorFotos.innerHTML = '<p>No hay fotos en esta consulta.</p>';
-                    } else {
-                        fotos.forEach(foto => {
-                            const rutaArchivo = foto.rutaArchivo ?? foto.ruta_archivo ?? foto.path ?? null;
-                            const src = rutaArchivo ? (rutaArchivo.startsWith('/') ? rutaArchivo : `/${rutaArchivo}`) : null;
-
-                            if (!src) {
-                                console.warn('Ruta de imagen faltante en datos de foto:', foto);
-                                return;
-                            }
-
-                            const img = document.createElement('img');
-                            img.src = src;
-                            img.alt = foto.nombreOriginal || 'Imagen de odontograma';
-                            img.style.width = '150px';
-                            img.style.height = '150px';
-                            img.style.objectFit = 'cover';
-                            img.style.borderRadius = '8px';
-                            img.style.border = '1px solid #ccc';
-                            img.style.cursor = 'pointer';
-                            img.onerror = () => {
-                                img.alt = 'No se pudo cargar la imagen';
-                                img.style.opacity = '0.5';
-                                console.error('Error cargando imagen de odontograma:', src);
-                            };
-                            img.onclick = () => window.open(src, '_blank');
-                            contenedorFotos.appendChild(img);
-                        });
-                    }
-                } else {
-                    console.error('Error al obtener fotos de odontograma:', fotosResponse.status, fotosResponse.statusText);
-                    contenedorFotos.innerHTML = '<p>Error al cargar las fotos del odontograma.</p>';
-                }
-            }
-        }
-
-        // Insertar en el modal
-        detalleConsultaContent.innerHTML = '';
-        detalleConsultaContent.appendChild(tempDiv);
-        modalDetalleConsulta.style.display = 'block';
-
-    } catch (error) {
-        console.error('Error al cargar el detalle:', error);
-        detalleConsultaContent.innerHTML = `<div class="error">Error al cargar el detalle: ${error.message}</div>`;
-        modalDetalleConsulta.style.display = 'block';
-    }
-}
-        // Función para formatear fecha
-        function formatearFecha(fechaString) {
-            if (!fechaString) return 'No especificada';
-            
+        // ============================================================
+        // DETALLE DE CONSULTA (MODAL) - CON ODONTOGRAMA
+        // ============================================================
+        async function mostrarDetalleConsulta(consulta) {
             try {
-                const fecha = new Date(fechaString);
-                return fecha.toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
+                console.log('📋 Consulta DTO:', consulta);
+
+                // 1. Obtener datos completos del paciente
+                let pacienteCompleto = pacienteActual;
+                
+                if (pacienteActual && pacienteActual.idPaciente) {
+                    try {
+                        const pacienteResponse = await fetch(`${API_BASE_URL}/${pacienteActual.idPaciente}`);
+                        if (pacienteResponse.ok) {
+                            pacienteCompleto = await pacienteResponse.json();
+                            console.log('👤 Datos del paciente:', pacienteCompleto);
+                        }
+                    } catch (error) {
+                        console.warn('No se pudieron obtener datos del paciente:', error);
+                    }
+                }
+
+                // 2. Obtener datos completos de la consulta (incluye odontograma)
+                let consultaCompleta = consulta;
+                const consultaId = consulta.idConsulta ?? consulta.id ?? consulta.id_consulta;
+                
+                if (consultaId) {
+                    try {
+                        const completaResponse = await fetch(`/api/consultas/${consultaId}/completo`);
+                        if (completaResponse.ok) {
+                            consultaCompleta = await completaResponse.json();
+                            console.log('🦷 Datos completos con odontograma:', consultaCompleta);
+                        }
+                    } catch (error) {
+                        console.warn('No se pudo obtener consulta completa:', error);
+                    }
+                }
+
+                // 3. Cargar el template HTML externo
+                const response = await fetch('/Doctor_static/Historial-static/hoja-consulta/completo_historial.html');
+                if (!response.ok) throw new Error(`Error al cargar el template: ${response.status}`);
+                const htmlString = await response.text();
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlString;
+
+                // 4. Función para asignar texto
+                const setText = (selector, valor) => {
+                    const el = tempDiv.querySelector(selector);
+                    if (el) {
+                        el.textContent = (valor !== null && valor !== undefined && valor !== '') ? valor : 'No especificado';
+                    }
+                };
+
+                // 5. Rellenar datos del paciente
+                const p = pacienteCompleto || {};
+
+                setText('#detalle-expediente', p.idPaciente);
+                setText('#detalle-historia', p.historialClinico);
+                setText('#detalle-ci', p.ci);
+
+                const nombreCompleto = p.nombreCompleto || 
+                    `${p.nombre || ''} ${p.apellidoPaterno || ''} ${p.apellidoMaterno || ''}`.trim() || 'No especificado';
+                
+                setText('#detalle-nombre-paciente', nombreCompleto);
+                setText('#detalle-apellido-paterno', p.apellidoPaterno);
+                setText('#detalle-apellido-materno', p.apellidoMaterno);
+
+                const edadSexo = `${p.edad || '?'} años / ${p.sexo || 'No especificado'}`;
+                setText('#detalle-edad-sexo', edadSexo);
+
+                const lugarFecha = `${p.lugarNacimiento || 'No especificado'}, ${p.fechaNacimiento || '?'}`;
+                setText('#detalle-lugar-fecha-nacimiento', lugarFecha);
+
+                setText('#detalle-direccion', p.direccion);
+                setText('#detalle-telefono-celular', p.telefono);
+                setText('#detalle-grado-instruccion', p.gradoInstruccion);
+                setText('#detalle-ocupacion', p.ocupacion);
+                setText('#detalle-estado-civil', p.estadoCivil);
+                setText('#detalle-naciones-originarias', p.nacionesOriginarias);
+                setText('#detalle-idioma', p.idioma);
+
+                // 6. Rellenar datos de la consulta
+                setText('#detalle-fecha', formatearFecha(consultaCompleta.fecha));
+                setText('#detalle-observaciones', consultaCompleta.observaciones);
+                setText('#detalle-fecha-revision', formatearFecha(consultaCompleta.fechaRevision));
+                setText('#detalle-patologia', consultaCompleta.nombrePatologia);
+
+                // 7. Patologías
+                setText('#detalle-anemia', getBooleano(consultaCompleta.anemia));
+                setText('#detalle-asma', getBooleano(consultaCompleta.asma));
+                setText('#detalle-cardiopatias', getBooleano(consultaCompleta.cardiopatias));
+                setText('#detalle-diabetes', getBooleano(consultaCompleta.diabetesMel));
+                setText('#detalle-gastricas', getBooleano(consultaCompleta.enfGastricos));
+                setText('#detalle-epilepsia', getBooleano(consultaCompleta.epilepsia));
+                setText('#detalle-hepatitis', getBooleano(consultaCompleta.hepatitis));
+                setText('#detalle-hipertension', getBooleano(consultaCompleta.hipertension));
+                setText('#detalle-tuberculosis', getBooleano(consultaCompleta.tuberculosis));
+                setText('#detalle-vih', getBooleano(consultaCompleta.vih));
+                setText('#detalle-otros', consultaCompleta.otros);
+                setText('#detalle-ninguno', getBooleano(consultaCompleta.ninguno));
+
+                // 8. Alergias
+                setText('#detalle-alergias', getBooleano(consultaCompleta.alergias));
+                if (consultaCompleta.especifiqueAlergia) {
+                    setText('#detalle-alergia-detalle', consultaCompleta.especifiqueAlergia);
+                }
+
+                // 9. Embarazo
+                setText('#detalle-embarazo', getBooleano(consultaCompleta.embarazo));
+                if (consultaCompleta.semanaEmbarazo) {
+                    setText('#detalle-semana-embarazo', `${consultaCompleta.semanaEmbarazo} semanas`);
+                }
+
+                // 10. Tratamiento médico
+                setText('#detalle-tratamiento-medico', getBooleano(consultaCompleta.tratamientoMedico));
+                if (consultaCompleta.tratamientoMedicoDetalle) {
+                    setText('#detalle-tratamiento-detalle', consultaCompleta.tratamientoMedicoDetalle);
+                }
+
+                // 11. Medicamentos
+                setText('#detalle-medicamentos', getBooleano(consultaCompleta.recibeAlgunMedicamento));
+                if (consultaCompleta.medicamentoActual) {
+                    setText('#detalle-medicamento-actual', consultaCompleta.medicamentoActual);
+                }
+
+                // 12. Hemorragia
+                setText('#detalle-hemorragia', getBooleano(consultaCompleta.tuvoHemorragiaDental));
+                if (consultaCompleta.especifiqueHemorragia) {
+                    setText('#detalle-hemorragia-detalle', consultaCompleta.especifiqueHemorragia);
+                }
+
+                // 13. Examen extraoral
+                setText('#detalle-atm', consultaCompleta.atm);
+                setText('#detalle-ganglios', consultaCompleta.gangliosLinfaticos);
+                setText('#detalle-respirador', consultaCompleta.respirador);
+                setText('#detalle-otros-respiratorio', consultaCompleta.otrosRespiratorio);
+
+                // 14. Examen intraoral
+                setText('#detalle-labios', consultaCompleta.labios);
+                setText('#detalle-lengua', consultaCompleta.lengua);
+                setText('#detalle-paladar', consultaCompleta.paladar);
+                setText('#detalle-piso-boca', consultaCompleta.pisoDeLaBoca);
+                setText('#detalle-mucosa-yugal', consultaCompleta.mucosaYugal);
+                setText('#detalle-encias', consultaCompleta.encias);
+
+                // 15. Prótesis
+                setText('#detalle-usa-protesis', getBooleano(consultaCompleta.utilizaProtesisDental));
+                if (consultaCompleta.utilizaProtesisDental) {
+                    setText('#detalle-protesis-tipo', consultaCompleta.tipoProtesis);
+                    setText('#detalle-protesis-tiempo', consultaCompleta.tiempoProtesis);
+                }
+
+                // 16. Hábitos
+                setText('#detalle-fuma', getBooleano(consultaCompleta.habitoFuma));
+                setText('#detalle-bebe', getBooleano(consultaCompleta.habitoBebe));
+                setText('#detalle-otros-habitos', consultaCompleta.otrosHabitos);
+
+                // 17. Higiene
+                setText('#detalle-cepillo', getBooleano(consultaCompleta.utilizaCepilloDental));
+                setText('#detalle-hilo', getBooleano(consultaCompleta.utilizaHiloDental));
+                setText('#detalle-enjuague', getBooleano(consultaCompleta.utilizaEnjuagueBucal));
+                setText('#detalle-frecuencia-cepillo', consultaCompleta.frecuenciaCepillo);
+                setText('#detalle-sangrado', getBooleano(consultaCompleta.sangradoEncias));
+                setText('#detalle-higiene-bucal', consultaCompleta.higieneBucal);
+                setText('#detalle-obs-higiene', consultaCompleta.observacionesHigiene);
+
+                // 18. Informante
+                setText('#detalle-informante-nombres', consultaCompleta.informanteNombres);
+                setText('#detalle-informante-apellido-paterno', consultaCompleta.informanteApellidoPaterno);
+                setText('#detalle-informante-apellido-materno', consultaCompleta.informanteApellidoMaterno);
+                setText('#detalle-informante-direccion', consultaCompleta.informanteDireccion);
+                setText('#detalle-informante-telefono', consultaCompleta.informanteTelefono);
+
+                // 19. Antecedentes
+                if (consultaCompleta.antecedentesFamiliares) {
+                    setText('#detalle-antecedentes-familiares', consultaCompleta.antecedentesFamiliares);
+                }
+                if (consultaCompleta.antecedentesPersonales) {
+                    setText('#detalle-antecedentes-personales', consultaCompleta.antecedentesPersonales);
+                }
+
+                // ============================================================
+                // 20. AUTO-RELLENAR EL ODONTOGRAMA
+                // ============================================================
+                const odontogramaData = consultaCompleta.odontograma || 
+                                        consultaCompleta.diagnostico?.odontograma || 
+                                        null;
+                const idDiagnostico = consultaCompleta.diagnostico?.idDiagnostico || 
+                                     consultaCompleta.idDiagnostico || 
+                                     null;
+
+                // 20a. Mostrar ID del diagnóstico
+                const idDiagnosticoInput = tempDiv.querySelector('#odontogramaDiagnosticoId');
+                if (idDiagnosticoInput) {
+                    idDiagnosticoInput.value = idDiagnostico || '';
+                }
+
+                // 20b. Cargar CPO/CEO
+                const diagnostico = consultaCompleta.diagnostico || consultaCompleta;
+                
+                // CPO
+                const cValue = tempDiv.querySelector('#cValue');
+                const pValue = tempDiv.querySelector('#pValue');
+                const oValue = tempDiv.querySelector('#oValue');
+                const sValue = tempDiv.querySelector('#sValue');
+                const totalDientes = tempDiv.querySelector('#totalDientes');
+                const cpodTotal = tempDiv.querySelector('#cpodTotal');
+                
+                if (cValue && diagnostico.cpoCariados !== undefined && diagnostico.cpoCariados !== null) {
+                    cValue.value = diagnostico.cpoCariados || 0;
+                    pValue.value = diagnostico.cpoPerdidos || 0;
+                    oValue.value = diagnostico.cpoObturados || 0;
+                    sValue.value = diagnostico.piezasSanash4Permanentes || 32;
+                    totalDientes.value = diagnostico.totalPiezasPermanentes || 32;
+                    cpodTotal.textContent = diagnostico.cpoTotal || 0;
+                    
+                    // Mostrar CPO, ocultar CEO
+                    const cpoGroup = tempDiv.querySelector('#cpoGroup');
+                    const ceoGroup = tempDiv.querySelector('#ceoGroup');
+                    if (cpoGroup) cpoGroup.style.display = 'block';
+                    if (ceoGroup) ceoGroup.style.display = 'none';
+                }
+
+                // CEO
+                const ceoCariados = tempDiv.querySelector('#ceoCariados');
+                const ceoExtraidos = tempDiv.querySelector('#ceoExtraidos');
+                const ceoObturados = tempDiv.querySelector('#ceoObturados');
+                const ceoSanos = tempDiv.querySelector('#ceoSanos');
+                const totalDientesTemp = tempDiv.querySelector('#totalDientesTemp');
+                const ceoTotal = tempDiv.querySelector('#ceoTotal');
+                
+                if (ceoCariados && diagnostico.ceoCariados !== undefined && diagnostico.ceoCariados !== null) {
+                    ceoCariados.value = diagnostico.ceoCariados || 0;
+                    ceoExtraidos.value = diagnostico.ceoExtraidos || 0;
+                    ceoObturados.value = diagnostico.ceoObturados || 0;
+                    ceoSanos.value = diagnostico.piezasSanash4Temporales || 20;
+                    totalDientesTemp.value = diagnostico.totalPiezasTemporales || 20;
+                    ceoTotal.textContent = diagnostico.ceoTotal || 0;
+                    
+                    // Mostrar CEO, ocultar CPO
+                    const cpoGroup = tempDiv.querySelector('#cpoGroup');
+                    const ceoGroup = tempDiv.querySelector('#ceoGroup');
+                    if (cpoGroup) cpoGroup.style.display = 'none';
+                    if (ceoGroup) ceoGroup.style.display = 'block';
+                }
+
+                // 20c. Restaurar los dientes del odontograma
+                if (odontogramaData && typeof odontogramaData === 'object') {
+                    restaurarOdontogramaEnTemplate(tempDiv, odontogramaData);
+                } else {
+                    console.log('ℹ️ No hay odontograma para restaurar');
+                }
+
+                // ============================================================
+                // 21. Cargar fotos del odontograma
+                // ============================================================
+                const contenedorFotos = tempDiv.querySelector('#contenedor-fotos-odontograma');
+                
+                if (contenedorFotos && consultaId) {
+                    try {
+                        const fotosResponse = await fetch(`/api/odontograma-fotos/consulta/${consultaId}`);
+                        if (fotosResponse.ok) {
+                            const fotos = await fotosResponse.json();
+                            contenedorFotos.innerHTML = '';
+                            
+                            if (!Array.isArray(fotos) || fotos.length === 0) {
+                                contenedorFotos.innerHTML = '<p>No hay fotos en esta consulta.</p>';
+                            } else {
+                                fotos.forEach(foto => {
+                                    const rutaArchivo = foto.rutaArchivo ?? foto.ruta_archivo ?? foto.path ?? null;
+                                    const src = rutaArchivo ? (rutaArchivo.startsWith('/') ? rutaArchivo : `/${rutaArchivo}`) : null;
+                                    
+                                    if (!src) {
+                                        console.warn('Ruta de imagen faltante:', foto);
+                                        return;
+                                    }
+                                    
+                                    const img = document.createElement('img');
+                                    img.src = src;
+                                    img.alt = foto.nombreOriginal || 'Imagen de odontograma';
+                                    img.style.width = '150px';
+                                    img.style.height = '150px';
+                                    img.style.objectFit = 'cover';
+                                    img.style.borderRadius = '8px';
+                                    img.style.border = '1px solid #ccc';
+                                    img.style.cursor = 'pointer';
+                                    img.onerror = () => {
+                                        img.alt = 'No se pudo cargar la imagen';
+                                        img.style.opacity = '0.5';
+                                    };
+                                    img.onclick = () => window.open(src, '_blank');
+                                    contenedorFotos.appendChild(img);
+                                });
+                            }
+                        } else {
+                            contenedorFotos.innerHTML = '<p>Error al cargar las fotos del odontograma.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error al cargar fotos:', error);
+                        contenedorFotos.innerHTML = '<p>Error al cargar las fotos del odontograma.</p>';
+                    }
+                }
+
+                // 22. Insertar en el modal
+                detalleConsultaContent.innerHTML = '';
+                detalleConsultaContent.appendChild(tempDiv);
+                modalDetalleConsulta.style.display = 'block';
+
+                console.log('✅ Detalle de consulta cargado correctamente');
+
             } catch (error) {
-                return fechaString;
+                console.error('❌ Error al cargar el detalle:', error);
+                detalleConsultaContent.innerHTML = `<div class="error">Error al cargar el detalle: ${error.message}</div>`;
+                modalDetalleConsulta.style.display = 'block';
             }
         }
 
-        // Descargar historial como PDF
+        // ============================================================
+        // DESCARGAR PDF
+        // ============================================================
         async function descargarHistorialPDF() {
             const idPaciente = document.getElementById('numExpediente').value;
-            const tipo = tipoHistorial.value;
             
             if (!idPaciente) {
                 alert('Debe seleccionar un paciente primero');
@@ -1236,7 +1391,6 @@ async function mostrarDetalleConsulta(consulta) {
             }
 
             try {
-                // Crear una ventana de impresión con el contenido del historial
                 const ventanaImpresion = window.open('', '_blank');
                 const nombrePaciente = document.getElementById('personaInformacion').value;
                 
@@ -1249,7 +1403,6 @@ async function mostrarDetalleConsulta(consulta) {
                             body { font-family: Arial, sans-serif; margin: 20px; }
                             .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
                             .consulta { margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; }
-                            .seccion { margin-bottom: 15px; }
                             .label { font-weight: bold; }
                             @media print { body { margin: 0; } }
                         </style>
@@ -1280,30 +1433,27 @@ async function mostrarDetalleConsulta(consulta) {
             }
         }
 
-        // Función para imprimir detalle de consulta
+        // ============================================================
+        // IMPRIMIR DETALLE
+        // ============================================================
         function imprimirDetalleConsulta() {
             window.print();
         }
 
-        // Event Listeners
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Búsqueda
             btnBuscar.addEventListener('click', buscarPacientes);
             
-            // Permitir búsqueda con Enter
             nombreBusqueda.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    buscarPacientes();
-                }
+                if (e.key === 'Enter') buscarPacientes();
             });
             
             ciBusqueda.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    buscarPacientes();
-                }
+                if (e.key === 'Enter') buscarPacientes();
             });
             
-            // Ocultar resultados al hacer clic fuera
             document.addEventListener('click', function(e) {
                 if (!resultadosBusqueda.contains(e.target) && 
                     e.target !== nombreBusqueda && 
@@ -1313,11 +1463,9 @@ async function mostrarDetalleConsulta(consulta) {
                 }
             });
 
-            // Historial
             btnCargarHistorial.addEventListener('click', cargarHistorial);
             btnDescargarHistorial.addEventListener('click', descargarHistorialPDF);
 
-            // Modal
             closeModal.addEventListener('click', function() {
                 modalDetalleConsulta.style.display = 'none';
             });

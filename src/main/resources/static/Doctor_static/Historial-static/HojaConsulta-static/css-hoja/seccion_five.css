@@ -1,0 +1,100 @@
+/* estilo de contenedor cinco, contenedor general  */
+.cont-five{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    height: auto;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+
+/* contendor interno izquierdo */
+.cont-izq-fv{
+    border-left: 1.5px solid black;
+}
+
+
+/* contenedor interno derecho */
+.cont-der-fiv{
+    border-right: 1.5px solid black;
+    border-left: 1.5px solid black;
+}
+
+
+/* filas del contenedor izquierdo interno */
+.row-cont-izq-esp{
+    height: 24px;
+    border-bottom: 1.5px solid black;
+    display:flex;
+}
+.row-cont-izq{
+    border-bottom: 1.5px solid black;
+    height: 16px;   
+}
+
+
+/* filas del contenedor derecho interno */
+.row-cont-der{
+    border-bottom: 1.5px solid black;
+    height: 24px;
+    width: 100%;
+    display: flex;
+}
+
+.prg-text-fiv{
+    flex: 0 0 auto;
+}
+
+.row-info-fiv{
+    flex: 1;
+    margin-left:10px ;
+}
+
+
+/* contenedor inferior, filas inferiores */
+.infer-cont{
+    display: grid;
+    grid-template-rows: repeat(5,1fr);
+}
+
+/* filas finales de la quinta seccion */
+.spc-bot-fiv {
+    height: auto;  /* Cambiar a auto */
+    min-height: 16px;
+    border-bottom: 1.5px solid black;
+    border-right: 1.5px solid black;
+    border-left: 1.5px solid black;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+}
+
+.fila-inferior-linea {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;  /* Para que si no cabe, baje */
+    gap: 2px 40px;  /* Espacio entre elementos */
+    width: 100%;
+}
+
+.fila-inferior-linea .text-doc {
+    font-size: clamp(11px, 2.5vw, 13px);
+    margin: 0;
+    white-space: nowrap;  /* Evita que se parta */
+}
+
+.fila-inferior-linea .text-dato-cont {
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.separador {
+    color: #999;
+    margin: 0 2px;
+}

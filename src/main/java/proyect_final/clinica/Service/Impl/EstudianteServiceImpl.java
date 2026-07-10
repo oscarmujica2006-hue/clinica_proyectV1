@@ -4,6 +4,9 @@ import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Dao.EstudianteRepository;
 import proyect_final.clinica.Service.EstudianteService;
 import proyect_final.clinica.Model.Dto.ProgresoMateriaDTO;
+
+import proyect_final.clinica.Model.Entity.Consentimiento;
+import proyect_final.clinica.Model.Dao.ConsentimientoRepository;
 import proyect_final.clinica.Model.Dto.ProgresoTratamientoDTO;
 import proyect_final.clinica.Model.Entity.InscripcionMateria;
 import proyect_final.clinica.Model.Entity.Materia;
@@ -36,6 +39,9 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Autowired
     private CupoRepository cupoRepository;
+
+    @Autowired
+    private ConsentimientoRepository consentimientoRepository;
     
     @Autowired
     private DiagnosticoTratamientoRepository diagnosticoTratamientoRepository;
@@ -190,4 +196,12 @@ public class EstudianteServiceImpl implements EstudianteService {
         System.out.println("✅ Total materias a mostrar: " + resultado.size());
         return resultado;
     }
+
+
+    @Override
+    public List<Consentimiento> obtenerConsentimientosPorEstudiante(Long idEstudiante) {
+        // Usar el método con detalles para obtener también la clínica y turno
+        return consentimientoRepository.findByEstudianteIdEstudianteWithDetails(idEstudiante);
+    }
+
 }

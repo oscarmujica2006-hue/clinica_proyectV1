@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Clínico Odontológico</title>
+
+    <style>
+        /* ============================================================
+           ESTILOS GENERALES
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .container-principal {
+            width: 215.9mm;
+            height: 330.2mm;
+            margin: 0 auto;
+            padding: 0;
+            background: white;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: top center;
+            border: 2px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos de texto general */
+        .text-doc {
+            font-size: clamp(10px, 2.5vw, 12px);
+            margin: 0;
+            font-weight: 600;
+        }
+
+
+        .text-doc-two {
+            font-size: clamp(8px, 2.5vw, 10px);
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .text-dato-cont {
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .titulo-hist {
+            font-size: 22px;
+            text-align: center;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .ap-text {
+            text-align: left !important;
+        }
+
+        @page {
+            size: oficio;
+            margin: 0;
+        }
+
+        @media print {
+            * {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            html,
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+
+            .container-principal {
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-after: avoid;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            .seccion {
+                page-break-inside: avoid;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        /* ============================================================
+           SECCIÓN UNO
+           ============================================================ */
+        #seccion-1 {
+            margin-top: 5px;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 0px;
+        }
+
+        .distribucion_tres {
+            display: grid;
+            grid-template-columns: 1fr 5fr 1fr;
+        }
+
+        .elem-uno-sec1 {
+            background-color: rgb(255, 255, 255);
+        }
+
+        #col-eus1-2 {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0px;
+        }
+
+        .sec_mat {
+            height: 70%;
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 2px;
+        }
+
+        .datos-mat {
+            width: 100%;
+            height: 100%;
+        }
+
+        .dist_datos {
+            display: flex;
+            flex-direction: column;
+            margin-right: 1%;
+            justify-content: center;
+        }
+
+        .datos-cont {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            height: 25%;
+        }
+
+        .sec-tit {
+            container-type: inline-size;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sec_titulo {
+            display: flex;
+            text-align: center;
+            height: 6%;
+        }
+
+        .contenedor-matriz {
+            border: 1px solid black;
+            height: auto;
+            width: auto;
+        }
+
+        .fila {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            height: auto;
+            width: auto;
+        }
+
+        .celda {
+            border: 1.2px solid black;
+            height: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: clamp(10px, 1vw, 11px);
+        }
+
+        #mat_mat {
+            padding: 5px;
+            gap: 0px !important;
+            margin-bottom: -30px;
+            margin-right: 5%;
+        }
+
+        #img-logo1 {
+            background-image: url('logo1.png');
+            background-position: center 10px;
+            background-repeat: no-repeat;
+            background-size: 90%;
+            height: 140px;
+        }
+
+        #body-one {
+            margin: 0 !important;
+            border: 0 !important;
+            padding: 0px !important;
+            gap: 0px !important;
+        }
+
+        /* ============================================================
+           SECCIÓN DOS
+           ============================================================ */
+        #section-2 {
+            margin-left: 15px;
+            margin-right: 15px;
+            margin-bottom: 0px;
+        }
+
+        .container-gen-3 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1.3px solid black;
+            height: 95px;
+            width: 100%;
+        }
+
+        .cont-fr {
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            height: 100%;
+        }
+
+        .fr-ins {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .div {
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            justify-items: end;
+        }
+
+        .inf-ext {
+            display: grid;
+            grid-template-rows: 1fr 3fr;
+            height: 40px;
+        }
+
+        .inf-pers {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            height: 80%;
+        }
+
+        .inf-cont {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr) !important;
+        }
+
+        .dat-inf {
+            width: 100%;
+            text-align: center;
+            display: grid;
+            height: 100%;
+        }
+
+        .ins-con2 {
+            border-bottom: 1.3px solid black;
+            height: 70%;
+            width: 50%;
+        }
+
+        .sub-dat {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            align-items: center;
+        }
+
+        #body-two {
+            margin: 0;
+            border: 0;
+            padding: 0px;
+        }
+
+        .cont-dat2 {
+            height: 90%;
+            width: 85%;
+            border-bottom: 1.3px dashed black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        /* ============================================================
+           SECCIÓN TRES
+           ============================================================ */
+        .section-tree {
+            display: grid;
+            grid-template-rows: 1fr 3fr 1fr;
+            height: 85px;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 0px;
+            border: 1px solid black;
+        }
+
+        .cont-dat3 {
+            height: 100%;
+        }
+
+        .cont-bord {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
+
+        .aux-three {
+            border-bottom: 1px solid black;
+        }
+
+        .cont-dmed3 {
+            display: grid;
+            grid-template-rows: 16px 1.5fr;
+        }
+
+        .pr-dat3 {
+            text-align: left;
+            text-justify: center;
+            height: 100%;
+        }
+
+        .prm-dt3 {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            height: 100%;
+        }
+
+        .seg-dat3 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .dat-int3 {
+            display: grid;
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .cont-dcont3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .cont-etq {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            height: 100%;
+            padding-left: 10px;
+        }
+
+        .selec-dat3 {
+            height: 14px;
+            width: 25px;
+            border: 1.3px solid black;
+        }
+
+        .lad-selec {
+            display: flex;
+            align-items: center;
+        }
+
+        .ult-cont3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr;
+        }
+
+        .ult-dat3 {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .insert-dt3 {
+            background-color: white;
+        }
+
+        /* ============================================================
+           SECCIÓN CUATRO
+           ============================================================ */
+        .cont-four {
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            height: 50px;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 0px;
+        }
+
+        .cont-div {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            border-bottom: 1.5px solid rgb(0, 0, 0);
+        }
+
+        .pr-div {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+        }
+
+        .cont-int-pr {
+            border-left: 1.5px solid black;
+            border-right: 1.5px solid black;
+            display: grid;
+            grid-template-columns: 1.14fr 1fr;
+            font-size: clamp(10px, 2.5vw, 12px);
+        }
+
+        .ap-cont-pr {
+            display: grid;
+            grid-template-columns: 1.23fr 1fr !important;
+        }
+
+        .cont-int-pr-s {
+            border-left: 0px solid black;
+        }
+
+        .resp-pr-four {
+            border-bottom: 1.5px solid rgb(0, 0, 0);
+            margin-bottom: 2px;
+            margin-left: 5px;
+            margin-right: 10px;
+            padding: 0px;
+        }
+
+        .cont-int-seg {
+            display: grid;
+            grid-template-columns: 4fr 1fr;
+            border-left: 1.2px solid black;
+        }
+
+        .seg-cont-cis {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .int-seg-cis {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cont-int-seg-seg {
+            display: grid;
+            grid-template-columns: 1fr 3fr;
+        }
+
+        .int-bor {
+            border-right: 1.2px solid black;
+        }
+
+        .int-cont-trh {
+            border-bottom: 1.5px solid black;
+            height: 100%;
+            padding-left: 5px;
+        }
+
+        .cont-row-trh {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* ============================================================
+           SECCIÓN CINCO
+           ============================================================ */
+        .cont-five {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            height: auto;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 0px;
+        }
+
+        .cont-izq-fv {
+            border-left: 1.5px solid black;
+        }
+
+        .cont-der-fiv {
+            border-right: 1.5px solid black;
+            border-left: 1.5px solid black;
+        }
+
+        .row-cont-izq-esp {
+            height: 20px;
+            border-bottom: 1.5px solid black;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .row-cont-der {
+            border-bottom: 1.5px solid black;
+            height: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .prg-text-fiv {
+            flex: 0 0 auto;
+            margin-right: 5px;
+            font-size: clamp(9px, 2vw, 11px);
+        }
+
+        .row-info-fiv {
+            flex: 1;
+            margin-left: 5px;
+        }
+
+        .infer-cont {
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        .spc-bot-fiv {
+            height: auto;
+            min-height: 18px;
+            border-bottom: 1.5px solid black;
+            border-right: 1.5px solid black;
+            border-left: 1.5px solid black;
+            margin-left: 10px;
+            margin-right: 10px;
+            margin-bottom: 0px;
+            padding: 1px 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .fila-inferior-linea {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2px 20px;
+            width: 100%;
+        }
+
+        .fila-inferior-linea .text-doc {
+            font-size: clamp(9px, 2vw, 11px);
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .fila-inferior-linea .text-dato-cont {
+            font-size: 10px;
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+        }
+
+        .separador {
+            color: #999;
+            margin: 0 2px;
+        }
+
+        /* ============================================================
+           ESTILOS DEL ODONTOGRAMA
+           ============================================================ */
+        .seccion-odontograma {
+            margin: 10px 10px 5px 10px;
+            padding: 10px;
+            border: 1.5px solid #2c5aa0;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .odontograma-header {
+            text-align: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #2c5aa0;
+        }
+
+        .odontograma-header h3 {
+            font-size: 16px;
+            color: #2c5aa0;
+            margin: 0;
+        }
+
+        .odontograma-header p {
+            color: #64748b;
+            font-size: 12px;
+            margin: 3px 0 0;
+        }
+
+        .odontograma-info {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f0f5ff;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+
+        .odontograma-info label {
+            font-weight: bold;
+            color: #1e293b;
+            font-size: 11px;
+        }
+
+        .odontograma-info select,
+        .odontograma-info input {
+            padding: 3px 8px;
+            margin-left: 5px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .odontograma-info input[readonly] {
+            background: #f0f5ff;
+            width: 80px;
+        }
+
+        .quadrants-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .quadrant {
+            border: 2px solid #2c5aa0;
+            border-radius: 6px;
+            padding: 6px;
+            background: #ffffff;
+        }
+
+        .quadrant-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c5aa0;
+            font-size: 11px;
+        }
+
+        .dental-chart {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 3px;
+            min-height: 40px;
+        }
+
+        .tooth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1px;
+        }
+
+        .tooth-number {
+            font-size: 8px;
+            font-weight: bold;
+            margin-bottom: 1px;
+            color: #333;
+        }
+
+        .tooth {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tooth.selected {
+            box-shadow: 0 0 0 2px #2c5aa0;
+            border-radius: 3px;
+        }
+
+        .center,
+        .left,
+        .right,
+        .top,
+        .bottom {
+            stroke: #000;
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: fill 0.2s ease;
+        }
+
+        .center.sano,
+        .left.sano,
+        .right.sano,
+        .top.sano,
+        .bottom.sano {
+            fill: #d4edda !important;
+        }
+        .center.cariado,
+        .left.cariado,
+        .right.cariado,
+        .top.cariado,
+        .bottom.cariado {
+            fill: #f8d7da !important;
+        }
+        .center.obturado,
+        .left.obturado,
+        .right.obturado,
+        .top.obturado,
+        .bottom.obturado {
+            fill: #fff3cd !important;
+        }
+        .center.obturado_cariado,
+        .left.obturado_cariado,
+        .right.obturado_cariado,
+        .top.obturado_cariado,
+        .bottom.obturado_cariado {
+            fill: url(#obturado-cariado-pattern) !important;
+        }
+        .tooth.extraccion .center,
+        .tooth.extraccion .left,
+        .tooth.extraccion .right,
+        .tooth.extraccion .top,
+        .tooth.extraccion .bottom {
+            fill: #dc3545 !important;
+        }
+        .tooth.extraido .center,
+        .tooth.extraido .left,
+        .tooth.extraido .right,
+        .tooth.extraido .top,
+        .tooth.extraido .bottom {
+            fill: #6c757d !important;
+        }
+        .tooth.perdido_otra .center,
+        .tooth.perdido_otra .left,
+        .tooth.perdido_otra .right,
+        .tooth.perdido_otra .top,
+        .tooth.perdido_otra .bottom {
+            fill: #495057 !important;
+        }
+        .center.endodoncia,
+        .left.endodoncia,
+        .right.endodoncia,
+        .top.endodoncia,
+        .bottom.endodoncia {
+            fill: #cce5ff !important;
+        }
+        .center.corona,
+        .left.corona,
+        .right.corona,
+        .top.corona,
+        .bottom.corona {
+            fill: #d4edda !important;
+            stroke: #ffc107 !important;
+            stroke-width: 2px !important;
+        }
+        .surface-label {
+            font-size: 6px;
+            font-weight: bold;
+            fill: #333;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .current-selection {
+            text-align: center;
+            margin: 8px 0;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c5aa0;
+            min-height: 18px;
+        }
+
+        .area-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        .area-selector-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #2c5aa0;
+            font-size: 12px;
+        }
+
+        .area-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .area-btn {
+            padding: 4px 12px;
+            border: 1px solid #999;
+            border-radius: 3px;
+            background: white;
+            cursor: pointer;
+            font-size: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .area-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+        .area-btn.active {
+            background: #2c5aa0;
+            color: white;
+            border-color: #2c5aa0;
+        }
+
+        .diagnostic-title {
+            text-align: center;
+            margin: 10px 0 6px;
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        .diagnostic-criteria {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            margin: 6px auto;
+            max-width: 700px;
+        }
+
+        .criteria-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 9px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .criteria-item:hover {
+            background: #f0f5ff;
+            border-color: #2c5aa0;
+        }
+
+        .criteria-color {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #666;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .sano-color {
+            background: #d4edda;
+        }
+        .cariado-color {
+            background: #f8d7da;
+        }
+        .obturado-color {
+            background: #fff3cd;
+        }
+        .obturado-cariado-color {
+            background: linear-gradient(45deg, #f8d7da 50%, #fff3cd 50%);
+        }
+        .extraccion-color {
+            background: #dc3545;
+        }
+        .extraido-color {
+            background: #6c757d;
+        }
+        .perdido-otra-color {
+            background: #495057;
+        }
+        .endodoncia-color {
+            background: #cce5ff;
+        }
+        .corona-color {
+            background: #d4edda;
+            border: 1px solid #ffc107;
+        }
+
+        .criteria-label {
+            font-size: 8px;
+            white-space: nowrap;
+        }
+
+        .indices-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f5ff;
+            border-radius: 5px;
+            flex-wrap: wrap;
+        }
+
+        .indices-group {
+            text-align: center;
+        }
+
+        .indices-group h4 {
+            margin-bottom: 6px;
+            color: #2c5aa0;
+            font-size: 12px;
+        }
+
+        .indices-group label {
+            font-size: 10px;
+        }
+
+        .indices-group input {
+            width: 40px;
+            text-align: center;
+            padding: 2px 4px;
+            margin: 0 2px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .indices-group .total {
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .contenedor-fotos-odontograma {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 50px;
+            padding: 5px;
+        }
+
+        .contenedor-fotos-odontograma .foto-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            background: #f9f9f9;
+        }
+
+        .contenedor-fotos-odontograma .foto-item img {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+
+        .contenedor-fotos-odontograma .foto-item .foto-label {
+            font-size: 9px;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        .mensaje-sin-fotos {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            padding: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-principal" class="container-principal">
+
+        <!-- ============================================================
+        SECCIÓN UNO
+        ============================================================ -->
+        <div id="body-one" class="seccion">
+            <section id="seccion-1">
+                <div class="distribucion_tres">
+                    <div class="elem-uno-sec1" id="img-logo1"></div>
+                    <div class="elem-uno-sec1" id="col-eus1-2">
+                        <div class="sec-tit sec_mat">
+                            <div class="datos-mat dist_datos">
+                                <div class="datos-cont">
+                                    <p class="text-doc">nro de Expediente clinico: <span id="detalle-expediente"></span></p>
+                                </div>
+                                <div class="datos-cont">
+                                    <p class="text-doc">nro de Historial clinico: <span id="detalle-historia"></span></p>
+                                </div>
+                                <div class="datos-cont">
+                                    <p class="text-doc">C.I.: <span id="detalle-ci"></span></p>
+                                </div>
+                            </div>
+                            <div class="datos-mat" id="mat_mat">
+                                <div class="contenedor-matriz">
+                                    <div class="fila">
+                                        <div class="celda">1</div>
+                                        <div class="celda">2</div>
+                                        <div class="celda">3</div>
+                                        <div class="celda">4</div>
+                                        <div class="celda">5</div>
+                                        <div class="celda">6</div>
+                                        <div class="celda">7</div>
+                                        <div class="celda">8</div>
+                                        <div class="celda">9</div>
+                                    </div>
+                                    <div class="fila">
+                                        <div class="celda">10</div>
+                                        <div class="celda">11</div>
+                                        <div class="celda">12</div>
+                                        <div class="celda">13</div>
+                                        <div class="celda">14</div>
+                                        <div class="celda">15</div>
+                                        <div class="celda">16</div>
+                                        <div class="celda">17</div>
+                                        <div class="celda">18</div>
+                                    </div>
+                                    <div class="fila">
+                                        <div class="celda">19</div>
+                                        <div class="celda">20</div>
+                                        <div class="celda">21</div>
+                                        <div class="celda">22</div>
+                                        <div class="celda">23</div>
+                                        <div class="celda">24</div>
+                                        <div class="celda">25</div>
+                                        <div class="celda">26</div>
+                                        <div class="celda">27</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sec-tit sec_titulo">
+                            <h1 class="titulo-hist">HISTORIA CLINICA ODONTOLOGICA U.A.P.</h1>
+                        </div>
+                    </div>
+                    <div class="elem-uno-sec1"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN DOS
+        ============================================================ -->
+        <div id="body-two" class="seccion">
+            <section id="section-2">
+                <div class="container-gen-3">
+                    <div class="cont-fr">
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-nombre-paciente"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Nombre</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-lugar-fecha-nacimiento"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Lugar y Fecha de Nacimiento</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-grado-instruccion"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Grado de Instrucción</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cont-fr">
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-apellido-paterno"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Apellido Paterno</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-ocupacion"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Ocupación</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-estado-civil"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Estado Civil</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cont-fr">
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-apellido-materno"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Apellido Materno</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-direccion"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Dirección</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-naciones-originarias"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Naciones Originarias</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cont-fr">
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-edad-sexo"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">edad sexo</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-telefono-celular"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Telefono Celular</p>
+                            </div>
+                        </div>
+                        <div class="fr-ins">
+                            <div class="div">
+                                <div class="cont-dat2 texto-autocompletado" id="detalle-idioma"></div>
+                            </div>
+                            <div class="div">
+                                <p class="text-doc">Idiona o Dialecto</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="inf-ext">
+                    <div class="div-inf inf-pers">
+                        <div class="dat-inf">
+                            <p class="text-doc">persona que brinda la informacion:</p>
+                        </div>
+                        <div class="dat-inf">
+                            <div class="ins-con2" id="detalle-informante-relacion"></div>
+                        </div>
+                    </div>
+                    <div class="div-inf inf-cont">
+                        <div class="dat-inf">
+                            <div class="sub-dat">
+                                <div class="ins-inf2 texto-autocompletado" id="detalle-informante-apellido-paterno"></div>
+                            </div>
+                            <div class="sub-dat">
+                                <p class="text-doc-two">Apellido Paterno</p>
+                            </div>
+                        </div>
+                        <div class="dat-inf">
+                            <div class="sub-dat">
+                                <div class="ins-inf2 texto-autocompletado" id="detalle-informante-apellido-materno"></div>
+                            </div>
+                            <div class="sub-dat">
+                                <p class="text-doc-two">Apellido Materno</p>
+                            </div>
+                        </div>
+                        <div class="dat-inf">
+                            <div class="sub-dat">
+                                <div class="ins-inf2 texto-autocompletado" id="detalle-informante-nombres"></div>
+                            </div>
+                            <div class="sub-dat">
+                                <p class="text-doc-two">Nombre</p>
+                            </div>
+                        </div>
+                        <div class="dat-inf">
+                            <div class="sub-dat">
+                                <div class="ins-inf2 texto-autocompletado" id="detalle-informante-direccion"></div>
+                            </div>
+                            <div class="sub-dat">
+                                <p class="text-doc-two">Dirección</p>
+                            </div>
+                        </div>
+                        <div class="dat-inf">
+                            <div class="sub-dat">
+                                <div class="ins-inf2 texto-autocompletado" id="detalle-informante-telefono"></div>
+                            </div>
+                            <div class="sub-dat">
+                                <p class="text-doc-two">Telefono</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN TRES
+        ============================================================ -->
+        <div class="seccion">
+            <section class="section-tree">
+                <div class="cont-dat3 aux-three">
+                    <div class="pr-dat3">
+                        <p class="text-doc">Antecedentes Patologicos Familiares:</p>
+                    </div>
+                    <div class="pr-dat3" id="detalle-antecedentes-familiares"></div>
+                </div>
+                <div class="cont-dat3 cont-dmed3">
+                    <div class="prm-dt3">
+                        <div class="dat-pfil3">
+                            <p class="text-doc">Antecedentes Patologicos Personales:</p>
+                        </div>
+                        <div class="dat-pfil3 texto-autocompletado" id="detalle-antecedentes-personales"></div>
+                    </div>
+                    <div class="seg-dat3 cont-bord">
+                        <div class="dat-int3">
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Anemia</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-anemia"></div>
+                                </div>
+                            </div>
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Asma</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-asma"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dat-int3">
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Cardiopatias</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-cardiopatias"></div>
+                                </div>
+                            </div>
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Diabetes Mel.</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-diabetes"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dat-int3">
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Enf.Gastricas</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-gastricas"></div>
+                                </div>
+                            </div>
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Epilipsia</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-epilepsia"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dat-int3">
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Hepatitis</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-hepatitis"></div>
+                                </div>
+                            </div>
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Hipertension</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-hipertension"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dat-int3">
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">Tuberculosis</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-tuberculosis"></div>
+                                </div>
+                            </div>
+                            <div class="cont-dcont3">
+                                <div class="inf-dat3">
+                                    <div class="cont-etq">
+                                        <p class="text-doc">VIH</p>
+                                    </div>
+                                </div>
+                                <div class="inf-dat3 lad-selec">
+                                    <div class="selec-dat3 texto-autocompletado" id="detalle-vih"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-dat3 ult-cont3">
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Otros:</p>
+                        </div>
+                        <div class="insert-dt3" id="detalle-otros"></div>
+                    </div>
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Ninguno:</p>
+                        </div>
+                        <div class="insert-dt3" id="detalle-ninguno"></div>
+                    </div>
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Alergias:SI().modificar.()NO</p>
+                        </div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-alergias"></div>
+                    </div>
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Especifique Alergia:</p>
+                        </div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-alergia-detalle"></div>
+                    </div>
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Embarazo:SI ()</p>
+                        </div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-embarazo"></div>
+                    </div>
+                    <div class="ult-dat3">
+                        <div>
+                            <p class="text-doc">Semanas:.modificar.</p>
+                        </div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-semana-embarazo"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN CUATRO
+        ============================================================ -->
+        <div class="seccion">
+            <div class="cont-four">
+                <div class="cont-div pr-div">
+                    <div class="cont-int-pr">
+                        <p class="text-doc">¿Esta en tratamiento médico?</p>
+                        <div class="resp-pr-four texto-autocompletado" id="detalle-tratamiento-medico">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="cont-int-pr cont-int-pr-s ap-cont-pr">
+                        <p class="text-doc">Detalle Tratamiento:</p>
+                        <div class="resp-pr-four texto-autocompletado" id="detalle-tratamiento-detalle">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-div">
+                    <div class="cont-int-seg">
+                        <div class="cont-cis">
+                            <p class="text-doc">¿Actualmente recibe algún medicamento?</p>
+                        </div>
+                        <div class="cont-cis seg-cont-cis">
+                            <div class="int-seg-cis">
+                                <div class="res-four-opt">
+                                    <p class="text-doc">SI</p>
+                                </div>
+                                <div class="res-four-opt texto-autocompletado" id="detalle-medicamentos"></div>
+                            </div>
+                            <div class="int-seg-cis">
+                                <div class="res-four-opt">
+                                    <p class="text-doc">NO</p>
+                                </div>
+                                <div class="res-four-opt texto-autocompletado" id="detalle-medicamentos"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cont-int-seg-seg">
+                        <div class="int-int-seg">
+                            <p class="text-doc">Medicamento Actual:</p>
+                        </div>
+                        <div class="int-int-seg int-bor">
+                            <div class="esp-resp texto-autocompletado" id="detalle-medicamento-actual"></div>
+                            <div class="esp-resp texto-autocompletado" id="detalle-medicamento-actual"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-div">
+                    <div class="cont-int-seg">
+                        <div class="cont-cis">
+                            <p class="text-doc">Tuvo hemorragia después de una extracción dental:</p>
+                        </div>
+                        <div class="cont-cis seg-cont-cis">
+                            <div class="int-seg-cis">
+                                <div class="res-four-opt">
+                                    <p class="text-doc">SI</p>
+                                </div>
+                                <div class="res-four-opt texto-autocompletado" id="detalle-hemorragia"></div>
+                            </div>
+                            <div class="int-seg-cis">
+                                <div class="res-four-opt">
+                                    <p class="text-doc">NO</p>
+                                </div>
+                                <div class="res-four-opt texto-autocompletado" id="detalle-hemorragia"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="cont-int-seg-seg">
+                        <div class="int-int-seg">
+                            <p class="text-doc">Especifique Hemorragia:</p>
+                        </div>
+                        <div class="int-int-seg int-bor">
+                            <div class="esp-resp texto-autocompletado" id="detalle-hemorragia-detalle"></div>
+                            <div class="esp-resp texto-autocompletado" id="detalle-hemorragia-detalle"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-row-trh">
+                    <div class="int-cont-trh">
+                        <p class="text-doc ap-text">EXAMEN EXTRA ORAL</p>
+                    </div>
+                    <div class="int-cont-trh">
+                        <p class="text-doc ap-text">EXAMEN INTRA ORAL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN CINCO
+        ============================================================ -->
+        <div class="seccion">
+            <div class="cont-five">
+                <div class="cont-izq-fv">
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">ATM:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-atm">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Ganglios linfáticos:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-ganglios">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Respirador:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-respirador">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Otros Respiratorio:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-otros-respiratorio">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">ANTECEDENTES BUCODENTALES</p>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Fecha de la última visita al odontólogo:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-fecha">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">HABITOS:</p>
+                        <div class="row-info-fiv">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">ANTECEDENTES DE HIGIENE ORAL:</p>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Utiliza cepillo dental:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-cepillo">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-izq-esp">
+                        <p class="text-doc prg-text-fiv">Frecuencia del cepillado dental:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-frecuencia-cepillo">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="cont-der-fiv">
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">HIGIENE BUCAL:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-higiene-bucal">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Labios:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-labios">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Lengua:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-lengua">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Paladar:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-paladar">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Piso de la boca:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-piso-boca">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Mucosa Yugal:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-mucosa-yugal">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Encias:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-encias">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Utiliza protesis dental:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-usa-protesis">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der"></div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Utiliza hilo dental:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-hilo">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                    <div class="row-cont-der">
+                        <p class="text-doc prg-text-fiv">Utiliza enjuage bucal:</p>
+                        <div class="row-info-fiv texto-autocompletado" id="detalle-enjuague">
+                            <p class="text-dato-cont">DATO</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="infer-cont">
+                <div class="spc-bot-fiv">
+                    <div class="fila-inferior-linea">
+                        <p class="text-doc prg-text-fiv">Utiliza cepillo dental:</p>
+                        <p class="text-dato-cont texto-autocompletado" id="detalle-cepillo">DATO</p>
+                        <span class="separador">|</span>
+                        <p class="text-doc prg-text-fiv">Utiliza hilo dental:</p>
+                        <p class="text-dato-cont texto-autocompletado" id="detalle-hilo">DATO</p>
+                        <span class="separador">|</span>
+                        <p class="text-doc prg-text-fiv">Utiliza enjuague bucal:</p>
+                        <p class="text-dato-cont texto-autocompletado" id="detalle-enjuague">DATO</p>
+                    </div>
+                </div>
+                <div class="spc-bot-fiv">
+                    <div class="fila-inferior-linea">
+                        <p class="text-doc prg-text-fiv">Frecuencia del cepillado dental:</p>
+                        <p class="text-dato-cont texto-autocompletado" id="detalle-frecuencia-cepillo">DATO</p>
+                        <span class="separador">|</span>
+                        <p class="text-doc prg-text-fiv">Durante el cepillado dental le sangran las encìas?:</p>
+                        <p class="text-dato-cont texto-autocompletado" id="detalle-sangrado">DATO</p>
+                    </div>
+                </div>
+                <div class="spc-bot-fiv">
+                    <p class="text-doc prg-text-fiv">Observaciones Higiene:</p>
+                    <p class="text-dato-cont texto-autocompletado" id="detalle-obs-higiene">DATO</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN ODONTOGRAMA
+        ============================================================ -->
+        <div class="seccion-odontograma">
+            <div class="odontograma-header">
+                <h3><i class="fas fa-tooth"></i> ODONTOGRAMA - SISTEMA DENTAL</h3>
+                <p>Seleccione un diente, luego elija un área y aplique un diagnóstico</p>
+            </div>
+
+            <div class="odontograma-info">
+                <div>
+                    <label>Tipo dentición:</label>
+                    <select id="tipoDenticion">
+                        <option value="permanente">Permanente (CPO-D) - Adultos</option>
+                        <option value="temporal">Temporal (CEO) - Niños</option>
+                    </select>
+                </div>
+                <div>
+                    <label>ID Diagnóstico:</label>
+                    <input type="text" id="odontogramaDiagnosticoId" readonly>
+                </div>
+            </div>
+
+            <div class="quadrants-container">
+                <div class="quadrant" id="quadrant1">
+                    <div class="quadrant-title" id="titleQuadrant1">CUADRANTE 1 - SUPERIOR DERECHO (11-18)</div>
+                    <div class="dental-chart" id="dentalChart1"></div>
+                </div>
+                <div class="quadrant" id="quadrant2">
+                    <div class="quadrant-title" id="titleQuadrant2">CUADRANTE 2 - SUPERIOR IZQUIERDO (21-28)</div>
+                    <div class="dental-chart" id="dentalChart2"></div>
+                </div>
+                <div class="quadrant" id="quadrant3">
+                    <div class="quadrant-title" id="titleQuadrant3">CUADRANTE 3 - INFERIOR IZQUIERDO (31-38)</div>
+                    <div class="dental-chart" id="dentalChart3"></div>
+                </div>
+                <div class="quadrant" id="quadrant4">
+                    <div class="quadrant-title" id="titleQuadrant4">CUADRANTE 4 - INFERIOR DERECHO (41-48)</div>
+                    <div class="dental-chart" id="dentalChart4"></div>
+                </div>
+            </div>
+
+            <div class="current-selection" id="currentSelection">
+                Seleccione un diente, luego un área y un diagnóstico
+            </div>
+
+            <div class="area-selector" id="areaSelector" style="display: none;">
+                <div class="area-selector-title">Seleccione un área del diente:</div>
+                <div class="area-buttons">
+                    <button class="area-btn" data-area="center">Centro</button>
+                    <button class="area-btn" data-area="top">Superior</button>
+                    <button class="area-btn" data-area="bottom">Inferior</button>
+                    <button class="area-btn" data-area="left">Izquierda</button>
+                    <button class="area-btn" data-area="right">Derecha</button>
+                </div>
+            </div>
+
+            <h3 class="diagnostic-title">
+                <i class="fas fa-list"></i> CRITERIOS DE DIAGNÓSTICO
+            </h3>
+
+            <div class="diagnostic-criteria" id="diagnosticCriteria">
+                <div class="criteria-item" data-state="sano">
+                    <div class="criteria-color sano-color"></div>
+                    <div class="criteria-label">0 - SANO</div>
+                </div>
+                <div class="criteria-item" data-state="cariado">
+                    <div class="criteria-color cariado-color"></div>
+                    <div class="criteria-label">1 - CARIADO (C)</div>
+                </div>
+                <div class="criteria-item" data-state="obturado">
+                    <div class="criteria-color obturado-color"></div>
+                    <div class="criteria-label">2 - OBTURADO (O)</div>
+                </div>
+                <div class="criteria-item" data-state="obturado_cariado">
+                    <div class="criteria-color obturado-cariado-color"></div>
+                    <div class="criteria-label">3 - OBTURADO + CARIADO (O)</div>
+                </div>
+                <div class="criteria-item" data-state="extraccion">
+                    <div class="criteria-color extraccion-color"></div>
+                    <div class="criteria-label">4 - EXTRACCIÓN INDICADA (P/E)</div>
+                </div>
+                <div class="criteria-item" data-state="extraido">
+                    <div class="criteria-color extraido-color"></div>
+                    <div class="criteria-label">5 - PERDIDO POR CARIES (P/E)</div>
+                </div>
+                <div class="criteria-item" data-state="perdido_otra">
+                    <div class="criteria-color perdido-otra-color"></div>
+                    <div class="criteria-label">6 - PERDIDO POR OTRA RAZÓN (P/E)</div>
+                </div>
+                <div class="criteria-item" data-state="endodoncia">
+                    <div class="criteria-color endodoncia-color"></div>
+                    <div class="criteria-label">7 - ENDODONCIA (O)</div>
+                </div>
+                <div class="criteria-item" data-state="corona">
+                    <div class="criteria-color corona-color"></div>
+                    <div class="criteria-label">8 - CORONA (O)</div>
+                </div>
+            </div>
+
+            <div class="indices-section" id="indicesSection">
+                <div class="indices-group" id="cpoGroup">
+                    <h4>CPO-D (Permanentes)</h4>
+                    <div>
+                        <label>C (Cariados):</label>
+                        <input type="number" id="cValue" readonly value="0">
+                    </div>
+                    <div>
+                        <label>P (Perdidos):</label>
+                        <input type="number" id="pValue" readonly value="0">
+                    </div>
+                    <div>
+                        <label>O (Obturados):</label>
+                        <input type="number" id="oValue" readonly value="0">
+                    </div>
+                    <div>
+                        <label>Total piezas Sanas:</label>
+                        <input type="number" id="sValue" readonly value="32">
+                    </div>
+                    <div>
+                        <label>Total piezas Dentales:</label>
+                        <input type="number" id="totalDientes" readonly value="32">
+                    </div>
+                    <div class="total">
+                        <strong>Total CPO-D: <span id="cpodTotal">0</span></strong>
+                    </div>
+                </div>
+                <div class="indices-group" id="ceoGroup" style="display: none;">
+                    <h4>CEO (Temporales - Niños)</h4>
+                    <div>
+                        <label>C (Cariados):</label>
+                        <input type="number" id="ceoCariados" readonly value="0">
+                        <label>E (Extraídos):</label>
+                        <input type="number" id="ceoExtraidos" readonly value="0">
+                        <label>O (Obturados):</label>
+                        <input type="number" id="ceoObturados" readonly value="0">
+                    </div>
+                    <div>
+                        <label>Total piezas Sanas:</label>
+                        <input type="number" id="ceoSanos" readonly value="20">
+                        <label>Total piezas Dentales:</label>
+                        <input type="number" id="totalDientesTemp" readonly value="20">
+                    </div>
+                    <div class="total">
+                        <strong>Total CEO: <span id="ceoTotal">0</span></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+        SECCIÓN FOTOS
+        ============================================================ -->
+        <div class="seccion-odontograma" style="margin-top: 5px;">
+            <h3>📸 Odontograma - Fotos del Paciente</h3>
+            <div id="contenedor-fotos-odontograma" class="contenedor-fotos-odontograma">
+                <div class="mensaje-sin-fotos">No hay fotos disponibles</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================================
+    SCRIPT
+    ============================================================ -->
+    <script>
+        // Función para cargar fotos del odontograma
+        function cargarFotosOdontograma() {
+            const contenedor = document.getElementById('contenedor-fotos-odontograma');
+            const fotos = [];
+
+            if (!fotos || fotos.length === 0) {
+                contenedor.innerHTML = '<div class="mensaje-sin-fotos">No hay fotos disponibles</div>';
+                return;
+            }
+
+            contenedor.innerHTML = '';
+            fotos.forEach((foto, index) => {
+                const fotoItem = document.createElement('div');
+                fotoItem.className = 'foto-item';
+                const img = document.createElement('img');
+                img.src = foto.url;
+                img.alt = foto.label || `Foto ${index + 1}`;
+                img.loading = 'lazy';
+                const label = document.createElement('span');
+                label.className = 'foto-label';
+                label.textContent = foto.label || `Foto ${index + 1}`;
+                fotoItem.appendChild(img);
+                fotoItem.appendChild(label);
+                contenedor.appendChild(fotoItem);
+            });
+        }
+
+        function generarOdontograma() {
+            const cuadrantes = [
+                { id: 'dentalChart1', dientes: [11, 12, 13, 14, 15, 16, 17, 18] },
+                { id: 'dentalChart2', dientes: [21, 22, 23, 24, 25, 26, 27, 28] },
+                { id: 'dentalChart3', dientes: [31, 32, 33, 34, 35, 36, 37, 38] },
+                { id: 'dentalChart4', dientes: [41, 42, 43, 44, 45, 46, 47, 48] }
+            ];
+
+            cuadrantes.forEach(cuadrante => {
+                const container = document.getElementById(cuadrante.id);
+                if (!container) return;
+                container.innerHTML = '';
+                cuadrante.dientes.forEach(numero => {
+                    const toothContainer = document.createElement('div');
+                    toothContainer.className = 'tooth-container';
+                    const numberLabel = document.createElement('div');
+                    numberLabel.className = 'tooth-number';
+                    numberLabel.textContent = numero;
+                    toothContainer.appendChild(numberLabel);
+                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.setAttribute('viewBox', '0 0 60 70');
+                    svg.setAttribute('class', 'tooth');
+                    svg.setAttribute('data-tooth', numero);
+                    svg.style.width = '28px';
+                    svg.style.height = '28px';
+                    const areas = [
+                        { id: 'center', d: 'M15,5 L45,5 L45,50 L30,65 L15,50 Z', label: 'C' },
+                        { id: 'top', d: 'M15,5 L45,5 L45,15 L15,15 Z', label: 'S' },
+                        { id: 'bottom', d: 'M15,50 L45,50 L30,65 L15,50 Z', label: 'I' },
+                        { id: 'left', d: 'M15,5 L25,5 L25,50 L15,50 Z', label: 'L' },
+                        { id: 'right', d: 'M35,5 L45,5 L45,50 L35,50 Z', label: 'R' }
+                    ];
+                    areas.forEach(area => {
+                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                        path.setAttribute('d', area.d);
+                        path.setAttribute('class', area.id);
+                        path.setAttribute('data-area', area.id);
+                        path.setAttribute('data-tooth', numero);
+                        path.style.fill = '#d4edda';
+                        path.style.stroke = '#000';
+                        path.style.strokeWidth = '1.5';
+                        svg.appendChild(path);
+                        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        label.setAttribute('class', 'surface-label');
+                        label.setAttribute('x', '30');
+                        label.setAttribute('y', '35');
+                        label.setAttribute('text-anchor', 'middle');
+                        label.setAttribute('dominant-baseline', 'middle');
+                        label.textContent = area.label;
+                        svg.appendChild(label);
+                    });
+                    svg.addEventListener('click', function(e) {
+                        const toothNumber = this.getAttribute('data-tooth');
+                        seleccionarDiente(toothNumber);
+                    });
+                    toothContainer.appendChild(svg);
+                    container.appendChild(toothContainer);
+                });
+            });
+        }
+
+        let dienteSeleccionado = null;
+
+        function seleccionarDiente(numero) {
+            document.querySelectorAll('.tooth.selected').forEach(el => el.classList.remove('selected'));
+            const tooth = document.querySelector(`.tooth[data-tooth="${numero}"]`);
+            if (tooth) {
+                tooth.classList.add('selected');
+                dienteSeleccionado = numero;
+                document.getElementById('currentSelection').textContent = `Diente seleccionado: ${numero}`;
+                document.getElementById('areaSelector').style.display = 'flex';
+            }
+        }
+
+        function aplicarDiagnostico(state) {
+            if (!dienteSeleccionado) {
+                alert('Primero seleccione un diente');
+                return;
+            }
+            const areaActiva = document.querySelector('.area-btn.active');
+            if (!areaActiva) {
+                alert('Primero seleccione un área del diente');
+                return;
+            }
+            const area = areaActiva.getAttribute('data-area');
+            const tooth = document.querySelector(`.tooth[data-tooth="${dienteSeleccionado}"]`);
+            if (tooth) {
+                const areaElement = tooth.querySelector(`[data-area="${area}"]`);
+                if (areaElement) {
+                    areaElement.classList.remove('sano', 'cariado', 'obturado', 'obturado_cariado',
+                        'extraccion', 'extraido', 'perdido_otra', 'endodoncia', 'corona');
+                    areaElement.classList.add(state);
+                    if (!odontogramaData[dienteSeleccionado]) {
+                        odontogramaData[dienteSeleccionado] = {};
+                    }
+                    odontogramaData[dienteSeleccionado][area] = state;
+                    actualizarIndices();
+                    mostrarToast(`Diagnóstico aplicado: ${state} en diente ${dienteSeleccionado} - ${area}`);
+                }
+            }
+        }
+
+        function aplicarArea(area) {
+            console.log(`Área seleccionada: ${area}`);
+        }
+
+        let odontogramaData = {};
+
+        function actualizarIndices() {
+            let cariados = 0,
+                perdidos = 0,
+                obturados = 0,
+                sanos = 0;
+            const totalDientes = 32;
+            Object.keys(odontogramaData).forEach(toothId => {
+                const tooth = odontogramaData[toothId];
+                let toothCariado = false,
+                    toothPerdido = false,
+                    toothObturado = false;
+                let toothSano = true;
+                Object.keys(tooth).forEach(area => {
+                    const state = tooth[area];
+                    if (state === 'cariado' || state === 'obturado_cariado') {
+                        toothCariado = true;
+                        toothSano = false;
+                    }
+                    if (state === 'extraccion' || state === 'extraido' || state === 'perdido_otra') {
+                        toothPerdido = true;
+                        toothSano = false;
+                    }
+                    if (state === 'obturado' || state === 'obturado_cariado' ||
+                        state === 'endodoncia' || state === 'corona') {
+                        toothObturado = true;
+                        toothSano = false;
+                    }
+                });
+                if (toothCariado) cariados++;
+                if (toothPerdido) perdidos++;
+                if (toothObturado) obturados++;
+                if (toothSano) sanos++;
+            });
+            const cValue = document.getElementById('cValue');
+            const pValue = document.getElementById('pValue');
+            const oValue = document.getElementById('oValue');
+            const sValue = document.getElementById('sValue');
+            const totalDientesInput = document.getElementById('totalDientes');
+            const cpodTotal = document.getElementById('cpodTotal');
+            if (cValue) cValue.value = cariados;
+            if (pValue) pValue.value = perdidos;
+            if (oValue) oValue.value = obturados;
+            if (sValue) sValue.value = sanos;
+            if (totalDientesInput) totalDientesInput.value = totalDientes;
+            const cpodTotalValue = cariados + perdidos + obturados;
+            if (cpodTotal) cpodTotal.textContent = cpodTotalValue;
+        }
+
+        function mostrarToast(mensaje) {
+            console.log('✅ ' + mensaje);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            generarOdontograma();
+            cargarFotosOdontograma();
+            document.querySelectorAll('.criteria-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const state = this.getAttribute('data-state');
+                    aplicarDiagnostico(state);
+                });
+            });
+            document.querySelectorAll('.area-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.area-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const area = this.getAttribute('data-area');
+                    aplicarArea(area);
+                });
+            });
+        });
+
+        console.log('🦷 Odontograma cargado correctamente');
+    </script>
+</body>
+
+</html>

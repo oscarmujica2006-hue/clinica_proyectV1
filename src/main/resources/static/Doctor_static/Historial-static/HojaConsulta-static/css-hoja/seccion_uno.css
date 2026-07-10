@@ -1,0 +1,106 @@
+#seccion-1{
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+.distribucion_tres {
+    display: grid;
+    grid-template-columns: 1fr 5fr 1fr;
+
+}
+
+.elem-uno-sec1 {
+    background-color: rgb(255, 255, 255);
+}
+
+#col-eus1-2 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0px;
+}
+
+.sec_mat {
+    height: 77%;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.datos-mat {
+    width: 100%;
+    height: 100%;
+}
+
+.dist_datos {
+    display: flex;
+    flex-direction: column;
+    margin-right: 1%;
+    justify-content: center;
+}
+
+.datos-cont {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    height: 25%;
+}
+
+.sec-tit {
+    container-type: inline-size;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sec_titulo {
+    display: flex;
+    text-align: center;
+    height: 6%;
+}
+
+.contenedor-matriz {
+    border: 1px solid black;
+    height: auto;
+    width: auto;
+}
+
+.fila {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    height: auto;
+    width: auto;
+}
+
+.celda {
+    border: 1.2px solid black;
+    height: 24px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(12px, 1vw, 12px);
+}
+
+#mat_mat {
+    padding: 5px;
+    gap: 0px !important;
+    margin-bottom: -40px;
+    margin-right: 5%;
+}
+
+#img-logo1 {
+    background-image: url(../img/logo1.png);
+    background-position: center 10px;
+    background-repeat: no-repeat;
+    background-size: 90%;
+    height: 140px;
+}
+
+#body-one{ 
+    margin: 0 !important;
+    border: 0 !important;
+    padding: 0px !important;
+    gap: 0px !important;
+}

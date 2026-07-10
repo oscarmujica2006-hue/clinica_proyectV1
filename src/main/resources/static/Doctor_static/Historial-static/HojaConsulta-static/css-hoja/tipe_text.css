@@ -1,0 +1,38 @@
+/* primera seccion  */
+
+
+/* estilo del titulo principl */
+.titulo-hist {
+    font-size: 25px;
+    text-align: center;
+    margin: 0px;
+    padding: 0px;
+}
+
+
+
+/* estilo de la segunda seccion  */
+
+
+/* estilo de la cuarta seccion  */
+
+.ap-text{
+    text-align: left !important;
+}
+
+/* estilo de texto general, aplicado en  casi todos los css  */
+
+/* texto de preguntas o peticiones de datos  */
+.text-doc {
+    font-size: clamp(12px, 3vw, 14px);
+    margin: 0;
+    font-weight: 600;
+ }
+
+/* respuestas de todos los contenidos cont dato  */
+.text-dato-cont{
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}

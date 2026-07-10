@@ -125,6 +125,337 @@
             .resumen { grid-template-columns: 1fr; }
             h1 { font-size: 1.4rem; }
         }
+
+        /* Estilos para el modal de recibo impreso - MÁS PEQUEÑO */
+        .modal-recibo-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .modal-recibo-overlay.active {
+            display: flex;
+        }
+        .modal-recibo-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 700px;
+            width: 100%;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        .modal-recibo-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #1d4f91;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+        }
+        .modal-recibo-close:hover {
+            background: #c62828;
+        }
+
+        /* Estilos del recibo impreso - VERSIÓN MÁS PEQUEÑA */
+        .recibo-impreso {
+            width: 100%;
+            background: white;
+            border: 2px solid #1d4f91;
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .recibo-impreso .encabezado {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .recibo-impreso .logos {
+            display: flex;
+            align-items: flex-start;
+            gap: 3px;
+        }
+
+        .recibo-impreso .logos img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        .recibo-impreso .logo-uap {
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        .recibo-impreso .titulo {
+            flex: 1;
+            text-align: center;
+            padding-top: 0px;
+            margin-top: -5px;
+        }
+
+        .recibo-impreso .titulo h1 {
+            color: #1d4f91;
+            font-size: 20px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .recibo-impreso .derecha-recibo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            padding-top: 20px;
+        }
+
+        .recibo-impreso .numero {
+            width: 120px;
+            border: 2px solid #1d4f91;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .recibo-impreso .numero h2 {
+            color: red;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .recibo-impreso .numero small {
+            display: block;
+            margin-top: 3px;
+            font-size: 10px;
+        }
+
+        .recibo-impreso .monto {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .recibo-impreso .monto label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .recibo-impreso .bs {
+            border: 2px solid #000;
+            width: 90px;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .recibo-impreso .bs span {
+            display: block;
+            font-size: 11px;
+        }
+
+        .recibo-impreso .bs strong {
+            font-size: 20px;
+        }
+
+        .recibo-impreso .empresa {
+            margin-top: -60px;
+            line-height: 20px;
+            padding-left: 5px;
+            font-size: 11px;
+        }
+
+        .recibo-impreso .empresa p {
+            margin: 2px 0;
+        }
+
+        .recibo-impreso .contenido {
+            border: 2px solid #1d4f91;
+            padding: 12px;
+            margin-top: 8px;
+        }
+
+        .recibo-impreso .fila {
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .recibo-impreso .fila label {
+            font-weight: bold;
+        }
+
+        .recibo-impreso .fila span {
+            border-bottom: 1px dotted black;
+            display: inline-block;
+            min-width: 120px;
+            padding-left: 5px;
+            font-size: 11px;
+        }
+
+        .recibo-impreso .uni {
+            margin-left: 20px;
+        }
+
+        .recibo-impreso .concepto {
+            display: block;
+        }
+
+        .recibo-impreso .conceptoTexto {
+            margin-top: 10px;
+            border: 1px dashed gray;
+            padding: 12px;
+            min-height: 50px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .recibo-impreso .pie {
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .recibo-impreso .firmas {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .recibo-impreso .firmas div {
+            min-width: 100px;
+            font-size: 11px;
+        }
+
+        .recibo-impreso .firmas div:first-child {
+            border-right: 1px solid #ccc;
+            padding-right: 20px;
+        }
+
+        .recibo-impreso .firmas div:last-child {
+            padding-left: 20px;
+        }
+
+        /* Botón de impresión más pequeño */
+        .btn-print {
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-recibo-content, .modal-recibo-content * {
+                visibility: visible;
+            }
+            .modal-recibo-content {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 20px;
+                border-radius: 0;
+                box-shadow: none;
+                background: white;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .modal-recibo-close {
+                display: none;
+            }
+            .recibo-impreso {
+                border: 2px solid black;
+                padding: 20px;
+                font-size: 12px;
+            }
+            .recibo-impreso .logos img {
+                width: 50px;
+                height: 50px;
+            }
+            .recibo-impreso .logo-uap {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .recibo-impreso .titulo h1 {
+                font-size: 28px;
+            }
+            .recibo-impreso .numero h2 {
+                font-size: 32px;
+            }
+            .recibo-impreso .bs strong {
+                font-size: 26px;
+            }
+            .btn-print {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-recibo-content {
+                max-width: 95%;
+                padding: 10px;
+            }
+            .recibo-impreso .encabezado {
+                flex-direction: column;
+                align-items: center;
+            }
+            .recibo-impreso .derecha-recibo {
+                padding-top: 5px;
+                width: 100%;
+            }
+            .recibo-impreso .empresa {
+                margin-top: 5px;
+                text-align: center;
+            }
+            .recibo-impreso .fila {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+            .recibo-impreso .uni {
+                margin-left: 0;
+            }
+            .recibo-impreso .firmas {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .recibo-impreso .firmas div:first-child {
+                border-right: none;
+                padding-right: 0;
+            }
+            .recibo-impreso .firmas div:last-child {
+                padding-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -205,16 +536,13 @@
         </div>
     </div>
 
-    <!-- Modal Detalle -->
-    <div class="modal-overlay" id="modalDetalle" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
-        <div class="modal-content" style="background:white; border-radius:12px; max-width:800px; width:95%; max-height:90vh; overflow-y:auto; padding:30px; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:15px; border-bottom:2px solid #f0f0f0;">
-                <h2 style="color:#0D47A1; margin:0;"><i class="fas fa-file-invoice"></i> Detalle del Recibo</h2>
-                <button class="modal-close" onclick="cerrarModal()" style="background:none; border:none; font-size:28px; cursor:pointer; color:#999;">&times;</button>
-            </div>
-            <div id="detalleContenido">
-                <div class="loading"><div class="loading-spinner"></div> Cargando detalle...</div>
-            </div>
+    <!-- Modal Recibo Impreso -->
+    <div class="modal-recibo-overlay" id="modalRecibo">
+        <div class="modal-recibo-content">
+            <button class="modal-recibo-close" onclick="cerrarModalRecibo()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="reciboImpresoContainer"></div>
         </div>
     </div>
 
@@ -227,7 +555,6 @@
         // ============ OBTENER DATOS DEL ESTUDIANTE ============
         async function obtenerDatosEstudiante() {
             try {
-                // Intentar obtener desde sessionStorage
                 idEstudiante = sessionStorage.getItem('idEstudiante');
                 codigoEstudiante = sessionStorage.getItem('codigoEstudiante');
                 const nombreEstudiante = sessionStorage.getItem('nombreEstudiante');
@@ -240,7 +567,6 @@
                     return true;
                 }
 
-                // Si no está en session, intentar obtener desde el backend
                 try {
                     const response = await fetch('/api/usuario/actual', { credentials: 'include' });
                     if (response.ok) {
@@ -257,7 +583,6 @@
                     console.warn('No se pudo obtener usuario:', e);
                 }
 
-                // Fallback: usar datos de ejemplo
                 idEstudiante = 1;
                 codigoEstudiante = '2024006';
                 document.getElementById('nombreEstudiante').textContent = 'Estudiante Demo';
@@ -301,6 +626,61 @@
             });
         }
 
+        function formatearFechaCorta(fecha) {
+            if (!fecha) return '-';
+            return new Date(fecha).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        function numeroALetras(num) {
+            const unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+            const decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+            const especiales = ['DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE'];
+            
+            const partes = num.toString().split('.');
+            const entero = parseInt(partes[0]);
+            const decimal = partes[1] || '00';
+            
+            let letras = '';
+            
+            if (entero === 0) {
+                letras = 'CERO';
+            } else if (entero < 10) {
+                letras = unidades[entero];
+            } else if (entero < 20) {
+                letras = especiales[entero - 10];
+            } else if (entero < 100) {
+                const d = Math.floor(entero / 10);
+                const u = entero % 10;
+                if (u === 0) {
+                    letras = decenas[d];
+                } else {
+                    letras = decenas[d] + ' Y ' + unidades[u];
+                }
+            } else if (entero < 1000) {
+                const c = Math.floor(entero / 100);
+                const resto = entero % 100;
+                letras = (c === 1 ? 'CIENTO' : unidades[c] + 'CIENTOS');
+                if (resto > 0) {
+                    letras += ' ' + numeroALetras(resto);
+                }
+            } else if (entero < 1000000) {
+                const m = Math.floor(entero / 1000);
+                const resto = entero % 1000;
+                letras = (m === 1 ? 'MIL' : numeroALetras(m) + ' MIL');
+                if (resto > 0) {
+                    letras += ' ' + numeroALetras(resto);
+                }
+            } else {
+                letras = 'MONTO NO SOPORTADO';
+            }
+            
+            return letras + ' ' + decimal + '/100 BOLIVIANOS';
+        }
+
         // ============ CARGAR RECIBOS DEL ESTUDIANTE ============
         async function cargarRecibosEstudiante() {
             if (!idEstudiante) {
@@ -327,11 +707,8 @@
             `;
 
             try {
-                // ✅ USAR EL ENDPOINT CORRECTO: Obtener recibos por estudiante
-                // Primero intentamos con el endpoint específico
                 let response = await fetch(`${API_BASE}/api/recibos/estudiante/${idEstudiante}`);
                 
-                // Si no existe, intentar con todos y filtrar
                 if (!response.ok) {
                     response = await fetch(`${API_BASE}/api/recibos/todos`);
                     if (!response.ok) {
@@ -341,12 +718,6 @@
 
                 let recibos = await response.json();
                 console.log('📦 Recibos recibidos:', recibos);
-
-                // Si es el endpoint de todos, filtrar por estudiante
-                if (recibos.length > 0 && recibos[0].estudianteId === undefined) {
-                    // Filtrar manualmente si es necesario
-                    // recibos = recibos.filter(r => r.estudianteId == idEstudiante);
-                }
 
                 if (!recibos || recibos.length === 0) {
                     tbody.innerHTML = `
@@ -368,7 +739,6 @@
                     const estado = recibo.estadoPago || 'PENDIENTE';
                     const montoTotal = recibo.montoTotal || 0;
 
-                    // Obtener datos del recibo
                     let pacienteNombre = recibo.pacienteNombre || 'N/A';
                     let tratamientoNombre = 'N/A';
                     let dientes = [];
@@ -384,7 +754,6 @@
                             if (d.diente) {
                                 dientesSet.add(d.diente);
                             }
-                            // También buscar en concepto
                             if (d.concepto) {
                                 const match = d.concepto.match(/Tratamiento:\s*([^-]+)/);
                                 if (match) tratamientosSet.add(match[1].trim());
@@ -406,7 +775,7 @@
                             <td style="text-align: right; font-weight: 600;">${formatearMoneda(montoTotal)}</td>
                             <td style="text-align: center;">${getEstadoBadge(estado)}</td>
                             <td style="text-align: center;">
-                                <button class="btn btn-primary btn-sm" onclick="verDetalleRecibo(${recibo.idRecibo})">
+                                <button class="btn btn-primary btn-sm" onclick="verReciboImpreso(${recibo.idRecibo})">
                                     <i class="fas fa-eye"></i> Ver
                                 </button>
                                 ${estado === 'PENDIENTE' || estado === 'PARCIAL' ? `
@@ -455,113 +824,312 @@
             document.getElementById('totalMonto').textContent = formatearMoneda(montoTotal);
         }
 
-        // ============ VER DETALLE ============
-        async function verDetalleRecibo(idRecibo) {
-            const modal = document.getElementById('modalDetalle');
-            const contenido = document.getElementById('detalleContenido');
-            modal.style.display = 'flex';
-            contenido.innerHTML = '<div class="loading"><div class="loading-spinner"></div> Cargando detalle...</div>';
+        // ============ VER RECIBO IMPRESO ============
+        async function verReciboImpreso(idRecibo) {
+            const modal = document.getElementById('modalRecibo');
+            const container = document.getElementById('reciboImpresoContainer');
+            
+            modal.classList.add('active');
+            container.innerHTML = '<div style="text-align:center; padding:20px;"><div class="loading-spinner"></div><p>Cargando recibo...</p></div>';
 
             try {
                 const response = await fetch(`${API_BASE}/api/recibos/${idRecibo}/completo`);
                 if (!response.ok) throw new Error('Error al obtener detalle');
 
                 const data = await response.json();
+                console.log('📄 Datos del recibo:', data);
 
-                let detallesHtml = '';
-                let totalTratamientos = 0;
-                let totalRadiografias = 0;
-
-                if (data.detalles && data.detalles.length > 0) {
-                    data.detalles.forEach(d => {
-                        const esRadiografia = d.tipoItem === 'RADIOGRAFIA';
-                        if (esRadiografia) {
-                            totalRadiografias += d.subtotal || 0;
-                        } else {
-                            totalTratamientos += d.subtotal || 0;
+                // ============ OBTENER DATOS DEL ESTUDIANTE (para Rote y Clínica) ============
+                let nombreCompletoEstudiante = 'Estudiante';
+                let codigoEstudianteStr = 'N/A';
+                let roteActual = '';
+                let clinicaNombre = 'CLÍNICA ODONTOLÓGICA UAP';
+                let materiaNombre = '';
+                let tratamientosList = [];
+                let dientesTratadosList = [];
+                let radiografiasList = [];
+                
+                try {
+                    const estudianteResponse = await fetch(`${API_BASE}/api/estudiantes/${idEstudiante}/detalle-recibo`);
+                    if (estudianteResponse.ok) {
+                        const estudianteData = await estudianteResponse.json();
+                        console.log('📘 Datos del estudiante:', estudianteData);
+                        
+                        if (estudianteData.nombreCompleto) {
+                            nombreCompletoEstudiante = estudianteData.nombreCompleto;
                         }
                         
-                        let dienteHtml = '';
-                        const dienteMatch = d.concepto ? d.concepto.match(/Diente\s*(\d+)/) : null;
-                        if (dienteMatch) {
-                            dienteHtml = `<span class="diente" style="font-size:12px; color:#666;">🦷 Diente ${dienteMatch[1]}</span>`;
+                        if (estudianteData.codigoEstudiante) {
+                            codigoEstudianteStr = estudianteData.codigoEstudiante;
                         }
                         
-                        detallesHtml += `
-                            <div class="detalle-item" style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
-                                <div class="concepto" style="display:flex; flex-direction:column;">
-                                    <span class="nombre" style="font-weight:500;">${d.concepto || 'Sin concepto'}</span>
-                                    ${dienteHtml}
-                                    ${esRadiografia ? '<span style="font-size:11px; color:#666;">📷 Radiografía</span>' : ''}
-                                </div>
-                                <span class="monto" style="font-weight:600;">${formatearMoneda(d.subtotal)}</span>
-                            </div>
-                        `;
-                    });
+                        if (estudianteData.roteActual) {
+                            roteActual = estudianteData.roteActual;
+                        }
+                        
+                        if (estudianteData.clinica) {
+                            clinicaNombre = estudianteData.clinica;
+                        }
+                        
+                        if (estudianteData.materiaNombre) {
+                            materiaNombre = estudianteData.materiaNombre;
+                        }
+                        
+                        if (estudianteData.tratamientos) {
+                            tratamientosList = estudianteData.tratamientos;
+                        }
+                        
+                        if (estudianteData.dientesTratados) {
+                            dientesTratadosList = estudianteData.dientesTratados;
+                        }
+                        
+                        if (estudianteData.radiografias) {
+                            radiografiasList = estudianteData.radiografias;
+                        }
+                        
+                        document.getElementById('nombreEstudiante').textContent = nombreCompletoEstudiante;
+                        document.getElementById('codigoEstudiante').textContent = codigoEstudianteStr;
+                        document.getElementById('clinicaEstudiante').textContent = clinicaNombre;
+                        
+                        sessionStorage.setItem('nombreEstudiante', nombreCompletoEstudiante);
+                        sessionStorage.setItem('codigoEstudiante', codigoEstudianteStr);
+                        sessionStorage.setItem('clinicaEstudiante', clinicaNombre);
+                        
+                    } else {
+                        console.warn('No se pudo obtener detalle del estudiante, usando fallback');
+                        nombreCompletoEstudiante = sessionStorage.getItem('nombreEstudiante') || 'Estudiante';
+                        codigoEstudianteStr = sessionStorage.getItem('codigoEstudiante') || 'N/A';
+                    }
+                } catch (e) {
+                    console.warn('No se pudo obtener datos completos del estudiante:', e);
+                    nombreCompletoEstudiante = sessionStorage.getItem('nombreEstudiante') || 'Estudiante';
+                    codigoEstudianteStr = sessionStorage.getItem('codigoEstudiante') || 'N/A';
                 }
 
-                contenido.innerHTML = `
-                    <div class="info-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; padding:15px; background:#f8f9fa; border-radius:8px;">
-                        <div class="item"><span class="label" style="font-size:11px; font-weight:600; color:#666; text-transform:uppercase;">Recibo #</span><span class="value" style="font-size:15px; font-weight:600;">${data.idRecibo}</span></div>
-                        <div class="item"><span class="label">Estado</span><span class="value">${getEstadoBadge(data.estadoPago)}</span></div>
-                        <div class="item"><span class="label">Fecha</span><span class="value">${formatearFecha(data.fechaPago)}</span></div>
-                        <div class="item"><span class="label">Paciente</span><span class="value">${data.pacienteNombre || 'N/A'}</span></div>
-                        <div class="item"><span class="label">Monto Total</span><span class="value" style="color:#0D47A1;">${formatearMoneda(data.montoTotal)}</span></div>
-                    </div>
-
-                    <h4 style="margin:15px 0 10px; color:#0D47A1;"><i class="fas fa-list"></i> Detalle de Servicios</h4>
-                    ${detallesHtml || '<p style="color:#999;">No hay detalles</p>'}
-
-                    <div class="total-recibo" style="display:flex; justify-content:space-between; padding:15px 0; border-top:2px solid #ddd; margin-top:10px; font-size:18px; font-weight:700;">
-                        <span class="total-label" style="color:#0D47A1;">TOTAL</span>
-                        <span class="total-monto" style="color:#0D47A1;">${formatearMoneda(data.montoTotal)}</span>
-                    </div>
-
-                    <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:14px; border-top:1px solid #eee; margin-top:5px;">
-                        <span>Subtotal Tratamientos</span>
-                        <span style="font-weight:600;">${formatearMoneda(totalTratamientos)}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; padding:5px 0; font-size:14px;">
-                        <span>Subtotal Radiografías</span>
-                        <span style="font-weight:600;">${formatearMoneda(totalRadiografias)}</span>
-                    </div>
-
-                    <div class="pagos-historial" style="margin-top:20px; padding:15px; background:#f8f9fa; border-radius:8px;">
-                        <h4 style="color:#0D47A1; margin-bottom:10px;"><i class="fas fa-money-bill-wave"></i> Historial de Pagos</h4>
-                        ${data.pagos && data.pagos.length > 0 ? 
-                            data.pagos.map(p => `
-                                <div class="pago-item" style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee; font-size:13px;">
-                                    <span>${formatearFecha(p.fechaPago)} - ${p.metodoPago || 'N/A'} ${p.observaciones ? `(${p.observaciones})` : ''}</span>
-                                    <span class="pago-monto" style="color:#2e7d32; font-weight:600;">${formatearMoneda(p.monto)}</span>
-                                </div>
-                            `).join('') : 
-                            '<p style="color:#999;">No hay pagos registrados</p>'
+                // ============ CONSTRUIR EL CONCEPTO DEL RECIBO ============
+                let conceptosParts = [];
+                
+                // 1. Materia con Rote
+                let materiaConRote = '';
+                if (materiaNombre) {
+                    materiaConRote = materiaNombre;
+                    if (roteActual) {
+                        materiaConRote += ` (${roteActual})`;
+                    }
+                    conceptosParts.push(`<strong>${materiaConRote}</strong>`);
+                } else if (roteActual) {
+                    conceptosParts.push(`<strong>ROTE: ${roteActual}</strong>`);
+                }
+                
+                // 2. Tratamientos
+                if (tratamientosList && tratamientosList.length > 0) {
+                    conceptosParts.push(tratamientosList.join('<br>'));
+                } else if (data.detalles && data.detalles.length > 0) {
+                    // Fallback: extraer de los detalles
+                    const conceptosSet = new Set();
+                    data.detalles.forEach(d => {
+                        let concepto = d.concepto || '';
+                        if (d.tratamientoNombre && !concepto.includes(d.tratamientoNombre)) {
+                            concepto = d.tratamientoNombre;
                         }
-                        <div style="display:flex; justify-content:space-between; padding:10px 0; border-top:2px solid #ddd; margin-top:10px; font-weight:600;">
-                            <span>Total Pagado</span>
-                            <span style="color:#2e7d32;">${formatearMoneda(data.montoPagado)}</span>
+                        if (concepto) {
+                            concepto = concepto.replace(/Diente\s*\d+/g, '').trim();
+                            if (concepto) conceptosSet.add(concepto);
+                        }
+                    });
+                    const conceptos = Array.from(conceptosSet);
+                    if (conceptos.length > 0) {
+                        conceptosParts.push(conceptos.join('<br>'));
+                    }
+                }
+                
+                // 3. Dientes Tratados
+                if (dientesTratadosList && dientesTratadosList.length > 0) {
+                    conceptosParts.push(`<span style="font-weight:bold;">Dientes Tratados:</span> ${dientesTratadosList.join(', ')}`);
+                } else if (data.detalles && data.detalles.length > 0) {
+                    // Fallback: extraer de los detalles
+                    const dientesSet = new Set();
+                    data.detalles.forEach(d => {
+                        if (d.diente) {
+                            dientesSet.add(d.diente);
+                        }
+                        if (d.concepto) {
+                            const dienteMatch = d.concepto.match(/Diente\s*(\d+)/);
+                            if (dienteMatch) {
+                                dientesSet.add(parseInt(dienteMatch[1]));
+                            }
+                        }
+                    });
+                    const dientes = Array.from(dientesSet).sort((a, b) => a - b);
+                    if (dientes.length > 0) {
+                        conceptosParts.push(`<span style="font-weight:bold;">Dientes Tratados:</span> ${dientes.join(', ')}`);
+                    }
+                }
+                
+                // 4. Radiografías
+                if (radiografiasList && radiografiasList.length > 0) {
+                    conceptosParts.push(`<span style="font-weight:bold; color:#1d4f91;">📷 ${radiografiasList.join(', ')}</span>`);
+                } else if (data.detalles && data.detalles.length > 0) {
+                    // Fallback: extraer radiografías de los detalles
+                    const radiografiasSet = new Set();
+                    data.detalles.forEach(d => {
+                        const esRadiografia = d.tipoItem === 'RADIOGRAFIA' || 
+                                            (d.concepto && d.concepto.toLowerCase().includes('radiograf'));
+                        if (esRadiografia) {
+                            let nombre = d.concepto || 'Radiografía';
+                            if (d.diente) {
+                                nombre += ` (Diente ${d.diente})`;
+                            }
+                            radiografiasSet.add(nombre);
+                        }
+                    });
+                    const radiografias = Array.from(radiografiasSet);
+                    if (radiografias.length > 0) {
+                        conceptosParts.push(`<span style="font-weight:bold; color:#1d4f91;">📷 ${radiografias.join(', ')}</span>`);
+                    }
+                }
+                
+                let conceptosHtml = conceptosParts.join('<br><br>');
+                if (!conceptosHtml) {
+                    conceptosHtml = 'SERVICIOS ODONTOLÓGICOS';
+                }
+
+                // Formatear monto
+                const montoTotal = data.montoTotal || 0;
+                const montoFormateado = montoTotal.toFixed(2).replace('.', ',');
+                const montoLetras = numeroALetras(montoTotal);
+
+                // Fecha
+                const fechaStr = formatearFechaCorta(data.fechaPago || data.fechaCreacion || new Date());
+
+                // Número de recibo
+                const numRecibo = String(data.idRecibo).padStart(5, '0');
+
+                // Paciente
+                const pacienteNombre = data.pacienteNombre || 'PACIENTE';
+
+                // Construir HTML del recibo
+                const reciboHtml = `
+                    <div class="recibo-impreso">
+                        <div class="encabezado">
+                            <div class="logos">
+                                <img src="/img/uap_logo.jpg" alt="UAP" class="logo-uap" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%231d4f91%22/%3E%3Ctext x=%225%22 y=%2225%22 font-size=%2212%22 fill=%22white%22%3EUAP%3C/text%3E%3C/svg%3E'">
+                                <img src="/img/ACS.jpg" alt="ACS" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2230%22 height=%2230%22%3E%3Crect width=%2230%22 height=%2230%22 fill=%22%23cccccc%22/%3E%3Ctext x=%225%22 y=%2220%22 font-size=%2210%22 fill=%22666%22%3EACS%3C/text%3E%3C/svg%3E'">
+                                <img src="/img/logo1.png" alt="Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2230%22 height=%2230%22%3E%3Crect width=%2230%22 height=%2230%22 fill=%22%231d4f91%22/%3E%3Ctext x=%225%22 y=%2220%22 font-size=%2210%22 fill=%22white%22%3ELOGO%3C/text%3E%3C/svg%3E'">
+                            </div>
+
+                            <div class="titulo">
+                                <h1>RECIBO DE PAGO 5TO AÑO</h1>
+                            </div>
+
+                            <div class="derecha-recibo">
+                                <div class="numero">
+                                    <span>RECIBO Nº</span>
+                                    <h2>${numRecibo}</h2>
+                                    <small>${fechaStr}</small>
+                                </div>
+
+                                <div class="monto">
+                                    <div>
+                                        <label>POR:</label>
+                                    </div>
+                                    <div class="bs">
+                                        <span>Bs.</span>
+                                        <strong>${montoFormateado}</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div style="display:flex; justify-content:space-between; padding:5px 0; font-weight:600; font-size:16px;">
-                            <span>Saldo Pendiente</span>
-                            <span style="color:${data.saldoPendiente > 0 ? '#c62828' : '#2e7d32'};">${formatearMoneda(data.saldoPendiente)}</span>
+
+                        <div class="empresa">
+                            <p><b>Empresa:</b> CLÍNICA ODONTOLÓGICA UAP</p>
+                            <p><b>NIT:</b> 123456789</p>
+                            <p><b>Dirección:</b> B/ San Pedro CAMPUS UAP</p>
+                        </div>
+
+                        <div class="contenido">
+                            <div class="fila">
+                                <label>RECIBO DEL SR.(A):</label>
+                                <span>${pacienteNombre}</span>
+                            </div>
+
+                            <div class="fila">
+                                <label>R.U.</label>
+                                <span>${codigoEstudianteStr}</span>
+
+                                <label class="uni">UNIVERSITARIO:</label>
+                                <span>${nombreCompletoEstudiante}</span>
+                            </div>
+
+                            <div class="fila">
+                                <label>CANTIDAD EN LETRAS:</label>
+                                <span>${montoLetras}</span>
+                            </div>
+
+                            <div class="fila concepto">
+                                <label>POR CONCEPTO DE:</label>
+                                <div class="conceptoTexto">
+                                    ${conceptosHtml}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pie">
+                            <div>
+                                <b>FECHA:</b> ${fechaStr}
+                            </div>
+
+                            <div class="firmas">
+                                <div>
+                                    _______________________
+                                    <br>
+                                    RECIBÍ CONFORME
+                                    <br>
+                                    <small>Firma del Paciente</small>
+                                </div>
+
+                                <div>
+                                    _______________________
+                                    <br>
+                                    ENTREGUÉ CONFORME
+                                    <br>
+                                    <small>Firma del Estudiante</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
 
+                container.innerHTML = reciboHtml;
+
+                // Agregar botón de impresión
+                const printBtn = document.createElement('button');
+                printBtn.className = 'btn btn-primary btn-print';
+                printBtn.innerHTML = '<i class="fas fa-print"></i> Imprimir Recibo';
+                printBtn.onclick = () => window.print();
+                container.appendChild(printBtn);
+
             } catch (error) {
                 console.error('Error:', error);
-                contenido.innerHTML = `
-                    <div style="text-align:center; padding:30px; color:#c62828;">
-                        <i class="fas fa-exclamation-triangle" style="font-size:40px; display:block; margin-bottom:15px;"></i>
-                        Error al cargar detalle: ${error.message}
+                container.innerHTML = `
+                    <div style="text-align:center; padding:20px; color:#c62828;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:30px; display:block; margin-bottom:10px;"></i>
+                        Error al cargar recibo: ${error.message}
                     </div>
                 `;
             }
         }
 
-        function cerrarModal() {
-            document.getElementById('modalDetalle').style.display = 'none';
+        function cerrarModalRecibo() {
+            document.getElementById('modalRecibo').classList.remove('active');
         }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalRecibo').addEventListener('click', function(e) {
+            if (e.target === this) {
+                cerrarModalRecibo();
+            }
+        });
 
         // ============ PAGAR RECIBO ============
         async function pagarRecibo(idRecibo, saldo) {

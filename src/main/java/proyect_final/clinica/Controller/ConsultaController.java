@@ -41,6 +41,17 @@ public class ConsultaController {
                       .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/completo")
+    public ResponseEntity<?> obtenerConsultaCompletaPorId(@PathVariable Long id) {
+        try {
+            ConsultaCompletaDTO consulta = consultaService.obtenerConsultaCompletaPorId(id);
+            return ResponseEntity.ok(consulta);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("success", false, "error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/completa")
     public ResponseEntity<?> crearConsultaCompleta(@RequestBody ConsultaCompletaDTO consultaDTO) {
         try {

@@ -32,9 +32,12 @@ public interface ConsultaService {
     List<Consulta> buscarPorCriterio(String criterio);
     
     Optional<Consulta> obtenerConsultaCompleta(Long idConsulta);
+    ConsultaCompletaDTO obtenerConsultaCompletaPorId(Long idConsulta);
     List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente);
 
     Consulta guardarConsultaConFotos(ConsultaConFotosDTO dto) throws IOException;
 
      void guardarFotoConsulta(Long idConsulta, MultipartFile archivo) throws IOException;
+    // ✅ MÉTODO PARA GUARDAR MÚLTIPLES FOTOS CON WEBP
+    void guardarMultiplesFotosConsulta(Long idConsulta, MultipartFile[] archivos) throws IOException;
 }

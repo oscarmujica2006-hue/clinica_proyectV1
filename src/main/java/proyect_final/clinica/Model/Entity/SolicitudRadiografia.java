@@ -2,6 +2,8 @@ package proyect_final.clinica.Model.Entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -23,6 +25,12 @@ public class SolicitudRadiografia {
     @ManyToOne
     @JoinColumn(name = "id_radiografia")
     private Radiografia radiografia; 
+
+
+
+    @OneToMany(mappedBy = "solicitudRadiografia")
+    private List<DetalleSolicitudRadiografia> detalles;
+
 
     @Column(name = "fecha_solicitud")
     private LocalDateTime fechaSolicitud;

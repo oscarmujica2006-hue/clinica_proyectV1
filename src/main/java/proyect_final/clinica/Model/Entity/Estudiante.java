@@ -35,10 +35,14 @@ public class Estudiante {
     private Rote roteActual;
     @Column(name="codigo_estudiante",nullable=false)
     private Integer codigoEstudiante;
-
-    @Column(name="bloqueado",nullable=false)
-    private Boolean bloqueado;
+    @Column(name = "bloqueado", nullable = false)
+    private Boolean bloqueado = false;
     
+    @Column(name = "razon_bloqueo", length = 50)
+    private String razonBloqueo;  // "ARCHIVO", "RADIOGRAFIA", "MULTIPLE"
+    
+    @Column(name = "fecha_bloqueo")
+    private LocalDateTime fechaBloqueo;
     @Column(name = "usu_reg_usuEst")
     private Integer usuRegUsuEst;
 

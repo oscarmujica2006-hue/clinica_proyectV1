@@ -4,6 +4,7 @@ import proyect_final.clinica.Model.Entity.*;
 import proyect_final.clinica.Model.Dto.ConsultaCompletaDTO;
 import proyect_final.clinica.Model.Dao.*;
 import proyect_final.clinica.Service.ConsultaService;
+import proyect_final.clinica.Service.ImageConversionService; // ✅ Importar
 import org.springframework.beans.factory.annotation.Autowired;
 import proyect_final.clinica.Model.Dao.PrestamoActualRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class ConsultaServiceImpl implements ConsultaService {
 
     @Autowired
     private PrestamoActualRepository prestamoActualRepository;
+
+    @Autowired
+    private ImageConversionService imageConversionService; // ✅ Inyectar servicio de conversión
 
     // ========== MÉTODOS EXISTENTES (sin cambios) ==========
 
@@ -145,8 +149,6 @@ public class ConsultaServiceImpl implements ConsultaService {
         consultaRepository.deleteById(id);
     }
 
-
-
     @Override
     public List<Consulta> obtenerPorPaciente(Long idPaciente) {
         return consultaRepository.findByPacienteIdPaciente(idPaciente);
@@ -156,11 +158,6 @@ public class ConsultaServiceImpl implements ConsultaService {
     public List<Consulta> obtenerPorEstudiante(Long idEstudiante) {
         return consultaRepository.findByEstudianteIdEstudiante(idEstudiante);
     }
-
-    // @Override
-    // public List<Consulta> obtenerPorRangoFechas(LocalDate fechaInicio, LocalDate fechaFin) {
-    //     return consultaRepository.findByFechaBetween(fechaInicio, fechaFin);
-    // }
 
     @Override
     public List<Consulta> buscarPorCriterio(String criterio) {
@@ -174,84 +171,21 @@ public class ConsultaServiceImpl implements ConsultaService {
 
     @Override
     @Transactional(readOnly = true)
+    public ConsultaCompletaDTO obtenerConsultaCompletaPorId(Long idConsulta) {
+        Consulta consulta = consultaRepository.findById(idConsulta)
+            .orElseThrow(() -> new RuntimeException("Consulta no encontrada con ID: " + idConsulta));
+        return mapearConsultaADTO(consulta);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ConsultaCompletaDTO> obtenerConsultasCompletasPorPaciente(Long idPaciente) {
         try {
             List<Consulta> consultas = consultaRepository.findByPacienteIdPacienteWithRelations(idPaciente);
             List<ConsultaCompletaDTO> dtos = new ArrayList<>();
 
             for (Consulta consulta : consultas) {
-                ConsultaCompletaDTO dto = new ConsultaCompletaDTO();
-                dto.setIdConsulta(consulta.getIdConsulta());
-                dto.setIdPaciente(consulta.getPaciente().getIdPaciente());
-                dto.setIdEstudiante(consulta.getEstudiante().getIdEstudiante());
-
-                if (consulta.getInformante() != null) {
-                    dto.setInformanteNombres(consulta.getInformante().getNombres());
-                    dto.setInformanteApellidoPaterno(consulta.getInformante().getApellidoPaterno());
-                    dto.setInformanteApellidoMaterno(consulta.getInformante().getApellidoMaterno());
-                    dto.setInformanteDireccion(consulta.getInformante().getDireccion());
-                    dto.setInformanteTelefono(consulta.getInformante().getTelefono());
-                }
-
-                if (consulta.getPatologiaPersonal() != null) {
-                    PatologiaPersonal p = consulta.getPatologiaPersonal();
-                    dto.setAnemia(p.getAnemia());
-                    dto.setCardiopatias(p.getCardiopatias());
-                    dto.setEnfGastricos(p.getEnfGastricos());
-                    dto.setHepatitis(p.getHepatitis());
-                    dto.setTuberculosis(p.getTuberculosis());
-                    dto.setAsma(p.getAsma());
-                    dto.setDiabetesMel(p.getDiabetesMel());
-                    dto.setEpilepsia(p.getEpilepsia());
-                    dto.setHipertension(p.getHipertension());
-                    dto.setOtros(p.getOtros());
-                    dto.setNinguno(p.getNinguno());
-                    dto.setAlergias(p.getAlergias());
-                    dto.setEmbarazo(p.getEmbarazo());
-                    dto.setSemanaEmbarazo(p.getSemanaEmbarazo());
-                }
-
-                if (consulta.getTratamientoMedico() != null) {
-                    dto.setTratamientoMedico(consulta.getTratamientoMedico().getTratamientoMedico());
-                    dto.setRecibeAlgunMedicamento(consulta.getTratamientoMedico().getRecibeAlgunMedicamento());
-                    dto.setTuvoHemorragiaDental(consulta.getTratamientoMedico().getTuvoHemorragiaDental());
-                    dto.setEspecifiqueHemorragia(consulta.getTratamientoMedico().getEspecifiqueHemorragia());
-                }
-
-                if (consulta.getExamenExtraOral() != null) {
-                    dto.setAtm(consulta.getExamenExtraOral().getAtm());
-                    dto.setGangliosLinfaticos(consulta.getExamenExtraOral().getGangliosLinfaticos());
-                    dto.setRespirador(consulta.getExamenExtraOral().getRespirador());
-                }
-
-                if (consulta.getExamenIntraOral() != null) {
-                    dto.setLabios(consulta.getExamenIntraOral().getLabios());
-                    dto.setLengua(consulta.getExamenIntraOral().getLengua());
-                    dto.setPaladar(consulta.getExamenIntraOral().getPaladar());
-                    dto.setPisoDeLaBoca(consulta.getExamenIntraOral().getPisoDeLaBoca());
-                    dto.setMucosaYugal(consulta.getExamenIntraOral().getMucosaYugal());
-                    dto.setEncias(consulta.getExamenIntraOral().getEncias());
-                    dto.setUtilizaProtesisDental(consulta.getExamenIntraOral().getUtilizaProtesisDental());
-                }
-
-                if (consulta.getAntecedentesBucodentales() != null) {
-                    dto.setFechaRevision(consulta.getAntecedentesBucodentales().getFechaRevision());
-                    dto.setHabitoFuma(consulta.getAntecedentesBucodentales().getFuma());
-                    dto.setHabitoBebe(consulta.getAntecedentesBucodentales().getBebe());
-                    dto.setOtrosHabitos(consulta.getAntecedentesBucodentales().getOtrosHabitos());
-                }
-
-                if (consulta.getAntecedentesHigieneOral() != null) {
-                    dto.setUtilizaCepilloDental(consulta.getAntecedentesHigieneOral().getUtilizaCepilloDental());
-                    dto.setUtilizaHiloDental(consulta.getAntecedentesHigieneOral().getUtilizaHiloDental());
-                    dto.setUtilizaEnjuagueBucal(consulta.getAntecedentesHigieneOral().getUtilizaEnjuagueBucal());
-                    dto.setFrecuenciaCepillo(consulta.getAntecedentesHigieneOral().getFrecuenciaCepillo());
-                    dto.setSangradoEncias(consulta.getAntecedentesHigieneOral().getDuranteElCepillado() != null &&
-                                         consulta.getAntecedentesHigieneOral().getDuranteElCepillado().contains("Sangrado"));
-                    dto.setHigieneBucal(consulta.getAntecedentesHigieneOral().getHigieneBucal());
-                }
-
-                dtos.add(dto);
+                dtos.add(mapearConsultaADTO(consulta));
             }
 
             return dtos;
@@ -262,7 +196,82 @@ public class ConsultaServiceImpl implements ConsultaService {
         }
     }
 
-    // ========== MÉTODO PARA GUARDAR CONSULTA CON FOTOS (MANTENIDO) ==========
+    private ConsultaCompletaDTO mapearConsultaADTO(Consulta consulta) {
+        ConsultaCompletaDTO dto = new ConsultaCompletaDTO();
+        dto.setIdConsulta(consulta.getIdConsulta());
+        dto.setIdPaciente(consulta.getPaciente().getIdPaciente());
+        dto.setIdEstudiante(consulta.getEstudiante().getIdEstudiante());
+
+        if (consulta.getInformante() != null) {
+            dto.setInformanteNombres(consulta.getInformante().getNombres());
+            dto.setInformanteApellidoPaterno(consulta.getInformante().getApellidoPaterno());
+            dto.setInformanteApellidoMaterno(consulta.getInformante().getApellidoMaterno());
+            dto.setInformanteDireccion(consulta.getInformante().getDireccion());
+            dto.setInformanteTelefono(consulta.getInformante().getTelefono());
+        }
+
+        if (consulta.getPatologiaPersonal() != null) {
+            PatologiaPersonal p = consulta.getPatologiaPersonal();
+            dto.setAnemia(p.getAnemia());
+            dto.setCardiopatias(p.getCardiopatias());
+            dto.setEnfGastricos(p.getEnfGastricos());
+            dto.setHepatitis(p.getHepatitis());
+            dto.setTuberculosis(p.getTuberculosis());
+            dto.setAsma(p.getAsma());
+            dto.setDiabetesMel(p.getDiabetesMel());
+            dto.setEpilepsia(p.getEpilepsia());
+            dto.setHipertension(p.getHipertension());
+            dto.setOtros(p.getOtros());
+            dto.setNinguno(p.getNinguno());
+            dto.setAlergias(p.getAlergias());
+            dto.setEmbarazo(p.getEmbarazo());
+            dto.setSemanaEmbarazo(p.getSemanaEmbarazo());
+        }
+
+        if (consulta.getTratamientoMedico() != null) {
+            dto.setTratamientoMedico(consulta.getTratamientoMedico().getTratamientoMedico());
+            dto.setRecibeAlgunMedicamento(consulta.getTratamientoMedico().getRecibeAlgunMedicamento());
+            dto.setTuvoHemorragiaDental(consulta.getTratamientoMedico().getTuvoHemorragiaDental());
+            dto.setEspecifiqueHemorragia(consulta.getTratamientoMedico().getEspecifiqueHemorragia());
+        }
+
+        if (consulta.getExamenExtraOral() != null) {
+            dto.setAtm(consulta.getExamenExtraOral().getAtm());
+            dto.setGangliosLinfaticos(consulta.getExamenExtraOral().getGangliosLinfaticos());
+            dto.setRespirador(consulta.getExamenExtraOral().getRespirador());
+        }
+
+        if (consulta.getExamenIntraOral() != null) {
+            dto.setLabios(consulta.getExamenIntraOral().getLabios());
+            dto.setLengua(consulta.getExamenIntraOral().getLengua());
+            dto.setPaladar(consulta.getExamenIntraOral().getPaladar());
+            dto.setPisoDeLaBoca(consulta.getExamenIntraOral().getPisoDeLaBoca());
+            dto.setMucosaYugal(consulta.getExamenIntraOral().getMucosaYugal());
+            dto.setEncias(consulta.getExamenIntraOral().getEncias());
+            dto.setUtilizaProtesisDental(consulta.getExamenIntraOral().getUtilizaProtesisDental());
+        }
+
+        if (consulta.getAntecedentesBucodentales() != null) {
+            dto.setFechaRevision(consulta.getAntecedentesBucodentales().getFechaRevision());
+            dto.setHabitoFuma(consulta.getAntecedentesBucodentales().getFuma());
+            dto.setHabitoBebe(consulta.getAntecedentesBucodentales().getBebe());
+            dto.setOtrosHabitos(consulta.getAntecedentesBucodentales().getOtrosHabitos());
+        }
+
+        if (consulta.getAntecedentesHigieneOral() != null) {
+            dto.setUtilizaCepilloDental(consulta.getAntecedentesHigieneOral().getUtilizaCepilloDental());
+            dto.setUtilizaHiloDental(consulta.getAntecedentesHigieneOral().getUtilizaHiloDental());
+            dto.setUtilizaEnjuagueBucal(consulta.getAntecedentesHigieneOral().getUtilizaEnjuagueBucal());
+            dto.setFrecuenciaCepillo(consulta.getAntecedentesHigieneOral().getFrecuenciaCepillo());
+            dto.setSangradoEncias(consulta.getAntecedentesHigieneOral().getDuranteElCepillado() != null &&
+                                 consulta.getAntecedentesHigieneOral().getDuranteElCepillado().contains("Sangrado"));
+            dto.setHigieneBucal(consulta.getAntecedentesHigieneOral().getHigieneBucal());
+        }
+
+        return dto;
+    }
+
+    // ========== MÉTODO PARA GUARDAR CONSULTA CON FOTOS (ACTUALIZADO CON WEBP) ==========
     @Override
     public Consulta guardarConsultaConFotos(ConsultaConFotosDTO dto) throws IOException {
 
@@ -292,42 +301,100 @@ public class ConsultaServiceImpl implements ConsultaService {
         return consulta;
     }
 
-    // ========== NUEVO MÉTODO PARA GUARDAR UNA SOLA FOTO ==========
+    // ========== NUEVO MÉTODO PARA GUARDAR UNA SOLA FOTO CON WEBP ==========
     @Override
     @Transactional
     public void guardarFotoConsulta(Long idConsulta, MultipartFile archivo) throws IOException {
         Consulta consulta = consultaRepository.findById(idConsulta)
             .orElseThrow(() -> new RuntimeException("Consulta no encontrada con ID: " + idConsulta));
 
+        // Validar tipo de archivo
         String contentType = archivo.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Solo se permiten archivos de imagen");
+        if (contentType == null || (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
+            throw new IllegalArgumentException("Solo se permiten archivos de imagen o PDF");
         }
 
+        // Preparar variables
+        byte[] datosImagen;
         String nombreOriginal = archivo.getOriginalFilename();
+        Long tamanoFinal;
+        String tipoFinal = contentType;
+
+        // ✅ CONVERTIR A WEBP si es imagen
+        if (contentType != null && contentType.startsWith("image/")) {
+            try {
+                datosImagen = imageConversionService.convertToWebP(archivo, 0.8f);
+                tipoFinal = "image/webp";
+                tamanoFinal = (long) datosImagen.length;
+                
+                // Mostrar reducción
+                double reduction = (1 - (double)tamanoFinal / archivo.getSize()) * 100;
+                System.out.println("✅ Odontograma WebP: " + nombreOriginal + " | " + 
+                    archivo.getSize()/1024 + "KB → " + tamanoFinal/1024 + "KB" +
+                    " (Reducción: " + String.format("%.1f", reduction) + "%)");
+                    
+            } catch (Exception e) {
+                // Si falla, guardar original
+                System.err.println("⚠️ Error convirtiendo odontograma a WebP: " + e.getMessage());
+                datosImagen = archivo.getBytes();
+                tamanoFinal = archivo.getSize();
+                tipoFinal = contentType;
+            }
+        } else {
+            // PDF: guardar sin conversión
+            datosImagen = archivo.getBytes();
+            tamanoFinal = archivo.getSize();
+        }
+
+        // Determinar extensión
         String extension = "";
         if (nombreOriginal != null && nombreOriginal.contains(".")) {
             extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
         }
-        String nombreArchivo = UUID.randomUUID().toString() + extension;
+        if (tipoFinal.equals("image/webp")) {
+            extension = ".webp";
+        }
 
+        // Crear directorio
         Path directorio = Paths.get("uploads/odontograma/");
         if (!Files.exists(directorio)) {
             Files.createDirectories(directorio);
         }
-        Path rutaCompleta = directorio.resolve(nombreArchivo);
-        Files.copy(archivo.getInputStream(), rutaCompleta, StandardCopyOption.REPLACE_EXISTING);
 
+        // Generar nombre único y guardar
+        String nombreArchivo = UUID.randomUUID().toString() + extension;
+        Path rutaCompleta = directorio.resolve(nombreArchivo);
+        Files.write(rutaCompleta, datosImagen);
+
+        // Crear entidad con los datos
         OdontogramaFoto fotoEntidad = new OdontogramaFoto();
         fotoEntidad.setConsulta(consulta);
         fotoEntidad.setRutaArchivo("/uploads/odontograma/" + nombreArchivo);
         fotoEntidad.setNombreOriginal(nombreOriginal);
-        fotoEntidad.setTipoContenido(contentType);
-        fotoEntidad.setTamano(archivo.getSize());
+        fotoEntidad.setTipoContenido(tipoFinal);
+        fotoEntidad.setTamano(tamanoFinal);
 
         odontogramaFotoRepository.save(fotoEntidad);
     }
 
+    // ========== MÉTODO PARA GUARDAR MÚLTIPLES FOTOS CON WEBP ==========
+    @Override
+    @Transactional
+    public void guardarMultiplesFotosConsulta(Long idConsulta, MultipartFile[] archivos) throws IOException {
+        if (archivos != null) {
+            for (MultipartFile archivo : archivos) {
+                if (!archivo.isEmpty()) {
+                    try {
+                        guardarFotoConsulta(idConsulta, archivo);
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("⚠️ Error al guardar foto de odontograma: " + e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    // ========== MÉTODO CONVERTIR DTO A ENTIDAD (EXISTENTE) ==========
     private Consulta convertirDTOaEntidad(ConsultaCompletaDTO dto) {
         Paciente paciente = pacienteRepository.findById(dto.getIdPaciente())
             .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));

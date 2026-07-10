@@ -2,6 +2,7 @@ package proyect_final.clinica.Model.Entity;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,6 +28,10 @@ public class Tratamiento {
 
     @Column(name = "descripcion_tratamiento", length = 255)
     private String descripcionTratamiento;
+
+    @OneToMany(mappedBy = "tratamiento")
+    private List<Cupo> cupos;
+
 
     @Column(name = "usu_reg_tra")
     private Integer usuRegTra;

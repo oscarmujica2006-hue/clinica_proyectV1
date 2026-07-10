@@ -11,7 +11,9 @@ public interface ConsentimientoFotoService {
     
     ConsentimientoFoto guardarFoto(Long idConsentimiento, MultipartFile archivo, Integer orden) throws IOException;
     
-    List<ConsentimientoFoto> guardarMultiplesFotos(Long idConsentimiento, MultipartFile[] archivos) throws IOException;
-    
-
+    List<ConsentimientoFoto> guardarMultiplesFotos(
+        Long idConsentimiento, 
+        MultipartFile[] archivos,
+        ImageConversionService conversionService
+    ) throws IOException;
 }
