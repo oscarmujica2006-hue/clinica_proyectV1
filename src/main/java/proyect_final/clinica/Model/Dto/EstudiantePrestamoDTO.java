@@ -5,6 +5,8 @@ import proyect_final.clinica.Model.Entity.Persona;
 import proyect_final.clinica.Model.Entity.Usuario;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class EstudiantePrestamoDTO {
     private Long idEstudiante;
@@ -13,6 +15,8 @@ public class EstudiantePrestamoDTO {
     private String email;
     private String nombreUsuario;  // ← Útil para mostrar en el frontend
     private Boolean bloqueado;      // ← Para saber si puede hacer préstamos
+    private String motivoBloqueo;   // ARCHIVO / RADIOGRAFIA / MULTIPLE
+    private LocalDateTime fechaBloqueo;
     
     // Constructor desde entidad
     public EstudiantePrestamoDTO(Estudiante estudiante) {
@@ -20,6 +24,8 @@ public class EstudiantePrestamoDTO {
             this.idEstudiante = estudiante.getIdEstudiante();
             this.codigoEstudiante = estudiante.getCodigoEstudiante();
             this.bloqueado = estudiante.getBloqueado();
+            this.motivoBloqueo = estudiante.getRazonBloqueo();
+            this.fechaBloqueo = estudiante.getFechaBloqueo();
             
             // Obtener datos del usuario
             Usuario usuario = estudiante.getUsuario();

@@ -62,7 +62,7 @@ public interface DiagnosticoTratamientoDienteRepository extends JpaRepository<Di
            "JOIN dt.consentimiento c " +
            "WHERE c.docente.idDocente = :idDocente " +
            "AND c.estado = 'APROBADO' " +
-           "AND dtd.estado = 'PENDIENTE' " +
+           "AND dtd.estado = 'PENDIENTE_APROBACION' " +
            "ORDER BY dtd.fechRegDiaTraDie ASC")
     List<DiagnosticoTratamientoDiente> findPendientesByDocenteId(@Param("idDocente") Long idDocente);
     
@@ -120,7 +120,7 @@ public interface DiagnosticoTratamientoDienteRepository extends JpaRepository<Di
            "JOIN dt.consentimiento c " +
            "WHERE c.docente.idDocente = :idDocente " +
            "AND c.estado = 'APROBADO' " +
-           "AND dtd.estado = 'PENDIENTE'")
+           "AND dtd.estado = 'PENDIENTE_APROBACION'")
     List<DiagnosticoTratamientoDiente> findPendientesByDocenteIdWithData(@Param("idDocente") Long idDocente);
     
     /**
@@ -131,7 +131,7 @@ public interface DiagnosticoTratamientoDienteRepository extends JpaRepository<Di
            "JOIN dt.consentimiento c " +
            "WHERE c.docente.idDocente = :idDocente " +
            "AND c.estado = 'APROBADO' " +
-           "AND dtd.estado = 'PENDIENTE'")
+           "AND dtd.estado = 'PENDIENTE_APROBACION'")
     Long countPendientesByDocenteId(@Param("idDocente") Long idDocente);
     
     /**

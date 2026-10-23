@@ -17,6 +17,8 @@ public class ReciboDTO {
     private String pacienteNombre;
     private String ciPaciente;
     private String estudianteNombre;  // ✅ NUEVO
+    private Long idEstudiante;        // estudiante real del recibo (cadena de consulta)
+    private String estudianteCodigo;  // código (R.U.) para el impreso
     private LocalDateTime fechaPago;
     private String estadoPago;
     private Double subtotalTratamientos;

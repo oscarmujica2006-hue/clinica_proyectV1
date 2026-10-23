@@ -470,11 +470,21 @@
             </button>
         </div>
 
+        <!-- Búsqueda de estudiante por código (solo caja) -->
+        <div style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap; align-items:center;">
+            <input type="number" id="codigoEstudianteInput"
+                   placeholder="Código del estudiante (Ej: 22222)" min="1"
+                   style="padding:8px 12px; border:1px solid #ccc; border-radius:6px; min-width:230px; font-size:14px;">
+            <button class="btn btn-primary" onclick="cargarRecibosEstudiante()">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </div>
+
         <!-- Información del Estudiante -->
         <div class="info-estudiante">
             <div>
                 <span class="label"><i class="fas fa-user-graduate"></i> Estudiante:</span>
-                <span class="value" id="nombreEstudiante">Cargando...</span>
+                <span class="value" id="nombreEstudiante">-</span>
             </div>
             <div>
                 <span class="label"><i class="fas fa-id-card"></i> Código:</span>
@@ -526,9 +536,9 @@
                 </thead>
                 <tbody id="recibosBody">
                     <tr>
-                        <td colspan="7" class="loading">
-                            <div class="loading-spinner"></div>
-                            <p style="margin-top: 10px;">Cargando recibos...</p>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-search" style="font-size:30px; display:block; margin-bottom:10px; opacity:0.3;"></i>
+                            Busque un estudiante para ver sus recibos
                         </td>
                     </tr>
                 </tbody>
@@ -549,51 +559,20 @@
     <script>
         // ============ VARIABLES GLOBALES ============
         const API_BASE = '';
-        let idEstudiante = null;
-        let codigoEstudiante = null;
+        let codigoBusquedaActivo = null;
 
-        // ============ OBTENER DATOS DEL ESTUDIANTE ============
-        async function obtenerDatosEstudiante() {
-            try {
-                idEstudiante = sessionStorage.getItem('idEstudiante');
-                codigoEstudiante = sessionStorage.getItem('codigoEstudiante');
-                const nombreEstudiante = sessionStorage.getItem('nombreEstudiante');
-                const clinicaEstudiante = sessionStorage.getItem('clinicaEstudiante');
-
-                if (idEstudiante) {
-                    document.getElementById('nombreEstudiante').textContent = nombreEstudiante || 'Estudiante';
-                    document.getElementById('codigoEstudiante').textContent = codigoEstudiante || 'N/A';
-                    document.getElementById('clinicaEstudiante').textContent = clinicaEstudiante || 'N/A';
-                    return true;
-                }
-
-                try {
-                    const response = await fetch('/api/usuario/actual', { credentials: 'include' });
-                    if (response.ok) {
-                        const usuario = await response.json();
-                        if (usuario && usuario.idUsuario) {
-                            idEstudiante = usuario.idUsuario;
-                            sessionStorage.setItem('idEstudiante', usuario.idUsuario);
-                            sessionStorage.setItem('nombreEstudiante', usuario.nombreCompleto || 'Estudiante');
-                            document.getElementById('nombreEstudiante').textContent = usuario.nombreCompleto || 'Estudiante';
-                            return true;
-                        }
-                    }
-                } catch (e) {
-                    console.warn('No se pudo obtener usuario:', e);
-                }
-
-                idEstudiante = 1;
-                codigoEstudiante = '2024006';
-                document.getElementById('nombreEstudiante').textContent = 'Estudiante Demo';
-                document.getElementById('codigoEstudiante').textContent = '2024006';
-                document.getElementById('clinicaEstudiante').textContent = 'Clínica 1';
-                return true;
-
-            } catch (error) {
-                console.error('Error al obtener datos del estudiante:', error);
-                return false;
-            }
+        // ============ MENSAJE SIN BÚSQUEDA ACTIVA ============
+        function mostrarMensajeBusqueda() {
+            codigoBusquedaActivo = null;
+            document.getElementById('nombreEstudiante').textContent = '-';
+            document.getElementById('codigoEstudiante').textContent = '-';
+            document.getElementById('clinicaEstudiante').textContent = '-';
+            document.getElementById('recibosBody').innerHTML = `
+                <tr><td colspan="7" class="no-data">
+                    <i class="fas fa-search" style="font-size:30px; display:block; margin-bottom:10px; opacity:0.3;"></i>
+                    Busque un estudiante para ver sus recibos
+                </td></tr>`;
+            actualizarResumen([]);
         }
 
         // ============ FUNCIONES AUXILIARES ============
@@ -681,43 +660,57 @@
             return letras + ' ' + decimal + '/100 BOLIVIANOS';
         }
 
-        // ============ CARGAR RECIBOS DEL ESTUDIANTE ============
+        // ============ CARGAR RECIBOS DEL ESTUDIANTE (por código de búsqueda) ============
         async function cargarRecibosEstudiante() {
-            if (!idEstudiante) {
-                const ok = await obtenerDatosEstudiante();
-                if (!ok) {
-                    document.getElementById('recibosBody').innerHTML = `
-                        <tr><td colspan="7" style="padding:20px; text-align:center; color:#c62828;">
-                            <i class="fas fa-exclamation-triangle" style="font-size:24px; display:block; margin-bottom:10px;"></i>
-                            No se pudo identificar al estudiante
-                        </td></tr>
-                    `;
-                    return;
-                }
+            const input = document.getElementById('codigoEstudianteInput');
+            const codigo = (input.value || '').trim() || codigoBusquedaActivo || '';
+            if (!codigo) {
+                mostrarMensajeBusqueda();
+                return;
             }
+            input.value = codigo;
 
             const tbody = document.getElementById('recibosBody');
             tbody.innerHTML = `
                 <tr>
                     <td colspan="7" class="loading">
                         <div class="loading-spinner"></div>
-                        <p>Cargando recibos del estudiante...</p>
+                        <p>Buscando recibos del estudiante...</p>
                     </td>
                 </tr>
             `;
 
             try {
-                let response = await fetch(`${API_BASE}/api/recibos/estudiante/${idEstudiante}`);
-                
+                const response = await fetch(`${API_BASE}/api/recibos/estudiante/codigo/${codigo}`);
+
+                if (response.status === 404) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="no-data">
+                                <i class="fas fa-user-slash" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                No se encontraron recibos para el estudiante con código: ${codigo}
+                            </td>
+                        </tr>
+                    `;
+                    codigoBusquedaActivo = null;
+                    document.getElementById('nombreEstudiante').textContent = '-';
+                    document.getElementById('codigoEstudiante').textContent = '-';
+                    document.getElementById('clinicaEstudiante').textContent = '-';
+                    actualizarResumen([]);
+                    return;
+                }
+
                 if (!response.ok) {
-                    response = await fetch(`${API_BASE}/api/recibos/todos`);
-                    if (!response.ok) {
-                        throw new Error('Error al cargar recibos');
-                    }
+                    throw new Error('Error al cargar recibos');
                 }
 
                 let recibos = await response.json();
                 console.log('📦 Recibos recibidos:', recibos);
+
+                codigoBusquedaActivo = codigo;
+                document.getElementById('nombreEstudiante').textContent = recibos[0]?.estudianteNombre || '-';
+                document.getElementById('codigoEstudiante').textContent = recibos[0]?.estudianteCodigo || codigo;
+                document.getElementById('clinicaEstudiante').textContent = 'Clínica Odontológica UAP';
 
                 if (!recibos || recibos.length === 0) {
                     tbody.innerHTML = `
@@ -839,72 +832,51 @@
                 const data = await response.json();
                 console.log('📄 Datos del recibo:', data);
 
-                // ============ OBTENER DATOS DEL ESTUDIANTE (para Rote y Clínica) ============
-                let nombreCompletoEstudiante = 'Estudiante';
-                let codigoEstudianteStr = 'N/A';
+                // ============ DATOS DEL ESTUDIANTE DESDE EL DTO (propios del recibo) ============
+                let nombreCompletoEstudiante = data.estudianteNombre || 'Estudiante';
+                let codigoEstudianteStr = data.estudianteCodigo || codigoBusquedaActivo || 'N/A';
+                const idEstudianteDelRecibo = data.idEstudiante || null;
                 let roteActual = '';
                 let clinicaNombre = 'CLÍNICA ODONTOLÓGICA UAP';
                 let materiaNombre = '';
                 let tratamientosList = [];
                 let dientesTratadosList = [];
                 let radiografiasList = [];
-                
+
                 try {
-                    const estudianteResponse = await fetch(`${API_BASE}/api/estudiantes/${idEstudiante}/detalle-recibo`);
-                    if (estudianteResponse.ok) {
-                        const estudianteData = await estudianteResponse.json();
-                        console.log('📘 Datos del estudiante:', estudianteData);
-                        
-                        if (estudianteData.nombreCompleto) {
-                            nombreCompletoEstudiante = estudianteData.nombreCompleto;
+                    if (idEstudianteDelRecibo) {
+                        const estudianteResponse = await fetch(`${API_BASE}/api/estudiantes/${idEstudianteDelRecibo}/detalle-recibo`);
+                        if (estudianteResponse.ok) {
+                            const estudianteData = await estudianteResponse.json();
+                            console.log('📘 Datos auxiliares del estudiante:', estudianteData);
+
+                            if (estudianteData.roteActual) {
+                                roteActual = estudianteData.roteActual;
+                            }
+                            if (estudianteData.clinica) {
+                                clinicaNombre = estudianteData.clinica;
+                            }
+                            if (estudianteData.materiaNombre) {
+                                materiaNombre = estudianteData.materiaNombre;
+                            }
+                            if (estudianteData.tratamientos) {
+                                tratamientosList = estudianteData.tratamientos;
+                            }
+                            if (estudianteData.dientesTratados) {
+                                dientesTratadosList = estudianteData.dientesTratados;
+                            }
+                            if (estudianteData.radiografias) {
+                                radiografiasList = estudianteData.radiografias;
+                            }
                         }
-                        
-                        if (estudianteData.codigoEstudiante) {
-                            codigoEstudianteStr = estudianteData.codigoEstudiante;
-                        }
-                        
-                        if (estudianteData.roteActual) {
-                            roteActual = estudianteData.roteActual;
-                        }
-                        
-                        if (estudianteData.clinica) {
-                            clinicaNombre = estudianteData.clinica;
-                        }
-                        
-                        if (estudianteData.materiaNombre) {
-                            materiaNombre = estudianteData.materiaNombre;
-                        }
-                        
-                        if (estudianteData.tratamientos) {
-                            tratamientosList = estudianteData.tratamientos;
-                        }
-                        
-                        if (estudianteData.dientesTratados) {
-                            dientesTratadosList = estudianteData.dientesTratados;
-                        }
-                        
-                        if (estudianteData.radiografias) {
-                            radiografiasList = estudianteData.radiografias;
-                        }
-                        
-                        document.getElementById('nombreEstudiante').textContent = nombreCompletoEstudiante;
-                        document.getElementById('codigoEstudiante').textContent = codigoEstudianteStr;
-                        document.getElementById('clinicaEstudiante').textContent = clinicaNombre;
-                        
-                        sessionStorage.setItem('nombreEstudiante', nombreCompletoEstudiante);
-                        sessionStorage.setItem('codigoEstudiante', codigoEstudianteStr);
-                        sessionStorage.setItem('clinicaEstudiante', clinicaNombre);
-                        
-                    } else {
-                        console.warn('No se pudo obtener detalle del estudiante, usando fallback');
-                        nombreCompletoEstudiante = sessionStorage.getItem('nombreEstudiante') || 'Estudiante';
-                        codigoEstudianteStr = sessionStorage.getItem('codigoEstudiante') || 'N/A';
                     }
                 } catch (e) {
-                    console.warn('No se pudo obtener datos completos del estudiante:', e);
-                    nombreCompletoEstudiante = sessionStorage.getItem('nombreEstudiante') || 'Estudiante';
-                    codigoEstudianteStr = sessionStorage.getItem('codigoEstudiante') || 'N/A';
+                    console.warn('No se pudieron obtener auxiliares del estudiante:', e);
                 }
+
+                document.getElementById('nombreEstudiante').textContent = nombreCompletoEstudiante;
+                document.getElementById('codigoEstudiante').textContent = codigoEstudianteStr;
+                document.getElementById('clinicaEstudiante').textContent = clinicaNombre;
 
                 // ============ CONSTRUIR EL CONCEPTO DEL RECIBO ============
                 let conceptosParts = [];
@@ -963,29 +935,6 @@
                     const dientes = Array.from(dientesSet).sort((a, b) => a - b);
                     if (dientes.length > 0) {
                         conceptosParts.push(`<span style="font-weight:bold;">Dientes Tratados:</span> ${dientes.join(', ')}`);
-                    }
-                }
-                
-                // 4. Radiografías
-                if (radiografiasList && radiografiasList.length > 0) {
-                    conceptosParts.push(`<span style="font-weight:bold; color:#1d4f91;">📷 ${radiografiasList.join(', ')}</span>`);
-                } else if (data.detalles && data.detalles.length > 0) {
-                    // Fallback: extraer radiografías de los detalles
-                    const radiografiasSet = new Set();
-                    data.detalles.forEach(d => {
-                        const esRadiografia = d.tipoItem === 'RADIOGRAFIA' || 
-                                            (d.concepto && d.concepto.toLowerCase().includes('radiograf'));
-                        if (esRadiografia) {
-                            let nombre = d.concepto || 'Radiografía';
-                            if (d.diente) {
-                                nombre += ` (Diente ${d.diente})`;
-                            }
-                            radiografiasSet.add(nombre);
-                        }
-                    });
-                    const radiografias = Array.from(radiografiasSet);
-                    if (radiografias.length > 0) {
-                        conceptosParts.push(`<span style="font-weight:bold; color:#1d4f91;">📷 ${radiografias.join(', ')}</span>`);
                     }
                 }
                 
@@ -1217,9 +1166,12 @@
         }
 
         // ============ INICIALIZAR ============
-        window.addEventListener('load', async () => {
-            await obtenerDatosEstudiante();
-            cargarRecibosEstudiante();
+        window.addEventListener('load', () => {
+            mostrarMensajeBusqueda();
+            document.getElementById('codigoEstudianteInput')
+                .addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') cargarRecibosEstudiante();
+                });
         });
     </script>
 </body>

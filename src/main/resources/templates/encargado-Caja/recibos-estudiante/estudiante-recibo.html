@@ -1,343 +1,1088 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- (mismo head que antes) -->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibos por Estudiante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             padding: 25px;
         }
-
-        h1 {
-            color: #0D47A1;
-            margin-bottom: 20px;
+        .header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
         }
-
+        h1 { color: #0D47A1; display: flex; align-items: center; gap: 10px; font-size: 1.8rem; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+        
         .search-section {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            align-items: flex-end;
         }
-
-        .search-section input {
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
             flex: 1;
+            min-width: 150px;
+        }
+        .search-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .search-group input,
+        .search-group select {
             padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 16px;
-            min-width: 250px;
+            background: white;
+            transition: border-color 0.3s;
         }
-
-        .search-section button {
-            background: #2196F3;
-            color: white;
+        .search-group input:focus,
+        .search-group select:focus {
+            outline: none;
+            border-color: #0D47A1;
+            box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.1);
+        }
+        .search-group select {
+            cursor: pointer;
+            appearance: auto;
+        }
+        
+        .info-estudiante {
+            background: #e3f2fd;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-left: 4px solid #0D47A1;
+        }
+        .info-estudiante .label { font-weight: 600; color: #0D47A1; }
+        .info-estudiante .value { font-weight: 500; }
+        
+        .resumen {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+            border-radius: 8px;
+        }
+        .resumen-item { text-align: center; }
+        .resumen-item .numero { font-size: 24px; font-weight: 700; }
+        .resumen-item .label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+        .resumen-item .numero.total { color: #0D47A1; }
+        .resumen-item .numero.pendiente { color: #e65100; }
+        .resumen-item .numero.pagado { color: #2e7d32; }
+        
+        .table-container { overflow-x: auto; border-radius: 8px; border: 1px solid #eee; }
+        .recibos-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .recibos-table th, .recibos-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .recibos-table th { background-color: #f8f9fa; color: #0D47A1; font-weight: 600; position: sticky; top: 0; z-index: 10; }
+        .recibos-table tr:hover { background-color: #f5f9ff; }
+        
+        .estado-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .estado-pendiente { background: #fff3e0; color: #e65100; }
+        .estado-parcial { background: #e3f2fd; color: #0D47A1; }
+        .estado-pagado { background: #e8f5e9; color: #2e7d32; }
+        
+        .btn {
+            padding: 8px 16px;
             border: none;
             border-radius: 6px;
-            padding: 12px 25px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .search-section button:hover {
-            background: #0D47A1;
-        }
-
-        .recibos-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .recibos-table th,
-        .recibos-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .recibos-table th {
-            background-color: #f8f9fa;
-            color: #0D47A1;
-            font-weight: 600;
-        }
-
-        .recibos-table tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .estado-pendiente {
-            background: #ff9800;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .btn-pagar {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 15px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
+            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            font-size: 13px;
         }
-
-        .btn-pagar:hover {
-            background: #388E3C;
+        .btn-primary { background: #2196F3; color: white; }
+        .btn-primary:hover { background: #0D47A1; transform: translateY(-2px); }
+        .btn-success { background: #4CAF50; color: white; }
+        .btn-success:hover { background: #388E3C; transform: translateY(-2px); }
+        .btn-secondary { background: #757575; color: white; }
+        .btn-secondary:hover { background: #616161; transform: translateY(-2px); }
+        .btn-warning { background: #FF9800; color: white; }
+        .btn-warning:hover { background: #E65100; transform: translateY(-2px); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #2196F3;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-
-        .btn-pagar:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .no-data { text-align: center; padding: 40px; color: #999; font-style: italic; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        
+        /* Estilos del modal de recibo */
+        .modal-recibo-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            overflow-y: auto;
         }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
+        .modal-recibo-overlay.active { display: flex; }
+        .modal-recibo-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 700px;
+            width: 100%;
             padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+        .modal-recibo-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: #1d4f91;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 10;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            margin-bottom: 5px;
         }
+        .modal-recibo-close:hover { background: #c62828; }
 
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .recibo-impreso {
+            width: 100%;
+            background: white;
+            border: 2px solid #1d4f91;
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        .recibo-impreso .encabezado {
             display: flex;
-            align-items: center;
+            justify-content: space-between;
+            align-items: flex-start;
             gap: 10px;
         }
-
-        .no-data {
+        .recibo-impreso .logos {
+            display: flex;
+            align-items: flex-start;
+            gap: 3px;
+        }
+        .recibo-impreso .logos img {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+        }
+        .recibo-impreso .logo-uap {
+            width: 40px !important;
+            height: 40px !important;
+        }
+        .recibo-impreso .titulo {
+            flex: 1;
             text-align: center;
-            padding: 40px;
-            color: #999;
-            font-style: italic;
+            padding-top: 0px;
+            margin-top: -5px;
+        }
+        .recibo-impreso .titulo h1 {
+            color: #1d4f91;
+            font-size: 20px;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .recibo-impreso .derecha-recibo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            padding-top: 20px;
+        }
+        .recibo-impreso .numero {
+            width: 120px;
+            border: 2px solid #1d4f91;
+            text-align: center;
+            padding: 5px;
+        }
+        .recibo-impreso .numero h2 {
+            color: red;
+            font-size: 24px;
+            margin: 0;
+        }
+        .recibo-impreso .numero small {
+            display: block;
+            margin-top: 3px;
+            font-size: 10px;
+        }
+        .recibo-impreso .monto {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+        .recibo-impreso .monto label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .recibo-impreso .bs {
+            border: 2px solid #000;
+            width: 90px;
+            text-align: center;
+            padding: 5px;
+        }
+        .recibo-impreso .bs span { display: block; font-size: 11px; }
+        .recibo-impreso .bs strong { font-size: 20px; }
+        .recibo-impreso .empresa {
+            margin-top: -60px;
+            line-height: 20px;
+            padding-left: 5px;
+            font-size: 11px;
+        }
+        .recibo-impreso .empresa p { margin: 2px 0; }
+        .recibo-impreso .contenido {
+            border: 2px solid #1d4f91;
+            padding: 12px;
+            margin-top: 8px;
+        }
+        .recibo-impreso .fila {
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .recibo-impreso .fila label { font-weight: bold; }
+        .recibo-impreso .fila span {
+            border-bottom: 1px dotted black;
+            display: inline-block;
+            min-width: 120px;
+            padding-left: 5px;
+            font-size: 11px;
+        }
+        .recibo-impreso .uni { margin-left: 20px; }
+        .recibo-impreso .concepto { display: block; }
+        .recibo-impreso .conceptoTexto {
+            margin-top: 10px;
+            border: 1px dashed gray;
+            padding: 12px;
+            min-height: 50px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .recibo-impreso .pie { margin-top: 20px; font-size: 12px; }
+        .recibo-impreso .firmas {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 25px;
+            text-align: center;
+        }
+        .recibo-impreso .firmas div {
+            min-width: 100px;
+            font-size: 11px;
+        }
+        .recibo-impreso .firmas div:first-child {
+            border-right: 1px solid #ccc;
+            padding-right: 20px;
+        }
+        .recibo-impreso .firmas div:last-child {
+            padding-left: 20px;
+        }
+        .btn-print {
+            margin-top: 10px;
+            width: 100%;
+            justify-content: center;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            .modal-recibo-content, .modal-recibo-content * { visibility: visible; }
+            .modal-recibo-content {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 20px;
+                border-radius: 0;
+                box-shadow: none;
+                background: white;
+                max-width: 100%;
+                max-height: 100%;
+            }
+            .modal-recibo-close { display: none; }
+            .recibo-impreso {
+                border: 2px solid black;
+                padding: 20px;
+                font-size: 12px;
+            }
+            .recibo-impreso .logos img {
+                width: 50px;
+                height: 50px;
+            }
+            .recibo-impreso .logo-uap {
+                width: 60px !important;
+                height: 60px !important;
+            }
+            .recibo-impreso .titulo h1 { font-size: 28px; }
+            .recibo-impreso .numero h2 { font-size: 32px; }
+            .recibo-impreso .bs strong { font-size: 26px; }
+            .btn-print { display: none !important; }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .search-section { flex-direction: column; }
+            .search-group { min-width: 100%; }
+            .resumen { grid-template-columns: 1fr 1fr; }
+            .recibos-table { font-size: 12px; }
+            .recibos-table th, .recibos-table td { padding: 8px 10px; }
+            .modal-recibo-content { max-width: 95%; padding: 10px; }
+            .recibo-impreso .encabezado {
+                flex-direction: column;
+                align-items: center;
+            }
+            .recibo-impreso .derecha-recibo {
+                padding-top: 5px;
+                width: 100%;
+            }
+            .recibo-impreso .empresa {
+                margin-top: 5px;
+                text-align: center;
+            }
+            .recibo-impreso .fila {
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+            .recibo-impreso .uni { margin-left: 0; }
+            .recibo-impreso .firmas {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .recibo-impreso .firmas div:first-child {
+                border-right: none;
+                padding-right: 0;
+            }
+            .recibo-impreso .firmas div:last-child {
+                padding-left: 0;
+            }
+        }
+        @media (max-width: 480px) {
+            .resumen { grid-template-columns: 1fr; }
+            h1 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>
-            <i class="fas fa-file-invoice"></i>
-            Recibos Pendientes por Estudiante
-        </h1>
-
-        <!-- Buscador por código de estudiante -->
-        <div class="search-section">
-            <input type="number" id="codigoEstudiante" placeholder="Código del estudiante" value="2024006" min="1">
-            <button id="btnBuscar">
-                <i class="fas fa-search"></i> Buscar recibos pendientes
-            </button>
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-file-invoice"></i> Recibos del Estudiante</h1>
+                <p class="subtitle"><i class="fas fa-info-circle"></i> Busque y gestione los recibos por código de estudiante</p>
+            </div>
         </div>
 
-        <!-- Área de mensajes -->
-        <div id="mensaje" style="display: none;"></div>
+        <!-- Buscador con Filtro de Estado -->
+        <div class="search-section">
+            <div class="search-group">
+                <label><i class="fas fa-id-card"></i> Código del Estudiante (RU)</label>
+                <input type="number" id="codigoEstudianteInput" placeholder="Ej: 22222" value="22222" min="1">
+            </div>
+            <div class="search-group">
+                <label><i class="fas fa-filter"></i> Filtrar por Estado</label>
+                <select id="estadoFiltro">
+                    <option value="todos">📋 Todos</option>
+                    <option value="pendientes">⏳ Pendientes</option>
+                    <option value="parciales">🔄 Parciales</option>
+                    <option value="pagados">✅ Pagados</option>
+                </select>
+            </div>
+            <div class="search-group" style="flex:0 0 auto;min-width:auto;">
+                <button class="btn btn-primary" onclick="buscarRecibos()">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+            <div class="search-group" style="flex:0 0 auto;min-width:auto;">
+                <button class="btn btn-secondary" onclick="limpiarBusqueda()">
+                    <i class="fas fa-undo"></i> Limpiar
+                </button>
+            </div>
+        </div>
 
-        <!-- Tabla de recibos -->
-        <table class="recibos-table" id="tablaRecibos">
-            <thead>
-                <tr>
-                    <th>ID Recibo</th>
-                    <th>ID Seguimiento</th>
-                    <th>Fecha Emisión</th>
-                    <th>Monto Total</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="recibosBody">
-                <tr>
-                    <td colspan="6" class="no-data">
-                        Ingrese un código de estudiante y haga clic en buscar
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Información del Estudiante -->
+        <div class="info-estudiante" id="infoEstudiante">
+            <div>
+                <span class="label"><i class="fas fa-user-graduate"></i> Estudiante:</span>
+                <span class="value" id="nombreEstudiante">-</span>
+            </div>
+            <div>
+                <span class="label"><i class="fas fa-id-card"></i> Código:</span>
+                <span class="value" id="codigoEstudianteInfo">-</span>
+            </div>
+            <div>
+                <span class="label"><i class="fas fa-clinic-medical"></i> Clínica:</span>
+                <span class="value" id="clinicaEstudiante">-</span>
+            </div>
+        </div>
+
+        <!-- Resumen -->
+        <div id="resumenContainer" class="resumen">
+            <div class="resumen-item">
+                <div class="numero total" id="totalRecibos">0</div>
+                <div class="label">Total Recibos</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero pendiente" id="totalPendientes">0</div>
+                <div class="label">⏳ Pendientes</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero" id="totalParciales" style="color: #0D47A1;">0</div>
+                <div class="label">🔄 Parciales</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero pagado" id="totalPagados">0</div>
+                <div class="label">✅ Pagados</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero total" id="totalMonto" style="color: #0D47A1;">$0.00</div>
+                <div class="label">Monto Total</div>
+            </div>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-container">
+            <table class="recibos-table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Paciente</th>
+                        <th>Tratamiento</th>
+                        <th>Dientes</th>
+                        <th style="text-align: right;">Total</th>
+                        <th style="text-align: center;">Estado</th>
+                        <th style="text-align: center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="recibosBody">
+                    <tr>
+                        <td colspan="7" class="no-data">
+                            <i class="fas fa-search" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                            Ingrese un código de estudiante y haga clic en Buscar
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-<script>
-    const API_BASE = '/api/seguimientos';
-    const codigoInput = document.getElementById('codigoEstudiante');
-    const btnBuscar = document.getElementById('btnBuscar');
-    const recibosBody = document.getElementById('recibosBody');
-    const mensajeDiv = document.getElementById('mensaje');
+    <!-- Modal Recibo Impreso -->
+    <div class="modal-recibo-overlay" id="modalRecibo">
+        <div class="modal-recibo-content">
+            <button class="modal-recibo-close" onclick="cerrarModalRecibo()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="reciboImpresoContainer"></div>
+        </div>
+    </div>
 
-    function mostrarMensaje(tipo, texto) {
-        mensajeDiv.style.display = 'flex';
-        mensajeDiv.className = tipo === 'error' ? 'error-message' : 'success-message';
-        mensajeDiv.innerHTML = `<i class="fas ${tipo === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${texto}`;
-        setTimeout(() => {
-            mensajeDiv.style.display = 'none';
-        }, 5000);
-    }
+    <script>
+        const API_BASE = '';
+        let codigoEstudianteActual = null;
+        let todosLosRecibos = [];
 
-    async function cargarRecibosPendientes(codigo) {
-        try {
-            recibosBody.innerHTML = '<tr><td colspan="6" class="loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</td></tr>';
+        // ============ FUNCIONES AUXILIARES ============
+        function getEstadoBadge(estado) {
+            const clases = {
+                'PENDIENTE': 'estado-pendiente',
+                'PARCIAL': 'estado-parcial',
+                'PAGADO': 'estado-pagado'
+            };
+            const labels = {
+                'PENDIENTE': 'PENDIENTE',
+                'PARCIAL': 'PARCIAL',
+                'PAGADO': 'PAGADO'
+            };
+            return `<span class="estado-badge ${clases[estado] || 'estado-pendiente'}">${labels[estado] || estado}</span>`;
+        }
 
-            const response = await fetch(`${API_BASE}/recibos/pendientes/estudiante/codigo/${codigo}`);
-            if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
+        function formatearMoneda(monto) {
+            return monto ? `$${Number(monto).toFixed(2)}` : '$0.00';
+        }
 
-            const recibos = await response.json();
+        function formatearFecha(fecha) {
+            if (!fecha) return '-';
+            return new Date(fecha).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
-            if (recibos.length === 0) {
-                recibosBody.innerHTML = '<tr><td colspan="6" class="no-data">No hay recibos pendientes para este estudiante</td></tr>';
+        function formatearFechaCorta(fecha) {
+            if (!fecha) return '-';
+            return new Date(fecha).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        function numeroALetras(num) {
+            const unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+            const decenas = ['', 'DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+            const especiales = ['DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE'];
+            
+            const partes = num.toString().split('.');
+            const entero = parseInt(partes[0]);
+            const decimal = partes[1] || '00';
+            
+            let letras = '';
+            
+            if (entero === 0) {
+                letras = 'CERO';
+            } else if (entero < 10) {
+                letras = unidades[entero];
+            } else if (entero < 20) {
+                letras = especiales[entero - 10];
+            } else if (entero < 100) {
+                const d = Math.floor(entero / 10);
+                const u = entero % 10;
+                if (u === 0) {
+                    letras = decenas[d];
+                } else {
+                    letras = decenas[d] + ' Y ' + unidades[u];
+                }
+            } else if (entero < 1000) {
+                const c = Math.floor(entero / 100);
+                const resto = entero % 100;
+                letras = (c === 1 ? 'CIENTO' : unidades[c] + 'CIENTOS');
+                if (resto > 0) {
+                    letras += ' ' + numeroALetras(resto);
+                }
+            } else if (entero < 1000000) {
+                const m = Math.floor(entero / 1000);
+                const resto = entero % 1000;
+                letras = (m === 1 ? 'MIL' : numeroALetras(m) + ' MIL');
+                if (resto > 0) {
+                    letras += ' ' + numeroALetras(resto);
+                }
+            } else {
+                letras = 'MONTO NO SOPORTADO';
+            }
+            
+            return letras + ' ' + decimal + '/100 BOLIVIANOS';
+        }
+
+        // ============ BUSCAR RECIBOS POR CÓDIGO ============
+        async function buscarRecibos() {
+            const codigo = document.getElementById('codigoEstudianteInput').value.trim();
+            const filtroEstado = document.getElementById('estadoFiltro').value;
+            
+            if (!codigo) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Código requerido',
+                    text: 'Por favor, ingrese el código del estudiante',
+                    confirmButtonColor: '#F59E0B'
+                });
                 return;
             }
 
-            // --- 1. Agrupar recibos por idConsentimiento ---
-            const gruposPorConsentimiento = {};
-            recibos.forEach(recibo => {
-                const idCons = recibo.idConsentimiento;
-                if (!gruposPorConsentimiento[idCons]) {
-                    gruposPorConsentimiento[idCons] = [];
+            const tbody = document.getElementById('recibosBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Buscando recibos del estudiante...</p>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                let url = `${API_BASE}/api/recibos/estudiante/codigo/${codigo}`;
+                
+                // Si el filtro no es "todos", usar el endpoint específico
+                if (filtroEstado === 'pendientes') {
+                    url = `${API_BASE}/api/recibos/estudiante/codigo/${codigo}/pendientes`;
+                } else if (filtroEstado === 'pagados') {
+                    url = `${API_BASE}/api/recibos/estudiante/codigo/${codigo}/estado/PAGADO`;
+                } else if (filtroEstado === 'parciales') {
+                    url = `${API_BASE}/api/recibos/estudiante/codigo/${codigo}/estado/PARCIAL`;
                 }
-                gruposPorConsentimiento[idCons].push(recibo);
-            });
 
-            let html = '';
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="no-data">
+                                    <i class="fas fa-user-slash" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                    No se encontraron recibos para el estudiante con código: ${codigo}
+                                </td>
+                            </tr>
+                        `;
+                        actualizarResumen([]);
+                        limpiarInfoEstudiante();
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
 
-            // --- 2. Procesar cada consentimiento por separado ---
-            Object.keys(gruposPorConsentimiento).forEach(idConsentimiento => {
-                const recibosConsentimiento = gruposPorConsentimiento[idConsentimiento];
+                const recibos = await response.json();
+                todosLosRecibos = recibos;
+                codigoEstudianteActual = codigo;
+                
+                console.log('📦 Recibos recibidos:', recibos);
 
-                // Ordenar recibos de este consentimiento por fecha descendente (más reciente primero)
-                const ordenados = [...recibosConsentimiento].sort((a, b) => new Date(b.fechaEmision) - new Date(a.fechaEmision));
-                const ultimoIdSeguimiento = ordenados[0].idSeguimiento;
-                // Filtrar solo los recibos del último seguimiento de este consentimiento
-                const recibosUltimoSeguimiento = recibosConsentimiento.filter(r => r.idSeguimiento === ultimoIdSeguimiento);
-
-                // Calcular total del último seguimiento
-                const totalSeguimiento = recibosUltimoSeguimiento.reduce((sum, r) => sum + r.montoTotal, 0);
-
-                // --- Encabezado del consentimiento ---
-                html += `
-                    <tr style="background-color: #d1c4e9; font-weight: bold;">
-                        <td colspan="6">Consentimiento #${idConsentimiento} - Último seguimiento (ID: ${ultimoIdSeguimiento})</td>
-                    </tr>
-                `;
-
-                // --- Filas de los recibos de este seguimiento ---
-                recibosUltimoSeguimiento.forEach(recibo => {
-                    const fecha = new Date(recibo.fechaEmision).toLocaleString('es-ES', {
-                        year: 'numeric', month: '2-digit', day: '2-digit',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-                    html += `
+                if (!recibos || recibos.length === 0) {
+                    tbody.innerHTML = `
                         <tr>
-                            <td>${recibo.idRecibo}</td>
-                            <td>${recibo.idSeguimiento}</td>
-                            <td>${fecha}</td>
-                            <td>$${recibo.montoTotal.toFixed(2)}</td>
-                            <td><span class="estado-pendiente">${recibo.estadoPago}</span></td>
-                            <td>
-                                <button class="btn-pagar" onclick="pagarRecibo(${recibo.idRecibo})">
-                                    <i class="fas fa-check"></i> Pagar
-                                </button>
+                            <td colspan="7" class="no-data">
+                                <i class="fas fa-inbox" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                No hay recibos ${filtroEstado !== 'todos' ? 'con estado: ' + filtroEstado : ''} para este estudiante
                             </td>
                         </tr>
                     `;
-                });
+                    actualizarResumen([]);
+                    limpiarInfoEstudiante();
+                    return;
+                }
 
-                // --- Fila con el total de este seguimiento ---
-                html += `
-                    <tr style="background-color: #e8eaf6; font-weight: bold;">
-                        <td colspan="3" style="text-align: right;">TOTAL ESTE SEGUIMIENTO:</td>
-                        <td>$${totalSeguimiento.toFixed(2)}</td>
-                        <td colspan="2"></td>
+                // Actualizar información del estudiante
+                if (recibos[0]?.estudianteNombre) {
+                    document.getElementById('nombreEstudiante').textContent = recibos[0].estudianteNombre;
+                }
+                document.getElementById('codigoEstudianteInfo').textContent = codigo;
+                document.getElementById('clinicaEstudiante').textContent = 'Clínica Odontológica UAP';
+
+                actualizarResumen(recibos);
+                renderizarRecibos(recibos, tbody);
+
+            } catch (error) {
+                console.error('Error:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 20px; text-align: center; color: #c62828;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                            Error: ${error.message}
+                            <br><button class="btn btn-primary" onclick="buscarRecibos()" style="margin-top: 10px;">Reintentar</button>
+                        </td>
                     </tr>
                 `;
+                actualizarResumen([]);
+            }
+        }
 
-                // Espaciado entre consentimientos
-                html += `<tr><td colspan="6" style="padding: 5px;"></td></tr>`;
+        function renderizarRecibos(recibos, tbody) {
+            let html = '';
+
+            recibos.forEach(recibo => {
+                const estado = recibo.estadoPago || 'PENDIENTE';
+                const montoTotal = recibo.montoTotal || 0;
+                const saldoPendiente = recibo.saldoPendiente || montoTotal;
+                
+                // Obtener datos del paciente y tratamientos
+                let pacienteCompleto = recibo.pacienteNombre || 'N/A';
+                
+                // Obtener tratamientos
+                let tratamientos = [];
+                let dientes = [];
+                
+                if (recibo.detalles && recibo.detalles.length > 0) {
+                        recibo.detalles.forEach(d => {
+                            if (d.tratamientoNombre) {
+                                tratamientos.push(d.tratamientoNombre);
+                            }
+                            if (d.diente != null) {
+                                dientes.push(d.diente);
+                            }
+                        });
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>#${recibo.idRecibo}</strong></td>
+                        <td>${pacienteCompleto || 'N/A'}</td>
+                        <td>${tratamientos.length > 0 ? tratamientos.join(', ') : 'N/A'}</td>
+                        <td>${dientes.length > 0 ? dientes.join(', ') : '-'}</td>
+                        <td style="text-align: right; font-weight: 600;">${formatearMoneda(montoTotal)}</td>
+                        <td style="text-align: center;">${getEstadoBadge(estado)}</td>
+                        <td style="text-align: center;">
+                            <button class="btn btn-primary btn-sm" onclick="verReciboImpreso(${recibo.idRecibo})">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            ${estado === 'PENDIENTE' || estado === 'PARCIAL' ? `
+                                <button class="btn btn-success btn-sm" onclick="pagarRecibo(${recibo.idRecibo}, ${saldoPendiente})">
+                                    <i class="fas fa-money-bill-wave"></i> Pagar
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
             });
 
-            recibosBody.innerHTML = html;
-
-            mostrarMensaje('success', 'Mostrando últimos seguimientos por consentimiento.');
-        } catch (error) {
-            console.error(error);
-            recibosBody.innerHTML = `<tr><td colspan="6" class="error-message">Error: ${error.message}</td></tr>`;
-            mostrarMensaje('error', 'No se pudieron cargar los recibos.');
+            tbody.innerHTML = html;
         }
-    }
 
-    async function pagarRecibo(idRecibo) {
-        if (!confirm('¿Marcar este recibo como pagado?')) return;
-        try {
-            const response = await fetch(`${API_BASE}/recibos/${idRecibo}/pagar`, { method: 'PUT' });
-            if (!response.ok) throw new Error('Error al pagar');
-            mostrarMensaje('success', `Recibo #${idRecibo} pagado`);
-            const codigo = codigoInput.value.trim();
-            if (codigo) cargarRecibosPendientes(codigo);
-        } catch (error) {
-            mostrarMensaje('error', error.message);
+        function actualizarResumen(recibos) {
+            let total = recibos.length;
+            let pendientes = 0, parciales = 0, pagados = 0;
+            let montoTotal = 0;
+
+            recibos.forEach(r => {
+                const estado = r.estadoPago || 'PENDIENTE';
+                if (estado === 'PENDIENTE') pendientes++;
+                else if (estado === 'PARCIAL') parciales++;
+                else if (estado === 'PAGADO') pagados++;
+                montoTotal += r.montoTotal || 0;
+            });
+
+            document.getElementById('totalRecibos').textContent = total;
+            document.getElementById('totalPendientes').textContent = pendientes;
+            document.getElementById('totalParciales').textContent = parciales;
+            document.getElementById('totalPagados').textContent = pagados;
+            document.getElementById('totalMonto').textContent = formatearMoneda(montoTotal);
         }
-    }
 
-    btnBuscar.addEventListener('click', () => {
-        const codigo = codigoInput.value.trim();
-        if (!codigo) {
-            mostrarMensaje('error', 'Debe ingresar un código de estudiante');
-            return;
+        function limpiarInfoEstudiante() {
+            document.getElementById('nombreEstudiante').textContent = '-';
+            document.getElementById('codigoEstudianteInfo').textContent = '-';
+            document.getElementById('clinicaEstudiante').textContent = '-';
         }
-        cargarRecibosPendientes(codigo);
-    });
 
-    codigoInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnBuscar.click();
-    });
-
-    window.addEventListener('load', () => {
-        if (codigoInput.value) {
-            cargarRecibosPendientes(codigoInput.value);
+        function limpiarBusqueda() {
+            document.getElementById('codigoEstudianteInput').value = '';
+            document.getElementById('estadoFiltro').value = 'todos';
+            document.getElementById('recibosBody').innerHTML = `
+                <tr>
+                    <td colspan="7" class="no-data">
+                        <i class="fas fa-search" style="font-size: 30px; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                        Ingrese un código de estudiante y haga clic en Buscar
+                    </td>
+                </tr>
+            `;
+            actualizarResumen([]);
+            limpiarInfoEstudiante();
+            todosLosRecibos = [];
+            codigoEstudianteActual = null;
         }
-    });
-</script>
+
+        // ============ VER RECIBO IMPRESO ============
+        async function verReciboImpreso(idRecibo) {
+            const modal = document.getElementById('modalRecibo');
+            const container = document.getElementById('reciboImpresoContainer');
+            
+            modal.classList.add('active');
+            container.innerHTML = '<div style="text-align:center; padding:20px;"><div class="loading-spinner"></div><p>Cargando recibo...</p></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/recibos/${idRecibo}/completo`);
+                if (!response.ok) throw new Error('Error al obtener detalle');
+
+                const data = await response.json();
+                console.log('📄 Datos del recibo:', data);
+
+                // Construir el concepto del recibo
+                let conceptosParts = [];
+                let tratamientosList = [];
+                let dientesTratadosList = [];
+                
+                if (data.detalles && data.detalles.length > 0) {
+                    data.detalles.forEach(d => {
+                        if (d.tratamientoNombre) {
+                            tratamientosList.push(d.tratamientoNombre);
+                        }
+                        if (d.diente != null) {
+                            dientesTratadosList.push(d.diente);
+                        }
+                    });
+                }
+                
+                // Tratamientos
+                if (tratamientosList.length > 0) {
+                    conceptosParts.push(tratamientosList.join('<br>'));
+                }
+                
+                // Dientes
+                if (dientesTratadosList.length > 0) {
+                    conceptosParts.push(`<span style="font-weight:bold;">Dientes Tratados:</span> ${dientesTratadosList.join(', ')}`);
+                }
+                
+                let conceptosHtml = conceptosParts.join('<br><br>');
+                if (!conceptosHtml) {
+                    conceptosHtml = 'SERVICIOS ODONTOLÓGICOS';
+                }
+
+                // Formatear datos
+                const montoTotal = data.montoTotal || 0;
+                const montoFormateado = montoTotal.toFixed(2).replace('.', ',');
+                const montoLetras = numeroALetras(montoTotal);
+                const fechaStr = formatearFechaCorta(data.fechRegRec || new Date());
+                const numRecibo = String(data.idRecibo).padStart(5, '0');
+                
+                // Datos directos del DTO del recibo
+                let pacienteNombre = data.pacienteNombre || 'PACIENTE';
+                let estudianteNombre = data.estudianteNombre || 'Estudiante';
+                let codigoEstudianteStr = data.estudianteCodigo || codigoEstudianteActual || 'N/A';
+
+                const reciboHtml = `
+                    <div class="recibo-impreso">
+                        <div class="encabezado">
+                            <div class="logos">
+                                <img src="/img/uap_logo.jpg" alt="UAP" class="logo-uap" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22%3E%3Crect width=%2240%22 height=%2240%22 fill=%22%231d4f91%22/%3E%3Ctext x=%225%22 y=%2225%22 font-size=%2212%22 fill=%22white%22%3EUAP%3C/text%3E%3C/svg%3E'">
+                                <img src="/img/ACS.jpg" alt="ACS" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2230%22 height=%2230%22%3E%3Crect width=%2230%22 height=%2230%22 fill=%22%23cccccc%22/%3E%3Ctext x=%225%22 y=%2220%22 font-size=%2210%22 fill=%22666%22%3EACS%3C/text%3E%3C/svg%3E'">
+                            </div>
+                            <div class="titulo">
+                                <h1>RECIBO DE PAGO 5TO AÑO</h1>
+                            </div>
+                            <div class="derecha-recibo">
+                                <div class="numero">
+                                    <span>RECIBO Nº</span>
+                                    <h2>${numRecibo}</h2>
+                                    <small>${fechaStr}</small>
+                                </div>
+                                <div class="monto">
+                                    <div><label>POR:</label></div>
+                                    <div class="bs">
+                                        <span>Bs.</span>
+                                        <strong>${montoFormateado}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="empresa">
+                            <p><b>Empresa:</b> CLÍNICA ODONTOLÓGICA UAP</p>
+                            <p><b>NIT:</b> 123456789</p>
+                            <p><b>Dirección:</b> B/ San Pedro CAMPUS UAP</p>
+                        </div>
+                        <div class="contenido">
+                            <div class="fila">
+                                <label>RECIBO DEL SR.(A):</label>
+                                <span>${pacienteNombre}</span>
+                            </div>
+                            <div class="fila">
+                                <label>R.U.</label>
+                                <span>${codigoEstudianteStr}</span>
+                                <label class="uni">UNIVERSITARIO:</label>
+                                <span>${estudianteNombre}</span>
+                            </div>
+                            <div class="fila">
+                                <label>CANTIDAD EN LETRAS:</label>
+                                <span>${montoLetras}</span>
+                            </div>
+                            <div class="fila concepto">
+                                <label>POR CONCEPTO DE:</label>
+                                <div class="conceptoTexto">${conceptosHtml}</div>
+                            </div>
+                        </div>
+                        <div class="pie">
+                            <div><b>FECHA:</b> ${fechaStr}</div>
+                            <div class="firmas">
+                                <div>
+                                    _______________________<br>
+                                    RECIBÍ CONFORME<br>
+                                    <small>Firma del Paciente</small>
+                                </div>
+                                <div>
+                                    _______________________<br>
+                                    ENTREGUÉ CONFORME<br>
+                                    <small>Firma del Estudiante</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML = reciboHtml;
+
+                const printBtn = document.createElement('button');
+                printBtn.className = 'btn btn-primary btn-print';
+                printBtn.innerHTML = '<i class="fas fa-print"></i> Imprimir Recibo';
+                printBtn.onclick = () => window.print();
+                container.appendChild(printBtn);
+
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = `
+                    <div style="text-align:center; padding:20px; color:#c62828;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:30px; display:block; margin-bottom:10px;"></i>
+                        Error al cargar recibo: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function cerrarModalRecibo() {
+            document.getElementById('modalRecibo').classList.remove('active');
+        }
+
+        document.getElementById('modalRecibo').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalRecibo();
+        });
+
+        // ============ PAGAR RECIBO ============
+        async function pagarRecibo(idRecibo, saldo) {
+            const { value: monto } = await Swal.fire({
+                title: 'Registrar Pago',
+                html: `
+                    <p>Recibo #${idRecibo}</p>
+                    <p><strong>Saldo pendiente: $${saldo.toFixed(2)}</strong></p>
+                    <div style="margin-top:15px;">
+                        <label style="display:block; text-align:left; font-weight:600; margin-bottom:5px;">Monto a pagar</label>
+                        <input id="swal-monto" type="number" step="0.01" min="0.01" max="${saldo}" value="${saldo}" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
+                    </div>
+                    <div style="margin-top:10px;">
+                        <label style="display:block; text-align:left; font-weight:600; margin-bottom:5px;">Método de pago</label>
+                        <select id="swal-metodo" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; font-size:16px;">
+                            <option value="EFECTIVO">Efectivo</option>
+                            <option value="TARJETA">Tarjeta</option>
+                            <option value="TRANSFERENCIA">Transferencia</option>
+                            <option value="OTRO">Otro</option>
+                        </select>
+                    </div>
+                `,
+                confirmButtonText: '✅ Confirmar Pago',
+                cancelButtonText: 'Cancelar',
+                showCancelButton: true,
+                confirmButtonColor: '#4CAF50',
+                cancelButtonColor: '#999',
+                preConfirm: () => {
+                    const monto = parseFloat(document.getElementById('swal-monto').value);
+                    const metodo = document.getElementById('swal-metodo').value;
+                    if (!monto || monto <= 0) {
+                        Swal.showValidationMessage('Ingrese un monto válido');
+                        return false;
+                    }
+                    if (monto > saldo) {
+                        Swal.showValidationMessage(`El monto no puede exceder el saldo ($${saldo.toFixed(2)})`);
+                        return false;
+                    }
+                    return { monto, metodo };
+                }
+            });
+
+            if (!monto) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/recibos/${idRecibo}/pagar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        monto: monto.monto,
+                        metodoPago: monto.metodo,
+                        observaciones: 'Pago registrado desde la web',
+                        idUsuario: 1
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al registrar pago');
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '✅ Pago registrado',
+                    html: `
+                        <p>Se registró un pago de <strong>$${monto.monto.toFixed(2)}</strong></p>
+                        <p>Estado: <strong>PAGADO</strong></p>
+                    `,
+                    confirmButtonColor: '#4CAF50'
+                });
+
+                buscarRecibos();
+
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            }
+        }
+
+        // ============ INICIALIZAR ============
+        window.addEventListener('load', () => {
+            const codigoInput = document.getElementById('codigoEstudianteInput');
+            if (codigoInput.value) {
+                buscarRecibos();
+            }
+        });
+
+        document.getElementById('codigoEstudianteInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') buscarRecibos();
+        });
+
+        document.getElementById('estadoFiltro').addEventListener('change', () => {
+            if (codigoEstudianteActual) {
+                buscarRecibos();
+            }
+        });
+    </script>
 </body>
 </html>

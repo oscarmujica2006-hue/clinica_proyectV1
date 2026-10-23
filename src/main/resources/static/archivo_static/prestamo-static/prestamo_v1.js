@@ -480,8 +480,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
                 limpiarFormularioPrestamo();
             } else {
-                const errorText = await response.text();
-                showNotification('error', `Error: ${errorText || 'Error desconocido'}`, 'Error');
+                let mensaje = 'Error desconocido';
+                try {
+                    const errorData = await response.json();
+                    mensaje = errorData.error || errorData.message || mensaje;
+                } catch {
+                    mensaje = (await response.text()) || mensaje;
+                }
+                showNotification('error', mensaje, 'Error');
             }
         } catch (error) {
             console.error('Error:', error);

@@ -4,6 +4,10 @@ import proyect_final.clinica.Model.Dto.PrestamoActualDTO;
 import proyect_final.clinica.Model.Entity.PrestamoActual;
 import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Entity.Archivo;
+import proyect_final.clinica.Model.Entity.Paciente;
+import proyect_final.clinica.Model.Entity.Persona;
+import proyect_final.clinica.Model.Dao.EstudianteRepository;
+import proyect_final.clinica.Model.Dao.ArchivoRepository;
 import proyect_final.clinica.Service.PrestamoActualService;
 import proyect_final.clinica.Service.EstudianteService;
 import proyect_final.clinica.Service.ArchivoService;
@@ -17,9 +21,11 @@ import jakarta.servlet.http.HttpSession;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,6 +42,12 @@ public class PrestamoActualController {
     
     @Autowired
     private ArchivoService archivoService;
+
+    @Autowired
+    private EstudianteRepository estudianteRepository;
+
+    @Autowired
+    private ArchivoRepository archivoRepository;
 
     // ✅ CORREGIDO: Cambiar a Long
     private Long getIdUsuarioDeSesion(HttpServletRequest request) {
@@ -81,11 +93,9 @@ public class PrestamoActualController {
     
     @GetMapping
     public ResponseEntity<List<PrestamoActualDTO>> obtenerTodos() {
+        prestamoActualService.marcarVencidosYBloquear();
         List<PrestamoActual> prestamos = prestamoActualService.obtenerTodos();
-        List<PrestamoActualDTO> dtos = prestamos.stream()
-            .map(this::convertirADTO)
-            .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(convertirADTOs(prestamos));
     }
 
     @GetMapping("/{id}")
@@ -96,7 +106,7 @@ public class PrestamoActualController {
     }
 
     @PostMapping
-    public ResponseEntity<PrestamoActualDTO> crearPrestamo(
+    public ResponseEntity<?> crearPrestamo(
             @RequestBody PrestamoActualDTO prestamoDTO,
             HttpServletRequest request) {
         try {
@@ -126,9 +136,13 @@ public class PrestamoActualController {
             PrestamoActual nuevoPrestamo = prestamoActualService.registrarPrestamo(prestamo);
             return new ResponseEntity<>(convertirADTO(nuevoPrestamo), HttpStatus.CREATED);
             
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("success", false, "error", e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("success", false, "error", "Error interno del servidor"));
         }
     }
 
@@ -176,10 +190,7 @@ public class PrestamoActualController {
             if (prestamos.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            List<PrestamoActualDTO> dtos = prestamos.stream()
-                .map(this::convertirADTO)
-                .collect(Collectors.toList());
-            return ResponseEntity.ok(dtos);
+            return ResponseEntity.ok(convertirADTOs(prestamos));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -192,10 +203,7 @@ public class PrestamoActualController {
             if (prestamos.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
-            List<PrestamoActualDTO> dtos = prestamos.stream()
-                .map(this::convertirADTO)
-                .collect(Collectors.toList());
-            return ResponseEntity.ok(dtos);
+            return ResponseEntity.ok(convertirADTOs(prestamos));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -213,31 +221,32 @@ public class PrestamoActualController {
             @RequestParam(required = false) Long idEstudiante,
             @RequestParam(required = false) Long idArchivo) {
         
+        // Evalúa vencimientos y bloqueos pendientes antes de listar
+        prestamoActualService.marcarVencidosYBloquear();
+
         List<PrestamoActual> prestamos = prestamoActualService.obtenerTodos();
         
         // Aplicar filtros
         if (estado != null && !estado.isEmpty()) {
             prestamos = prestamos.stream()
-                .filter(p -> p.getEstadoPrestamo().equalsIgnoreCase(estado))
+                .filter(p -> p.getEstadoPrestamo() != null && p.getEstadoPrestamo().equalsIgnoreCase(estado))
                 .collect(Collectors.toList());
         }
         if (idEstudiante != null) {
             prestamos = prestamos.stream()
-                .filter(p -> p.getIdEstudiante().equals(idEstudiante))
+                .filter(p -> idEstudiante.equals(p.getIdEstudiante()))
                 .collect(Collectors.toList());
         }
         if (idArchivo != null) {
             prestamos = prestamos.stream()
-                .filter(p -> p.getIdArchivo().equals(idArchivo))
+                .filter(p -> idArchivo.equals(p.getIdArchivo()))
                 .collect(Collectors.toList());
         }
         
         // Ordenar por fecha de préstamo descendente
         prestamos.sort((p1, p2) -> p2.getFechaPrestamo().compareTo(p1.getFechaPrestamo()));
         
-        return ResponseEntity.ok(prestamos.stream()
-            .map(this::convertirADTO)
-            .collect(Collectors.toList()));
+        return ResponseEntity.ok(convertirADTOs(prestamos));
     }
 
     /**
@@ -279,15 +288,22 @@ public class PrestamoActualController {
             
             PrestamoActual actualizado = prestamoActualService.actualizar(id, prestamo);
             
-            // Desbloquear estudiante automáticamente
+            // Desbloquear estudiante automáticamente solo si no le quedan préstamos vencidos
             Long idEstudiante = prestamo.getIdEstudiante();
-            prestamoActualService.desbloquearEstudiante(idEstudiante);
+            boolean desbloqueado = false;
+            if (!prestamoActualService.tienePrestamosVencidos(idEstudiante)) {
+                prestamoActualService.desbloquearEstudiante(idEstudiante);
+                desbloqueado = true;
+            }
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("message", "Devolución registrada y estudiante desbloqueado");
+            response.put("message", desbloqueado
+                    ? "Devolución registrada y estudiante desbloqueado"
+                    : "Devolución registrada. El estudiante sigue bloqueado por otro(s) préstamo(s) vencido(s)");
             response.put("idPrestamo", actualizado.getId());
             response.put("idEstudiante", idEstudiante);
+            response.put("desbloqueado", desbloqueado);
             response.put("diasRetraso", actualizado.getDiasRetraso());
             
             return ResponseEntity.ok(response);
@@ -364,8 +380,25 @@ public class PrestamoActualController {
      * POST /api/prestamos-actuales/desbloquear/{idEstudiante}
      */
     @PostMapping("/desbloquear/{idEstudiante}")
-    public ResponseEntity<?> desbloquearEstudiante(@PathVariable Long idEstudiante) {
+    public ResponseEntity<?> desbloquearEstudiante(
+            @PathVariable Long idEstudiante,
+            HttpServletRequest request) {
         try {
+            Long idUsuario = getIdUsuarioDeSesion(request);
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("success", false, "error", "Usuario no autenticado"));
+            }
+
+            // No se desbloquea si el estudiante sigue con préstamos vencidos sin devolver
+            if (prestamoActualService.tienePrestamosVencidos(idEstudiante)) {
+                return ResponseEntity.badRequest().body(Map.of(
+                    "success", false,
+                    "error", "El estudiante tiene préstamo(s) vencido(s) pendiente(s) de devolución. " +
+                             "Registre la devolución antes de desbloquearlo."
+                ));
+            }
+
             prestamoActualService.desbloquearEstudiante(idEstudiante);
             
             Map<String, Object> response = new HashMap<>();
@@ -393,6 +426,8 @@ public class PrestamoActualController {
     @GetMapping("/estadisticas")
     public ResponseEntity<?> obtenerEstadisticas() {
         try {
+            prestamoActualService.marcarVencidosYBloquear();
+
             List<PrestamoActual> prestamos = prestamoActualService.obtenerTodos();
             
             long total = prestamos.size();
@@ -406,19 +441,19 @@ public class PrestamoActualController {
                 .filter(p -> "DEVUELTO".equals(p.getEstadoPrestamo()))
                 .count();
             
-            // Contar estudiantes bloqueados
+            // Contar estudiantes bloqueados (de cualquier tipo de bloqueo)
             List<Long> estudiantesConPrestamos = prestamos.stream()
                 .filter(p -> "ACTIVO".equals(p.getEstadoPrestamo()) || "VENCIDO".equals(p.getEstadoPrestamo()))
                 .map(PrestamoActual::getIdEstudiante)
+                .filter(Objects::nonNull)
                 .distinct()
                 .collect(Collectors.toList());
             
             long estudiantesBloqueados = 0;
-            for (Long id : estudiantesConPrestamos) {
-                Optional<Estudiante> estudianteOpt = estudianteService.obtenerPorId(id);
-                if (estudianteOpt.isPresent() && estudianteOpt.get().getBloqueado()) {
-                    estudiantesBloqueados++;
-                }
+            if (!estudiantesConPrestamos.isEmpty()) {
+                estudiantesBloqueados = estudianteRepository.findAllById(estudiantesConPrestamos).stream()
+                    .filter(e -> Boolean.TRUE.equals(e.getBloqueado()))
+                    .count();
             }
             
             Map<String, Object> response = new HashMap<>();
@@ -441,35 +476,92 @@ public class PrestamoActualController {
     // ===== MÉTODO PRIVADO PARA CONVERTIR A DTO =====
     
     private PrestamoActualDTO convertirADTO(PrestamoActual prestamo) {
-        PrestamoActualDTO dto = new PrestamoActualDTO(prestamo);
-        
-        // Obtener datos del estudiante
-        Optional<Estudiante> estudianteOpt = estudianteService.obtenerPorId(prestamo.getIdEstudiante());
-        if (estudianteOpt.isPresent()) {
-            Estudiante estudiante = estudianteOpt.get();
-            dto.setCodigoEstudiante(estudiante.getCodigoEstudiante());
-            
-            if (estudiante.getUsuario() != null) {
-                dto.setEmailEstudiante(estudiante.getUsuario().getEmail());
-                
-                if (estudiante.getUsuario().getPersona() != null) {
-                    var persona = estudiante.getUsuario().getPersona();
-                    String nombreCompleto = (persona.getNombre() != null ? persona.getNombre() : "") + " " + 
-                                        (persona.getApellidoPaterno() != null ? persona.getApellidoPaterno() : "") + " " + 
-                                        (persona.getApellidoMaterno() != null ? persona.getApellidoMaterno() : "");
-                    dto.setNombreEstudiante(nombreCompleto.trim());
+        return convertirADTOs(List.of(prestamo)).get(0);
+    }
+    
+    /**
+     * Convierte una lista de préstamos a DTO resolviendo estudiantes y archivos
+     * en una sola carga por tabla (evita el N+1 de la versión anterior).
+     */
+    private List<PrestamoActualDTO> convertirADTOs(List<PrestamoActual> prestamos) {
+        List<PrestamoActualDTO> dtos = new ArrayList<>();
+
+        if (prestamos == null || prestamos.isEmpty()) {
+            return dtos;
+        }
+
+        // Carga masiva de estudiantes
+        List<Long> idsEstudiantes = prestamos.stream()
+                .map(PrestamoActual::getIdEstudiante)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Map<Long, Estudiante> estudiantes = idsEstudiantes.isEmpty()
+                ? Map.of()
+                : estudianteRepository.findAllById(idsEstudiantes).stream()
+                    .collect(Collectors.toMap(Estudiante::getIdEstudiante, e -> e));
+
+        // Carga masiva de archivos
+        List<Long> idsArchivos = prestamos.stream()
+                .map(PrestamoActual::getIdArchivo)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Map<Long, Archivo> archivos = idsArchivos.isEmpty()
+                ? Map.of()
+                : archivoRepository.findAllById(idsArchivos).stream()
+                    .collect(Collectors.toMap(Archivo::getIdArchivo, a -> a));
+
+        for (PrestamoActual prestamo : prestamos) {
+            PrestamoActualDTO dto = new PrestamoActualDTO(prestamo);
+
+            // Datos del estudiante
+            Estudiante estudiante = estudiantes.get(prestamo.getIdEstudiante());
+            if (estudiante != null) {
+                dto.setCodigoEstudiante(estudiante.getCodigoEstudiante());
+                dto.setEstudianteBloqueado(Boolean.TRUE.equals(estudiante.getBloqueado()));
+
+                if (estudiante.getUsuario() != null) {
+                    dto.setEmailEstudiante(estudiante.getUsuario().getEmail());
+
+                    if (estudiante.getUsuario().getPersona() != null) {
+                        dto.setNombreEstudiante(nombreCompleto(estudiante.getUsuario().getPersona()));
+                    }
                 }
+            } else {
+                dto.setEstudianteBloqueado(false);
             }
+
+            // Datos del archivo y del paciente
+            Archivo archivo = archivos.get(prestamo.getIdArchivo());
+            if (archivo != null) {
+                dto.setCodigoArchivo(archivo.getCodigoArchivo());
+
+                if (archivo.getPaciente() != null) {
+                    Paciente paciente = archivo.getPaciente();
+                    dto.setPacienteCi(paciente.getCi() != null ? paciente.getCi().toString() : null);
+
+                    if (paciente.getPersona() != null) {
+                        dto.setPacienteNombre(nombreCompleto(paciente.getPersona()));
+                    }
+                }
+            } else {
+                dto.setCodigoArchivo("No disponible");
+            }
+
+            dtos.add(dto);
         }
-        
-        // Obtener datos del archivo
-        Optional<Archivo> archivoOpt = archivoService.getArchivoById(prestamo.getIdArchivo());
-        if (archivoOpt.isPresent()) {
-            dto.setCodigoArchivo(archivoOpt.get().getCodigoArchivo());
-        } else {
-            dto.setCodigoArchivo("No disponible");
+
+        return dtos;
+    }
+
+    private String nombreCompleto(Persona persona) {
+        if (persona == null) {
+            return null;
         }
-        
-        return dto;
+        String nombre = (persona.getNombre() != null ? persona.getNombre() : "") + " " +
+                        (persona.getApellidoPaterno() != null ? persona.getApellidoPaterno() : "") + " " +
+                        (persona.getApellidoMaterno() != null ? persona.getApellidoMaterno() : "");
+        return nombre.trim().replaceAll("\\s+", " ");
     }
 }

@@ -94,6 +94,24 @@ public ResponseEntity<?> getIdArchivoPorPaciente(
             response.put("idArchivo", archivo.getIdArchivo());
             response.put("found", true);
             response.put("codigoArchivo", archivo.getCodigoArchivo());
+
+            Map<String, Object> archivoData = new HashMap<>();
+            archivoData.put("idArchivo", archivo.getIdArchivo());
+            archivoData.put("codigoArchivo", archivo.getCodigoArchivo());
+            archivoData.put("ubicacionFisica", archivo.getUbicacionFisica());
+            response.put("archivo", archivoData);
+
+            Paciente paciente = archivo.getPaciente();
+            if (paciente != null) {
+                Map<String, Object> pacienteData = new HashMap<>();
+                pacienteData.put("id", paciente.getIdPaciente());
+                pacienteData.put("ci", paciente.getCi());
+                pacienteData.put("nombreCompleto", getNombreCompleto(paciente.getPersona()));
+                pacienteData.put("historialClinico", paciente.getHistorialClinico());
+                pacienteData.put("telefono", paciente.getTelefono());
+                pacienteData.put("direccion", paciente.getDireccion());
+                response.put("paciente", pacienteData);
+            }
             
             return ResponseEntity.ok(response);
         } else {

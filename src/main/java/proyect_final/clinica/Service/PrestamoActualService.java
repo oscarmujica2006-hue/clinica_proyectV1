@@ -25,6 +25,12 @@ public interface PrestamoActualService {
     PrestamoActual devolverArchivo(Long idPrestamo, LocalDate fechaDevolucion);
     void desbloquearEstudiante(Long idEstudiante);
     boolean puedeRealizarConsulta(Long idEstudiante, Long idPaciente);
+
+    // Marca como VENCIDO los préstamos cuya fecha límite ya pasó y bloquea a sus estudiantes
+    int marcarVencidosYBloquear();
+
+    // Indica si el estudiante tiene préstamos vencidos sin devolver
+    boolean tienePrestamosVencidos(Long idEstudiante);
     
     // NUEVOS MÉTODOS PARA VALIDACIÓN
     Optional<PrestamoActual> obtenerPrestamoActivoPorEstudiante(Long idEstudiante);

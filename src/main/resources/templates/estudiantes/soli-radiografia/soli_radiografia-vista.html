@@ -56,26 +56,6 @@
         }
         .header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
         .header p { opacity: 0.9; font-size: 0.95rem; }
-        .info-usuario {
-            background: var(--primary-light);
-            border-radius: var(--radius-sm);
-            padding: 0.8rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            border-left: 4px solid var(--primary);
-        }
-        .info-usuario-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--gray-700);
-            font-size: 0.9rem;
-        }
-        .info-usuario-item i { color: var(--primary); width: 18px; }
         .form-card {
             background: white;
             border-radius: var(--radius);
@@ -91,13 +71,6 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-        }
-        .form-subtitle {
-            color: var(--gray-500);
-            font-size: 0.9rem;
-            margin-bottom: 1.8rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--gray-100);
         }
         .form-group { margin-bottom: 1.5rem; }
         .form-group label {
@@ -241,18 +214,6 @@
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .info-box {
-            background: #DBEAFE;
-            border-radius: var(--radius-sm);
-            padding: 0.8rem 1.2rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            color: #1D4ED8;
-            font-size: 0.85rem;
-        }
-        .info-box i { font-size: 1.2rem; }
         .search-diagnostico-container {
             display: flex;
             gap: 10px;
@@ -324,7 +285,6 @@
             .btn { width: 100%; flex: none; }
             .btn-outline { flex: none; }
             .header h1 { font-size: 1.4rem; }
-            .info-usuario { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
             .search-diagnostico-container { flex-direction: column; }
             .btn-sm { width: 100%; }
         }
@@ -342,29 +302,9 @@
             <p>Complete el formulario para solicitar una radiografía</p>
         </div>
 
-        <div class="info-usuario">
-            <div class="info-usuario-item">
-                <i class="fas fa-user-circle"></i>
-                <span><strong>Estudiante:</strong> <span id="usuarioNombre">Cargando...</span></span>
-            </div>
-            <div class="info-usuario-item">
-                <i class="fas fa-tooth"></i>
-                <span><strong>Diagnóstico ID:</strong> <span id="diagnosticoIdInfo">-</span></span>
-            </div>
-        </div>
-
-        <div class="info-box">
-            <i class="fas fa-info-circle"></i>
-            <span>Busque un diagnóstico tratamiento por ID para ver sus dientes y seleccionar los que serán radiografiados.</span>
-        </div>
-
         <div class="form-card">
             <div class="form-title">
-                <i class="fas fa-plus-circle"></i> Nueva Solicitud de Radiografía
-            </div>
-            <div class="form-subtitle">
-                <i class="fas fa-info-circle" style="color: var(--primary);"></i>
-                Complete todos los campos obligatorios <span style="color: var(--danger);">*</span>
+                <i class="fas fa-info-circle"></i> Complete todos los campos obligatorios
             </div>
 
             <form id="solicitudForm" novalidate>
@@ -473,39 +413,84 @@
         let dientesDiagnosticoData = [];
         let radiografiasDisponibles = [];
 
-        // ===== OBTENER USUARIO =====
+        // ===== OBTENER ESTUDIANTE =====
         async function obtenerInfoUsuario() {
             try {
-                let userId = sessionStorage.getItem('idUsuario');
-                let userNombre = sessionStorage.getItem('nombreUsuario');
-
-                if (userId) {
-                    idEstudiante = parseInt(userId);
-                    document.getElementById('usuarioNombre').textContent = userNombre || 'Estudiante';
+                // 1. Intentar obtener desde sessionStorage
+                let estudianteId = sessionStorage.getItem('idEstudiante');
+                
+                if (estudianteId) {
+                    idEstudiante = parseInt(estudianteId);
+                    console.log('✅ Estudiante ID desde sessionStorage:', idEstudiante);
                     return;
                 }
 
+                // 2. Intentar obtener el estudiante actual desde la API
                 try {
-                    const response = await fetch('/api/usuario/actual', { credentials: 'include' });
+                    const response = await fetch('/api/estudiante/actual', { 
+                        credentials: 'include' 
+                    });
+                    
                     if (response.ok) {
-                        const usuario = await response.json();
-                        if (usuario && usuario.idUsuario) {
-                            idEstudiante = usuario.idUsuario;
-                            document.getElementById('usuarioNombre').textContent = usuario.nombreCompleto || 'Estudiante';
-                            sessionStorage.setItem('idUsuario', usuario.idUsuario);
-                            sessionStorage.setItem('nombreUsuario', usuario.nombreCompleto);
+                        const estudiante = await response.json();
+                        if (estudiante && estudiante.idEstudiante) {
+                            idEstudiante = estudiante.idEstudiante;
+                            sessionStorage.setItem('idEstudiante', idEstudiante);
+                            console.log('✅ Estudiante ID desde API /estudiante/actual:', idEstudiante);
                             return;
+                        }
+                    }
+                } catch (apiError) {
+                    console.warn('API /estudiante/actual no disponible:', apiError);
+                }
+
+                // 3. Fallback: Obtener usuario y luego su estudiante
+                try {
+                    const userResponse = await fetch('/api/usuario/actual', { 
+                        credentials: 'include' 
+                    });
+                    
+                    if (userResponse.ok) {
+                        const usuario = await userResponse.json();
+                        if (usuario && usuario.idUsuario) {
+                            // Buscar el estudiante asociado al usuario
+                            const estResponse = await fetch(`/api/estudiantes/usuario/${usuario.idUsuario}`, { 
+                                credentials: 'include' 
+                            });
+                            
+                            if (estResponse.ok) {
+                                const estudiante = await estResponse.json();
+                                if (estudiante && estudiante.idEstudiante) {
+                                    idEstudiante = estudiante.idEstudiante;
+                                    sessionStorage.setItem('idEstudiante', idEstudiante);
+                                    sessionStorage.setItem('idUsuario', usuario.idUsuario);
+                                    console.log('✅ Estudiante ID desde /estudiantes/usuario:', idEstudiante);
+                                    return;
+                                }
+                            }
                         }
                     }
                 } catch (apiError) {
                     console.warn('API de usuario no disponible:', apiError);
                 }
 
-                idEstudiante = 1;
-                document.getElementById('usuarioNombre').textContent = 'Estudiante Demo';
+                // 4. Si todo falla, mostrar error
+                console.error('❌ No se pudo obtener el ID del estudiante');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de autenticación',
+                    text: 'No se pudo identificar al estudiante. Por favor, inicie sesión nuevamente.',
+                    confirmButtonColor: '#EF4444'
+                });
+
             } catch (error) {
                 console.error('Error al obtener usuario:', error);
-                idEstudiante = 1;
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al obtener información del usuario',
+                    confirmButtonColor: '#EF4444'
+                });
             }
         }
 
@@ -589,7 +574,6 @@
 
                 document.getElementById('infoDiagnostico').style.display = 'block';
                 document.getElementById('infoIdDiagnostico').textContent = idDiagnostico;
-                document.getElementById('diagnosticoIdInfo').textContent = idDiagnostico;
 
                 renderizarDientesDiagnostico(dientes);
                 renderizarDientesSeleccionados();
@@ -766,7 +750,6 @@
             document.getElementById('motivoSolicitud').value = '';
             document.getElementById('infoDiagnostico').style.display = 'none';
             document.getElementById('resumenSolicitud').classList.remove('visible');
-            document.getElementById('diagnosticoIdInfo').textContent = '-';
             dientesSeleccionados = [];
             dientesSeleccionadosIds = [];
             dientesDiagnosticoData = [];
@@ -845,7 +828,7 @@
                     idEstudiante: idEstudiante
                 };
 
-                console.log('📤 Enviando:', payload);
+                console.log('📤 Enviando payload:', payload);
 
                 const response = await fetch('/api/solicitudes-radiografia/crear', {
                     method: 'POST',

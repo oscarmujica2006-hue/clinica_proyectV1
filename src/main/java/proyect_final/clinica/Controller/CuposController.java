@@ -55,6 +55,18 @@ public class CuposController {
                 cuposDisponibles = ((Number) cuposObj).intValue();
             }
             
+            // Obtener cuposTotales (meta fija por tratamiento); fallback a cuposDisponibles
+            Integer cuposTotales = null;
+            Object cuposTotalesObj = payload.get("cuposTotales");
+            if (cuposTotalesObj instanceof Integer) {
+                cuposTotales = (Integer) cuposTotalesObj;
+            } else if (cuposTotalesObj instanceof Number) {
+                cuposTotales = ((Number) cuposTotalesObj).intValue();
+            }
+            if (cuposTotales == null) {
+                cuposTotales = cuposDisponibles;
+            }
+            
             if (materiaMap == null || tratamientoMap == null || cuposDisponibles == null) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Datos incompletos: materia, tratamiento y cuposDisponibles son requeridos"));
             }
@@ -100,6 +112,7 @@ public class CuposController {
             Cupo cupo = new Cupo();
             cupo.setMateria(materiaOpt.get());
             cupo.setTratamiento(tratamientoOpt.get());
+            cupo.setCuposTotales(cuposTotales);
             cupo.setCuposDisponibles(cuposDisponibles);
             
             Cupo saved = cupoService.guardar(cupo);

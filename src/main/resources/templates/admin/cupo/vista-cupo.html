@@ -88,6 +88,10 @@
                 <label class="block text-gray-700 font-medium mb-1">Cupos disponibles *</label>
                 <input type="number" id="cupoCantidad" min="0" value="0" class="w-full border rounded-lg px-3 py-2">
             </div>
+            <div>
+                <label class="block text-gray-700 font-medium mb-1">Cupos totales (meta) *</label>
+                <input type="number" id="cupoCuposTotales" min="0" value="0" class="w-full border rounded-lg px-3 py-2">
+            </div>
         </div>
         <div class="bg-gray-50 px-6 py-4 rounded-b-2xl flex justify-end gap-3">
             <button class="cancelModalBtn px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">Cancelar</button>
@@ -168,7 +172,7 @@
         cuposData.forEach(cupo => {
             const row = document.createElement('tr');
             row.className = 'border-b hover:bg-gray-50 transition cupo-card';
-            row.setAttribute('data-id', cupo.idCupos);
+            row.setAttribute('data-id', cupo.idCupo);
             const materiaNombre = cupo.materia?.nombreMateria || `ID: ${cupo.materia?.id_materia}`;
             const tratamientoNombre = cupo.tratamiento?.nombreTratamiento || `ID: ${cupo.tratamiento?.idTratamiento}`;
             row.innerHTML = `
@@ -227,7 +231,7 @@
                 btnCancelar.classList.add('hidden');
                 row.classList.remove('editing');
                 try {
-                    const res = await fetch(`${API_BASE}/api/cupos/${cupo.idCupos}`, {
+                    const res = await fetch(`${API_BASE}/api/cupos/${cupo.idCupo}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ cuposDisponibles: nuevoValor })
@@ -309,11 +313,12 @@
     }
 
     // ==================== CREAR CUPO ====================
-    async function crearCupo(materiaId, tratamientoId, cupos) {
+    async function crearCupo(materiaId, tratamientoId, cupos, cuposTotales) {
         const nuevoCupo = {
             materia: { id_materia: parseInt(materiaId) },
             tratamiento: { idTratamiento: parseInt(tratamientoId) },
-            cuposDisponibles: parseInt(cupos)
+            cuposDisponibles: parseInt(cupos),
+            cuposTotales: parseInt(cuposTotales)
         };
         const res = await fetch(`${API_BASE}/api/cupos`, {
             method: 'POST',
@@ -352,8 +357,9 @@
         const materiaId = document.getElementById('cupoMateriaSelect').value;
         const tratamientoId = document.getElementById('cupoTratamientoSelect').value;
         const cantidad = document.getElementById('cupoCantidad').value;
-        if (!materiaId || !tratamientoId || cantidad === '') {
-            mostrarMensajeModal('cupoModal', 'Seleccione materia, tratamiento y cantidad', 'error');
+        const cuposTotales = document.getElementById('cupoCuposTotales').value;
+        if (!materiaId || !tratamientoId || cantidad === '' || cuposTotales === '') {
+            mostrarMensajeModal('cupoModal', 'Seleccione materia, tratamiento, cupos disponibles y cupos totales', 'error');
             return;
         }
         const btn = document.getElementById('saveCupoBtn');
@@ -361,13 +367,14 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
         btn.disabled = true;
         try {
-            await crearCupo(materiaId, tratamientoId, cantidad);
+            await crearCupo(materiaId, tratamientoId, cantidad, cuposTotales);
             mostrarMensajeModal('cupoModal', 'Cupo creado correctamente', 'success');
             setTimeout(() => cerrarModal('cupoModal'), 1500);
             cargarCupos();
             document.getElementById('cupoMateriaSelect').value = '';
             document.getElementById('cupoTratamientoSelect').value = '';
             document.getElementById('cupoCantidad').value = '0';
+            document.getElementById('cupoCuposTotales').value = '0';
         } catch (error) {
             mostrarMensajeModal('cupoModal', error.message, 'error');
         } finally {

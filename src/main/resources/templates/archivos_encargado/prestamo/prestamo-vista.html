@@ -1065,21 +1065,16 @@
 
                 let html = '';
                 for (const prestamo of activos) {
-                    // Obtener datos del paciente y estudiante
-                    const [paciente, estudiante] = await Promise.all([
-                        obtenerPacientePorArchivo(prestamo.idArchivo),
-                        obtenerEstudiantePorId(prestamo.idEstudiante)
-                    ]);
-                    
                     const diasRestantes = calcularDiasRestantes(prestamo.fechaLimitePrestamo);
                     const esVencido = diasRestantes < 0;
+                    const nombreEstudiante = prestamo.nombreEstudiante || 'N/A';
                     
                     html += `
                         <tr class="${esVencido ? 'vencido-row' : ''}">
                             <td><strong>${prestamo.idPrestamo || prestamo.id}</strong></td>
-                            <td>${paciente?.nombreCompleto || 'N/A'}</td>
-                            <td>${paciente?.ci || 'N/A'}</td>
-                            <td>${estudiante?.nombreCompleto || 'N/A'} (${estudiante?.codigoEstudiante || 'N/A'})</td>
+                            <td>${prestamo.pacienteNombre || 'N/A'}</td>
+                            <td>${prestamo.pacienteCi || 'N/A'}</td>
+                            <td>${nombreEstudiante} (${prestamo.codigoEstudiante || 'N/A'})</td>
                             <td>${formatearFecha(prestamo.fechaPrestamo)}</td>
                             <td>${formatearFecha(prestamo.fechaLimitePrestamo)}</td>
                             <td>
@@ -1141,17 +1136,14 @@
 
                 let html = '';
                 for (const prestamo of devueltos) {
-                    const [paciente, estudiante] = await Promise.all([
-                        obtenerPacientePorArchivo(prestamo.idArchivo),
-                        obtenerEstudiantePorId(prestamo.idEstudiante)
-                    ]);
+                    const nombreEstudiante = prestamo.nombreEstudiante || 'N/A';
                     
                     html += `
                         <tr>
                             <td><strong>${prestamo.idPrestamo || prestamo.id}</strong></td>
-                            <td>${paciente?.nombreCompleto || 'N/A'}</td>
-                            <td>${paciente?.ci || 'N/A'}</td>
-                            <td>${estudiante?.nombreCompleto || 'N/A'} (${estudiante?.codigoEstudiante || 'N/A'})</td>
+                            <td>${prestamo.pacienteNombre || 'N/A'}</td>
+                            <td>${prestamo.pacienteCi || 'N/A'}</td>
+                            <td>${nombreEstudiante} (${prestamo.codigoEstudiante || 'N/A'})</td>
                             <td>${formatearFecha(prestamo.fechaPrestamo)}</td>
                             <td>${formatearFecha(prestamo.fechaDevolucion) || 'N/A'}</td>
                             <td>${prestamo.diasRetraso || 0} días</td>
@@ -1175,22 +1167,34 @@
             }
         }
 
-        // ===== FUNCIONES AUXILIARES =====
-        function formatearFecha(fecha) {
-            if (!fecha) return 'N/A';
-            const d = new Date(fecha);
-            return d.toLocaleDateString('es-ES');
-        }
+    // ===== FUNCIONES AUXILIARES =====
+    // Convierte 'yyyy-MM-dd' a Date local (medianoche local).
+    // No usar new Date('yyyy-MM-dd') porque se interpreta como UTC y
+    // en zonas horarias negativas (UTC-4/-5) muestra un día menos.
+    function parseFecha(fecha) {
+        if (!fecha) return null;
+        const s = String(fecha).substring(0, 10);
+        const [anio, mes, dia] = s.split('-').map(Number);
+        if (!anio || !mes || !dia) return null;
+        return new Date(anio, mes - 1, dia);
+    }
 
-        function calcularDiasRestantes(fechaLimite) {
-            if (!fechaLimite) return 0;
-            const hoy = new Date();
-            hoy.setHours(0, 0, 0, 0);
-            const limite = new Date(fechaLimite);
-            limite.setHours(0, 0, 0, 0);
-            const diff = Math.ceil((limite - hoy) / (1000 * 60 * 60 * 24));
-            return diff;
-        }
+    function formatearFecha(fecha) {
+        const d = parseFecha(fecha);
+        if (!d) return 'N/A';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        return `${dd}/${mm}/${d.getFullYear()}`;
+    }
+
+    function calcularDiasRestantes(fechaLimite) {
+        const limite = parseFecha(fechaLimite);
+        if (!limite) return 0;
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        return Math.round((limite.getTime() - hoy.getTime()) / 86400000);
+    }
+
 
         async function obtenerPacientePorArchivo(idArchivo) {
             try {
@@ -1198,16 +1202,6 @@
                 if (!response.ok) return null;
                 const archivo = await response.json();
                 return archivo.paciente || null;
-            } catch {
-                return null;
-            }
-        }
-
-        async function obtenerEstudiantePorId(idEstudiante) {
-            try {
-                const response = await fetch(`/api/estudiantes/${idEstudiante}`);
-                if (!response.ok) return null;
-                return await response.json();
             } catch {
                 return null;
             }

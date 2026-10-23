@@ -518,7 +518,7 @@
                 if (ci) searchParams.append('ci', ci);
                 if (nombre) searchParams.append('nombre', nombre);
                 
-                const archivoUrl = `${API_ARCHIVOS}/buscar-por-paciente?${searchParams.toString()}`;
+                const archivoUrl = `${API_ARCHIVOS}/id-por-paciente?${searchParams.toString()}`;
                 const archivoResponse = await fetch(archivoUrl);
                 
                 if (archivoResponse.status === 404) {

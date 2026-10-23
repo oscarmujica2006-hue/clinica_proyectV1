@@ -4,6 +4,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -29,6 +30,7 @@ public class Tratamiento {
     @Column(name = "descripcion_tratamiento", length = 255)
     private String descripcionTratamiento;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "tratamiento")
     private List<Cupo> cupos;
 

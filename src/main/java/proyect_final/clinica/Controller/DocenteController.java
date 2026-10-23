@@ -324,19 +324,28 @@ public class DocenteController {
             Cupo cupoActualizado = cupoService.findByTratamientoId(idTratamiento);
             int cuposRestantes = cupoActualizado != null ? cupoActualizado.getCuposDisponibles() : 0;
             
-            // 8. OBTENER EL RECIBO GENERADO POR EL TRIGGER
-            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
-            Recibo reciboGenerado = reciboService.findByConsentimientoId(idConsentimiento);
-            
-            return ResponseEntity.ok(Map.of(
-                "mensaje", "✅ Procedimiento aprobado - Trigger descontó cupo y actualizó recibo",
-                "idDientePlan", idDientePlan,
-                "cuposRestantes", cuposRestantes,
-                "progreso", aprobados + "/" + total,
-                "idRecibo", reciboGenerado != null ? reciboGenerado.getIdRecibo() : null,
-                "montoTotal", reciboGenerado != null ? reciboGenerado.getMontoTotal() : 0,
-                "estadoRecibo", reciboGenerado != null ? reciboGenerado.getEstadoPago() : "SIN_RECIBO"
-            ));
+            // 8. OBTENER EL RECIBO GENERADO POR EL TRIGGER (blindado contra consentimiento nulo)
+            Long idConsentimiento = plan.getConsentimiento() != null
+                ? plan.getConsentimiento().getIdConsentimiento()
+                : null;
+            Recibo reciboGenerado = null;
+            if (idConsentimiento != null) {
+                reciboGenerado = reciboService.findByConsentimientoId(idConsentimiento);
+            } else if (plan.getEvolucionClinica() != null) {
+                reciboGenerado = reciboService.findByEvolucionClinicaId(
+                    plan.getEvolucionClinica().getIdEvolucionClinica());
+            }
+
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "✅ Procedimiento aprobado - Trigger descontó cupo y actualizó recibo");
+            respuesta.put("idDientePlan", idDientePlan);
+            respuesta.put("cuposRestantes", cuposRestantes);
+            respuesta.put("progreso", aprobados + "/" + total);
+            respuesta.put("idRecibo", reciboGenerado != null ? reciboGenerado.getIdRecibo() : null);
+            respuesta.put("montoTotal", reciboGenerado != null ? reciboGenerado.getMontoTotal() : 0);
+            respuesta.put("estadoRecibo", reciboGenerado != null ? reciboGenerado.getEstadoPago() : "SIN_RECIBO");
+
+            return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -405,9 +414,17 @@ public class DocenteController {
                 .obtenerPorId(idDiagnosticoTratamiento)
                 .orElseThrow(() -> new RuntimeException("Diagnóstico no encontrado"));
             
-            // Obtener el recibo
-            Long idConsentimiento = plan.getConsentimiento().getIdConsentimiento();
-            Recibo recibo = reciboService.findByConsentimientoId(idConsentimiento);
+            // Obtener el recibo (blindado contra consentimiento nulo)
+            Long idConsentimiento = plan.getConsentimiento() != null
+                ? plan.getConsentimiento().getIdConsentimiento()
+                : null;
+            Recibo recibo = null;
+            if (idConsentimiento != null) {
+                recibo = reciboService.findByConsentimientoId(idConsentimiento);
+            } else if (plan.getEvolucionClinica() != null) {
+                recibo = reciboService.findByEvolucionClinicaId(
+                    plan.getEvolucionClinica().getIdEvolucionClinica());
+            }
             
             if (recibo == null) {
                 return ResponseEntity.ok(Map.of(

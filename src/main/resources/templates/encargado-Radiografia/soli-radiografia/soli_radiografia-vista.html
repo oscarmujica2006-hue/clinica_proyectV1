@@ -15,7 +15,7 @@
             padding: 20px;
         }
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             border-radius: 12px;
@@ -103,9 +103,13 @@
         .btn-sm { padding: 6px 12px; font-size: 12px; }
         .btn-info { background: #0D47A1; color: white; }
         .btn-info:hover { background: #0a3a80; transform: translateY(-2px); }
+        .btn-warning { background: #e65100; color: white; }
+        .btn-warning:hover { background: #bf360c; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
         .resumen {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
             padding: 15px;
@@ -119,6 +123,8 @@
         .resumen-item .numero.pendiente { color: #e65100; }
         .resumen-item .numero.aprobado { color: #2e7d32; }
         .resumen-item .numero.rechazado { color: #c62828; }
+        .resumen-item .numero.recibos { color: #6B21A5; }
+
         .table-container {
             overflow-x: auto;
             border-radius: 8px;
@@ -128,13 +134,15 @@
         .table-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .table-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
         .table-container::-webkit-scrollbar-thumb:hover { background: #999; }
+
         .solicitudes-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 13px;
+            min-width: 1200px;
         }
         .solicitudes-table th, .solicitudes-table td {
-            padding: 12px 15px;
+            padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -147,7 +155,8 @@
             z-index: 10;
         }
         .solicitudes-table tr:hover { background-color: #f5f9ff; }
-        .solicitudes-table .estado-badge {
+
+        .estado-badge {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 20px;
@@ -159,7 +168,36 @@
         .estado-aprobado { background: #e8f5e9; color: #2e7d32; }
         .estado-rechazado { background: #fce4ec; color: #c62828; }
         .estado-realizado { background: #e3f2fd; color: #0D47A1; }
-        .acciones { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+        .estado-cancelado { background: #f5f5f5; color: #757575; }
+
+        .calidad-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .calidad-excelente { background: #D1FAE5; color: #065F46; }
+        .calidad-buena { background: #DBEAFE; color: #1E40AF; }
+        .calidad-regular { background: #FEF3C7; color: #92400E; }
+        .calidad-mala { background: #FEE2E2; color: #991B1B; }
+        .calidad-defectuosa { background: #FCE4EC; color: #880E4F; }
+        .calidad-pendiente { background: #F3F4F6; color: #6B7280; }
+
+        .recibo-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            background: #E3F2FD;
+            color: #0D47A1;
+        }
+        .recibo-badge.pagado { background: #D1FAE5; color: #065F46; }
+        .recibo-badge.pendiente { background: #FEF3C7; color: #92400E; }
+
+        .acciones { display: flex; gap: 4px; flex-wrap: wrap; justify-content: center; }
         .loading-spinner {
             display: inline-block;
             width: 30px;
@@ -177,10 +215,8 @@
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
             justify-content: center;
@@ -190,7 +226,7 @@
         .modal-content {
             background: white;
             border-radius: 12px;
-            max-width: 500px;
+            max-width: 550px;
             width: 95%;
             max-height: 90vh;
             overflow-y: auto;
@@ -228,20 +264,65 @@
             border-top: 2px solid #f0f0f0;
         }
 
+        .calidad-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .calidad-option {
+            padding: 15px 10px;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .calidad-option:hover { transform: scale(1.05); }
+        .calidad-option.selected { border-color: #0D47A1; background: #E3F2FD; }
+        .calidad-option .icono { font-size: 24px; display: block; margin-bottom: 5px; }
+        .calidad-option.excelente { border-color: #10B981; }
+        .calidad-option.buena { border-color: #3B82F6; }
+        .calidad-option.regular { border-color: #F59E0B; }
+        .calidad-option.mala { border-color: #EF4444; }
+        .calidad-option.defectuosa { border-color: #7C3AED; }
+        .calidad-option.excelente.selected { background: #D1FAE5; }
+        .calidad-option.buena.selected { background: #DBEAFE; }
+        .calidad-option.regular.selected { background: #FEF3C7; }
+        .calidad-option.mala.selected { background: #FEE2E2; }
+        .calidad-option.defectuosa.selected { background: #EDE9FE; }
+
+        .calidad-obligatoria {
+            background: #FFF3E0;
+            border: 1px solid #FFB74D;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #E65100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         @media (max-width: 768px) {
             .container { padding: 15px; }
             .header { flex-direction: column; align-items: flex-start; }
             .filters-section { flex-direction: column; }
             .filter-group { min-width: 100%; }
             .resumen { grid-template-columns: 1fr 1fr; }
-            .solicitudes-table { font-size: 12px; }
-            .solicitudes-table th, .solicitudes-table td { padding: 8px 10px; }
+            .solicitudes-table { font-size: 11px; min-width: 900px; }
+            .solicitudes-table th, .solicitudes-table td { padding: 6px 8px; }
             .acciones { flex-direction: column; }
-            .btn-sm { width: 100%; justify-content: center; }
+            .btn-sm { width: 100%; justify-content: center; font-size: 10px; }
+            .calidad-options { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 480px) {
             .resumen { grid-template-columns: 1fr; }
             .header h1 { font-size: 1.2rem; }
+            .calidad-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -269,6 +350,7 @@
                     <option value="APROBADO">Aprobados</option>
                     <option value="RECHAZADO">Rechazados</option>
                     <option value="REALIZADO">Realizados</option>
+                    <option value="CANCELADO">Cancelados</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -287,6 +369,11 @@
             </div>
             <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
                 <button class="btn btn-success" onclick="cargarSolicitudes()" style="height: 42px;"><i class="fas fa-sync-alt"></i> Recargar</button>
+            </div>
+            <div class="filter-group" style="flex: 0 0 auto; min-width: auto;">
+                <a href="/pagos-cajero.html" class="btn btn-warning" style="height:42px;text-decoration:none;color:white;">
+                    <i class="fas fa-hand-holding-usd"></i> Cajero
+                </a>
             </div>
         </div>
 
@@ -309,7 +396,7 @@
                 <div class="label">❌ Rechazados</div>
             </div>
             <div class="resumen-item">
-                <div class="numero total" id="totalRecibos" style="color: #0D47A1;">$0.00</div>
+                <div class="numero recibos" id="totalRecibos" style="color: #6B21A5;">$0.00</div>
                 <div class="label">💰 Total en Recibos</div>
             </div>
         </div>
@@ -319,18 +406,20 @@
             <table class="solicitudes-table">
                 <thead>
                     <tr>
-                        <th style="width: 60px;">#ID</th>
+                        <th style="width: 50px;">#ID</th>
                         <th>Paciente</th>
                         <th>Radiografía</th>
                         <th>Dientes</th>
                         <th>Motivo</th>
                         <th>Fecha</th>
-                        <th style="text-align: center;">Estado</th>
-                        <th style="text-align: center;">Acciones</th>
+                        <th style="text-align:center;">Estado</th>
+                        <th style="text-align:center;">Calidad</th>
+                        <th style="text-align:center;">Recibo</th>
+                        <th style="text-align:center;min-width:180px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="solicitudesBody">
-                    <tr><td colspan="8" class="loading"><div class="loading-spinner"></div><p>Cargando solicitudes...</p></td></tr>
+                    <tr><td colspan="10" class="loading"><div class="loading-spinner"></div><p>Cargando solicitudes...</p></td></tr>
                 </tbody>
             </table>
         </div>
@@ -356,16 +445,156 @@
         </div>
     </div>
 
+    <!-- MODAL: Realizar con Calidad -->
+    <div class="modal-overlay" id="modalRealizarCalidad">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-camera"></i> Realizar Radiografía</h2>
+                <button class="modal-close" onclick="cerrarModalRealizar()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="calidad-obligatoria">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Seleccione la calidad de la radiografía antes de confirmar
+                </div>
+
+                <div class="calidad-options" id="calidadRealizarOptions">
+                    <div class="calidad-option excelente" onclick="seleccionarCalidadRealizar('EXCELENTE')">
+                        <span class="icono">⭐</span>
+                        EXCELENTE
+                    </div>
+                    <div class="calidad-option buena" onclick="seleccionarCalidadRealizar('BUENA')">
+                        <span class="icono">👍</span>
+                        BUENA
+                    </div>
+                    <div class="calidad-option regular" onclick="seleccionarCalidadRealizar('REGULAR')">
+                        <span class="icono">👌</span>
+                        REGULAR
+                    </div>
+                    <div class="calidad-option mala" onclick="seleccionarCalidadRealizar('MALA')">
+                        <span class="icono">👎</span>
+                        MALA
+                    </div>
+                    <div class="calidad-option defectuosa" onclick="seleccionarCalidadRealizar('DEFECTUOSA')">
+                        <span class="icono">❌</span>
+                        DEFECTUOSA
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Observaciones (opcional)</label>
+                    <textarea id="observacionesRealizar" placeholder="Comentarios sobre la radiografía..."></textarea>
+                </div>
+
+                <div style="background:#f0f4f8;padding:12px;border-radius:8px;margin-top:15px;">
+                    <p style="font-size:13px;color:#555;margin:0;">
+                        <i class="fas fa-info-circle" style="color:#0D47A1;"></i>
+                        Al confirmar: se aprobará, se generará el recibo, se marcará como realizada y se guardará la calidad.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModalRealizar()">Cancelar</button>
+                <button class="btn btn-success" id="btnConfirmarRealizar"><i class="fas fa-check"></i> Confirmar Realizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Calidad (para calificar después de realizada) -->
+    <div class="modal-overlay" id="modalCalidad">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-star"></i> Calificar Radiografía</h2>
+                <button class="modal-close" onclick="cerrarModalCalidad()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom:15px;color:#666;">Seleccione la calidad de la radiografía realizada</p>
+                <div class="calidad-options" id="calidadOptions">
+                    <div class="calidad-option excelente" onclick="seleccionarCalidad('EXCELENTE')">
+                        <span class="icono">⭐</span>
+                        EXCELENTE
+                    </div>
+                    <div class="calidad-option buena" onclick="seleccionarCalidad('BUENA')">
+                        <span class="icono">👍</span>
+                        BUENA
+                    </div>
+                    <div class="calidad-option regular" onclick="seleccionarCalidad('REGULAR')">
+                        <span class="icono">👌</span>
+                        REGULAR
+                    </div>
+                    <div class="calidad-option mala" onclick="seleccionarCalidad('MALA')">
+                        <span class="icono">👎</span>
+                        MALA
+                    </div>
+                    <div class="calidad-option defectuosa" onclick="seleccionarCalidad('DEFECTUOSA')">
+                        <span class="icono">❌</span>
+                        DEFECTUOSA
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones (opcional)</label>
+                    <textarea id="observacionesCalidad" placeholder="Comentarios adicionales sobre la calidad..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModalCalidad()">Cancelar</button>
+                <button class="btn btn-success" id="btnGuardarCalidad"><i class="fas fa-save"></i> Guardar Calidad</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ===== VARIABLES =====
         const API_BASE = '';
         let currentSolicitudId = null;
+        let currentCalidadId = null;
+        let calidadSeleccionada = null;
+        let calidadRealizarSeleccionada = null;
+        let currentRealizarId = null;
 
         // ===== FUNCIONES =====
         function getEstadoBadge(estado) {
-            const clases = { 'PENDIENTE': 'estado-pendiente', 'APROBADO': 'estado-aprobado', 'RECHAZADO': 'estado-rechazado', 'REALIZADO': 'estado-realizado' };
-            const labels = { 'PENDIENTE': '⏳ PENDIENTE', 'APROBADO': '✅ APROBADO', 'RECHAZADO': '❌ RECHAZADO', 'REALIZADO': '📷 REALIZADO' };
+            const clases = {
+                'PENDIENTE': 'estado-pendiente',
+                'APROBADO': 'estado-aprobado',
+                'RECHAZADO': 'estado-rechazado',
+                'REALIZADO': 'estado-realizado',
+                'CANCELADO': 'estado-cancelado'
+            };
+            const labels = {
+                'PENDIENTE': '⏳ PENDIENTE',
+                'APROBADO': '✅ APROBADO',
+                'RECHAZADO': '❌ RECHAZADO',
+                'REALIZADO': '📷 REALIZADO',
+                'CANCELADO': '🚫 CANCELADO'
+            };
             return `<span class="estado-badge ${clases[estado] || 'estado-pendiente'}">${labels[estado] || estado}</span>`;
+        }
+
+        function getCalidadBadge(calidad) {
+            if (!calidad) return `<span class="calidad-badge calidad-pendiente">⏳ Pendiente</span>`;
+            const clases = {
+                'EXCELENTE': 'calidad-excelente',
+                'BUENA': 'calidad-buena',
+                'REGULAR': 'calidad-regular',
+                'MALA': 'calidad-mala',
+                'DEFECTUOSA': 'calidad-defectuosa'
+            };
+            const labels = {
+                'EXCELENTE': '⭐ Excelente',
+                'BUENA': '👍 Buena',
+                'REGULAR': '👌 Regular',
+                'MALA': '👎 Mala',
+                'DEFECTUOSA': '❌ Defectuosa'
+            };
+            return `<span class="calidad-badge ${clases[calidad] || 'calidad-pendiente'}">${labels[calidad] || calidad}</span>`;
+        }
+
+        function getReciboBadge(idRecibo, pagado) {
+            if (!idRecibo) return `<span class="recibo-badge" style="background:#F3F4F6;color:#6B7280;">Sin recibo</span>`;
+            const estado = pagado ? 'pagado' : 'pendiente';
+            const texto = pagado ? '💰 Pagado' : '⏳ Pendiente';
+            return `<span class="recibo-badge ${estado}">#${idRecibo} ${texto}</span>`;
         }
 
         function formatearMoneda(monto) { return monto ? `$${Number(monto).toFixed(2)}` : '$0.00'; }
@@ -387,7 +616,7 @@
             const hasta = document.getElementById('fechaFin').value;
             const body = document.getElementById('solicitudesBody');
 
-            body.innerHTML = `<tr><td colspan="8" class="loading"><div class="loading-spinner"></div><p>Cargando...</p></td></tr>`;
+            body.innerHTML = `<tr><td colspan="10" class="loading"><div class="loading-spinner"></div><p>Cargando...</p></td></tr>`;
 
             try {
                 let url = `${API_BASE}/api/solicitudes-radiografia`;
@@ -413,7 +642,7 @@
                 }
 
                 if (!solicitudes || solicitudes.length === 0) {
-                    body.innerHTML = `<tr><td colspan="8" class="no-data"><i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;opacity:0.3;"></i>No hay solicitudes</td></tr>`;
+                    body.innerHTML = `<tr><td colspan="10" class="no-data"><i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;opacity:0.3;"></i>No hay solicitudes</td></tr>`;
                     actualizarResumen([]);
                     return;
                 }
@@ -439,9 +668,11 @@
                         } catch (e) {}
                     }
 
-                    // Radiografía
                     const nombreRayo = s.radiografia?.nombreRayo || s.radiografia?.nombre || 'N/A';
                     const pacienteNombre = s.pacienteNombre || 'N/A';
+                    const calidad = s.calidad || null;
+                    const idRecibo = s.idRecibo || null;
+                    const pagado = s.pagado || false;
 
                     html += `
                         <tr>
@@ -452,16 +683,32 @@
                             <td>${s.motivo || '-'}</td>
                             <td>${formatearFecha(s.fechaSolicitud)}</td>
                             <td style="text-align:center;">${getEstadoBadge(estadoS)}</td>
+                            <td style="text-align:center;">${getCalidadBadge(calidad)}</td>
+                            <td style="text-align:center;">${getReciboBadge(idRecibo, pagado)}</td>
                             <td style="text-align:center;">
                                 <div class="acciones">
                                     ${estadoS === 'PENDIENTE' ? `
-                                        <button class="btn btn-success btn-sm" onclick="aprobarSolicitud(${s.idSolicitudRadiografia})"><i class="fas fa-check"></i> Aprobar</button>
-                                        <button class="btn btn-danger btn-sm" onclick="abrirModalRechazo(${s.idSolicitudRadiografia})"><i class="fas fa-times"></i> Rechazar</button>
+                                        <button class="btn btn-success btn-sm" onclick="abrirModalRealizar(${s.idSolicitudRadiografia})">
+                                            <i class="fas fa-camera"></i> Realizar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" onclick="abrirModalRechazo(${s.idSolicitudRadiografia})">
+                                            <i class="fas fa-times"></i> Rechazar
+                                        </button>
+                                        <button class="btn btn-secondary btn-sm" onclick="cancelarSolicitud(${s.idSolicitudRadiografia})">
+                                            <i class="fas fa-ban"></i> Cancelar
+                                        </button>
                                     ` : `
-                                        <button class="btn btn-primary btn-sm" onclick="verDetalle(${s.idSolicitudRadiografia})"><i class="fas fa-eye"></i> Ver</button>
+                                        <button class="btn btn-primary btn-sm" onclick="verDetalle(${s.idSolicitudRadiografia})">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </button>
                                     `}
-                                    ${estadoS === 'APROBADO' ? `
-                                        <button class="btn btn-info btn-sm" onclick="marcarRealizado(${s.idSolicitudRadiografia})"><i class="fas fa-camera"></i> Realizado</button>
+                                    ${estadoS === 'REALIZADO' && !calidad ? `
+                                        <button class="btn btn-warning btn-sm" onclick="abrirModalCalidad(${s.idSolicitudRadiografia})">
+                                            <i class="fas fa-star"></i> Calificar
+                                        </button>
+                                    ` : ''}
+                                    ${estadoS === 'REALIZADO' && calidad ? `
+                                        <span class="calidad-badge calidad-${calidad.toLowerCase()}">${calidad}</span>
                                     ` : ''}
                                 </div>
                             </td>
@@ -472,7 +719,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                body.innerHTML = `<tr><td colspan="8" style="padding:20px;text-align:center;color:#c62828;"><i class="fas fa-exclamation-triangle" style="font-size:24px;display:block;margin-bottom:10px;"></i>Error: ${error.message}<br><button class="btn btn-primary" onclick="cargarSolicitudes()" style="margin-top:10px;">Reintentar</button></td></tr>`;
+                body.innerHTML = `<tr><td colspan="10" style="padding:20px;text-align:center;color:#c62828;"><i class="fas fa-exclamation-triangle" style="font-size:24px;display:block;margin-bottom:10px;"></i>Error: ${error.message}<br><button class="btn btn-primary" onclick="cargarSolicitudes()" style="margin-top:10px;">Reintentar</button></td></tr>`;
             }
         }
 
@@ -484,7 +731,7 @@
                 else if (estado === 'APROBADO') aprobados++;
                 else if (estado === 'RECHAZADO') rechazados++;
                 else if (estado === 'REALIZADO') realizados++;
-                if (estado === 'APROBADO' || estado === 'REALIZADO') {
+                if (estado === 'REALIZADO') {
                     totalRecibos += Number(s.radiografia?.precioRayo || s.precio || 0);
                 }
             });
@@ -495,31 +742,140 @@
             document.getElementById('totalRecibos').textContent = formatearMoneda(totalRecibos);
         }
 
-        // ===== APROBAR =====
-        async function aprobarSolicitud(id) {
-            const result = await Swal.fire({
-                title: '¿Aprobar solicitud?',
-                text: 'Al aprobar, se generará el recibo automáticamente',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#2E7D32',
-                cancelButtonColor: '#757575',
-                confirmButtonText: '✅ Sí, aprobar',
-                cancelButtonText: 'Cancelar'
-            });
-            if (!result.isConfirmed) return;
+        // ===== MODAL REALIZAR CON CALIDAD =====
+        function abrirModalRealizar(id) {
+            currentRealizarId = id;
+            calidadRealizarSeleccionada = null;
+            document.getElementById('observacionesRealizar').value = '';
+            document.querySelectorAll('#calidadRealizarOptions .calidad-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('modalRealizarCalidad').classList.add('active');
+        }
+
+        function cerrarModalRealizar() {
+            document.getElementById('modalRealizarCalidad').classList.remove('active');
+            currentRealizarId = null;
+            calidadRealizarSeleccionada = null;
+        }
+
+        function seleccionarCalidadRealizar(valor) {
+            calidadRealizarSeleccionada = valor;
+            document.querySelectorAll('#calidadRealizarOptions .calidad-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#calidadRealizarOptions .calidad-option.${valor.toLowerCase()}`)?.classList.add('selected');
+        }
+
+        // ===== CONFIRMAR REALIZAR CON CALIDAD =====
+        document.getElementById('btnConfirmarRealizar').addEventListener('click', async function() {
+            if (!calidadRealizarSeleccionada) {
+                await Swal.fire({ 
+                    icon: 'warning', 
+                    title: '⚠️ Calidad requerida', 
+                    text: 'Debe seleccionar la calidad de la radiografía antes de continuar.',
+                    confirmButtonColor: '#F59E0B' 
+                });
+                return;
+            }
+
+            const observaciones = document.getElementById('observacionesRealizar').value.trim();
+            const id = currentRealizarId;
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
 
             try {
-                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/aprobar`, { method: 'PUT', credentials: 'include' });
-                if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Error al aprobar'); }
-                const data = await response.json();
-                await Swal.fire({ icon: 'success', title: '✅ Solicitud aprobada', html: `<p>Precio: ${formatearMoneda(data.precio || 0)}</p><p style="color:#2e7d32;"><i class="fas fa-check-circle"></i> Recibo generado automáticamente</p>`, confirmButtonColor: '#2E7D32' });
+                // 🔥 PASO 1: PRIMERO guardar la calidad
+                const calidadResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/calidad`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        calidad: calidadRealizarSeleccionada,
+                        observaciones: observaciones
+                    })
+                });
+
+                if (!calidadResponse.ok) {
+                    let errorMsg = 'Error al guardar la calidad';
+                    try {
+                        const errorData = await calidadResponse.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                // 🔥 PASO 2: Aprobar la solicitud
+                const aprobarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/aprobar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({})
+                });
+
+                if (!aprobarResponse.ok) {
+                    let errorMsg = 'Error al aprobar';
+                    try {
+                        const errorData = await aprobarResponse.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                // 🔥 PASO 3: Marcar como realizada (AQUÍ SE GENERA EL RECIBO)
+                const realizarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/realizar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({})
+                });
+
+                if (!realizarResponse.ok) {
+                    let errorMsg = 'Error al marcar como realizada';
+                    try {
+                        const errorData = await realizarResponse.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                const data = await realizarResponse.json();
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '✅ Radiografía realizada',
+                    html: `
+                        <div style="text-align:left;padding:10px;">
+                            <p><strong>ID Solicitud:</strong> #${data.idSolicitud || id}</p>
+                            <p><strong>Precio:</strong> ${formatearMoneda(data.precio || 0)}</p>
+                            <p><strong>Recibo:</strong> #${data.idRecibo || 'N/A'}</p>
+                            <p><strong>Calidad:</strong> ${getCalidadBadge(calidadRealizarSeleccionada)}</p>
+                            <p style="color:#2e7d32;margin-top:10px;">
+                                <i class="fas fa-check-circle"></i> Solicitud aprobada, realizada y calificada
+                            </p>
+                            ${data.idRecibo ? `
+                                <p style="color:#0D47A1;margin-top:10px;">
+                                    <i class="fas fa-receipt"></i> Recibo #${data.idRecibo} generado automáticamente
+                                </p>
+                            ` : ''}
+                        </div>
+                    `,
+                    confirmButtonColor: '#2E7D32'
+                });
+
+                cerrarModalRealizar();
                 cargarSolicitudes();
+
             } catch (error) {
-                console.error('Error:', error);
-                await Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#c62828' });
+                console.error('❌ Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message || 'Error al procesar la solicitud',
+                    confirmButtonColor: '#c62828'
+                });
+            } finally {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check"></i> Confirmar Realizar';
             }
-        }
+        });
 
         // ===== RECHAZAR =====
         function abrirModalRechazo(id) { currentSolicitudId = id; document.getElementById('motivoRechazo').value = ''; document.getElementById('modalRechazo').classList.add('active'); }
@@ -549,27 +905,32 @@
             }
         });
 
-        // ===== MARCAR REALIZADO =====
-        async function marcarRealizado(id) {
+        // ===== CANCELAR =====
+        async function cancelarSolicitud(id) {
             const result = await Swal.fire({
-                title: '¿Marcar como realizado?',
-                text: 'Confirme que la radiografía fue realizada',
-                icon: 'question',
+                title: '🚫 ¿Cancelar solicitud?',
+                text: 'Esta acción no se puede deshacer',
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#0D47A1',
+                confirmButtonColor: '#c62828',
                 cancelButtonColor: '#757575',
-                confirmButtonText: '✅ Sí, realizada',
-                cancelButtonText: 'Cancelar'
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'No, volver'
             });
             if (!result.isConfirmed) return;
 
             try {
-                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/realizado`, { method: 'PUT', credentials: 'include' });
-                if (!response.ok) { const error = await response.json(); throw new Error(error.error || 'Error al marcar realizado'); }
-                await Swal.fire({ icon: 'success', title: '✅ Radiografía realizada', confirmButtonColor: '#0D47A1' });
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/cancelar`, {
+                    method: 'PUT',
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al cancelar');
+                }
+                await Swal.fire({ icon: 'success', title: '✅ Solicitud cancelada', confirmButtonColor: '#c62828' });
                 cargarSolicitudes();
             } catch (error) {
-                console.error('Error:', error);
                 await Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#c62828' });
             }
         }
@@ -604,6 +965,10 @@
                             <p><strong>Estado:</strong> ${getEstadoBadge(data.estado)}</p>
                             <p><strong>Fecha:</strong> ${formatearFecha(data.fechaSolicitud)}</p>
                             <p><strong>Precio:</strong> ${formatearMoneda(data.radiografia?.precioRayo || 0)}</p>
+                            ${data.calidad ? `<p><strong>Calidad:</strong> ${getCalidadBadge(data.calidad)}</p>` : ''}
+                            ${data.observacionesCalidad ? `<p><strong>Observaciones:</strong> ${data.observacionesCalidad}</p>` : ''}
+                            ${data.idRecibo ? `<p><strong>Recibo:</strong> #${data.idRecibo}</p>` : ''}
+                            ${data.pagado !== undefined ? `<p><strong>Pagado:</strong> ${data.pagado ? '✅ Sí' : '⏳ Pendiente'}</p>` : ''}
                         </div>
                     `,
                     confirmButtonColor: '#0D47A1'
@@ -613,6 +978,72 @@
                 await Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#c62828' });
             }
         }
+
+        // ===== MODAL DE CALIDAD (para calificar después de realizada) =====
+        function abrirModalCalidad(id) {
+            currentCalidadId = id;
+            calidadSeleccionada = null;
+            document.getElementById('observacionesCalidad').value = '';
+            document.querySelectorAll('#calidadOptions .calidad-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('modalCalidad').classList.add('active');
+        }
+
+        function cerrarModalCalidad() {
+            document.getElementById('modalCalidad').classList.remove('active');
+            currentCalidadId = null;
+            calidadSeleccionada = null;
+        }
+
+        function seleccionarCalidad(valor) {
+            calidadSeleccionada = valor;
+            document.querySelectorAll('#calidadOptions .calidad-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`#calidadOptions .calidad-option.${valor.toLowerCase()}`)?.classList.add('selected');
+        }
+
+        document.getElementById('btnGuardarCalidad').addEventListener('click', async function() {
+            if (!calidadSeleccionada) {
+                await Swal.fire({ icon: 'warning', title: 'Seleccione una calidad', confirmButtonColor: '#F59E0B' });
+                return;
+            }
+
+            const observaciones = document.getElementById('observacionesCalidad').value.trim();
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/${currentCalidadId}/calidad`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        calidad: calidadSeleccionada,
+                        observaciones: observaciones
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al guardar calidad');
+                }
+
+                await Swal.fire({ 
+                    icon: 'success', 
+                    title: '✅ Calidad guardada',
+                    text: `Radiografía calificada como ${calidadSeleccionada}`,
+                    confirmButtonColor: '#2E7D32'
+                });
+
+                cerrarModalCalidad();
+                cargarSolicitudes();
+
+            } catch (error) {
+                await Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#c62828' });
+            } finally {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-save"></i> Guardar Calidad';
+            }
+        });
 
         // ===== EVENTOS =====
         document.getElementById('btnBuscar').addEventListener('click', cargarSolicitudes);
@@ -626,8 +1057,26 @@
         document.getElementById('fechaInicio').addEventListener('change', cargarSolicitudes);
         document.getElementById('fechaFin').addEventListener('change', cargarSolicitudes);
 
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModalRechazo(); });
-        document.getElementById('modalRechazo').addEventListener('click', function(e) { if (e.target === this) cerrarModalRechazo(); });
+        // Cerrar modales con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                cerrarModalRechazo();
+                cerrarModalCalidad();
+                cerrarModalRealizar();
+            }
+        });
+
+        document.getElementById('modalRechazo').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalRechazo();
+        });
+
+        document.getElementById('modalCalidad').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalCalidad();
+        });
+
+        document.getElementById('modalRealizarCalidad').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalRealizar();
+        });
 
         // ===== INICIALIZAR =====
         window.addEventListener('load', () => {

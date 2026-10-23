@@ -28,6 +28,9 @@ public class Cupo  {
     @Column(name = "cupos_disponibles")
     private Integer cuposDisponibles;
 
+    @Column(name = "cupos_totales", nullable = false)
+    private Integer cuposTotales;
+
     @Column(name = "usu_reg_cup")
     private Integer usuRegCup;
 

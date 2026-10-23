@@ -35,10 +35,12 @@ public interface SolicitudRadiografiaService {
         List<Long> idsDientesPlan,
         Long idEstudiante  // ✅ AGREGAR PARÁMETRO
     );
-    
+        // Agregar a la interface
+    SolicitudRadiografia cancelarSolicitud(Long idSolicitud);
     SolicitudRadiografia aprobarSolicitud(Long idSolicitud);
     SolicitudRadiografia rechazarSolicitud(Long idSolicitud, String motivoRechazo);
-    SolicitudRadiografia marcarRealizado(Long idSolicitud);  // ✅ NUEVO
+    SolicitudRadiografia marcarRealizado(Long idSolicitud);  
+    SolicitudRadiografia realizarSolicitud(Long idSolicitud);
     
     List<Map<String, Object>> obtenerDiagnosticoTratamientoConDientes(Long idDiagnosticoTratamiento);
 }

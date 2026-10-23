@@ -279,34 +279,6 @@
             </div>
         </div>
 
-        <!-- ===== ESTADÍSTICAS GENERALES ===== -->
-        <div id="estadisticasContainer" class="bg-white rounded-2xl shadow-custom p-4 mb-4" style="display: none;">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">
-                <i class="fas fa-chart-bar text-blue-500"></i> Resumen General
-            </h2>
-            <div class="grid grid-cols-2 gap-3">
-                <div class="estadistica-card rounded-xl p-3 text-center">
-                    <p class="text-2xl font-bold text-blue-600" id="totalTratamientos">0</p>
-                    <p class="text-xs text-gray-600">Tratamientos</p>
-                </div>
-                <div class="estadistica-card rounded-xl p-3 text-center">
-                    <p class="text-2xl font-bold text-green-600" id="totalRealizados">0</p>
-                    <p class="text-xs text-gray-600">Realizados</p>
-                </div>
-                <div class="estadistica-card rounded-xl p-3 text-center">
-                    <p class="text-2xl font-bold text-yellow-600" id="totalPendientes">0</p>
-                    <p class="text-xs text-gray-600">Pendientes</p>
-                </div>
-                <div class="estadistica-card rounded-xl p-3 text-center">
-                    <p class="text-2xl font-bold text-purple-600" id="porcentajeGeneral">0%</p>
-                    <p class="text-xs text-gray-600">Progreso</p>
-                </div>
-            </div>
-            <div class="w-full bg-gray-200 rounded-full h-3 mt-3 overflow-hidden">
-                <div id="barraGlobal" class="bg-gradient-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-700" style="width: 0%"></div>
-            </div>
-        </div>
-
         <!-- ===== PROGRESO DEL ESTUDIANTE ===== -->
         <div id="studentDashboard" class="bg-white rounded-2xl shadow-custom p-4">
             <h2 class="text-lg font-bold text-gray-800 mb-3">
@@ -390,25 +362,13 @@
             
             // Mostrar info del estudiante
             if (studentInfo) {
-                document.getElementById('studentNameDisplay').textContent = studentInfo.nombre || 'Estudiante';
-                document.getElementById('studentCodeDisplay').textContent = `Código: ${studentInfo.codigoEstudiante || '---'}`;
+                const nameDisplay = document.getElementById('studentNameDisplay');
+                const codeDisplay = document.getElementById('studentCodeDisplay');
+                if (nameDisplay) nameDisplay.textContent = studentInfo.nombre || 'Estudiante';
+                if (codeDisplay) codeDisplay.textContent = `Código: ${studentInfo.codigoEstudiante || '---'}`;
             }
 
-            // Estadísticas
-            const statsContainer = document.getElementById('estadisticasContainer');
-            if (estadisticas && estadisticas.totalTratamientos > 0) {
-                statsContainer.style.display = 'block';
-                document.getElementById('totalTratamientos').textContent = estadisticas.totalTratamientos || 0;
-                document.getElementById('totalRealizados').textContent = estadisticas.totalRealizados || 0;
-                const pendientes = (estadisticas.totalRequeridos || 0) - (estadisticas.totalRealizados || 0);
-                document.getElementById('totalPendientes').textContent = pendientes;
-                document.getElementById('porcentajeGeneral').textContent = (estadisticas.porcentajeGeneral || 0) + '%';
-                document.getElementById('barraGlobal').style.width = (estadisticas.porcentajeGeneral || 0) + '%';
-            } else {
-                statsContainer.style.display = 'none';
-            }
-
-            // Progreso por tratamiento
+            // Progreso por tratamiento (sin estadísticas)
             if (!progresoData || progresoData.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-8 text-gray-500 bg-gray-50 rounded-2xl">
@@ -454,7 +414,11 @@
                 `;
             }
             container.innerHTML = html;
-            document.getElementById('lastUpdate').innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+            
+            const lastUpdate = document.getElementById('lastUpdate');
+            if (lastUpdate) {
+                lastUpdate.innerHTML = `<i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}`;
+            }
         }
 
         // ==========================================
@@ -533,12 +497,21 @@
         // ==========================================
         // 6. EVENTOS E INICIALIZACIÓN
         // ==========================================
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            const refreshIcon = document.getElementById('refreshIcon');
-            refreshIcon.classList.add('fa-spin-slow');
-            loadData(true);
-            setTimeout(() => { refreshIcon.classList.remove('fa-spin-slow'); }, 800);
-        });
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                const refreshIcon = document.getElementById('refreshIcon');
+                if (refreshIcon) {
+                    refreshIcon.classList.add('fa-spin-slow');
+                }
+                loadData(true);
+                setTimeout(() => { 
+                    if (refreshIcon) {
+                        refreshIcon.classList.remove('fa-spin-slow');
+                    }
+                }, 800);
+            });
+        }
 
         // Inicializar
         console.log('✅ Página de progreso cargada correctamente');

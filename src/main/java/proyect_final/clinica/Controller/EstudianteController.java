@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +32,22 @@ public class EstudianteController {
         List<EstudiantePrestamoDTO> dtos = estudiantes.stream()
             .map(EstudiantePrestamoDTO::new)
             .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    // ==================== OBTENER ESTUDIANTES BLOQUEADOS ====================
+    @GetMapping("/bloqueados")
+    public ResponseEntity<List<EstudiantePrestamoDTO>> getEstudiantesBloqueados() {
+        List<Estudiante> estudiantes = estudianteService.buscarPorBloqueado(true);
+
+        List<EstudiantePrestamoDTO> dtos = estudiantes.stream()
+            .map(EstudiantePrestamoDTO::new)
+            .sorted(Comparator.comparing(
+                (EstudiantePrestamoDTO e) -> e.getFechaBloqueo(),
+                Comparator.nullsLast(Comparator.naturalOrder())
+            ))
+            .collect(Collectors.toList());
+
         return ResponseEntity.ok(dtos);
     }
 

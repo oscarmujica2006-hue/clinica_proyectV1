@@ -132,11 +132,18 @@ public class SolicitudInsumoController {
             if (evolucion != null) {
                 Diagnostico diagnostico = evolucion.getDiagnostico();
                 if (diagnostico != null && diagnostico.getRevision() != null && 
-                    diagnostico.getRevision().getConsulta() != null && 
-                    diagnostico.getRevision().getConsulta().getPaciente() != null) {
-                    Persona p = diagnostico.getRevision().getConsulta().getPaciente().getPersona();
-                    if (p != null) {
+                    diagnostico.getRevision().getConsulta() != null) {
+                    var consulta = diagnostico.getRevision().getConsulta();
+                    
+                    if (consulta.getPaciente() != null && consulta.getPaciente().getPersona() != null) {
+                        Persona p = consulta.getPaciente().getPersona();
                         detalle.put("pacienteNombre", p.getNombre() + " " + p.getApellidoPaterno());
+                    }
+                    
+                    if (consulta.getEstudiante() != null && consulta.getEstudiante().getUsuario() != null 
+                        && consulta.getEstudiante().getUsuario().getPersona() != null) {
+                        Persona peEst = consulta.getEstudiante().getUsuario().getPersona();
+                        detalle.put("estudianteNombre", peEst.getNombre() + " " + peEst.getApellidoPaterno());
                     }
                 }
             }
@@ -163,6 +170,16 @@ public class SolicitudInsumoController {
             }
         }
         detalle.put("insumos", insumos);
+        
+        // Obtener docente desde el primer detalle de solicitud
+        if (solicitud.getDetalles() != null && !solicitud.getDetalles().isEmpty()) {
+            SolicitudDetInsumo primerDet = solicitud.getDetalles().get(0);
+            if (primerDet.getDocente() != null && primerDet.getDocente().getUsuario() != null
+                && primerDet.getDocente().getUsuario().getPersona() != null) {
+                Persona pd = primerDet.getDocente().getUsuario().getPersona();
+                detalle.put("doctorNombre", pd.getNombre() + " " + pd.getApellidoPaterno());
+            }
+        }
         
         return ResponseEntity.ok(detalle);
     }

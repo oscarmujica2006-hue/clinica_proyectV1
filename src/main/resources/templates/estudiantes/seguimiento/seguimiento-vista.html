@@ -427,7 +427,6 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-file-medical-alt"></i> Seguimiento de Tratamiento</h1>
-            <p>Registro de procedimientos realizados por sesión</p>
             <button class="back-dashboard-btn" onclick="backToDashboard()">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </button>
@@ -455,13 +454,6 @@
                     <div class="form-group">
                         <label>Estado del Plan:</label>
                         <input type="text" id="estado-plan" readonly>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <label>Progreso:</label>
-                    <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden; position: relative;">
-                        <div id="barra-progreso" style="height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); width: 0%; transition: width 0.5s ease; border-radius: 10px;"></div>
-                        <span id="progreso-texto" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: bold; color: #333;">0%</span>
                     </div>
                 </div>
             </div>
@@ -579,29 +571,6 @@
                 </div>
             </div>
 
-            <!-- Resumen de la sesión -->
-            <div class="form-section full-width" style="background: #e3f2fd;">
-                <h2 class="section-title"><i class="fas fa-chart-pie"></i> Resumen de la Sesión</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
-                    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 2rem; color: #2196F3;" id="totalDientesResumen">0</div>
-                        <div style="font-size: 0.8rem; color: #666;">Total Dientes</div>
-                    </div>
-                    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 2rem; color: #4CAF50;" id="realizadosResumen">0</div>
-                        <div style="font-size: 0.8rem; color: #666;">Realizados</div>
-                    </div>
-                    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 2rem; color: #FF9800;" id="pendientesResumen">0</div>
-                        <div style="font-size: 0.8rem; color: #666;">Pendientes</div>
-                    </div>
-                    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 2rem; color: #9C27B0;" id="sesionProcedimientos">0</div>
-                        <div style="font-size: 0.8rem; color: #666;">Esta Sesión</div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Botones de acción -->
             <div class="button-group">
                 <button class="btn-primary" id="btnGuardar"><i class="fas fa-save"></i> Guardar</button>
@@ -693,13 +662,6 @@
                 document.getElementById('tratamiento-nombre').value = data.tratamientoNombre || '-';
                 document.getElementById('estado-plan').value = data.estadoPlan || '-';
                 
-                // Actualizar progreso
-                const realizados = data.cantidadRealizada || 0;
-                const total = data.cantidadPlaneada || 0;
-                const porcentaje = total > 0 ? Math.round((realizados / total) * 100) : 0;
-                document.getElementById('barra-progreso').style.width = porcentaje + '%';
-                document.getElementById('progreso-texto').textContent = `${porcentaje}% (${realizados}/${total})`;
-                
                 // Establecer fecha y hora actual
                 const now = new Date();
                 document.getElementById('fecha').value = now.toISOString().split('T')[0];
@@ -743,7 +705,6 @@
                         </div>
                     `;
                     selectDiente.innerHTML = '<option value="">-- No hay dientes pendientes --</option>';
-                    actualizarResumen();
                     return;
                 }
                 
@@ -765,25 +726,12 @@
                     selectDiente.appendChild(option);
                 });
                 
-                actualizarResumen();
-                
             } catch (error) {
                 console.error('❌ Error:', error);
                 document.getElementById('dientesPendientesContainer').innerHTML = `
                     <span style="color: #f44336;">Error al cargar dientes: ${error.message}</span>
                 `;
             }
-        }
-
-        // ========== ACTUALIZAR RESUMEN ==========
-        function actualizarResumen() {
-            const realizados = dientesPendientes.filter(d => d.estado === 'REALIZADO').length;
-            const pendientes = dientesPendientes.length;
-            
-            document.getElementById('totalDientesResumen').textContent = totalDientesPlan || pendientes;
-            document.getElementById('realizadosResumen').textContent = realizados;
-            document.getElementById('pendientesResumen').textContent = pendientes;
-            document.getElementById('sesionProcedimientos').textContent = procedimientosAgregados.length;
         }
 
         // ========== AGREGAR PROCEDIMIENTO ==========
@@ -829,7 +777,6 @@
             document.getElementById('procedimientoInput').value = '';
             document.getElementById('selectDiente').value = '';
             
-            actualizarResumen();
             mostrarAlerta(`✅ Diente ${diente.diente} agregado: ${procedimiento}`, 'success');
         });
 
@@ -871,7 +818,6 @@
         function eliminarProcedimiento(index) {
             procedimientosAgregados.splice(index, 1);
             renderizarProcedimientos();
-            actualizarResumen();
             mostrarAlerta('Procedimiento eliminado', 'info');
         }
 
@@ -929,7 +875,6 @@
             document.getElementById('fecha').value = now.toISOString().split('T')[0];
             document.getElementById('hora').value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
-            actualizarResumen();
             mostrarAlerta('Formulario limpiado', 'info');
         }
 
@@ -1008,7 +953,7 @@
                 
                 setTimeout(() => {
                     cargarDientesPendientes(idPlanTratamiento);
-                    // Actualizar progreso del plan
+                    // Recargar datos del plan
                     cargarDatosPlan();
                 }, 500);
                 

@@ -47,7 +47,7 @@ public interface CupoRepository extends JpaRepository<Cupo, Long> {
     boolean existsCupoByTratamientoIdAndMateriaId(@Param("idTratamiento") Long idTratamiento, @Param("idMateria") Long idMateria);
 
 
-    @Query(value = "SELECT * FROM fn_obtener_progreso_estudiante(:idEstudiante)", nativeQuery = true)
+    @Query(value = "SELECT * FROM fn_obtener_progreso_estudiante(CAST(:idEstudiante AS INTEGER))", nativeQuery = true)
     List<Object[]> llamarFnProgresoEstudiante(@Param("idEstudiante") Long idEstudiante);
    
 

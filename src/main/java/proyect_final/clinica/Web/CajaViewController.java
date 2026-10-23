@@ -29,6 +29,10 @@ public class CajaViewController {
         return "encargado-Caja/recibos-estudiante/estudiante-recibo";
     }
  
-
-  
+    @GetMapping("/radiografia-pago/pago_radiografia")
+    public String mostrarRecibosRadiografia() {
+        return "encargado-Caja/radiografia-pago/pago_radiografia";
+    }
+ 
+    
 }

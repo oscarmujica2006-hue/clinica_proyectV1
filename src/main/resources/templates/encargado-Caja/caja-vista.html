@@ -27,10 +27,15 @@
                 <span class="menu-text">Recibo</span>
             </li>
 
-            <!-- <li onclick="loadPage('/caja/recibos-estudiante/estudiante-recibo', 'estudiante Recibo', 'estudianteReciboFrame', this)">
+            <li onclick="loadPage('/caja/radiografia-pago/pago_radiografia', '', 'pagoRadiografiaFrame', this)">
+                <i class="fas fa-user-injured"></i>
+                <span class="menu-text">Pago Radiografía</span>
+            </li>
+
+            <li onclick="loadPage('/caja/recibos-estudiante/estudiante-recibo', 'estudiante Recibo', 'estudianteReciboFrame', this)">
                 <i class="fas fa-user-injured"></i>
                 <span class="menu-text">Recibos de Estudiantes</span>
-            </li> -->
+            </li>
 
 
 
@@ -49,31 +54,16 @@
             <iframe id="reciboFrame" src="about:blank"></iframe>
         </div>
 
-
-        <!-- Contenido de Nuevo Paciente -->
+        <div id="pagoRadiografiaContent" class="content-area">
+            <iframe id="pagoRadiografiaFrame" src="about:blank"></iframe>
+        </div>
+        
+        
         <div id="estudianteReciboContent" class="content-area">
             <iframe id="estudianteReciboFrame" src="about:blank"></iframe>
         </div>
-        
-        <!-- Contenido de Consentimiento -->
-        <div id="ConsentimientoEstadoContent" class="content-area">
-            <iframe id="ConsentimientoEstadoFrame" src="about:blank"></iframe>
-        </div>
 
-        <!-- Contenido de Desbloqueo Estudiante -->
-        <div id="desbloqueoContent" class="content-area">
-            <iframe id="desbloqueoFrame" src="about:blank"></iframe>
-        </div>
 
-        <!-- Contenido de Registro Estudiante -->
-        <div id="registroEstudianteContent" class="content-area">
-            <iframe id="registroEstudianteFrame" src="about:blank"></iframe>
-        </div>
-
-            <!-- Contenido de Archivos -->
-            <div id="ArchivosContent" class="content-area">
-                <iframe id="ArchivosFrame" src="about:blank"></iframe>
-            </div>
     </div>
 
     <script>
@@ -113,16 +103,10 @@
             else if (frameId === 'estudianteReciboFrame') {
                 contentId = 'estudianteReciboContent';
             }
-            
-            else if (frameId === 'ConsentimientoEstadoFrame') {
-                contentId = 'ConsentimientoEstadoContent';
-            } else if (frameId === 'desbloqueoFrame') {
-                contentId = 'desbloqueoContent';
-            } else if (frameId === 'registroEstudianteFrame') {
-                contentId = 'registroEstudianteContent';
-            } else if (frameId === 'ArchivosFrame') {
-                contentId = 'ArchivosContent';
+            else if (frameId === 'pagoRadiografiaFrame') {
+                contentId = 'pagoRadiografiaContent';
             }
+
             
             if (contentId) {
                 document.getElementById(contentId).classList.add('active');

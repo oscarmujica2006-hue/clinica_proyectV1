@@ -12,19 +12,17 @@ import proyect_final.clinica.Model.Entity.InscripcionMateria;
 import proyect_final.clinica.Model.Entity.Materia;
 import proyect_final.clinica.Model.Entity.Tratamiento;
 import proyect_final.clinica.Model.Entity.Cupo;
-import proyect_final.clinica.Model.Entity.DiagnosticoTratamiento;
-import proyect_final.clinica.Model.Entity.DiagnosticoTratamientoDiente;
 import proyect_final.clinica.Model.Dao.CupoRepository;
 import proyect_final.clinica.Model.Dao.InscripcionMateriaRepository;
-import proyect_final.clinica.Model.Dao.DiagnosticoTratamientoRepository;
-import proyect_final.clinica.Model.Dao.DiagnosticoTratamientoDienteRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -42,12 +40,6 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Autowired
     private ConsentimientoRepository consentimientoRepository;
-    
-    @Autowired
-    private DiagnosticoTratamientoRepository diagnosticoTratamientoRepository;
-    
-    @Autowired
-    private DiagnosticoTratamientoDienteRepository diagnosticoTratamientoDienteRepository;
 
     // ==================== MÉTODOS BÁSICOS ====================
     
@@ -129,6 +121,23 @@ public class EstudianteServiceImpl implements EstudianteService {
             return new ArrayList<>();
         }
         
+        // ✅ Obtener los valores reales de progreso (cupoTotal / cupoRealizado) desde la
+        // función de BD, la misma que usa el dashboard del estudiante. Se indexa por ID de tratamiento.
+        Map<Long, int[]> progresoFn = new HashMap<>();
+        try {
+            List<Object[]> filasFn = cupoRepository.llamarFnProgresoEstudiante(idEstudiante);
+            for (Object[] row : filasFn) {
+                if (row[3] == null) continue;
+                Long idTrat = ((Number) row[3]).longValue();
+                int cupoTotal = row[5] != null ? ((Number) row[5]).intValue() : 0;
+                int cupoRealizado = row[6] != null ? ((Number) row[6]).intValue() : 0;
+                progresoFn.put(idTrat, new int[]{cupoTotal, cupoRealizado});
+            }
+            System.out.println("📊 fn_obtener_progreso_estudiante devolvió " + progresoFn.size() + " tratamientos");
+        } catch (Exception e) {
+            System.out.println("⚠️ No se pudo obtener progreso desde la función de BD: " + e.getMessage());
+        }
+        
         List<ProgresoMateriaDTO> resultado = new ArrayList<>();
         
         for (InscripcionMateria inscripcion : inscripciones) {
@@ -152,26 +161,18 @@ public class EstudianteServiceImpl implements EstudianteService {
             } else {
                 for (Cupo cupo : cuposList) {
                     Tratamiento tratamiento = cupo.getTratamiento();
-                    Integer requerido = cupo.getCuposDisponibles();
                     
-                    // ✅ Buscar planes por ID de tratamiento
-                    List<DiagnosticoTratamiento> planes = diagnosticoTratamientoRepository
-                        .findByTratamiento_IdTratamiento(tratamiento.getIdTratamiento());
-                    
-                    int realizado = 0;
-                    
-                    for (DiagnosticoTratamiento plan : planes) {
-                        // Contar dientes APROBADOS de este plan
-                        List<DiagnosticoTratamientoDiente> dientes = diagnosticoTratamientoDienteRepository
-                            .findByDiagnosticoTratamientoAndEstado(plan, "APROBADO");
-                        realizado += dientes.size();
-                    }
+                    // ✅ Valores por estudiante provenientes de fn_obtener_progreso_estudiante
+                    int[] valores = progresoFn.getOrDefault(
+                        tratamiento.getIdTratamiento(), new int[]{0, 0});
+                    int requerido = valores[0];
+                    int realizado = valores[1];
                     
                     // ✅ Crear DTO con todos los campos incluyendo faltante
                     ProgresoTratamientoDTO dto = new ProgresoTratamientoDTO(
                         tratamiento.getIdTratamiento(),
                         tratamiento.getNombreTratamiento(),
-                        requerido != null ? requerido : 0,
+                        requerido,
                         realizado
                     );
                     // El faltante se calcula automáticamente en el constructor

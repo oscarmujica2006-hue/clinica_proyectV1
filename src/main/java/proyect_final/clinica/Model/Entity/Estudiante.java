@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @Entity
@@ -21,20 +20,21 @@ public class Estudiante {
     @Column(name = "id_estudiante")
     private Long idEstudiante;
 
-
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)  
     private Usuario usuario;
     
-
-    @Column(name="gestion",nullable=false,length = 43)
+    @Column(name = "gestion", nullable = false, length = 43)
     private String gestion;
 
     @ManyToOne
     @JoinColumn(name = "id_rote_actual", nullable = false)
     private Rote roteActual;
-    @Column(name="codigo_estudiante",nullable=false)
+    
+    @Column(name = "codigo_estudiante", nullable = false)
     private Integer codigoEstudiante;
+    
+    // 🔥 CAMPOS DE BLOQUEO
     @Column(name = "bloqueado", nullable = false)
     private Boolean bloqueado = false;
     
@@ -43,6 +43,7 @@ public class Estudiante {
     
     @Column(name = "fecha_bloqueo")
     private LocalDateTime fechaBloqueo;
+    
     @Column(name = "usu_reg_usuEst")
     private Integer usuRegUsuEst;
 
@@ -56,4 +57,16 @@ public class Estudiante {
     @UpdateTimestamp
     @Column(name = "fech_mod_usuEst")
     private LocalDateTime fechModUsuEst;
+    
+    public boolean isBloqueadoPorRadiografia() {
+        return bloqueado != null && bloqueado && "RADIOGRAFIA".equals(razonBloqueo);
+    }
+    
+    public boolean isBloqueadoPorArchivo() {
+        return bloqueado != null && bloqueado && "ARCHIVO".equals(razonBloqueo);
+    }
+    
+    public boolean isBloqueadoMultiple() {
+        return bloqueado != null && bloqueado && "MULTIPLE".equals(razonBloqueo);
+    }
 }

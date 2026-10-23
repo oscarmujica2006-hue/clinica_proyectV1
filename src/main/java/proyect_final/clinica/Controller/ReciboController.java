@@ -4,8 +4,10 @@ import proyect_final.clinica.Model.Dto.ReciboDTO;
 import proyect_final.clinica.Model.Dto.DetalleReciboDTO;
 import proyect_final.clinica.Model.Dto.PagoReciboDTO;
 import proyect_final.clinica.Model.Entity.Recibo;
+import proyect_final.clinica.Model.Entity.Estudiante;
 import proyect_final.clinica.Model.Entity.PagoRecibo;
 import proyect_final.clinica.Service.ReciboService;
+import proyect_final.clinica.Service.EstudianteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class ReciboController {
 
     @Autowired
     private ReciboService reciboService;
+
+    @Autowired
+    private EstudianteService estudianteService;
 
     // ==================== CONVERTIR ENTIDAD A DTO ====================
     private ReciboDTO convertirAReciboDTO(Recibo recibo) {
@@ -79,6 +84,9 @@ public class ReciboController {
                             estudianteNombre = persona.getNombre() + " " + 
                                              persona.getApellidoPaterno();
                         }
+                        dto.setIdEstudiante(estudiante.getIdEstudiante());
+                        dto.setEstudianteCodigo(estudiante.getCodigoEstudiante() != null
+                                ? String.valueOf(estudiante.getCodigoEstudiante()) : null);
                     }
                 }
             }
@@ -89,6 +97,19 @@ public class ReciboController {
         dto.setPacienteNombre(pacienteNombre);
         dto.setCiPaciente(ciPaciente);
         dto.setEstudianteNombre(estudianteNombre);
+
+        // Fallback: si la cadena de consulta no dio estudiante, usar el del consentimiento
+        if (dto.getIdEstudiante() == null && recibo.getConsentimiento() != null
+                && recibo.getConsentimiento().getEstudiante() != null) {
+            var est = recibo.getConsentimiento().getEstudiante();
+            if (est.getUsuario() != null && est.getUsuario().getPersona() != null) {
+                dto.setEstudianteNombre(est.getUsuario().getPersona().getNombre() + " "
+                        + est.getUsuario().getPersona().getApellidoPaterno());
+            }
+            dto.setIdEstudiante(est.getIdEstudiante());
+            dto.setEstudianteCodigo(est.getCodigoEstudiante() != null
+                    ? String.valueOf(est.getCodigoEstudiante()) : null);
+        }
         
         // ✅ CONVERTIR DETALLES CON TRATAMIENTO Y DIENTE
         if (recibo.getDetalles() != null) {
@@ -167,6 +188,45 @@ public class ReciboController {
     @GetMapping("/todos")
     public ResponseEntity<List<ReciboDTO>> listarTodosAlias() {
         return listarTodos();
+    }
+
+    // ==================== RECIBOS POR ESTUDIANTE (ID) ====================
+    @GetMapping("/estudiante/{idEstudiante}")
+    public ResponseEntity<List<ReciboDTO>> obtenerPorEstudiante(@PathVariable Long idEstudiante) {
+        return ResponseEntity.ok(reciboService.findByEstudianteId(idEstudiante).stream()
+                .map(this::convertirAReciboDTO)
+                .collect(Collectors.toList()));
+    }
+
+    // ==================== RECIBOS POR CÓDIGO DE ESTUDIANTE ====================
+    @GetMapping("/estudiante/codigo/{codigo}")
+    public ResponseEntity<List<ReciboDTO>> obtenerPorCodigoEstudiante(@PathVariable Integer codigo) {
+        Optional<Estudiante> estudiante = estudianteService.buscarPorCodigoExacto(codigo);
+        if (estudiante.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(reciboService.findByEstudianteId(estudiante.get().getIdEstudiante()).stream()
+                .map(this::convertirAReciboDTO)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/estudiante/codigo/{codigo}/pendientes")
+    public ResponseEntity<List<ReciboDTO>> obtenerPendientesPorCodigo(@PathVariable Integer codigo) {
+        Optional<Estudiante> estudiante = estudianteService.buscarPorCodigoExacto(codigo);
+        if (estudiante.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(reciboService.findByEstudianteId(estudiante.get().getIdEstudiante()).stream()
+                .filter(r -> !"PAGADO".equals(r.getEstadoPago()))
+                .map(this::convertirAReciboDTO)
+                .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/estudiante/codigo/{codigo}/estado/{estado}")
+    public ResponseEntity<List<ReciboDTO>> obtenerPorCodigoYEstado(@PathVariable Integer codigo,
+                                                                   @PathVariable String estado) {
+        Optional<Estudiante> estudiante = estudianteService.buscarPorCodigoExacto(codigo);
+        if (estudiante.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(reciboService.findByEstudianteId(estudiante.get().getIdEstudiante()).stream()
+                .filter(r -> estado.equals(r.getEstadoPago()))
+                .map(this::convertirAReciboDTO)
+                .collect(Collectors.toList()));
     }
 
     // ==================== OBTENER RECIBO POR ID (DTO) ====================

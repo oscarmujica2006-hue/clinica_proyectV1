@@ -220,15 +220,18 @@ public class ConsentimientoController {
     @ResponseBody
     public ResponseEntity<?> getProcedimientosPendientes(@PathVariable Long docenteId) {
         try {
-            // ✅ Usa el método del service que agregamos
-            List<DiagnosticoTratamientoDiente> dientesPendientes = diagnosticoTratamientoDienteService
-                .findPendientesByDocenteId(docenteId);
+            List<DiagnosticoTratamientoDiente> todosDientes = new ArrayList<>();
+            todosDientes.addAll(diagnosticoTratamientoDienteService.findPendientesByDocenteId(docenteId));
+            todosDientes.addAll(diagnosticoTratamientoDienteService.findCompletadosByDocenteId(docenteId));
+            todosDientes.addAll(diagnosticoTratamientoDienteService.findRechazadosByDocenteId(docenteId));
             
             List<Map<String, Object>> procedimientos = new ArrayList<>();
             int totalPendientes = 0;
+            int totalAprobados = 0;
+            int totalRechazados = 0;
             int cuposRestantes = 0;
             
-            for (DiagnosticoTratamientoDiente diente : dientesPendientes) {
+            for (DiagnosticoTratamientoDiente diente : todosDientes) {
                 DiagnosticoTratamiento diagTrat = diente.getDiagnosticoTratamiento();
                 
                 Consentimiento consentimiento = diagTrat.getConsentimiento();
@@ -255,35 +258,61 @@ public class ConsentimientoController {
                 
                 Integer cupos = diagTrat.getCantidadPendiente();
                 item.put("cuposDisponibles", cupos != null ? cupos : 0);
-                cuposRestantes += (cupos != null ? cupos : 0);
                 
                 EvolucionClinica evolucion = diagTrat.getEvolucionClinica();
                 if (evolucion != null) {
                     Diagnostico diagnostico = evolucion.getDiagnostico();
                     if (diagnostico != null && diagnostico.getRevision() != null) {
                         var revision = diagnostico.getRevision();
-                        if (revision.getConsulta() != null && revision.getConsulta().getPaciente() != null) {
-                            Paciente paciente = revision.getConsulta().getPaciente();
-                            item.put("pacienteCi", paciente.getCi());
-                            
-                            Persona persona = paciente.getPersona();
-                            if (persona != null) {
-                                String nombre = persona.getNombre() + " " + persona.getApellidoPaterno();
-                                item.put("pacienteNombre", nombre);
+                        if (revision.getConsulta() != null) {
+                            var consulta = revision.getConsulta();
+
+                            if (consulta.getPaciente() != null) {
+                                Paciente paciente = consulta.getPaciente();
+                                item.put("pacienteCi", paciente.getCi());
+
+                                Persona persona = paciente.getPersona();
+                                if (persona != null) {
+                                    String nombre = persona.getNombre() + " " + persona.getApellidoPaterno();
+                                    item.put("pacienteNombre", nombre);
+                                }
+                            }
+
+                            Estudiante est = consulta.getEstudiante();
+                            if (est != null) {
+                                item.put("idEstudiante", est.getIdEstudiante());
+                                item.put("ruEstudiante", est.getCodigoEstudiante());
+                                if (est.getUsuario() != null && est.getUsuario().getPersona() != null) {
+                                    Persona personaEst = est.getUsuario().getPersona();
+                                    item.put("nombreEstudiante",
+                                        personaEst.getNombre() + " " + personaEst.getApellidoPaterno());
+                                }
                             }
                         }
                     }
                 }
                 
-                totalPendientes++;
+                switch (diente.getEstado()) {
+                    case "PENDIENTE_APROBACION":
+                        totalPendientes++;
+                        cuposRestantes += (cupos != null ? cupos : 0);
+                        break;
+                    case "COMPLETADO":
+                        totalAprobados++;
+                        break;
+                    case "RECHAZADO":
+                        totalRechazados++;
+                        break;
+                }
+                
                 procedimientos.add(item);
             }
             
             Map<String, Object> response = new HashMap<>();
             response.put("procedimientos", procedimientos);
             response.put("totalPendientes", totalPendientes);
-            response.put("totalAprobados", 0);
-            response.put("totalRechazados", 0);
+            response.put("totalAprobados", totalAprobados);
+            response.put("totalRechazados", totalRechazados);
             response.put("cuposRestantes", cuposRestantes);
             
             return ResponseEntity.ok(response);
@@ -316,7 +345,7 @@ public class ConsentimientoController {
             
             DiagnosticoTratamientoDiente dientePlan = optional.get();
             
-            if (!dientePlan.getEstado().equals("PENDIENTE")) {
+            if (!dientePlan.getEstado().equals("PENDIENTE_APROBACION")) {
                 return ResponseEntity.badRequest().body("Este procedimiento ya fue procesado");
             }
             
@@ -395,7 +424,7 @@ public class ConsentimientoController {
             
             DiagnosticoTratamientoDiente dientePlan = optional.get();
             
-            if (!dientePlan.getEstado().equals("PENDIENTE")) {
+            if (!dientePlan.getEstado().equals("PENDIENTE_APROBACION")) {
                 return ResponseEntity.badRequest().body("Este procedimiento ya fue procesado");
             }
             

@@ -17,6 +17,7 @@ public interface ReciboService {
     
     // ==================== ✅ MÉTODOS POR CONSENTIMIENTO ====================
     Recibo findByConsentimientoId(Long idConsentimiento);          // Retorna UNO (para triggers)
+    Recibo findByEvolucionClinicaId(Long idEvolucionClinica);       // Fallback si no hay consentimiento
     List<Recibo> findByConsentimientoIdList(Long idConsentimiento); // Retorna VARIOS (para listados)
     List<Recibo> findRecibosPendientesByConsentimiento(Long idConsentimiento);
     
@@ -34,6 +35,7 @@ public interface ReciboService {
     List<Recibo> findRecibosConSaldoPendiente();
     List<Recibo> findRecibosByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin);
     List<Recibo> findByPacienteId(Long idPaciente);
+    List<Recibo> findByEstudianteId(Long idEstudiante);
     
     // ==================== ESTADÍSTICAS ====================
     Double sumPagosByFechaBetween(LocalDateTime fechaInicio, LocalDateTime fechaFin);

@@ -648,7 +648,7 @@
                 
                 // Cargar datos según pestaña
                 const tab = this.dataset.tab;
-                if (tab === 'tab-prestamos') cargarPrestamos();
+                if (tab === 'tab-prestamos') cargarPrestamos(filtrosPrestamosActuales());
                 else if (tab === 'tab-radiografias') cargarRadiografias();
                 else if (tab === 'tab-bloqueados') cargarBloqueados();
             });
@@ -686,9 +686,9 @@
 
             try {
                 let url = `${API_BASE}/api/prestamos-actuales/todos?`;
-                if (filtros.estado) url += `estado=${filtros.estado}&`;
-                if (filtros.idEstudiante) url += `idEstudiante=${filtros.idEstudiante}&`;
-                if (filtros.idArchivo) url += `idArchivo=${filtros.idArchivo}&`;
+                if (filtros.estado) url += `estado=${encodeURIComponent(filtros.estado)}&`;
+                if (filtros.idEstudiante) url += `idEstudiante=${encodeURIComponent(filtros.idEstudiante)}&`;
+                if (filtros.idArchivo) url += `idArchivo=${encodeURIComponent(filtros.idArchivo)}&`;
 
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Error al cargar préstamos');
@@ -707,10 +707,12 @@
 
                 let html = '';
                 for (const p of prestamos) {
-                    const esActivo = p.estadoPrestamo === 'ACTIVO';
-                    const esVencido = p.estadoPrestamo === 'VENCIDO' || (p.diasRetraso && p.diasRetraso > 0);
-                    const esDevuelto = p.estadoPrestamo === 'DEVUELTO';
-                    
+                    const estado = (p.estadoPrestamo || '').toUpperCase();
+                    const esActivo = estado === 'ACTIVO';
+                    const esVencido = estado === 'VENCIDO';
+                    const esDevuelto = estado === 'DEVUELTO';
+                    const estudianteBloqueado = p.estudianteBloqueado === true;
+
                     let estadoBadge = '';
                     let estadoClase = '';
                     if (esActivo) {
@@ -720,29 +722,38 @@
                         estadoClase = 'vencido-row';
                     } else if (esDevuelto) {
                         estadoBadge = '<span class="badge badge-secondary">✅ Devuelto</span>';
+                    } else {
+                        estadoBadge = `<span class="badge badge-warning">${estado || 'Sin estado'}</span>`;
                     }
 
-                    const dias = p.diasRetraso || 0;
-                    const diasHtml = dias > 0 ? 
-                        `<span class="badge badge-danger">${dias} días</span>` : 
-                        `<span class="badge badge-success">0 días</span>`;
+                    if (p.fechaDevolucion) {
+                        estadoBadge += `<br><small class="text-muted">Devuelto: ${formatearFecha(p.fechaDevolucion)}</small>`;
+                    }
 
-                    // Verificar si el estudiante está bloqueado
-                    let estudianteBloqueado = false;
-                    try {
-                        const resEst = await fetch(`${API_BASE}/api/estudiantes/${p.idEstudiante}`);
-                        if (resEst.ok) {
-                            const est = await resEst.json();
-                            estudianteBloqueado = est.bloqueado || false;
-                        }
-                    } catch (e) {}
+                    // Columna "Días": retraso si ya pasó la fecha, días restantes si sigue activo
+                    const diasRetraso = p.diasRetraso || 0;
+                    let diasHtml;
+                    if (esActivo) {
+                        const restantes = diasRestantes(p.fechaLimitePrestamo);
+                        diasHtml = restantes < 0
+                            ? `<span class="badge badge-danger">${Math.abs(restantes)} días</span>`
+                            : `<span class="badge badge-success">${restantes} días</span>`;
+                    } else if (diasRetraso > 0) {
+                        diasHtml = `<span class="badge badge-danger">${diasRetraso} días</span>`;
+                    } else {
+                        diasHtml = '<span class="badge badge-success">0 días</span>';
+                    }
+
+                    const nombreEstudiante = p.nombreEstudiante || p.estudianteNombre || 'N/A';
+                    const nombrePaciente = p.pacienteNombre || 'N/A';
+                    const ciPaciente = p.pacienteCi ? ` (CI: ${p.pacienteCi})` : '';
 
                     html += `
                         <tr class="${estadoClase} ${estudianteBloqueado ? 'bloqueado-row' : ''}">
                             <td><strong>${p.idPrestamo || p.id}</strong></td>
-                            <td>${p.pacienteNombre || 'N/A'}</td>
+                            <td>${nombrePaciente}${ciPaciente}</td>
                             <td>
-                                ${p.estudianteNombre || 'N/A'} (${p.codigoEstudiante || 'N/A'})
+                                ${nombreEstudiante} (${p.codigoEstudiante || 'N/A'})
                                 ${estudianteBloqueado ? '<span class="bloqueado-badge"><i class="fas fa-lock"></i> BLOQUEADO</span>' : ''}
                             </td>
                             <td>${formatearFecha(p.fechaPrestamo)}</td>
@@ -906,16 +917,25 @@
 
                 let html = '';
                 estudiantes.forEach(est => {
+                    const motivo = {
+                        'ARCHIVO': 'Préstamo sin devolver (vencido)',
+                        'RADIOGRAFIA': 'Radiografías pendientes de pago',
+                        'MULTIPLE': 'Múltiples incumplimientos'
+                    }[est.motivoBloqueo] || est.motivoBloqueo || 'Préstamo(s) vencido(s)';
+
                     html += `
                         <div style="background: #ffebee; padding: 18px; border-radius: 10px; border-left: 4px solid var(--danger); min-width: 250px; flex: 1;">
                             <div style="font-weight: bold; margin-bottom: 10px; font-size: 16px;">
                                 <i class="fas fa-user-graduate"></i> ${est.nombreCompleto || 'N/A'}
                                 <span style="font-size: 12px; color: var(--gray); display: block;">RU: ${est.codigoEstudiante || 'N/A'} | ID: ${est.idEstudiante}</span>
                             </div>
-                            <div style="margin-bottom: 15px; color: #666; font-size: 14px;">
+                            <div style="margin-bottom: 6px; color: #666; font-size: 14px;">
                                 <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 
-                                Motivo: ${est.motivoBloqueo || 'Préstamo(s) vencido(s)'}
+                                Motivo: ${motivo}
                             </div>
+                            ${est.fechaBloqueo ? `<div style="margin-bottom: 15px; color: #666; font-size: 13px;">
+                                <i class="fas fa-clock"></i> Bloqueado desde: ${formatearFechaHora(est.fechaBloqueo)}
+                            </div>` : '<div style="margin-bottom: 15px;"></div>'}
                             <button class="btn btn-unlock" style="width: 100%;" onclick="desbloquearEstudiante(${est.idEstudiante})">
                                 <i class="fas fa-unlock"></i> Desbloquear Estudiante
                             </button>
@@ -940,7 +960,8 @@
         window.registrarDevolucionPrestamo = function(id) {
             Swal.fire({
                 title: '¿Registrar devolución?',
-                text: 'Al devolver el préstamo, el estudiante será desbloqueado automáticamente',
+                text: 'Al devolver el préstamo, el estado pasará a DEVUELTO. ' +
+                      'El desbloqueo del estudiante es una decisión aparte del docente.',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#27ae60',
@@ -951,7 +972,7 @@
                 if (!result.isConfirmed) return;
 
                 try {
-                    const response = await fetch(`${API_BASE}/api/prestamos-actuales/${id}/devolver-con-desbloqueo`, {
+                    const response = await fetch(`${API_BASE}/api/prestamos-actuales/${id}/devolver`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' }
                     });
@@ -961,7 +982,7 @@
                         Swal.fire({
                             icon: 'success',
                             title: '✅ Devolución registrada',
-                            text: 'El estudiante ha sido desbloqueado correctamente',
+                            text: 'El préstamo quedó en estado DEVUELTO',
                             confirmButtonColor: '#27ae60'
                         });
                         recargarTodo();
@@ -1205,7 +1226,7 @@
         window.desbloquearEstudiante = function(idEstudiante) {
             Swal.fire({
                 title: '¿Desbloquear estudiante?',
-                text: 'El estudiante podrá solicitar nuevos préstamos',
+                text: 'El estudiante podrá solicitar nuevos préstamos y acceder al sistema',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#9b59b6',
@@ -1237,13 +1258,14 @@
                     console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: '❌ Error',
+                        title: '❌ No se pudo desbloquear',
                         text: error.message,
                         confirmButtonColor: '#e74c3c'
                     });
                 }
             });
         };
+
 
         // ============================================================
         //   FILTROS
@@ -1283,20 +1305,62 @@
         // ============================================================
         //   UTILIDADES
         // ============================================================
+        // Convierte 'yyyy-MM-dd' a Date local (medianoche local).
+        // No usar new Date('yyyy-MM-dd') porque se interpreta como UTC y
+        // en zonas horarias negativas (UTC-4/-5) muestra un día menos.
+        function parseFecha(fecha) {
+            if (!fecha) return null;
+            const s = String(fecha).substring(0, 10);
+            const [anio, mes, dia] = s.split('-').map(Number);
+            if (!anio || !mes || !dia) return null;
+            return new Date(anio, mes - 1, dia);
+        }
+
         function formatearFecha(fecha) {
-            if (!fecha) return 'N/A';
-            try {
-                return new Date(fecha).toLocaleDateString('es-ES');
-            } catch {
-                return fecha;
-            }
+            const d = parseFecha(fecha);
+            if (!d) return 'N/A';
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            return `${dd}/${mm}/${d.getFullYear()}`;
+        }
+
+        // Días restantes hasta la fecha límite (negativo = ya venció)
+        function diasRestantes(fechaLimite) {
+            const limite = parseFecha(fechaLimite);
+            if (!limite) return 0;
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            return Math.round((limite.getTime() - hoy.getTime()) / 86400000);
+        }
+
+        // Formatea fecha y hora ISO (LocalDateTime del backend)
+        function formatearFechaHora(fechaHora) {
+            if (!fechaHora) return 'N/A';
+            const d = new Date(fechaHora);
+            if (isNaN(d.getTime())) return 'N/A';
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const hh = String(d.getHours()).padStart(2, '0');
+            const min = String(d.getMinutes()).padStart(2, '0');
+            return `${dd}/${mm}/${d.getFullYear()} ${hh}:${min}`;
         }
 
         function recargarTodo() {
             cargarEstadisticas();
-            cargarPrestamos();
+            cargarPrestamos(filtrosPrestamosActuales());
             cargarRadiografias();
             cargarBloqueados();
+        }
+
+        // Filtros de préstamos actualmente aplicados (para no perderlos al refrescar)
+        function filtrosPrestamosActuales() {
+            const filtros = {
+                idEstudiante: document.getElementById('filtroEstudiante').value || null,
+                idArchivo: document.getElementById('filtroArchivo').value || null,
+                estado: document.getElementById('filtroEstado').value || null
+            };
+            Object.keys(filtros).forEach(k => { if (filtros[k] === '') filtros[k] = null; });
+            return filtros;
         }
 
         function mostrarNotificacion(mensaje, tipo = 'success') {
@@ -1333,7 +1397,7 @@
             const activeTab = document.querySelector('.tab-content.active');
             if (activeTab) {
                 const id = activeTab.id;
-                if (id === 'tab-prestamos') cargarPrestamos();
+                if (id === 'tab-prestamos') cargarPrestamos(filtrosPrestamosActuales());
                 else if (id === 'tab-radiografias') cargarRadiografias();
                 else if (id === 'tab-bloqueados') cargarBloqueados();
             }

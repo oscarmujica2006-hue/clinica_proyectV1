@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagos de Radiografías - Cajero</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1B5E20, #2E7D32);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header h1 { display: flex; align-items: center; gap: 12px; font-size: 1.6rem; margin: 0; }
+        .header .subtitle { opacity: 0.9; font-size: 0.9rem; margin-top: 5px; }
+        .badge-cajero {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-group input, .filter-group select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: #2E7D32;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .btn-success { background: #2E7D32; color: white; }
+        .btn-success:hover { background: #1B5E20; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(46,125,50,0.3); }
+        .btn-primary { background: #0D47A1; color: white; }
+        .btn-primary:hover { background: #0a3a80; transform: translateY(-2px); }
+        .btn-secondary { background: #757575; color: white; }
+        .btn-secondary:hover { background: #616161; transform: translateY(-2px); }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .resumen-pagos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .resumen-item { text-align: center; }
+        .resumen-item .numero { font-size: 22px; font-weight: 700; }
+        .resumen-item .label { font-size: 11px; color: #666; text-transform: uppercase; }
+        .resumen-item .numero.total { color: #0D47A1; }
+        .resumen-item .numero.pagado { color: #2E7D32; }
+        .resumen-item .numero.pendiente { color: #e65100; }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .table-container::-webkit-scrollbar { width: 6px; height: 6px; }
+        .table-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .table-container::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        .table-container::-webkit-scrollbar-thumb:hover { background: #999; }
+
+        .pagos-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 800px;
+        }
+        .pagos-table th, .pagos-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        .pagos-table th {
+            background: #f8f9fa;
+            color: #0D47A1;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .pagos-table tr:hover { background: #f5f9ff; }
+
+        .estado-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .estado-pendiente { background: #fff3e0; color: #e65100; }
+        .estado-pagado { background: #e8f5e9; color: #2e7d32; }
+
+        .calidad-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .calidad-excelente { background: #D1FAE5; color: #065F46; }
+        .calidad-buena { background: #DBEAFE; color: #1E40AF; }
+        .calidad-regular { background: #FEF3C7; color: #92400E; }
+        .calidad-mala { background: #FEE2E2; color: #991B1B; }
+        .calidad-defectuosa { background: #FCE4EC; color: #880E4F; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e0e0e0;
+            border-top: 3px solid #1565C0;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .no-data { text-align: center; padding: 40px; color: #999; font-style: italic; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 95%;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .modal-header h2 { color: #0D47A1; margin: 0; }
+        .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #999; }
+        .modal-close:hover { color: #333; }
+        .modal-body .form-group { margin-bottom: 15px; }
+        .modal-body .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #333; }
+        .modal-body .form-group input, .modal-body .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .modal-body .form-group .monto-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0D47A1;
+            text-align: center;
+        }
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .filters-section { flex-direction: column; }
+            .filter-group { min-width: 100%; }
+            .resumen-pagos { grid-template-columns: 1fr 1fr; }
+            .pagos-table { font-size: 12px; min-width: 600px; }
+            .pagos-table th, .pagos-table td { padding: 8px 10px; }
+        }
+        @media (max-width: 480px) {
+            .resumen-pagos { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-credit-card"></i> Pagos de Radiografías</h1>
+                <div class="subtitle"><i class="fas fa-info-circle"></i> Gestión de pagos de radiografías individuales</div>
+            </div>
+            <div class="badge-cajero">
+                <i class="fas fa-user-tie"></i>
+                <span>Cajero: <strong id="nombreCajero">Cajero</strong></span>
+            </div>
+        </div>
+
+        <div class="resumen-pagos">
+            <div class="resumen-item">
+                <div class="numero total" id="totalSolicitudes">0</div>
+                <div class="label">Total Radiografías</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero pendiente" id="totalPendientes">0</div>
+                <div class="label">⏳ Pendientes de Pago</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero pagado" id="totalPagados">0</div>
+                <div class="label">✅ Pagadas</div>
+            </div>
+            <div class="resumen-item">
+                <div class="numero total" id="totalMonto" style="color:#0D47A1;">$0.00</div>
+                <div class="label">💰 Monto Total</div>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="estadoFiltro"><i class="fas fa-filter"></i> Estado</label>
+                <select id="estadoFiltro">
+                    <option value="todos">Todos</option>
+                    <option value="pendientes" selected>Pendientes de Pago</option>
+                    <option value="pagados">Pagados</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="buscarPaciente"><i class="fas fa-search"></i> Paciente</label>
+                <input type="text" id="buscarPaciente" placeholder="Buscar por paciente...">
+            </div>
+            <div class="filter-group" style="flex:0 0 auto;min-width:auto;">
+                <button class="btn btn-primary" onclick="cargarPagos()"><i class="fas fa-search"></i> Filtrar</button>
+            </div>
+            <div class="filter-group" style="flex:0 0 auto;min-width:auto;">
+                <button class="btn btn-secondary" onclick="limpiarFiltros()"><i class="fas fa-undo"></i> Limpiar</button>
+            </div>
+            <div class="filter-group" style="flex:0 0 auto;min-width:auto;">
+                <a href="/gestion-solicitudes.html" class="btn btn-secondary" style="background:#0D47A1;color:white;">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="pagos-table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Paciente</th>
+                        <th>Radiografía</th>
+                        <th>Estudiante</th>
+                        <th>Calidad</th>
+                        <th style="text-align:right;">Precio</th>
+                        <th style="text-align:center;">Estado</th>
+                        <th style="text-align:center;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="pagosBody">
+                    <tr><td colspan="8" class="loading"><div class="loading-spinner"></div><p>Cargando...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Pago -->
+    <div class="modal-overlay" id="modalPago">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-hand-holding-usd"></i> Registrar Pago</h2>
+                <button class="modal-close" onclick="cerrarModalPago()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Radiografía</label>
+                    <div id="infoRadiografia" style="padding:10px;background:#f8f9fa;border-radius:6px;font-weight:600;">Cargando...</div>
+                </div>
+                <div class="form-group">
+                    <label>Monto a pagar</label>
+                    <div class="monto-info" id="montoMostrar">$0.00</div>
+                    <input type="hidden" id="montoPago" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <select id="metodoPago">
+                        <option value="EFECTIVO">Efectivo</option>
+                        <option value="TARJETA">Tarjeta</option>
+                        <option value="TRANSFERENCIA">Transferencia</option>
+                        <option value="QR">QR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <input type="text" id="obsPago" placeholder="Observaciones...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModalPago()">Cancelar</button>
+                <button class="btn btn-success" id="btnConfirmarPago"><i class="fas fa-check"></i> Registrar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+        let currentSolicitudPago = null;
+        let currentPrecio = 0;
+
+        function formatearMoneda(monto) {
+            return monto ? `$${Number(monto).toFixed(2)}` : '$0.00';
+        }
+
+        function getEstadoBadge(estado, pagado) {
+            if (pagado) return `<span class="estado-badge estado-pagado">✅ Pagado</span>`;
+            return `<span class="estado-badge estado-pendiente">⏳ Pendiente</span>`;
+        }
+
+        function getCalidadBadge(calidad) {
+            if (!calidad) return `<span class="calidad-badge" style="background:#F3F4F6;color:#6B7280;">⏳ Pendiente</span>`;
+            const clases = {
+                'EXCELENTE': 'calidad-excelente',
+                'BUENA': 'calidad-buena',
+                'REGULAR': 'calidad-regular',
+                'MALA': 'calidad-mala',
+                'DEFECTUOSA': 'calidad-defectuosa'
+            };
+            const labels = {
+                'EXCELENTE': '⭐ Excelente',
+                'BUENA': '👍 Buena',
+                'REGULAR': '👌 Regular',
+                'MALA': '👎 Mala',
+                'DEFECTUOSA': '❌ Defectuosa'
+            };
+            return `<span class="calidad-badge ${clases[calidad] || ''}">${labels[calidad] || calidad}</span>`;
+        }
+
+        // ===== CARGAR PAGOS =====
+        async function cargarPagos() {
+            const estado = document.getElementById('estadoFiltro').value;
+            const buscar = document.getElementById('buscarPaciente').value.toLowerCase().trim();
+            const body = document.getElementById('pagosBody');
+
+            body.innerHTML = `<tr><td colspan="8" class="loading"><div class="loading-spinner"></div><p>Cargando...</p></td></tr>`;
+
+            try {
+                console.log('📡 Llamando a: /api/solicitudes-radiografia/realizadas/pagos');
+                
+                const response = await fetch(`${API_BASE}/api/solicitudes-radiografia/realizadas/pagos`, {
+                    credentials: 'include'
+                });
+                
+                console.log('📥 Response status:', response.status);
+                
+                if (!response.ok) throw new Error(`Error ${response.status}`);
+
+                let solicitudes = await response.json();
+                console.log('📊 Datos recibidos:', solicitudes);
+
+                // 🔥 FILTRO POR PACIENTE
+                if (buscar) {
+                    solicitudes = solicitudes.filter(s => {
+                        const nombre = (s.pacienteNombre || '').toLowerCase();
+                        return nombre.includes(buscar);
+                    });
+                }
+
+                // 🔥 FILTRO POR ESTADO DE PAGO
+                if (estado === 'pendientes') {
+                    solicitudes = solicitudes.filter(s => !s.pagado);
+                } else if (estado === 'pagados') {
+                    solicitudes = solicitudes.filter(s => s.pagado);
+                }
+
+                // 🔥 ELIMINAR FILTRO DE CALIDAD - Mostrar todas
+                // solicitudes = solicitudes.filter(s => s.calidad);  // ← QUITAR
+
+                if (!solicitudes || solicitudes.length === 0) {
+                    body.innerHTML = `<tr><td colspan="8" class="no-data">
+                        <i class="fas fa-inbox" style="font-size:30px;display:block;margin-bottom:10px;opacity:0.3;"></i>
+                        No hay radiografías ${estado === 'pendientes' ? 'pendientes de pago' : 'pagadas'}
+                    </td></tr>`;
+                    actualizarResumen([]);
+                    return;
+                }
+
+                actualizarResumen(solicitudes);
+
+                let html = '';
+                let totalMonto = 0;
+
+                for (const s of solicitudes) {
+                    const precio = s.radiografia?.precioRayo || 0;
+                    totalMonto += precio;
+                    const pagado = s.pagado || false;
+                    const pacienteNombre = s.pacienteNombre || 'N/A';
+                    const estudianteNombre = s.estudianteNombre || 'N/A';
+                    const nombreRayo = s.radiografia?.nombreRayo || s.radiografia?.nombre || 'N/A';
+                    const calidad = s.calidad || null;
+                    const tieneRecibo = s.idRecibo !== null && s.idRecibo !== undefined;
+
+                    html += `
+                        <tr>
+                            <td><strong>#${s.idSolicitudRadiografia}</strong></td>
+                            <td>${pacienteNombre}</td>
+                            <td>${nombreRayo}</td>
+                            <td>${estudianteNombre}</td>
+                            <td style="text-align:center;">${getCalidadBadge(calidad)}</td>
+                            <td style="text-align:right;font-weight:600;color:#0D47A1;">${formatearMoneda(precio)}</td>
+                            <td style="text-align:center;">${getEstadoBadge(s.estado, pagado)}</td>
+                            <td style="text-align:center;">
+                                ${!pagado && tieneRecibo ? `
+                                    <button class="btn btn-success btn-sm" onclick="abrirModalPago(${s.idSolicitudRadiografia}, ${precio})">
+                                        <i class="fas fa-hand-holding-usd"></i> Cobrar
+                                    </button>
+                                ` : !pagado && !tieneRecibo ? `
+                                    <span style="color:#999;font-size:11px;">
+                                        <i class="fas fa-exclamation-triangle"></i> Sin recibo
+                                    </span>
+                                ` : `
+                                    <button class="btn btn-secondary btn-sm" disabled>
+                                        <i class="fas fa-check-circle"></i> Pagado
+                                    </button>
+                                `}
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                document.getElementById('totalMonto').textContent = formatearMoneda(totalMonto);
+                body.innerHTML = html;
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                body.innerHTML = `<tr><td colspan="8" style="padding:20px;text-align:center;color:#c62828;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:24px;display:block;margin-bottom:10px;"></i>
+                    Error: ${error.message}
+                    <br><br>
+                    <button class="btn btn-primary" onclick="cargarPagos()">Reintentar</button>
+                </td></tr>`;
+            }
+        }
+
+        function actualizarResumen(solicitudes) {
+            let total = solicitudes.length;
+            let pendientes = solicitudes.filter(s => !s.pagado).length;
+            let pagados = solicitudes.filter(s => s.pagado).length;
+            let totalMonto = solicitudes.reduce((sum, s) => sum + (s.radiografia?.precioRayo || 0), 0);
+
+            document.getElementById('totalSolicitudes').textContent = total;
+            document.getElementById('totalPendientes').textContent = pendientes;
+            document.getElementById('totalPagados').textContent = pagados;
+            document.getElementById('totalMonto').textContent = formatearMoneda(totalMonto);
+        }
+
+        function limpiarFiltros() {
+            document.getElementById('estadoFiltro').value = 'pendientes';
+            document.getElementById('buscarPaciente').value = '';
+            cargarPagos();
+        }
+
+        // ===== MODAL DE PAGO =====
+        function abrirModalPago(id, precio) {
+            currentSolicitudPago = id;
+            currentPrecio = precio;
+
+            console.log('📋 Solicitud ID:', id);
+            console.log('💰 Precio:', precio);
+
+            document.getElementById('infoRadiografia').textContent = `Radiografía #${id} - ${formatearMoneda(precio)}`;
+            document.getElementById('montoMostrar').textContent = formatearMoneda(precio);
+            document.getElementById('montoPago').value = precio;
+            document.getElementById('metodoPago').value = 'EFECTIVO';
+            document.getElementById('obsPago').value = '';
+
+            document.getElementById('modalPago').classList.add('active');
+        }
+
+        function cerrarModalPago() {
+            document.getElementById('modalPago').classList.remove('active');
+            currentSolicitudPago = null;
+            currentPrecio = 0;
+        }
+
+        document.getElementById('btnConfirmarPago').addEventListener('click', async function() {
+            const monto = parseFloat(document.getElementById('montoPago').value);
+            const metodoPago = document.getElementById('metodoPago').value;
+            const observaciones = document.getElementById('obsPago').value.trim();
+
+            if (!monto || monto <= 0) {
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'Monto inválido',
+                    confirmButtonColor: '#F59E0B'
+                });
+                return;
+            }
+
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+            try {
+                // Obtener la solicitud para obtener el id_recibo
+                const solicitudRes = await fetch(`${API_BASE}/api/solicitudes-radiografia/${currentSolicitudPago}`, {
+                    credentials: 'include'
+                });
+                const solicitud = await solicitudRes.json();
+                
+                console.log('📋 Datos de solicitud:', solicitud);
+                console.log('📋 idRecibo:', solicitud.idRecibo);
+
+                if (!solicitud.idRecibo) {
+                    await Swal.fire({
+                        icon: 'warning',
+                        title: '⚠️ Sin recibo asociado',
+                        html: `
+                            <p>Esta radiografía no tiene un recibo asociado.</p>
+                            <p style="font-size:0.9rem;color:#666;margin-top:10px;">
+                                <strong>Solución:</strong> Contacte al administrador.
+                            </p>
+                            <p style="font-size:0.8rem;color:#999;margin-top:5px;">
+                                ID Solicitud: #${currentSolicitudPago}
+                            </p>
+                        `,
+                        confirmButtonColor: '#F59E0B'
+                    });
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-check"></i> Registrar Pago';
+                    return;
+                }
+
+                if (solicitud.pagado) {
+                    await Swal.fire({
+                        icon: 'info',
+                        title: 'ℹ️ Ya está pagada',
+                        text: 'Esta radiografía ya fue pagada anteriormente.',
+                        confirmButtonColor: '#0D47A1'
+                    });
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-check"></i> Registrar Pago';
+                    cargarPagos();
+                    return;
+                }
+
+                // Registrar pago en el recibo
+                console.log('💳 Registrando pago en recibo:', solicitud.idRecibo);
+                
+                const response = await fetch(`${API_BASE}/api/recibos/${solicitud.idRecibo}/pagar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        monto: monto,
+                        metodoPago: metodoPago,
+                        observaciones: observaciones || `Pago de radiografía #${currentSolicitudPago}`
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error al registrar pago');
+                }
+
+                const data = await response.json();
+                console.log('✅ Pago registrado:', data);
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '✅ Pago registrado',
+                    html: `
+                        <div style="text-align:left;">
+                            <p><strong>Radiografía:</strong> #${currentSolicitudPago}</p>
+                            <p><strong>Monto:</strong> ${formatearMoneda(monto)}</p>
+                            <p><strong>Método:</strong> ${metodoPago}</p>
+                            <p style="color:#2e7d32;margin-top:10px;">
+                                <i class="fas fa-check-circle"></i> Pago registrado correctamente
+                            </p>
+                            <p style="font-size:0.9rem;color:#666;">
+                                Recibo #${solicitud.idRecibo}
+                            </p>
+                        </div>
+                    `,
+                    confirmButtonColor: '#2E7D32'
+                });
+
+                cerrarModalPago();
+                cargarPagos();
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: '❌ Error',
+                    text: error.message,
+                    confirmButtonColor: '#c62828'
+                });
+            } finally {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-check"></i> Registrar Pago';
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModalPago();
+        });
+
+        document.getElementById('modalPago').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModalPago();
+        });
+
+        window.addEventListener('load', () => {
+            console.log('🚀 Iniciando vista de pagos...');
+            document.getElementById('estadoFiltro').value = 'pendientes';
+            cargarPagos();
+        });
+    </script>
+</body>
+</html>

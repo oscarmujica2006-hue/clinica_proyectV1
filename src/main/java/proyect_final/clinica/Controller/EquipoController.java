@@ -79,8 +79,6 @@ public class EquipoController {
                     Map<String, Object> dto = new HashMap<>();
                     dto.put("idEquipo", e.getIdEquipo());
                     dto.put("nombreEquipo", e.getNombreEquipo());
-                    dto.put("codigoEquipo", e.getCodigoEquipo() != null ? e.getCodigoEquipo() : "");
-                    dto.put("estado", e.getEstadoEquipo() != null ? e.getEstadoEquipo() : "ACTIVO");
                     return dto;
                 })
                 .collect(Collectors.toList());

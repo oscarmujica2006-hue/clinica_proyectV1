@@ -1,5 +1,6 @@
 package proyect_final.clinica.Service.Impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import proyect_final.clinica.Model.Dao.SolicitudRadiografiaRepository;
 import proyect_final.clinica.Model.Dao.DetalleSolicitudRadiografiaRepository;
 import proyect_final.clinica.Model.Dao.DiagnosticoTratamientoDienteRepository;
@@ -18,15 +19,12 @@ import proyect_final.clinica.Service.ReciboService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -57,7 +55,203 @@ public class SolicitudRadiografiaServiceImpl implements SolicitudRadiografiaServ
     @Lazy
     private ReciboService reciboService;
 
-    // ==================== CRUD BÁSICO ====================
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // =============================================
+    // 🔥 MÉTODOS PARA LLAMAR FUNCIONES POSTGRESQL
+    // =============================================
+    
+    public int contarSolicitudesHoy(Long idEstudiante) {
+        return solicitudRadiografiaRepository.contarSolicitudesHoy(idEstudiante);
+    }
+    
+    public Map<String, Object> puedeSolicitar(Long idEstudiante) {
+        try {
+            String jsonResult = solicitudRadiografiaRepository.puedeSolicitar(idEstudiante);
+            return objectMapper.readValue(jsonResult, Map.class);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("puedeSolicitar", false);
+            error.put("motivo", "ERROR");
+            error.put("mensaje", "Error al validar: " + e.getMessage());
+            return error;
+        }
+    }
+    
+    @Scheduled(cron = "0 0 * * * *")
+    public void verificarPagosVencidos() {
+        try {
+            String resultado = solicitudRadiografiaRepository.verificarPagosVencidos();
+            System.out.println("✅ Verificación de pagos vencidos: " + resultado);
+        } catch (Exception e) {
+            System.err.println("❌ Error al verificar pagos vencidos: " + e.getMessage());
+        }
+    }
+
+    // =============================================
+    // CREAR SOLICITUD CON VALIDACIÓN
+    // =============================================
+    
+    @Override
+    public SolicitudRadiografia crearSolicitudConDetalles(
+            Long idDiagnosticoTratamiento,
+            Long idRadiografia,
+            String motivo,
+            List<Long> idsDientesPlan,
+            Long idEstudiante) {
+        
+        Map<String, Object> validacion = puedeSolicitar(idEstudiante);
+        
+        if (!(Boolean) validacion.get("puedeSolicitar")) {
+            String motivoError = (String) validacion.get("mensaje");
+            throw new RuntimeException("❌ No puede solicitar: " + motivoError);
+        }
+        
+        DiagnosticoTratamiento plan = diagnosticoTratamientoService.obtenerPorId(idDiagnosticoTratamiento)
+            .orElseThrow(() -> new RuntimeException("Plan de tratamiento no encontrado"));
+        
+        Radiografia radiografia = radiografiaService.obtenerPorId(idRadiografia)
+            .orElseThrow(() -> new RuntimeException("Radiografía no encontrada"));
+        
+        Estudiante estudiante = estudianteService.obtenerPorId(idEstudiante)
+            .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+        
+        SolicitudRadiografia solicitud = new SolicitudRadiografia();
+        solicitud.setDiagnosticoTratamiento(plan);
+        solicitud.setRadiografia(radiografia);
+        solicitud.setMotivo(motivo);
+        solicitud.setEstado("PENDIENTE");
+        solicitud.setFechaSolicitud(LocalDateTime.now());
+        solicitud.setEstudiante(estudiante);
+        solicitud.setPagado(false);
+        solicitud.setIncluidaEnRecibo(false);
+        
+        SolicitudRadiografia solicitudGuardada = solicitudRadiografiaRepository.save(solicitud);
+        
+        if (idsDientesPlan != null && !idsDientesPlan.isEmpty()) {
+            List<DetalleSolicitudRadiografia> detalles = new ArrayList<>();
+            
+            for (Long idDientePlan : idsDientesPlan) {
+                DiagnosticoTratamientoDiente dientePlan = diagnosticoTratamientoDienteRepository
+                    .findById(idDientePlan)
+                    .orElseThrow(() -> new RuntimeException("Diente del plan no encontrado: " + idDientePlan));
+                
+                DetalleSolicitudRadiografia detalle = new DetalleSolicitudRadiografia();
+                detalle.setSolicitudRadiografia(solicitudGuardada);
+                detalle.setDiagTratDiente(dientePlan);
+                detalles.add(detalle);
+            }
+            
+            detalleSolicitudRadiografiaRepository.saveAll(detalles);
+        }
+        
+        return solicitudGuardada;
+    }
+
+    // =============================================
+    // 🔥 NUEVO: REALIZAR SOLICITUD (Aprobar + Marcar Realizado)
+    // =============================================
+    
+    @Override
+    @Transactional
+    public SolicitudRadiografia realizarSolicitud(Long idSolicitud) {
+        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
+            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        if (!"PENDIENTE".equals(solicitud.getEstado())) {
+            throw new RuntimeException("Solo se puede realizar solicitudes en estado PENDIENTE");
+        }
+
+        // 🔥 PASO 1: Cambiar a APROBADO - El TRIGGER crea el recibo y actualiza id_recibo
+        solicitud.setEstado("APROBADO");
+        solicitud = solicitudRadiografiaRepository.save(solicitud);
+
+        // 🔥 PASO 2: Cambiar a REALIZADO - La radiografía ya fue realizada
+        solicitud.setEstado("REALIZADO");
+        solicitud.setFechModSolRad(LocalDateTime.now());
+        
+        return solicitudRadiografiaRepository.save(solicitud);
+    }
+
+    // =============================================
+    // APROBAR SOLICITUD (el trigger hace el resto)
+    // =============================================
+    
+    @Override
+    public SolicitudRadiografia aprobarSolicitud(Long idSolicitud) {
+        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
+            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+
+        if ("APROBADO".equals(solicitud.getEstado())) {
+            return solicitud;
+        }
+
+        solicitud.setEstado("APROBADO");
+        solicitud = solicitudRadiografiaRepository.save(solicitud);
+
+        return solicitud;
+    }
+
+    // =============================================
+    // RECHAZAR SOLICITUD
+    // =============================================
+    
+    @Override
+    public SolicitudRadiografia rechazarSolicitud(Long idSolicitud, String motivoRechazo) {
+        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
+            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        
+        solicitud.setEstado("RECHAZADA");
+        solicitud.setMotivoRechazo(motivoRechazo);
+        return solicitudRadiografiaRepository.save(solicitud);
+    }
+
+    // =============================================
+    // CANCELAR SOLICITUD
+    // =============================================
+    
+    @Override
+    @Transactional
+    public SolicitudRadiografia cancelarSolicitud(Long idSolicitud) {
+        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
+            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        
+        if (!"PENDIENTE".equals(solicitud.getEstado()) && !"APROBADO".equals(solicitud.getEstado())) {
+            throw new RuntimeException("No se puede cancelar una solicitud en estado: " + solicitud.getEstado());
+        }
+        
+        solicitud.setEstado("CANCELADO");
+        solicitud.setMotivoRechazo("Cancelado por el usuario");
+        solicitud.setFechModSolRad(LocalDateTime.now());
+        
+        if (Boolean.TRUE.equals(solicitud.getIncluidaEnRecibo()) && solicitud.getIdRecibo() != null) {
+            System.out.println("📌 Solicitud #" + idSolicitud + " cancelada. Recibo ID: " + solicitud.getIdRecibo());
+        }
+        
+        return solicitudRadiografiaRepository.save(solicitud);
+    }
+
+    // =============================================
+    // MARCAR COMO REALIZADO
+    // =============================================
+    
+    @Override
+    public SolicitudRadiografia marcarRealizado(Long idSolicitud) {
+        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
+            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        
+        if (!"APROBADO".equals(solicitud.getEstado())) {
+            throw new RuntimeException("Solo se puede marcar como realizado una solicitud aprobada");
+        }
+        
+        solicitud.setEstado("REALIZADO");
+        return solicitudRadiografiaRepository.save(solicitud);
+    }
+
+    // =============================================
+    // MÉTODOS EXISTENTES
+    // =============================================
     
     @Override
     public List<SolicitudRadiografia> listarTodos() {
@@ -79,8 +273,6 @@ public class SolicitudRadiografiaServiceImpl implements SolicitudRadiografiaServ
         solicitudRadiografiaRepository.deleteById(id);
     }
 
-    // ==================== BÚSQUEDAS ====================
-    
     @Override
     public List<SolicitudRadiografia> findByDiagnosticoTratamientoId(Long idDiagTrat) {
         return solicitudRadiografiaRepository.findByDiagnosticoTratamiento_IdDiagTrat(idDiagTrat);
@@ -101,8 +293,6 @@ public class SolicitudRadiografiaServiceImpl implements SolicitudRadiografiaServ
         return solicitudRadiografiaRepository.findByEstudianteId(idEstudiante);
     }
 
-    // ==================== DETALLES ====================
-    
     @Override
     public DetalleSolicitudRadiografia guardarDetalle(DetalleSolicitudRadiografia detalle) {
         return detalleSolicitudRadiografiaRepository.save(detalle);
@@ -123,125 +313,6 @@ public class SolicitudRadiografiaServiceImpl implements SolicitudRadiografiaServ
         detalleSolicitudRadiografiaRepository.deleteById(id);
     }
 
-    // ==================== ✅ CREAR SOLICITUD CON ESTUDIANTE ====================
-    
-    @Override
-    public SolicitudRadiografia crearSolicitudConDetalles(
-            Long idDiagnosticoTratamiento,
-            Long idRadiografia,
-            String motivo,
-            List<Long> idsDientesPlan,
-            Long idEstudiante) {
-        
-        // 1. Obtener el plan de tratamiento
-        DiagnosticoTratamiento plan = diagnosticoTratamientoService.obtenerPorId(idDiagnosticoTratamiento)
-            .orElseThrow(() -> new RuntimeException("Plan de tratamiento no encontrado"));
-        
-        // 2. Obtener la radiografía
-        Radiografia radiografia = radiografiaService.obtenerPorId(idRadiografia)
-            .orElseThrow(() -> new RuntimeException("Radiografía no encontrada"));
-        
-        // 3. Obtener el estudiante
-        Estudiante estudiante = estudianteService.obtenerPorId(idEstudiante)
-            .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-        
-        // 4. Crear la solicitud
-        SolicitudRadiografia solicitud = new SolicitudRadiografia();
-        solicitud.setDiagnosticoTratamiento(plan);
-        solicitud.setRadiografia(radiografia);
-        solicitud.setMotivo(motivo);
-        solicitud.setEstado("PENDIENTE");
-        solicitud.setFechaSolicitud(LocalDateTime.now());
-        solicitud.setEstudiante(estudiante);  // ✅ AGREGAR ESTUDIANTE
-        
-        SolicitudRadiografia solicitudGuardada = solicitudRadiografiaRepository.save(solicitud);
-        
-        // 5. Crear los detalles (dientes)
-        if (idsDientesPlan != null && !idsDientesPlan.isEmpty()) {
-            List<DetalleSolicitudRadiografia> detalles = new ArrayList<>();
-            
-            for (Long idDientePlan : idsDientesPlan) {
-                DiagnosticoTratamientoDiente dientePlan = diagnosticoTratamientoDienteRepository
-                    .findById(idDientePlan)
-                    .orElseThrow(() -> new RuntimeException("Diente del plan no encontrado: " + idDientePlan));
-                
-                DetalleSolicitudRadiografia detalle = new DetalleSolicitudRadiografia();
-                detalle.setSolicitudRadiografia(solicitudGuardada);
-                detalle.setDiagTratDiente(dientePlan);
-                detalles.add(detalle);
-            }
-            
-            detalleSolicitudRadiografiaRepository.saveAll(detalles);
-        }
-        
-        return solicitudGuardada;
-    }
-
-    // ==================== APROBAR / RECHAZAR ====================
-    
-    @Override
-    public SolicitudRadiografia aprobarSolicitud(Long idSolicitud) {
-        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
-
-        if ("APROBADO".equals(solicitud.getEstado())) {
-            return solicitud;
-        }
-
-        solicitud.setEstado("APROBADO");
-        solicitud = solicitudRadiografiaRepository.save(solicitud);
-
-        try {
-            Long idConsentimiento = null;
-            if (solicitud.getDiagnosticoTratamiento() != null
-                    && solicitud.getDiagnosticoTratamiento().getConsentimiento() != null) {
-                idConsentimiento = solicitud.getDiagnosticoTratamiento().getConsentimiento().getIdConsentimiento();
-            }
-
-            if (solicitud.getRadiografia() != null) {
-                reciboService.generarRecibo(
-                        "RADIOGRAFIA",
-                        solicitud.getIdSolicitudRadiografia(),
-                        "Radiografía solicitada",
-                        solicitud.getRadiografia().getPrecioRayo(),
-                        null,
-                        idConsentimiento
-                );
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Solicitud aprobada, pero no se pudo registrar en el recibo: " + e.getMessage(), e);
-        }
-
-        return solicitud;
-    }
-
-    @Override
-    public SolicitudRadiografia rechazarSolicitud(Long idSolicitud, String motivoRechazo) {
-        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
-        
-        solicitud.setEstado("RECHAZADO");
-        solicitud.setMotivo(motivoRechazo);
-        return solicitudRadiografiaRepository.save(solicitud);
-    }
-
-    // ==================== ✅ NUEVO: MARCAR COMO REALIZADO ====================
-    
-    @Override
-    public SolicitudRadiografia marcarRealizado(Long idSolicitud) {
-        SolicitudRadiografia solicitud = solicitudRadiografiaRepository.findById(idSolicitud)
-            .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
-        
-        if (!"APROBADO".equals(solicitud.getEstado())) {
-            throw new RuntimeException("Solo se puede marcar como realizado una solicitud aprobada");
-        }
-        
-        solicitud.setEstado("REALIZADO");
-        return solicitudRadiografiaRepository.save(solicitud);
-    }
-
-    // ==================== OBTENER DIENTES DEL DIAGNÓSTICO ====================
-    
     @Override
     public List<Map<String, Object>> obtenerDiagnosticoTratamientoConDientes(Long idDiagnosticoTratamiento) {
         try {

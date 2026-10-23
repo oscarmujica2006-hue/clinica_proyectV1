@@ -47,7 +47,6 @@ public class Recibo {
     @OneToMany(mappedBy = "recibo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleRecibo> detalles = new ArrayList<>();
     
-    // ✅ AGREGAR: Relación con PagoRecibo
     @OneToMany(mappedBy = "recibo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PagoRecibo> pagos = new ArrayList<>();
     
@@ -65,7 +64,10 @@ public class Recibo {
     @Column(name = "fech_mod_rec")
     private LocalDateTime fechModRec;
     
-    // Método para recalcular total
+    // =============================================
+    // MÉTODOS DE NEGOCIO
+    // =============================================
+    
     public void recalcularTotal() {
         double totalTratamientos = 0;
         double totalRadiografias = 0;
@@ -85,7 +87,6 @@ public class Recibo {
         this.subtotalRadiografias = totalRadiografias;
         this.montoTotal = totalTratamientos + totalRadiografias;
         
-        // Recalcular saldo pendiente
         this.saldoPendiente = this.montoTotal - (this.montoPagado != null ? this.montoPagado : 0);
         
         // Actualizar estado según pagos
@@ -100,7 +101,6 @@ public class Recibo {
         }
     }
     
-    // Método para registrar un pago
     public void registrarPago(Double monto, String metodoPago) {
         if (monto == null || monto <= 0) {
             throw new RuntimeException("El monto del pago debe ser mayor a 0");
@@ -135,5 +135,41 @@ public class Recibo {
         } else {
             this.estadoPago = "PARCIAL";
         }
+    }
+    
+    // 🔥 MÉTODO PARA VERIFICAR SI TIENE RADIOGRAFÍAS PENDIENTES
+    public boolean tieneRadiografiasPendientes() {
+        if (detalles == null) return false;
+        
+        for (DetalleRecibo detalle : detalles) {
+            if ("RADIOGRAFIA".equals(detalle.getTipoItem()) && 
+                detalle.getSolicitudRadiografia() != null &&
+                !Boolean.TRUE.equals(detalle.getSolicitudRadiografia().getPagado())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // 🔥 MÉTODO PARA OBTENER EL ESTUDIANTE ASOCIADO
+    public Estudiante getEstudianteAsociado() {
+        if (consentimiento == null) return null;
+        
+        DiagnosticoTratamiento dt = consentimiento.getDiagnosticoTratamiento();
+        if (dt == null) return null;
+        
+        EvolucionClinica ec = dt.getEvolucionClinica();
+        if (ec == null) return null;
+        
+        Diagnostico d = ec.getDiagnostico();
+        if (d == null) return null;
+        
+        Revision r = d.getRevision();
+        if (r == null) return null;
+        
+        Consulta c = r.getConsulta();
+        if (c == null) return null;
+        
+        return c.getEstudiante();
     }
 }

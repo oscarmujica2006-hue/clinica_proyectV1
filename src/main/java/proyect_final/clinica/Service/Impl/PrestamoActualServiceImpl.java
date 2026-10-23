@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;  // ← IMPORTAR LocalDate
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;  // ← PARA CALCULAR DÍAS
 import java.util.*;
 
@@ -94,7 +95,7 @@ public class PrestamoActualServiceImpl implements PrestamoActualService {
         Optional<PrestamoActual> prestamoActivo = obtenerPrestamoActivoPorEstudiante(prestamo.getIdEstudiante());
 
         if (prestamoActivo.isPresent()) {
-            throw new RuntimeException("El estudiante ya tiene un préstamo activo");
+            throw new RuntimeException("El estudiante tiene un préstamo pendiente de devolución. No se le puede prestar otro archivo.");
         }
 
         // Configurar el nuevo préstamo
@@ -145,6 +146,8 @@ public class PrestamoActualServiceImpl implements PrestamoActualService {
             .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
         
         estudiante.setBloqueado(true);
+        estudiante.setRazonBloqueo("ARCHIVO");
+        estudiante.setFechaBloqueo(LocalDateTime.now());
         estudianteRepository.save(estudiante);
     }
     
@@ -155,7 +158,48 @@ public class PrestamoActualServiceImpl implements PrestamoActualService {
             .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
         
         estudiante.setBloqueado(false);
+        estudiante.setRazonBloqueo(null);
+        estudiante.setFechaBloqueo(null);
         estudianteRepository.save(estudiante);
+    }
+
+    @Override
+    @Transactional
+    public int marcarVencidosYBloquear() {
+        List<PrestamoActual> vencidos = prestamoRepository.findPrestamosVencidos();
+        if (vencidos.isEmpty()) {
+            return 0;
+        }
+
+        LocalDate hoy = LocalDate.now();
+        int total = 0;
+
+        for (PrestamoActual prestamo : vencidos) {
+            prestamo.setEstadoPrestamo("VENCIDO");
+            prestamo.setDiasRetraso((int) ChronoUnit.DAYS.between(prestamo.getFechaLimitePrestamo(), hoy));
+            prestamoRepository.save(prestamo);
+
+            Estudiante estudiante = estudianteRepository.findById(prestamo.getIdEstudiante()).orElse(null);
+            if (estudiante != null && !Boolean.TRUE.equals(estudiante.getBloqueado())) {
+                estudiante.setBloqueado(true);
+                estudiante.setRazonBloqueo("ARCHIVO");
+                estudiante.setFechaBloqueo(LocalDateTime.now());
+                estudianteRepository.save(estudiante);
+            }
+
+            System.out.println("🚫 Préstamo " + prestamo.getId() + " marcado como VENCIDO - estudiante "
+                    + prestamo.getIdEstudiante() + " bloqueado");
+            total++;
+        }
+
+        return total;
+    }
+
+    @Override
+    public boolean tienePrestamosVencidos(Long idEstudiante) {
+        return !prestamoRepository
+            .findByIdEstudianteAndEstadoPrestamo(idEstudiante, "VENCIDO")
+            .isEmpty();
     }
     
     @Override
