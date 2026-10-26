@@ -242,13 +242,71 @@
             .header { padding: 15px; }
             .header h1 { font-size: 18px; }
         }
+
+        /* ============================================ */
+        /* ANIMACIONES PERSONALIZADAS PARA SWEETALERT   */
+        /* ============================================ */
+        .swal2-popup {
+            border-radius: 16px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+            padding: 30px 25px !important;
+        }
+        .swal2-title {
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            color: #2c3e50 !important;
+        }
+        .swal2-html-container {
+            font-size: 15px !important;
+            line-height: 1.6 !important;
+            color: #555 !important;
+        }
+        .swal2-confirm, .swal2-cancel {
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            padding: 10px 24px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+            margin: 0 6px !important;
+        }
+        .swal2-confirm:hover, .swal2-cancel:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
+        }
+        .swal2-icon {
+            animation: swalIconPop 0.5s ease-out !important;
+        }
+        @keyframes swalIconPop {
+            0% { transform: scale(0.3); opacity: 0; }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .swal2-input, .swal2-textarea {
+            border-radius: 8px !important;
+            border: 2px solid #e0e0e0 !important;
+            font-family: inherit !important;
+            transition: border-color 0.2s ease !important;
+        }
+        .swal2-input:focus, .swal2-textarea:focus {
+            border-color: #3498db !important;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1) !important;
+        }
+        .swal2-timer-progress-bar {
+            background: linear-gradient(90deg, #27ae60, #2ecc71) !important;
+        }
+        .swal2-validation-message {
+            border-radius: 8px !important;
+            background: #fff3e0 !important;
+            color: #e67e22 !important;
+            font-weight: 600 !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1> Gestión de consentimientos y validación de procedimiento</h1>
-            
         </div>
 
         <div class="tabs">
@@ -685,31 +743,121 @@
             }
         }
 
+        // ================================================================
+        // ============ APROBAR / RECHAZAR CONSENTIMIENTO ============
+        // ================================================================
         async function aprobarConsentimiento(id) {
-            if (!confirm('¿Está seguro de APROBAR este consentimiento?')) return;
+            // 1. Confirmación bonita
+            const confirmacion = await Swal.fire({
+                title: '✅ ¿Aprobar consentimiento?',
+                html: '<p>El consentimiento pasará a estado <strong style="color:#27ae60;">APROBADO</strong>.</p><p style="font-size:14px;color:#666;">Esta acción notificará al estudiante.</p>',
+                icon: 'question',
+                iconColor: '#27ae60',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-check"></i> Sí, aprobar',
+                cancelButtonText: '<i class="fas fa-times"></i> Cancelar',
+                confirmButtonColor: '#27ae60',
+                cancelButtonColor: '#95a5a6',
+                background: '#f0fdf4',
+                reverseButtons: true,
+                focusConfirm: false
+            });
+
+            if (!confirmacion.isConfirmed) return;
+
             try {
                 const url = `${API_BASE}/api/consentimientos/${id}/estado?estado=APROBADO`;
                 const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' } });
-                if (response.ok) {
-                    Swal.fire({ icon: 'success', title: '✅ Aprobado', text: 'Consentimiento aprobado correctamente' });
-                    cargarConsentimientos();
-                } else throw new Error(await response.text());
+                if (!response.ok) throw new Error(await response.text());
+
+                // 2. Alerta de éxito animada
+                await Swal.fire({
+                    title: '✅ ¡Aprobado!',
+                    html: '<p>El consentimiento fue aprobado correctamente.</p>',
+                    icon: 'success',
+                    iconColor: '#27ae60',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#27ae60',
+                    background: '#f0fdf4',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                cargarConsentimientos();
             } catch (error) {
-                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                Swal.fire({
+                    title: '❌ Error',
+                    text: error.message,
+                    icon: 'error',
+                    iconColor: '#e74c3c',
+                    confirmButtonColor: '#e74c3c',
+                    background: '#fef2f2'
+                });
             }
         }
 
         async function rechazarConsentimiento(id) {
-            if (!confirm('¿Está seguro de RECHAZAR este consentimiento?')) return;
+            // 1. Pedir motivo con SweetAlert
+            const resultado = await Swal.fire({
+                title: '❌ ¿Rechazar consentimiento?',
+                html: '<p>El consentimiento pasará a estado <strong style="color:#e74c3c;">RECHAZADO</strong>.</p><p style="font-size:14px;color:#666;">Por favor indique el motivo del rechazo.</p>',
+                input: 'textarea',
+                inputPlaceholder: 'Escriba el motivo del rechazo aquí...',
+                inputAttributes: {
+                    'aria-label': 'Motivo del rechazo',
+                    'maxlength': 500
+                },
+                icon: 'warning',
+                iconColor: '#e74c3c',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-times"></i> Sí, rechazar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#95a5a6',
+                background: '#fef2f2',
+                reverseButtons: true,
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return '⚠️ Debe ingresar un motivo para rechazar';
+                    }
+                }
+            });
+
+            if (!resultado.isConfirmed) return;
+
+            const motivo = resultado.value.trim();
+
             try {
                 const url = `${API_BASE}/api/consentimientos/${id}/estado?estado=RECHAZADO`;
-                const response = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' } });
-                if (response.ok) {
-                    Swal.fire({ icon: 'info', title: '❌ Rechazado', text: 'Consentimiento rechazado correctamente' });
-                    cargarConsentimientos();
-                } else throw new Error(await response.text());
+                const response = await fetch(url, { 
+                    method: 'PUT', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo })
+                });
+                if (!response.ok) throw new Error(await response.text());
+
+                await Swal.fire({
+                    title: '❌ Rechazado',
+                    html: '<p>El consentimiento fue rechazado.</p>',
+                    icon: 'info',
+                    iconColor: '#e74c3c',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#e74c3c',
+                    background: '#fef2f2',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                cargarConsentimientos();
             } catch (error) {
-                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                Swal.fire({
+                    title: '❌ Error',
+                    text: error.message,
+                    icon: 'error',
+                    iconColor: '#e74c3c',
+                    confirmButtonColor: '#e74c3c',
+                    background: '#fef2f2'
+                });
             }
         }
 
@@ -936,12 +1084,15 @@
                     icon: 'success',
                     title: '✅ Procedimiento Aprobado',
                     html: `<p><strong>${result.mensaje}</strong></p><p>Cupos restantes: <strong>${result.cuposRestantes}</strong></p>`,
-                    confirmButtonColor: '#27ae60'
+                    confirmButtonColor: '#27ae60',
+                    background: '#f0fdf4',
+                    timer: 3500,
+                    timerProgressBar: true
                 });
                 cerrarModalAccion();
                 cargarProcedimientos();
             } catch (error) {
-                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message });
+                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#e74c3c' });
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -952,7 +1103,7 @@
             if (!currentDientePlanId) return;
             const motivo = document.getElementById('motivoRechazo').value.trim();
             if (!motivo) {
-                Swal.fire({ icon: 'warning', title: '⚠️ Motivo requerido', text: 'Ingrese el motivo del rechazo' });
+                Swal.fire({ icon: 'warning', title: '⚠️ Motivo requerido', text: 'Ingrese el motivo del rechazo', confirmButtonColor: '#f39c12' });
                 return;
             }
             const btn = this;
@@ -968,11 +1119,11 @@
                 });
                 if (!response.ok) throw new Error(await response.text());
                 const result = await response.json();
-                Swal.fire({ icon: 'info', title: '❌ Procedimiento Rechazado', text: result.mensaje || 'Procedimiento rechazado correctamente' });
+                Swal.fire({ icon: 'info', title: '❌ Procedimiento Rechazado', text: result.mensaje || 'Procedimiento rechazado correctamente', confirmButtonColor: '#e74c3c', background: '#fef2f2', timer: 3500, timerProgressBar: true });
                 cerrarModalAccion();
                 cargarProcedimientos();
             } catch (error) {
-                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message });
+                Swal.fire({ icon: 'error', title: '❌ Error', text: error.message, confirmButtonColor: '#e74c3c' });
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;

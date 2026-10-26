@@ -763,7 +763,7 @@
             document.querySelector(`#calidadRealizarOptions .calidad-option.${valor.toLowerCase()}`)?.classList.add('selected');
         }
 
-        // ===== CONFIRMAR REALIZAR CON CALIDAD =====
+        // ===== CONFIRMAR REALIZAR CON CALIDAD (ORDEN CORREGIDO) =====
         document.getElementById('btnConfirmarRealizar').addEventListener('click', async function() {
             if (!calidadRealizarSeleccionada) {
                 await Swal.fire({ 
@@ -782,7 +782,43 @@
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
 
             try {
-                // 🔥 PASO 1: PRIMERO guardar la calidad
+                // 🔥 PASO 1: Aprobar la solicitud (PENDIENTE → APROBADO)
+                const aprobarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/aprobar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({})
+                });
+
+                if (!aprobarResponse.ok) {
+                    let errorMsg = 'Error al aprobar';
+                    try {
+                        const errorData = await aprobarResponse.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                // 🔥 PASO 2: Marcar como realizada (APROBADO → REALIZADO) → aquí se genera el recibo
+                const realizarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/realizar`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({})
+                });
+
+                if (!realizarResponse.ok) {
+                    let errorMsg = 'Error al marcar como realizada';
+                    try {
+                        const errorData = await realizarResponse.json();
+                        errorMsg = errorData.error || errorData.message || errorMsg;
+                    } catch (e) {}
+                    throw new Error(errorMsg);
+                }
+
+                const data = await realizarResponse.json();
+
+                // 🔥 PASO 3: AHORA SÍ, guardar la calidad (ya está REALIZADO)
                 const calidadResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/calidad`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -801,42 +837,6 @@
                     } catch (e) {}
                     throw new Error(errorMsg);
                 }
-
-                // 🔥 PASO 2: Aprobar la solicitud
-                const aprobarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/aprobar`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({})
-                });
-
-                if (!aprobarResponse.ok) {
-                    let errorMsg = 'Error al aprobar';
-                    try {
-                        const errorData = await aprobarResponse.json();
-                        errorMsg = errorData.error || errorData.message || errorMsg;
-                    } catch (e) {}
-                    throw new Error(errorMsg);
-                }
-
-                // 🔥 PASO 3: Marcar como realizada (AQUÍ SE GENERA EL RECIBO)
-                const realizarResponse = await fetch(`${API_BASE}/api/solicitudes-radiografia/${id}/realizar`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({})
-                });
-
-                if (!realizarResponse.ok) {
-                    let errorMsg = 'Error al marcar como realizada';
-                    try {
-                        const errorData = await realizarResponse.json();
-                        errorMsg = errorData.error || errorData.message || errorMsg;
-                    } catch (e) {}
-                    throw new Error(errorMsg);
-                }
-
-                const data = await realizarResponse.json();
 
                 await Swal.fire({
                     icon: 'success',

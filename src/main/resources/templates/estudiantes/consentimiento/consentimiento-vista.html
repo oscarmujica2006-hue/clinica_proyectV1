@@ -640,10 +640,7 @@
             <span class="label">ID Evolución</span>
             <span class="value" id="idEvolucionMostrar">-</span>
           </div>
-          <div class="info-item">
-            <span class="label">ID Diagnóstico</span>
-            <span class="value" id="idDiagnosticoMostrar">-</span>
-          </div>
+
           <div class="info-item">
             <span class="label">Paciente</span>
             <span class="value" id="pacienteNombre">-</span>
@@ -652,14 +649,8 @@
             <span class="label">Edad</span>
             <span class="value" id="edadPaciente">-</span>
           </div>
-          <div class="info-item">
-            <span class="label">Diagnóstico</span>
-            <span class="value" id="diagnosticoDescripcion">-</span>
-          </div>
-          <div class="info-item">
-            <span class="label">Tipo de Registro</span>
-            <span class="value" id="tipoRegistroMostrar">-</span>
-          </div>
+
+
           <div class="info-item">
             <span class="label">Subjetivo</span>
             <span class="value" id="subjetivoMostrar">-</span>
@@ -743,13 +734,8 @@
             </button>
         </div>
         
-        <p><strong>Observaciones:</strong></p>
-        <div id="observacionesProcedimiento" style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-sm); margin-top: 0.5rem; border-left: 3px solid var(--primary);">
-          <span id="observacionesTexto" style="color: var(--gray-700);">-</span>
-        </div>
-        
         <label class="diente-label" style="margin-top: 1.5rem;">
-          <i class="fas fa-pen"></i> Observaciones adicionales
+          <i class="fas fa-pen"></i> Observaciones:
         </label>
         <textarea id="explicacionProcedimiento" class="procedimiento-texto" placeholder="Observaciones adicionales..."></textarea>
       </div>
@@ -831,7 +817,6 @@
     </div>
 
     <div class="button-container">
-      <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Imprimir</button>
       <button class="btn btn-outline" onclick="limpiarFormulario()"><i class="fas fa-undo-alt"></i> Limpiar todo</button>
       <button class="btn btn-success" id="btnGuardarTodo"><i class="fas fa-save"></i> Guardar <span id="btnGuardarTexto">Consentimiento</span></button>
     </div>
@@ -1111,28 +1096,23 @@ async function buscarPorEvolucion() {
         document.getElementById('formularioConsentimiento').style.display = 'none';
         cargarClinicas();
         actualizarProgreso(1);
-        document.getElementById('seccionBotonSoap').style.display = 'block';
         
     } catch (error) {
         console.error('Error:', error);
-        
+        mostrarAlerta('Error al buscar la evolución clínica', 'error');
     }
 }
 
 function mostrarInfoEvolucion(evolucion) {
     document.getElementById('infoEvolucion').style.display = 'block';
     document.getElementById('idEvolucionMostrar').textContent = evolucion.idEvolucionClinica || '-';
-    document.getElementById('idDiagnosticoMostrar').textContent = evolucion.idDiagnostico || '-';
     document.getElementById('pacienteNombre').textContent = evolucion.nombrePaciente || 'No disponible';
     document.getElementById('edadPaciente').textContent = evolucion.edad ? evolucion.edad + ' años' : '-';
-    document.getElementById('diagnosticoDescripcion').textContent = evolucion.descripcionDiagnostico || 'Sin descripción';
-    document.getElementById('tipoRegistroMostrar').textContent = evolucion.tipoRegistro || '-';
     document.getElementById('subjetivoMostrar').textContent = evolucion.subjetivo || '-';
     
     document.getElementById('nombrePacienteForm').textContent = evolucion.nombrePaciente || 'No disponible';
     document.getElementById('edadPacienteForm').textContent = evolucion.edad ? evolucion.edad + ' años' : '-';
     document.getElementById('nombreRevocatorio').textContent = evolucion.nombrePaciente || 'No disponible';
-    document.getElementById('observacionesTexto').textContent = evolucion.subjetivo || 'Sin observaciones';
     document.getElementById('resumenObservaciones').textContent = evolucion.subjetivo || 'Sin observaciones';
     
     evolucionSeleccionada = evolucion;
@@ -1158,30 +1138,8 @@ async function cargarClinicas() {
         });
     } catch (error) {
         console.error('Error cargando clínicas:', error);
-        cargarClinicasMock();
+        mostrarAlerta('No se pudieron cargar las clínicas. Verifique la conexión.', 'error');
     }
-}
-
-function cargarClinicasMock() {
-    const mockClinicas = [
-        { id: 1, nombre: 'Clínica 1 - Mañana', turno: 'Mañana', idDoctor: 1, nombreDoctor: 'Dr. Carlos Rodríguez' },
-        { id: 2, nombre: 'Clínica 2 - Tarde', turno: 'Tarde', idDoctor: 2, nombreDoctor: 'Dra. Ana Martínez' },
-        { id: 3, nombre: 'Clínica 3 - Noche', turno: 'Noche', idDoctor: 3, nombreDoctor: 'Dr. Miguel Sánchez' }
-    ];
-    const contenedor = document.getElementById('opciones_clinicas');
-    contenedor.innerHTML = '';
-    mockClinicas.forEach(clinica => {
-        const opcion = document.createElement('div');
-        opcion.className = 'option-card';
-        opcion.dataset.id = clinica.id;
-        opcion.dataset.nombre = clinica.nombre;
-        opcion.dataset.turno = clinica.turno;
-        opcion.dataset.idDoctor = clinica.idDoctor;
-        opcion.dataset.nombreDoctor = clinica.nombreDoctor;
-        opcion.innerHTML = `<h4>${clinica.nombre}</h4><p><i class="fas fa-clock"></i> Turno: ${clinica.turno}</p><p><i class="fas fa-user-md"></i> ${clinica.nombreDoctor}</p>`;
-        opcion.addEventListener('click', () => seleccionarClinica(opcion));
-        contenedor.appendChild(opcion);
-    });
 }
 
 async function cargarDocentesDeClinica(idClinica) {
@@ -1209,6 +1167,7 @@ async function cargarDocentesDeClinica(idClinica) {
         }
     } catch (error) {
         console.error('Error cargando docentes de la clínica:', error);
+        mostrarAlerta('No se pudieron cargar los docentes de la clínica.', 'error');
     }
 }
 
@@ -1257,27 +1216,8 @@ async function cargarMateriasPorClinica(idClinica) {
         actualizarProgreso(3);
     } catch (error) {
         console.error('Error cargando materias:', error);
-        cargarMateriasMock();
+        mostrarAlerta('No se pudieron cargar las materias de la clínica.', 'error');
     }
-}
-
-function cargarMateriasMock() {
-    const mockMaterias = [
-        { idMateria: 1, nombreMateria: 'Odontología General', descripcionMateria: 'Atención dental básica' },
-        { idMateria: 2, nombreMateria: 'Ortodoncia', descripcionMateria: 'Corrección de dientes' },
-        { idMateria: 3, nombreMateria: 'Cirugía Oral', descripcionMateria: 'Procedimientos quirúrgicos' }
-    ];
-    const container = document.getElementById('tiposTratamientoContainer');
-    container.innerHTML = '';
-    mockMaterias.forEach(materia => {
-        const opcion = document.createElement('div');
-        opcion.className = 'option-card';
-        opcion.dataset.id = materia.idMateria;
-        opcion.dataset.nombre = materia.nombreMateria;
-        opcion.innerHTML = `<h4>${materia.nombreMateria}</h4><p>${materia.descripcionMateria}</p>`;
-        opcion.addEventListener('click', () => seleccionarMateria(opcion));
-        container.appendChild(opcion);
-    });
 }
 
 function seleccionarMateria(element) {
@@ -1308,7 +1248,7 @@ async function cargarTratamientosPorMateria(idMateria) {
             agregarTarjetaTratamiento(container, {
                 id: t.idTratamiento,
                 nombre: t.nombreTratamiento,
-                descripcion: t.descripcionTratamiento || 'Sin descripción',
+                descripcion: t.descripcionTratamiento || '',
                 precio: t.precioTratamiento ? `$${Number(t.precioTratamiento).toLocaleString('es-CL')}` : 'Consultar',
                 categoria: materiaSeleccionada?.nombre || 'Tratamiento',
                 cupos: t.cuposDisponibles
@@ -1318,27 +1258,8 @@ async function cargarTratamientosPorMateria(idMateria) {
         actualizarProgreso(4);
     } catch (error) {
         console.error('Error cargando tratamientos:', error);
-        cargarTratamientosMock();
+        mostrarAlerta('No se pudieron cargar los tratamientos de la materia.', 'error');
     }
-}
-
-function cargarTratamientosMock() {
-    const mockTratamientos = [
-        { idTratamiento: 1, nombreTratamiento: 'Limpieza Dental', descripcionTratamiento: 'Eliminación de sarro y placa bacteriana', precioTratamiento: 50000 },
-        { idTratamiento: 2, nombreTratamiento: 'Extracción Dental', descripcionTratamiento: 'Extracción de pieza dental', precioTratamiento: 80000 },
-        { idTratamiento: 3, nombreTratamiento: 'Obturación', descripcionTratamiento: 'Relleno de caries', precioTratamiento: 60000 }
-    ];
-    const container = document.getElementById('tratamientosContainer');
-    container.innerHTML = '';
-    mockTratamientos.forEach(t => {
-        agregarTarjetaTratamiento(container, {
-            id: t.idTratamiento,
-            nombre: t.nombreTratamiento,
-            descripcion: t.descripcionTratamiento,
-            precio: `$${t.precioTratamiento.toLocaleString('es-CL')}`,
-            categoria: materiaSeleccionada?.nombre || 'Tratamiento'
-        });
-    });
 }
 
 function agregarTarjetaTratamiento(container, tratamiento) {
@@ -1349,7 +1270,7 @@ function agregarTarjetaTratamiento(container, tratamiento) {
     opcion.dataset.descripcion = tratamiento.descripcion || '';
     opcion.dataset.precio = tratamiento.precio.replace(/[^0-9.-]/g, '') || '0';
     opcion.dataset.categoria = tratamiento.categoria;
-    opcion.innerHTML = `<span class="badge badge-primary">${tratamiento.categoria}</span><h4>${tratamiento.nombre}</h4><p>${tratamiento.descripcion || 'Sin descripción'}</p><div class="price-tag">${tratamiento.precio}</div>`;
+    opcion.innerHTML = `<span class="badge badge-primary">${tratamiento.categoria}</span><h4>${tratamiento.nombre}</h4>${tratamiento.descripcion ? `<p>${tratamiento.descripcion}</p>` : ''}<div class="price-tag">${tratamiento.precio}</div>`;
     opcion.addEventListener('click', () => seleccionarTratamiento(opcion, tratamiento));
     container.appendChild(opcion);
 }
@@ -1364,7 +1285,6 @@ function seleccionarTratamiento(element, tratamiento) {
     document.getElementById('detallesTratamientoSeleccionado').innerHTML = 
         `<strong>Categoría:</strong> ${tratamiento.categoria || 'General'} | <strong>Precio:</strong> ${tratamiento.precio || 'Consultar'}`;
     document.getElementById('resumenTratamiento').textContent = tratamiento.nombre;
-    document.getElementById('observacionesTexto').textContent = observacionesActuales || 'Sin observaciones';
     
     actualizarResumenDientes();
     
@@ -1375,8 +1295,7 @@ function seleccionarTratamiento(element, tratamiento) {
     document.getElementById('insumosGridContainer').innerHTML = `
         <div style="text-align: center; padding: 1rem; color: var(--gray-500);">
             <i class="fas fa-info-circle" style="font-size: 1.5rem; display: block; margin-bottom: 0.5rem;"></i>
-            <p>La relación entre la evolución clínica y el tratamiento se creará al guardar.</p>
-            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Los insumos se cargarán automáticamente.</p>
+            <p>Los insumos se cargarán automáticamente.</p>
         </div>
     `;
     document.getElementById('solicitudInsumosContainer').style.display = 'block';
@@ -1536,7 +1455,6 @@ document.getElementById('btnGuardarTodo').addEventListener('click', async functi
             throw new Error('No se encontró el ID de la evolución clínica');
         }
         
-        // ✅ CORREGIDO: Usar idEvolucionClinica en lugar de idDiagnostico
         const diagTratData = {
             idEvolucionClinica: parseInt(idEvolucionClinica),
             idTratamiento: parseInt(tratamientoSeleccionado.id),

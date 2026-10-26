@@ -1,6 +1,7 @@
 package proyect_final.clinica.Model.Dao;
 
 import proyect_final.clinica.Model.Entity.SolicitudRadiografia;
+import proyect_final.clinica.Model.Dto.RadiografiaPorClinicaDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,17 @@ import java.util.Optional;
 
 @Repository
 public interface SolicitudRadiografiaRepository extends JpaRepository<SolicitudRadiografia, Long> {
+
+    @Query("SELECT new proyect_final.clinica.Model.Dto.RadiografiaPorClinicaDTO(" +
+           "c.idClinica, c.nombreClinica, r.nombreRayo, COUNT(sr.idSolicitudRadiografia)) " +
+           "FROM SolicitudRadiografia sr " +
+           "JOIN sr.estudiante e " +
+           "JOIN Clinica c ON c.rote = e.roteActual " +
+           "JOIN sr.radiografia r " +
+           "WHERE sr.estado = 'REALIZADO' " +
+           "GROUP BY c.idClinica, c.nombreClinica, r.idRadiografia, r.nombreRayo " +
+           "ORDER BY c.nombreClinica, COUNT(sr.idSolicitudRadiografia) DESC, r.nombreRayo")
+    List<RadiografiaPorClinicaDTO> resumirRadiografiasRealizadasPorClinica();
     
     // =============================================
     // 🔥 MÉTODOS PARA LLAMAR FUNCIONES POSTGRESQL

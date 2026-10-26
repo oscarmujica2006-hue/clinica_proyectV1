@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de radiografías por clínica</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 24px;
+            color: #1f2937;
+            background: #f5f7fa;
+            font-family: Arial, sans-serif;
+        }
+        main { max-width: 1100px; margin: 0 auto; }
+        h1 { margin: 0 0 8px; color: #5b21b6; }
+        .subtitle { margin: 0 0 24px; color: #6b7280; }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .card, .table-card {
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+        }
+        .label { display: block; margin-bottom: 8px; color: #6b7280; }
+        .value { font-size: 1.4rem; font-weight: 700; color: #5b21b6; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 13px 12px; border-bottom: 1px solid #e5e7eb; }
+        th { color: #4b5563; background: #f9fafb; }
+        td:last-child, th:last-child { text-align: right; }
+        .empty { padding: 28px; color: #6b7280; text-align: center; }
+        @media (max-width: 600px) { body { padding: 14px; } }
+    </style>
+</head>
+<body>
+<main>
+    <h1>Radiografías realizadas por clínica</h1>
+    <p class="subtitle">El análisis considera solicitudes con estado REALIZADO.</p>
+
+    <section class="summary">
+        <div class="card">
+            <span class="label">Radiografías realizadas</span>
+            <span class="value" th:text="${totalRadiografias}">0</span>
+        </div>
+        <div class="card">
+            <span class="label">Clínica(s) con más radiografías</span>
+            <span class="value" th:if="${!clinicasConMayorCantidad.isEmpty()}"
+                  th:text="${#strings.listJoin(clinicasConMayorCantidad, ', ')}">—</span>
+            <span class="value" th:if="${clinicasConMayorCantidad.isEmpty()}">Sin datos</span>
+            <span class="label" th:if="${!clinicasConMayorCantidad.isEmpty()}"
+                  th:text="|${mayorCantidad} radiografía(s)|">0 radiografías</span>
+        </div>
+    </section>
+
+    <section class="table-card">
+        <div class="table-wrap" th:if="${!reporte.isEmpty()}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Clínica</th>
+                    <th>Nombre de la radiografía</th>
+                    <th>Cantidad</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="fila : ${reporte}">
+                    <td th:text="${fila.nombreClinica}">Clínica</td>
+                    <td th:text="${fila.nombreRadiografia}">Radiografía</td>
+                    <td th:text="${fila.cantidad}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="empty" th:if="${reporte.isEmpty()}">
+            Todavía no hay radiografías realizadas para mostrar.
+        </p>
+    </section>
+</main>
+</body>
+</html>

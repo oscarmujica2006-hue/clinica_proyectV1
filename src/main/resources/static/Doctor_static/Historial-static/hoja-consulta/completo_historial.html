@@ -39,13 +39,11 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Estilos de texto general */
         .text-doc {
             font-size: clamp(10px, 2.5vw, 12px);
             margin: 0;
             font-weight: 600;
         }
-
 
         .text-doc-two {
             font-size: clamp(8px, 2.5vw, 10px);
@@ -395,15 +393,15 @@
         }
 
         /* ============================================================
-           SECCIÓN CUATRO
+           SECCIÓN CUATRO  (AJUSTE: height auto + margen inferior)
            ============================================================ */
         .cont-four {
             display: grid;
             grid-template-rows: repeat(3, 1fr);
-            height: 50px;
+            height: auto;              /* antes: 50px */
             margin-left: 10px;
             margin-right: 10px;
-            margin-bottom: 0px;
+            margin-bottom: 6px;        /* separación con el título siguiente */
         }
 
         .cont-div {
@@ -982,6 +980,53 @@
             padding: 15px;
             font-style: italic;
         }
+
+        /* ============================================================
+           TÍTULOS DE SECCIÓN (AJUSTE: margen superior)
+           ============================================================ */
+        .titulo-seccion-examen {
+            background: #e8eef7;
+            border-bottom: 2px solid #2c5aa0;
+            padding: 3px 8px;
+            font-weight: 700;
+            font-size: clamp(10px, 2.5vw, 12px);
+            color: #1e3a5f;
+            margin: 6px 10px 0 10px;   /* margen superior para separar */
+        }
+
+        .bloque-examen {
+            margin: 0 10px;
+            border: 1px solid #333;
+            border-top: none;
+        }
+
+        .bloque-examen .cont-five {
+            margin: 0;
+            border: none;
+        }
+
+        .bloque-examen .cont-izq-fv {
+            border-left: none;
+        }
+
+        .bloque-examen .cont-der-fiv {
+            border-right: none;
+        }
+
+        .bloque-higiene {
+            margin: 0 10px 0 10px;
+            border: 1px solid #333;
+        }
+
+        .bloque-higiene .spc-bot-fiv {
+            margin: 0;
+            border-left: none;
+            border-right: none;
+        }
+
+        .bloque-higiene .spc-bot-fiv:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 
@@ -1353,39 +1398,35 @@
                     </div>
                 </div>
                 <div class="cont-dat3 ult-cont3">
+                    <!-- AJUSTE: etiquetas limpias, sin SI()/NO()/modificar -->
                     <div class="ult-dat3">
                         <div>
                             <p class="text-doc">Otros:</p>
                         </div>
-                        <div class="insert-dt3" id="detalle-otros"></div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-otros"></div>
                     </div>
                     <div class="ult-dat3">
                         <div>
                             <p class="text-doc">Ninguno:</p>
                         </div>
-                        <div class="insert-dt3" id="detalle-ninguno"></div>
+                        <div class="insert-dt3 texto-autocompletado" id="detalle-ninguno"></div>
                     </div>
                     <div class="ult-dat3">
                         <div>
-                            <p class="text-doc">Alergias:SI().modificar.()NO</p>
+                            <p class="text-doc">Alergias:</p>
                         </div>
                         <div class="insert-dt3 texto-autocompletado" id="detalle-alergias"></div>
                     </div>
+
                     <div class="ult-dat3">
                         <div>
-                            <p class="text-doc">Especifique Alergia:</p>
-                        </div>
-                        <div class="insert-dt3 texto-autocompletado" id="detalle-alergia-detalle"></div>
-                    </div>
-                    <div class="ult-dat3">
-                        <div>
-                            <p class="text-doc">Embarazo:SI ()</p>
+                            <p class="text-doc">Embarazo:</p>
                         </div>
                         <div class="insert-dt3 texto-autocompletado" id="detalle-embarazo"></div>
                     </div>
                     <div class="ult-dat3">
                         <div>
-                            <p class="text-doc">Semanas:.modificar.</p>
+                            <p class="text-doc">Semanas:</p>
                         </div>
                         <div class="insert-dt3 texto-autocompletado" id="detalle-semana-embarazo"></div>
                     </div>
@@ -1394,7 +1435,7 @@
         </div>
 
         <!-- ============================================================
-        SECCIÓN CUATRO
+        SECCIÓN CUATRO (tratamientos médicos)
         ============================================================ -->
         <div class="seccion">
             <div class="cont-four">
@@ -1472,22 +1513,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="cont-row-trh">
-                    <div class="int-cont-trh">
-                        <p class="text-doc ap-text">EXAMEN EXTRA ORAL</p>
-                    </div>
-                    <div class="int-cont-trh">
-                        <p class="text-doc ap-text">EXAMEN INTRA ORAL</p>
-                    </div>
-                </div>
             </div>
         </div>
 
         <!-- ============================================================
-        SECCIÓN CINCO
+        SECCIÓN CINCO - EXAMEN EXTRA ORAL / INTRA ORAL
         ============================================================ -->
         <div class="seccion">
-            <div class="cont-five">
+
+            <!-- TÍTULO EXAMEN EXTRA ORAL -->
+            <div class="titulo-seccion-examen">EXAMEN EXTRA ORAL</div>
+            <div class="bloque-examen">
                 <div class="cont-izq-fv">
                     <div class="row-cont-izq-esp">
                         <p class="text-doc prg-text-fiv">ATM:</p>
@@ -1513,44 +1549,13 @@
                             <p class="text-dato-cont">DATO</p>
                         </div>
                     </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">ANTECEDENTES BUCODENTALES</p>
-                    </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">Fecha de la última visita al odontólogo:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-fecha">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">HABITOS:</p>
-                        <div class="row-info-fiv">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">ANTECEDENTES DE HIGIENE ORAL:</p>
-                    </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">Utiliza cepillo dental:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-cepillo">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
-                    <div class="row-cont-izq-esp">
-                        <p class="text-doc prg-text-fiv">Frecuencia del cepillado dental:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-frecuencia-cepillo">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
                 </div>
+            </div>
+
+            <!-- TÍTULO EXAMEN INTRA ORAL -->
+            <div class="titulo-seccion-examen">EXAMEN INTRA ORAL</div>
+            <div class="bloque-examen">
                 <div class="cont-der-fiv">
-                    <div class="row-cont-der">
-                        <p class="text-doc prg-text-fiv">HIGIENE BUCAL:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-higiene-bucal">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
                     <div class="row-cont-der">
                         <p class="text-doc prg-text-fiv">Labios:</p>
                         <div class="row-info-fiv texto-autocompletado" id="detalle-labios">
@@ -1587,28 +1592,12 @@
                             <p class="text-dato-cont">DATO</p>
                         </div>
                     </div>
-                    <div class="row-cont-der">
-                        <p class="text-doc prg-text-fiv">Utiliza protesis dental:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-usa-protesis">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
-                    <div class="row-cont-der"></div>
-                    <div class="row-cont-der">
-                        <p class="text-doc prg-text-fiv">Utiliza hilo dental:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-hilo">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
-                    <div class="row-cont-der">
-                        <p class="text-doc prg-text-fiv">Utiliza enjuage bucal:</p>
-                        <div class="row-info-fiv texto-autocompletado" id="detalle-enjuague">
-                            <p class="text-dato-cont">DATO</p>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <div class="infer-cont">
+
+            <!-- TÍTULO HIGIENE BUCAL -->
+            <div class="titulo-seccion-examen">HIGIENE BUCAL</div>
+            <div class="bloque-higiene">
                 <div class="spc-bot-fiv">
                     <div class="fila-inferior-linea">
                         <p class="text-doc prg-text-fiv">Utiliza cepillo dental:</p>
@@ -1635,6 +1624,30 @@
                     <p class="text-dato-cont texto-autocompletado" id="detalle-obs-higiene">DATO</p>
                 </div>
             </div>
+
+            <!-- TÍTULO ANTECEDENTES BUCODENTALES -->
+            <div class="titulo-seccion-examen">ANTECEDENTES BUCODENTALES</div>
+            <div class="bloque-examen">
+                <div class="row-cont-der">
+                    <p class="text-doc prg-text-fiv">Fecha de la última visita al odontólogo:</p>
+                    <div class="row-info-fiv texto-autocompletado" id="detalle-fecha">
+                        <p class="text-dato-cont">DATO</p>
+                    </div>
+                </div>
+                <div class="row-cont-der">
+                    <p class="text-doc prg-text-fiv">HABITOS:</p>
+                    <div class="row-info-fiv">
+                        <p class="text-dato-cont">DATO</p>
+                    </div>
+                </div>
+                <div class="row-cont-der">
+                    <p class="text-doc prg-text-fiv">Utiliza protesis dental:</p>
+                    <div class="row-info-fiv texto-autocompletado" id="detalle-usa-protesis">
+                        <p class="text-dato-cont">DATO</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- ============================================================
@@ -1803,7 +1816,6 @@
     SCRIPT
     ============================================================ -->
     <script>
-        // Función para cargar fotos del odontograma
         function cargarFotosOdontograma() {
             const contenedor = document.getElementById('contenedor-fotos-odontograma');
             const fotos = [];
